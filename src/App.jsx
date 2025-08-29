@@ -1,10 +1,15 @@
 import { useState } from 'react'
+import Header from './Header'
+import Home from './Home'
+
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
-    <h1>Salam</h1>
+    <>
+      <Header />
+      <Home />
+    </>
   )
 }
 

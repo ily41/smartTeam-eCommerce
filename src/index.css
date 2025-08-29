@@ -1,0 +1,117 @@
+@import "tailwindcss";
+
+.scrollbar-hide::-webkit-scrollbar { 
+  display: none;
+}
+
+.inter {
+  font-family: 'Inter', sans-serif;
+}
+
+.slider-container {
+            width: 100%;
+            max-width: 1200px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px 0;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+
+        .slider-wrapper {
+            overflow: hidden;
+            mask: linear-gradient(
+                to right,
+                transparent 0%,
+                black 10%,
+                black 90%,
+                transparent 100%
+            );
+        }
+
+        .slider-track {
+            display: flex;
+            animation: slide 20s linear infinite;
+            gap: 30px;
+        }
+
+        .brand-item {
+            flex: 0 0 180px;
+            height: 100px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .brand-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            border-radius: 15px;
+            transition: opacity 0.3s ease;
+        }
+
+        .brand-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .brand-item:hover::before {
+            opacity: 0.8;
+        }
+
+        .brand-text {
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            letter-spacing: 1px;
+        }
+
+        /* Brand Colors */
+        .lg { background: linear-gradient(135deg, #e91e63, #ad1457); }
+        .dell { background: linear-gradient(135deg, #0073e6, #004c99); }
+        .toshiba { background: linear-gradient(135deg, #dc143c, #8b0000); }
+        .oppo { background: linear-gradient(135deg, #00b894, #00a085); }
+        .asus { background: linear-gradient(135deg, #1a1a1a, #333333); }
+        .samsung { background: linear-gradient(135deg, #1f4788, #0d47a1); }
+
+        @keyframes slide {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        .slider-track:hover {
+            animation-play-state: paused;
+        }
+
+        @media (max-width: 768px) {
+            .slider-container {
+                margin: 20px;
+                padding: 30px 0;
+            }
+            
+            .brand-item {
+                flex: 0 0 150px;
+                height: 80px;
+            }
+            
+            .brand-text {
+                font-size: 16px;
+            }
+        }
