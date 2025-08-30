@@ -30,16 +30,16 @@ const Header = () => {
   return (
     <header>
         <nav >
-            <div className='flex justify-between lg:justify-around p-6 items-center'>
-                <div className='flex gap-2'>
+            <div className='flex justify-between lg:justify-around lg:items-center p-6 items-center'>
+                <div className='flex lg:flex-1 lg:ml-10 gap-2'>
                     <img className='lg:hidden' src="./Icons/burger.svg" alt="" />
                     <img className=' min-w-[100px] max-w-[230px] w-[13vh] lg:w-[20vh] ' src="./Icons/logo.svg" alt="" />
 
                 </div>
 
-                <div className='hidden lg:block'>
+                <div className='hidden lg:flex-3 mr-20 lg:block'>
                     <div className="max-w-4xl mx-auto">
-                      <div className="flex bg-white border-2 border-black rounded-lg overflow-hidden shadow-sm hover:shadow-md ">
+                      <div className="flex  border-2 border-black rounded-lg overflow-hidden shadow-sm hover:shadow-md ">
                         <input 
                           type="text" 
                           placeholder="Search" 
@@ -61,7 +61,7 @@ const Header = () => {
                 </div>
 
                 
-                <div className='flex gap-3 pr-2 flex-shrink-0 lg:hidden'>
+                <div className='flex lg:flex-1 gap-3 pr-2 flex-shrink-0 lg:hidden'>
                   <div className='flex flex-col items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity duration-200'>
                     <img className='scale-[1.1]' src="./Icons/profile.svg" alt="" />
                   </div>
@@ -74,7 +74,7 @@ const Header = () => {
                 </div>
 
 
-                <div className='hidden lg:flex gap-0 lg:gap-5 pr-2 '>
+                <div className='hidden lg:flex gap-0 lg:gap-5 lg:mr-10 pr-2 '>
                     <div className='flex flex-col gap-1 items-center cursor-pointer hover:opacity-80 transition-opacity duration-200'>
                         <img src="./Icons/profile-gray.svg" alt="" />
                         <p className='text-gray-500 text-md'>Profile</p>
@@ -94,7 +94,7 @@ const Header = () => {
             </div>
 
 
-             <div className="p-6  rounded-lg lg:hidden  ">
+             <div className="p-6 rounded-lg lg:hidden bg-[#f7fafc] border-t-1 border-t-[#DEE2E6] ">
               <div className=" rounded-lg  mx-auto">
                 <div className="relative rounded-lg ">
                   <div className={`relative rounded-lg  transition-all duration-200 ${
@@ -144,17 +144,17 @@ const Header = () => {
             
         </nav>
 
-        <div className='flex p-3 overflow-x-auto gap-2 text-center scrollbar-hide lg:hidden'>
-            <div className='min-w-[20%] w-fit flex-shrink-0 whitespace-nowrap bg-gray-200 p-2 rounded-lg font-normal transition-all duration-200 hover:bg-gray-300 cursor-pointer'>
+        <div className='flex p-3 overflow-x-auto gap-2 text-center scrollbar-hide bg-[#f7fafc] lg:hidden'>
+            <div className='min-w-[20%] w-fit flex-shrink-0 whitespace-nowrap bg-white p-2 rounded-lg font-medium border-1 border-[#DEE2E6] transition-all duration-200 hover:bg-gray-300 cursor-pointer'>
                 <span className='inter'>Hello bextiyar</span>
             </div>
-            <div className='min-w-[20%] w-fit flex-shrink-0 whitespace-nowrap bg-gray-200 p-2 rounded-lg font-normal transition-all duration-200 hover:bg-gray-300 cursor-pointer'>
+            <div className='min-w-[20%] w-fit flex-shrink-0 whitespace-nowrap bg-white p-2 rounded-lg font-medium border-1 border-[#DEE2E6] transition-all duration-200 hover:bg-gray-300 cursor-pointer'>
                 <span className='inter'>All categories</span>
             </div>
-            <div className='min-w-[20%] w-fit flex-shrink-0 whitespace-nowrap bg-gray-200 p-2 rounded-lg font-normal transition-all duration-200 hover:bg-gray-300 cursor-pointer'>
+            <div className='min-w-[20%] w-fit flex-shrink-0 whitespace-nowrap bg-white p-2 rounded-lg font-medium border-1 border-[#DEE2E6] transition-all duration-200 hover:bg-gray-300 cursor-pointer'>
                 <span className='inter'>Technology</span>
             </div>
-            <div className='min-w-[20%] w-fit flex-shrink-0 whitespace-nowrap bg-gray-200 p-2 rounded-lg font-normal transition-all duration-200 hover:bg-gray-300 cursor-pointer'>
+            <div className='min-w-[20%] w-fit flex-shrink-0 whitespace-nowrap bg-white p-2 rounded-lg font-medium border-1 border-[#DEE2E6] transition-all duration-200 hover:bg-gray-300 cursor-pointer'>
                 <span className='inter'>Sports</span>
             </div>
         </div>
