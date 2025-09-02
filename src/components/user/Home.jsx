@@ -3,6 +3,7 @@ import MyMap from '../UI/googleMaps'
 import SearchUI from '../UI/SearchUI'
 import HomePageUI from '../UI/HomePageUI'
 import HomeNavbar from '../UI/HomeNavbar'
+import { Link } from 'react-router'
 
 const Home = () => {
     const [hoveredCategorie, setHoveredCategorie] = useState(null)
@@ -230,7 +231,7 @@ const Home = () => {
         <section className='mt-12 mx-4 lg:w-[85vw] lg:mx-auto'>
             <div className='flex justify-between text-2xl font-semibold'>
                 <h1 >Recommended items</h1>
-                <h1 className='text-[#E60C03]'>More </h1>
+                <Link to='./products'><h1 className='text-[#E60C03] cursor-pointer'>More </h1></Link>
 
             </div>
 

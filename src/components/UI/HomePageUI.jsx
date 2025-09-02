@@ -5,7 +5,7 @@ const HomePageUI = ({deal}) => {
     if(deal) {
         return (
         
-            <Link to='/products' className='bg-white p-1 border-1 border-gray-300 cursor-pointer rounded-lg relative transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-gray-400'>
+            <Link to='/details' className='bg-white p-1 border-1 border-gray-300 cursor-pointer rounded-lg relative transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-gray-400'>
                 <img className='w-full rounded-lg ' src="./deals/recommended.svg" alt="" />
                 <div className='font-semibold p-2 inter'>
                     <div className='[@media(min-width:450px)]:flex gap-2 items-center '>
@@ -24,7 +24,7 @@ const HomePageUI = ({deal}) => {
     }
     else {
         return (
-        <Link to='/products' className='bg-white p-1 border-1 cursor-pointer border-gray-300 rounded-lg transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-gray-400'>
+        <Link to='/details' className='bg-white p-1 border-1 cursor-pointer border-gray-300 rounded-lg transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-gray-400'>
             <img className='w-full rounded-lg' src="./deals/recommended.svg" alt="" />
             <div className='font-semibold p-2 inter'>
                 <h1 className='text-lg'>680 AZN</h1>
