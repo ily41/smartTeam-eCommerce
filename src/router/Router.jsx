@@ -5,6 +5,7 @@ import Home from '../components/user/Home'
 import Products from '../Pages/user/Products'
 import Details from '../Pages/user/Details'
 import Cart from '../Pages/user/Cart'
+import WishList from '../Pages/user/WishList'
 
 const router = () => {
   return (
@@ -15,6 +16,7 @@ const router = () => {
             <Route path='/products' element = {<Products />} />
             <Route path='/details' element = {<Details />} />
             <Route path='/cart' element = {<Cart />} />
+            <Route path='/favorites' element = {<WishList />} />
         </Routes>
         <Footer />
     </BrowserRouter>

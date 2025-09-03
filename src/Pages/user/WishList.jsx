@@ -1,12 +1,30 @@
 import React, { useState } from 'react'
 import SearchUI from '../../components/UI/SearchUI'
 import { Breadcrumb } from '../../products/Breadcrumb'
-import { Minus, Plus, ShoppingCart, Trash2 } from 'lucide-react';
+import { Heart, Minus, Plus, ShoppingCart, Trash2 } from 'lucide-react';
 
-const Cart = () => {
+const WishList = () => {
   const [cartItems, setCartItems] = useState([
     {
       id: 1,
+      name: 'Laptop',
+      size: 'Medium',
+      color: 'Blue',
+      material: 'Plastic',
+      price: 680,
+      quantity: 1,
+    },
+    {
+      id: 2,
+      name: 'Laptop',
+      size: 'Medium',
+      color: 'Blue',
+      material: 'Plastic',
+      price: 680,
+      quantity: 1,
+    },
+    {
+      id: 2,
       name: 'Laptop',
       size: 'Medium',
       color: 'Blue',
@@ -47,7 +65,7 @@ const Cart = () => {
         </div>
         
         <div className=" p-4 pl-7 text-xl font-semibold bg-white lg:bg-transparent border-b lg:border-0 border-[#dee2e6] mb-3">
-          <h1>My Cart ({cartItems.length})</h1>
+          <h1>Favorites ({cartItems.length})</h1>
         </div>
 
         <div className="bg-white lg:bg-transparent rounded-lg flex flex-col lg:flex-row lg:gap-4 shadow-sm lg:shadow-none p-4 space-y-4">
@@ -55,66 +73,56 @@ const Cart = () => {
 
             {cartItems.map((item, index) => (
               <>
-                <div key={item.id} className="space-y-4  lg:hidden">
+                <div key={item.id} className="space-y-4 lg:hidden py-4">
                 {/* Product Info Row */}
-                <div className="flex items-start rounded-lg p-4">
+                <div className="flex rounded-lg ">
                   {/* Product Image */}
-                  <div className="w-24 h-24 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center mr-4 overflow-hidden">
+                  <div className="  rounded-lg flex items-center p-[1px] max-w-[150px] justify-center mr-3 overflow-hidden">
                     <img
                       src="./deals/product.avif"
                       alt={item.name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full  object-cover"
                     />
                   </div>
 
                   {/* Product Details */}
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-lg text-gray-900 mb-1">
-                      {item.name}
-                    </h3>
-                    <p className="text-md text-gray-500">
+                  <div className=" flex flex-col justify-between flex-1">
+                    <div className="text-md flex justify-between mb-3 font-semibold text-gray-900">
+                        <h3 className="font-semibold text-md text-gray-900 mb-1">
+                          {item.name}
+                        </h3>
+                        {item.price * item.quantity} AZN
+                    </div>
+                    
+                    <p className="text-xs text-gray-500">
                       Size: {item.size}, Color: {item.color}
                     </p>
-                    <p className="text-md text-gray-500">
+                    <p className="text-xs text-gray-500">
                       Material: {item.material}
                     </p>
+
+                    <div className="flex items-center md:justify-end  mt-6">
+                      <button className="w-fit text-sm lg:text-md bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-md font-medium transition-colors duration-200">
+                         Add to the cart
+                      </button>
+                      
+                    </div>
                   </div>
 
-                  {/* Delete Button */}
-                  <button
-                    onClick={() => removeItem(item.id)}
-                    className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                  >
-                    <Trash2 size={24} />
-                  </button>
+                  
+
+                  
+
                 </div>
 
                 {/* Quantity Controls + Price */}
-                <div className="flex items-center justify-between px-4">
-                  <div className="flex items-center border border-gray-300 rounded-lg">
-                    <button className="p-2 hover:bg-gray-100 transition-colors">
-                      <Minus size={16} />
-                    </button>
-                    <span className="px-4 py-2 border-x border-[#dee2e6] text-center">
-                      {item.quantity}
-                    </span>
-                    <button className="p-2 hover:bg-gray-100 transition-colors">
-                      <Plus size={16} />
-                    </button>
-                  </div>
-
-                  <div className="text-xl font-semibold text-gray-900">
-                    {item.price * item.quantity} AZN
-                  </div>
-                </div>
+                
 
                 {/* Divider */}
-                {index < cartItems.length - 1 && (
-                  <hr className="mx-2 border-[#dee2e6]" />
-                )}
+                
                 </div>
 
-                <div className='hidden lg:flex gap-4'>
+                <div className='hidden lg:flex gap-4 p-4 '>
 
                   <div className='flex-1 flex'>
                     <div className="w-30 h-30 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center mr-4 overflow-hidden">
@@ -130,6 +138,9 @@ const Cart = () => {
                         <h3 className="font-semibold text-lg text-gray-900 mb-1">
                           {item.name}
                         </h3>
+                        <div className="text-xl font-semibold text-gray-900">
+                            {item.price * item.quantity} AZN
+                        </div>
                         <p className="text-md text-gray-500">
                           Size: {item.size}, Color: {item.color}
                         </p>
@@ -138,27 +149,18 @@ const Cart = () => {
                         </p>
                       </div>
 
-                      <button className='px-3 p-1 mt-7 shadow-md bg-white text-red-500 rounded-lg border-1 border-[#dee2e6]'>Remove</button>
 
                     </div>
                   </div>
 
-                  <div className="flex flex-col  items-end justify-around px-4">
-                      <div className="text-lg font-semibold text-gray-900">
-                        {item.price * item.quantity} AZN
-                      </div>
+                  <div className="flex flex-col  items-end gap-8 justify-around px-4">
                       
-                      <div className="flex items-center border border-gray-300 rounded-lg">
-                        <button className="p-2 hover:bg-gray-100 transition-colors">
-                          <Minus size={16} />
-                        </button>
-                        <span className="px-4 py-2 border-x border-[#dee2e6] text-center">
-                          {item.quantity}
-                        </span>
-                        <button className="p-2 hover:bg-gray-100 transition-colors">
-                          <Plus size={16} />
-                        </button>
-                      </div>
+                    <Heart color='red' size={30} fill='red'/>
+
+                    <button className="w-full bg-red-500  hover:bg-red-600 text-white font-semibold py-3 px-15 rounded-lg transition-colors flex items-center justify-center space-x-2">
+                      <ShoppingCart size={20} />
+                      <span>Buy Now</span>
+                    </button>
 
                      
 
@@ -205,4 +207,4 @@ const Cart = () => {
   );
 };
 
-export default Cart;
+export default WishList;
