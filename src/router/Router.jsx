@@ -2,8 +2,9 @@ import { BrowserRouter, Route, Routes } from 'react-router'
 import Header from '../components/user/Header'
 import Footer from '../components/user/Footer'
 import Home from '../components/user/Home'
-import Products from '../Pages/admin/user/Products'
-import Details from '../Pages/admin/user/Details'
+import Products from '../Pages/user/Products'
+import Details from '../Pages/user/Details'
+import Cart from '../Pages/user/Cart'
 
 const router = () => {
   return (
@@ -13,6 +14,7 @@ const router = () => {
             <Route path='/' element = {<Home />} />
             <Route path='/products' element = {<Products />} />
             <Route path='/details' element = {<Details />} />
+            <Route path='/cart' element = {<Cart />} />
         </Routes>
         <Footer />
     </BrowserRouter>

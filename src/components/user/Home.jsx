@@ -2,7 +2,6 @@ import React, { act, useState } from 'react'
 import MyMap from '../UI/googleMaps'
 import SearchUI from '../UI/SearchUI'
 import HomePageUI from '../UI/HomePageUI'
-import HomeNavbar from '../UI/HomeNavbar'
 import { Link } from 'react-router'
 
 const Home = () => {
@@ -12,7 +11,6 @@ const Home = () => {
 
   return (
     <>
-      <HomeNavbar />
       <main className=' bg-[#f7fafc] lg:pt-5'>
         
         <div className='p-5'>

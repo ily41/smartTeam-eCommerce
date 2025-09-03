@@ -4,9 +4,25 @@
   display: none;
 }
 
-.inter {
-  font-family: 'Inter', sans-serif;
+.helveticaNow {
+  font-family: 'helveticaNow', sans-serif;
 }
+
+.inter {
+  font-family: 'inter', sans-serif;
+}
+
+.montserrat {
+  font-family: 'montserrat', sans-serif;
+}
+
+@font-face {
+  font-family: 'helveticaNow';
+  src: url('/font/helvetica-now-text-medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+
 
 .slider-container {
             width: 100%;
