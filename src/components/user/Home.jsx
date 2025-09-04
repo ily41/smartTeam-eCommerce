@@ -155,8 +155,8 @@ const Home = () => {
         <section className='lg:flex lg:bg-white lg:mt-8 lg:rounded-lg lg:w-[85vw] mx-auto lg:border-1 lg:border-gray-300'>
             <div className='p-4 pr-9 border-r-1 border-gray-300 '>
                 <div className='inter lg:mb-5 border-t-gray-300 p-4 lg:p-0'>
-                    <h1 className='text-2xl font-semibold'>Deals and offers</h1>
-                    <p className='text-lg font-medium text-gray-600'>Electronic equipments</p>
+                    <h1 className='text-xl font-semibold mb-1'>Deals and offers</h1>
+                    <p className='text-md font-medium text-gray-600'>Electronic equipments</p>
                 </div>
                 <div className='hidden lg:flex gap-2'>
 
@@ -184,39 +184,39 @@ const Home = () => {
             </div>
 
             <div className='flex flex-1 rounded-lg'>
-                <div className='relative py-10 border-1 lg:border-t-0 bg-white lg:border-b-0 border-gray-300 w-full flex flex-col items-center  gap-1 lg:min-h-[15vh] lg:p-3  '>
-                    <img className='w-full  max-w-[180px] lg:max-w-none' src="./deals/1.svg" alt="" />
-                    <p className='sm:whitespace-nowrap text-lg'>Smart watches</p>
-                    <div className='absolute top-6 right-6 lg:top-3 lg:right-3 p-8 lg:p-6 w-0 h-0 flex justify-center items-center  rounded-[50%] bg-[#FF4B43] text-white inter '>
-                        <p className='text-lg font-semibold lg:text-sm'>-25%</p>
+                <div className='relative py-5 inter border-1 lg:border-t-0 bg-white lg:border-b-0 border-gray-300 w-full flex flex-col items-center  gap-1 lg:min-h-[15vh] lg:p-3  '>
+                    <img className='w-full  max-w-[180px] px-2  lg:max-w-none' src="./deals/1.svg" alt="" />
+                    <p className='sm:whitespace-nowrap text-md'>Smart watches</p>
+                    <div className='absolute top-2 right-2 lg:top-3 lg:right-3 p-6 w-0 h-0 flex justify-center items-center  rounded-[50%] bg-[#FF4B43] text-white inter '>
+                        <p className='text-xs text-center font-semibold lg:text-sm'>-25%</p>
                     </div>
                 </div>
-                <div className='border-1 relative py-10 lg:border-t-0 bg-white lg:border-b-0 border-gray-300 w-full flex flex-col items-center  gap-1 lg:min-h-[15vh] lg:p-3'>
-                    <img className='w-full max-w-[180px] lg:max-w-none ' src="./deals/2.svg" alt="" />
-                    <p className='sm:whitespace-nowrap text-lg'>Smart watches</p>
-                    <div className='absolute top-6 right-6 lg:top-3 lg:right-3 p-8 lg:p-6 w-0 h-0 flex justify-center items-center  rounded-[50%] bg-[#FF4B43] text-white inter '>
-                        <p className='text-lg font-semibold lg:text-sm'>-25%</p>
+                <div className='border-1 relative py-5 inter lg:border-t-0 bg-white lg:border-b-0 border-gray-300 w-full flex flex-col items-center  gap-1 lg:min-h-[15vh] lg:p-3'>
+                    <img className='w-full max-w-[180px]  px-2 lg:max-w-none ' src="./deals/2.svg" alt="" />
+                    <p className='sm:whitespace-nowrap text-md'>Smart watches</p>
+                    <div className='absolute top-2 right-2 lg:top-3 lg:right-3 p-6 w-0 h-0 flex justify-center items-center  rounded-[50%] bg-[#FF4B43] text-white inter '>
+                        <p className='text-xs text-center font-semibold lg:text-sm'>-25%</p>
                     </div>
                 </div>
-                <div className='border-1 relative py-10 lg:border-t-0 bg-white lg:border-b-0 border-gray-300 w-full flex flex-col items-center  gap-1 lg:min-h-[15vh] lg:p-3'>
-                    <img className='w-full max-w-[180px] lg:max-w-none ' src="./deals/3.svg" alt="" />
-                    <p className='sm:whitespace-nowrap text-lg'>Smart watches</p>
-                    <div className='absolute top-6 right-6 lg:top-3 lg:right-3 p-8 lg:p-6 w-0 h-0 flex justify-center items-center  rounded-[50%] bg-[#FF4B43] text-white inter '>
-                        <p className='text-lg font-semibold lg:text-sm'>-25%</p>
+                <div className='border-1 relative py-5 inter lg:border-t-0 bg-white lg:border-b-0 border-gray-300 w-full flex flex-col items-center  gap-1 lg:min-h-[15vh] lg:p-3'>
+                    <img className='w-full max-w-[180px]  px-2 lg:max-w-none ' src="./deals/3.svg" alt="" />
+                    <p className='sm:whitespace-nowrap text-md'>Smart watches</p>
+                    <div className='absolute top-2 right-2 lg:top-3 lg:right-3 p-6 w-0 h-0 flex justify-center items-center  rounded-[50%] bg-[#FF4B43] text-white inter '>
+                        <p className='text-xs text-center font-semibold lg:text-sm'>-25%</p>
                     </div>
                 </div>
-                <div className='hidden relative py-10 lg:flex border-1 lg:border-t-0 lg:border-b-0 border-gray-300 w-full  flex-col items-center  gap-1 lg:min-h-[15vh] lg:p-3'>
-                    <img className='w-full max-w-[180px] lg:max-w-none ' src="./deals/1.svg" alt="" />
-                    <p className='whitespace-nowrap text-lg'>Smart watches</p>
-                    <div className='absolute top-6 right-6 lg:top-3 lg:right-3 p-8 lg:p-6 w-0 h-0 flex justify-center items-center  rounded-[50%] bg-[#FF4B43] text-white inter '>
-                        <p className='text-lg font-semibold lg:text-sm'>-25%</p>
+                <div className='hidden relative py-5 inter lg:flex border-1 lg:border-t-0 lg:border-b-0 border-gray-300 w-full  flex-col items-center  gap-1 lg:min-h-[15vh] lg:p-3'>
+                    <img className='w-full max-w-[180px]  px-2 lg:max-w-none ' src="./deals/1.svg" alt="" />
+                    <p className='whitespace-nowrap text-md'>Smart watches</p>
+                    <div className='absolute top-2 right-2 lg:top-3 lg:right-37p-6 lg:p-6 w-0 h-0 flex justify-center items-center  rounded-[50%] bg-[#FF4B43] text-white inter '>
+                        <p className='text-xs text-center font-semibold lg:text-sm'>-25%</p>
                     </div>
                 </div>
-                <div className='hidden relative py-10 [@media(min-width:1200px)]:flex border-1 lg:border-t-0 lg:border-b-0 border-gray-300 w-full x flex-col items-center  gap-1 lg:min-h-[15vh] lg:p-3'>
-                    <img className='w-full max-w-[180px] lg:max-w-none ' src="./deals/1.svg" alt="" />
-                    <p className='whitespace-nowrap text-lg'>Smart watches</p>
-                    <div className='absolute top-6 right-6 lg:top-3 lg:right-3 p-8 lg:p-6 w-0 h-0 flex justify-center items-center  rounded-[50%] bg-[#FF4B43] text-white inter '>
-                        <p className='text-lg font-semibold lg:text-sm'>-25%</p>
+                <div className='hidden relative py-5 inter [@media(min-width:1200px)]:flex border-1 lg:border-t-0 lg:border-b-0 border-gray-300 w-full x flex-col items-center  gap-1 lg:min-h-[15vh] lg:p-3'>
+                    <img className='w-full max-w-[180px]  px-2 lg:max-w-none ' src="./deals/1.svg" alt="" />
+                    <p className='whitespace-nowrap text-md'>Smart watches</p>
+                    <div className='absolute top-2 right-2 lg:top-3 lg:right-3 p-6 lg:p-6 w-0 h-0 flex justify-center items-center  rounded-[50%] bg-[#FF4B43] text-white inter '>
+                        <p className='text-xs text-center font-semibold lg:text-sm'>-25%</p>
                     </div>
                 </div>
 
@@ -227,9 +227,9 @@ const Home = () => {
         </section>
 
         <section className='mt-12 mx-4 lg:w-[85vw] lg:mx-auto'>
-            <div className='flex justify-between text-2xl font-semibold'>
+            <div className='flex justify-between text-xl font-semibold'>
                 <h1 >Recommended items</h1>
-                <Link to='./products'><h1 className='text-[#E60C03] cursor-pointer'>More </h1></Link>
+                <Link to='./products'><h1 className='text-[#E60C03] cursor-pointer '>More </h1></Link>
 
             </div>
 
@@ -250,7 +250,7 @@ const Home = () => {
         </section>
 
         <section className='mt-12 mx-4 lg:w-[85vw] lg:mx-auto'>
-            <div className='flex justify-between text-2xl font-semibold'>
+            <div className='flex justify-between text-xl font-semibold'>
                 <h1 >Hot Deals</h1>
                 <h1 className='text-[#E60C03]'>More</h1>
 
@@ -272,7 +272,7 @@ const Home = () => {
         </section>
 
         <section className='mt-12 mx-4 lg:w-[85vw] lg:mx-auto '>
-            <div className='text-2xl font-semibold'>
+            <div className='text-xl font-semibold'>
                 <h1>Extra Services</h1>
             </div>
             <div className="lg:flex gap-3">

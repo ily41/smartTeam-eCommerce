@@ -8,12 +8,6 @@ import { Breadcrumb } from '../../products/Breadcrumb';
 import SearchUI from '../../components/UI/SearchUI';
 
 function Details() {
-  const thumbnails = [
-    '/laptop-thumb1.jpg',
-    '/laptop-thumb2.jpg', 
-    '/laptop-thumb3.jpg',
-    '/laptop-thumb4.jpg'
-  ];
 
   const specifications = [
     '16GB RAM',
@@ -95,7 +89,7 @@ function Details() {
         <Breadcrumb />
         
       </div>
-      <div className="min-h-screen bg-gray-50 pt-8 sm:pt-0">
+      <div className="min-h-[70vh] bg-gray-50 pt-8 sm:pt-0">
       {/* Mobile Layout */}
       <div className="md:hidden ">
         <div className=" bg-white border-y-1 border-[#DEE2E6]">
@@ -118,7 +112,7 @@ function Details() {
                 pagination={false} // Disable default pagination
                 autoplay={{ delay: 3000, disableOnInteraction: false }} 
                 modules={[Pagination, Autoplay]} 
-                className="mySwiper"
+                className="mySwiper max-w-[65vw]"
                 onSlideChange={(swiper) => setActiveSlide(swiper.activeIndex)}
                 onSwiper={setSwiperRef}
               >
@@ -229,8 +223,8 @@ function Details() {
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Similar Products</h2>
             <div className="overflow-x-scroll scrollbar-hide flex gap-3 rounded-lg p-3">
               {similarProducts.slice(0, 2).map((product) => (
-                <div key={product.id} className="flex items-center space-x-3 min-w-[70%] p-2 bg-white  rounded-lg shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)]">
-                  <div className="  h-28  overflow-hidden">
+                <div key={product.id} className="flex items-center  min-w-[80%] p-2 bg-white  rounded-lg shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)]">
+                  <div className="h-38">
                     <img src='./deals/product.avif' alt={product.name} className="w-full h-full object-cover" />
                   </div>
                   <div className="flex-1 flex flex-col self-start mt-2">

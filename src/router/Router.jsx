@@ -6,6 +6,7 @@ import Products from '../Pages/user/Products'
 import Details from '../Pages/user/Details'
 import Cart from '../Pages/user/Cart'
 import WishList from '../Pages/user/WishList'
+import About from '../Pages/user/About'
 
 const router = () => {
   return (
@@ -17,6 +18,7 @@ const router = () => {
             <Route path='/details' element = {<Details />} />
             <Route path='/cart' element = {<Cart />} />
             <Route path='/favorites' element = {<WishList />} />
+            <Route path='/about' element = {<About />} />
         </Routes>
         <Footer />
     </BrowserRouter>

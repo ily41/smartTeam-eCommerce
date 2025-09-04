@@ -88,16 +88,16 @@ const WishList = () => {
                   {/* Product Details */}
                   <div className=" flex flex-col justify-between flex-1">
                     <div className="text-md flex justify-between mb-3 font-semibold text-gray-900">
-                        <h3 className="font-semibold text-md text-gray-900 mb-1">
+                        <h3 className="font-semibold text-lg text-gray-900 mb-1">
                           {item.name}
                         </h3>
                         {item.price * item.quantity} AZN
                     </div>
                     
-                    <p className="text-xs text-gray-500">
+                    <p className="text-md text-gray-500">
                       Size: {item.size}, Color: {item.color}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-md text-gray-500">
                       Material: {item.material}
                     </p>
 
@@ -188,7 +188,7 @@ const WishList = () => {
                 <span>Discount:</span>
                 <span>- 15 AZN</span>
               </div>
-              <div className="flex justify-between text-lg lg:mb-7 font-bold text-gray-900 pt-2 border-t border-gray-200">
+              <div className="flex justify-between text-lg mb-7 font-bold text-gray-900 pt-2 border-t border-gray-200">
                 <span>Total:</span>
                 <span>130 AZN</span>
               </div>

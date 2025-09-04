@@ -7,11 +7,11 @@ const Header = () => {
     
   return (
     <header>
-        <nav >
+        <nav className='border-b-1 border-[#dee2e6]'>
             <div className='flex justify-between lg:justify-around lg:items-center p-6 items-center'>
                 <Link to='/' className='flex lg:flex-1 cursor-pointer lg:justify-center gap-2'>
-                    <img className='lg:hidden' src="./Icons/burger.svg" alt="" />
-                    <img className=' min-w-[100px] max-w-[230px] w-[13vh] lg:w-[20vh] ' src="./Icons/logo.svg" alt="" />
+                    <img className='md:hidden' src="./Icons/burger.svg" alt="" />
+                    <img className=' min-w-[100px] max-w-[230px] w-[18vh] lg:w-[20vh] ' src="./Icons/logo.svg" alt="" />
 
                 </Link>
 
@@ -84,10 +84,10 @@ const Header = () => {
                     
               {/* Navigation Links */}
               <nav className="flex items-center space-x-6 lg:space-x-8">
-                <a href="#" className="text-gray-700 inter text-sm lg:text-base cursor-pointer hover:text-gray-900 transition-colors duration-200">Home</a>
-                <a href="#" className="text-gray-700 inter text-sm lg:text-base  cursor-pointer hover:text-gray-900 transition-colors duration-200">About Us</a>
-                <a href="#" className="text-gray-700 inter text-sm lg:text-base  cursor-pointer hover:text-gray-900 transition-colors duration-200">Download Program</a>
-                <a href="#" className="text-gray-700 inter text-sm lg:text-base  cursor-pointer hover:text-gray-900 transition-colors duration-200">Contact</a>
+                <Link to='/home' className="text-gray-700 inter text-sm lg:text-base cursor-pointer hover:text-gray-900 transition-colors duration-200">Home</Link>
+                <Link to='/about' className="text-gray-700 inter text-sm lg:text-base  cursor-pointer hover:text-gray-900 transition-colors duration-200">About Us</Link>
+                <a  className="text-gray-700 inter text-sm lg:text-base  cursor-pointer hover:text-gray-900 transition-colors duration-200">Download Program</a>
+                <a  className="text-gray-700 inter text-sm lg:text-base  cursor-pointer hover:text-gray-900 transition-colors duration-200">Contact</a>
               </nav>
             </div>
                     

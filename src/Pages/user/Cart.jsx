@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import SearchUI from '../../components/UI/SearchUI'
 import { Breadcrumb } from '../../products/Breadcrumb'
-import { Minus, Plus, ShoppingCart, Trash2 } from 'lucide-react';
+import { ArrowLeft, Minus, Plus, ShoppingCart, Trash2 } from 'lucide-react';
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([
@@ -57,13 +57,13 @@ const Cart = () => {
               <>
                 <div key={item.id} className="space-y-4  lg:hidden">
                 {/* Product Info Row */}
-                <div className="flex items-start rounded-lg p-4">
+                <div className="flex items-start rounded-lg ">
                   {/* Product Image */}
-                  <div className="w-24 h-24 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center mr-4 overflow-hidden">
+                  <div className="w-30 h-30 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center mr-4 overflow-hidden">
                     <img
                       src="./deals/product.avif"
                       alt={item.name}
-                      className="w-full h-full object-cover"
+                      className="w-full  h-full object-cover"
                     />
                   </div>
 
@@ -90,7 +90,7 @@ const Cart = () => {
                 </div>
 
                 {/* Quantity Controls + Price */}
-                <div className="flex items-center justify-between px-4">
+                <div className="flex items-center justify-between ">
                   <div className="flex items-center border border-gray-300 rounded-lg">
                     <button className="p-2 hover:bg-gray-100 transition-colors">
                       <Minus size={16} />
@@ -117,7 +117,7 @@ const Cart = () => {
                 <div className='hidden lg:flex gap-4'>
 
                   <div className='flex-1 flex'>
-                    <div className="w-30 h-30 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center mr-4 overflow-hidden">
+                    <div className="w-30 h-30  rounded-lg flex items-center justify-center mr-4 overflow-hidden">
                       <img
                         src="./deals/product.avif"
                         alt={item.name}
@@ -141,7 +141,10 @@ const Cart = () => {
                       <button className='px-3 p-1 mt-7 shadow-md bg-white text-red-500 rounded-lg border-1 border-[#dee2e6]'>Remove</button>
 
                     </div>
+                    
+                    
                   </div>
+                  
 
                   <div className="flex flex-col  items-end justify-around px-4">
                       <div className="text-lg font-semibold text-gray-900">
@@ -166,15 +169,24 @@ const Cart = () => {
                   
                 </div>
                 {index < cartItems.length - 1 && (
-                  <hr className="mx-2 border-[#dee2e6]" />
+                  <hr className="mx-2 hidden lg:block border-[#dee2e6]" />
                 )}
 
               </>
             ))}
+            <hr className="mx-2 border-[#dee2e6] hidden lg:block" />
+            <div className=' justify-between hidden lg:flex'>
+                  <button className='flex items-center gap-2 text-white bg-black inter p-2 rounded-lg'>
+                    <ArrowLeft size={20} />
+                    <p>Back to Shop</p>
+                  </button>
+                  <button className='px-3  bg-white text-red-500 rounded-lg border-1 border-[#bfc2c6]'>Remove all</button>
+                  
+            </div>
 
           </div>
 
-          <div className='lg:bg-white lg:p-5 lg:shadow-sm  lg:h-fit flex-2 lg:rounded-lg'>
+          <div className='lg:bg-white lg:p-5 lg:shadow-sm  py-1 lg:h-fit flex-2 lg:rounded-lg'>
 
             {/* Pricing Summary */}
             <div className="border-t lg:border-none  border-gray-200 pt-4 space-y-3">
@@ -186,7 +198,7 @@ const Cart = () => {
                 <span>Discount:</span>
                 <span>- 15 AZN</span>
               </div>
-              <div className="flex justify-between text-lg lg:mb-7 font-bold text-gray-900 pt-2 border-t border-gray-200">
+              <div className="flex justify-between text-lg mb-7 font-bold text-gray-900 pt-2 border-t border-gray-200">
                 <span>Total:</span>
                 <span>130 AZN</span>
               </div>
