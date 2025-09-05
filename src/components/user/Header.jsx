@@ -84,10 +84,10 @@ const Header = () => {
                     
               {/* Navigation Links */}
               <nav className="flex items-center space-x-6 lg:space-x-8">
-                <Link to='/home' className="text-gray-700 inter text-sm lg:text-base cursor-pointer hover:text-gray-900 transition-colors duration-200">Home</Link>
+                <Link to='/' className="text-gray-700 inter text-sm lg:text-base cursor-pointer hover:text-gray-900 transition-colors duration-200">Home</Link>
                 <Link to='/about' className="text-gray-700 inter text-sm lg:text-base  cursor-pointer hover:text-gray-900 transition-colors duration-200">About Us</Link>
-                <a  className="text-gray-700 inter text-sm lg:text-base  cursor-pointer hover:text-gray-900 transition-colors duration-200">Download Program</a>
-                <a  className="text-gray-700 inter text-sm lg:text-base  cursor-pointer hover:text-gray-900 transition-colors duration-200">Contact</a>
+                <Link to='/download'  className="text-gray-700 inter text-sm lg:text-base  cursor-pointer hover:text-gray-900 transition-colors duration-200">Download Program</Link>
+                <Link to='/contact'   className="text-gray-700 inter text-sm lg:text-base  cursor-pointer hover:text-gray-900 transition-colors duration-200">Contact</Link>
               </nav>
             </div>
                     

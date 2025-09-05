@@ -13,7 +13,7 @@ const Home = () => {
     <>
       <main className=' bg-[#f7fafc] lg:pt-5'>
         
-        <div className='p-5'>
+        <div className='p-5 pb-0 md:pb-5'>
             <SearchUI />
         </div>
         
@@ -229,7 +229,7 @@ const Home = () => {
         <section className='mt-12 mx-4 lg:w-[85vw] lg:mx-auto'>
             <div className='flex justify-between text-xl font-semibold'>
                 <h1 >Recommended items</h1>
-                <Link to='./products'><h1 className='text-[#E60C03] cursor-pointer '>More </h1></Link>
+                <Link to='./products'><h1 className='text-[#E60C03] cursor-pointer text-lg'>More </h1></Link>
 
             </div>
 
@@ -252,7 +252,7 @@ const Home = () => {
         <section className='mt-12 mx-4 lg:w-[85vw] lg:mx-auto'>
             <div className='flex justify-between text-xl font-semibold'>
                 <h1 >Hot Deals</h1>
-                <h1 className='text-[#E60C03]'>More</h1>
+                <h1 className='text-[#E60C03] text-lg'>More</h1>
 
             </div>
 
@@ -271,7 +271,7 @@ const Home = () => {
             </div>
         </section>
 
-        <section className='mt-12 mx-4 lg:w-[85vw] lg:mx-auto '>
+        {/* <section className='mt-12 mx-4 lg:w-[85vw] lg:mx-auto '>
             <div className='text-xl font-semibold'>
                 <h1>Extra Services</h1>
             </div>
@@ -306,7 +306,7 @@ const Home = () => {
             </div>
 
             
-        </section>
+        </section> */}
 
         <section className='my-12  mx-4  lg:w-[85vw] lg:mx-auto'>
             <div className='text-2xl mb-8 font-semibold'>
