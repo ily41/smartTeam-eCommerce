@@ -36,9 +36,9 @@ const Header = () => {
 
                 
                 <div className='flex lg:flex-1 gap-3 pr-2 flex-shrink-0 lg:hidden'>
-                  <div className='flex flex-col items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity duration-200'>
+                  <Link to='/profile' className='flex flex-col items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity duration-200'>
                     <img className='scale-[1.1]' src="./Icons/profile.svg" alt="" />
-                  </div>
+                  </Link>
                   <Link to='/favorites' className='flex flex-col items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity duration-200'>
                     <img className='scale-[1.1]' src="./Icons/favorites.svg" alt="" />
                   </Link>

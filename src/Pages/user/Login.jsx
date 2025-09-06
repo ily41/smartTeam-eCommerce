@@ -1,9 +1,29 @@
 import React, { useState, useEffect } from 'react';
+import { useLoginMutation, useSignupMutation } from '../../store/API';
+import {jwtDecode} from "jwt-decode";
+import { Loader, X } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router';
+import { toast } from 'react-toastify';
 
 const Login = () => {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    phoneNumber: "",
+    confirmPassword: ""
+  });
   const [currentView, setCurrentView] = useState('login');
   const [countdown, setCountdown] = useState(20);
   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  const from = location.state?.from || '/'
+
+  const [login, { isLoading: isLoginLoading }] = useLoginMutation(); 
+  const [signup, { isLoading: isSignLoading }] = useSignupMutation(); 
 
   useEffect(() => {
     const handleResize = () => {
@@ -39,11 +59,16 @@ const Login = () => {
     }
   };
 
-  const formatCountdown = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
+  const setCookie = (name, value, expiresAt) => {
+  const expires = "expires=" + new Date(expiresAt).toUTCString();
+  document.cookie = `${name}=${value}; ${expires}; path=/; SameSite=Lax; Secure`;
+};
+
+  // const formatCountdown = (seconds) => {
+  //   const minutes = Math.floor(seconds / 60);
+  //   const secs = seconds % 60;
+  //   return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  // };
 
   const GoogleIcon = () => (
     <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -59,6 +84,77 @@ const Login = () => {
       <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
     </svg>
   );
+
+  const handleLogin = async (e) =>{
+    console.log("login ATTEMPT")
+    e.preventDefault(); 
+     try {
+      const result = await login({
+        email: formData.email,
+        password: formData.password
+      }).unwrap();
+
+      setCookie("token", result.token, result.expiresAt)
+      const token = jwtDecode(result.token);
+
+      toast.success("Login successful!")
+      
+
+      if (token.role === "NormalUser") {
+        if (from && from !== '/') {
+          navigate(from, { replace: true })
+        } else {
+          navigate("/") 
+        }
+      } else {
+        navigate("/admin")
+      }
+      
+    }catch (error){
+      console.error("Signup failed:", error);
+      if (error?.status === 401) {
+        toast.error("Login failed. Invalid email or password.");
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
+    }
+  }
+  const handleSignUp = async (e) => {
+  e.preventDefault(); 
+
+  try {
+    const result = await signup({
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email,
+      phoneNumber: formData.phoneNumber,
+      password: formData.password.trim(),
+      confirmPassword: formData.confirmPassword.trim()
+    }).unwrap();
+
+    toast.success("Registration successful!");
+    setCurrentView("login");
+    console.log("Navigated to login");
+
+  } catch (error) { // ✅ catch error properly
+    console.error("Signup failed:", error);
+
+    if (error?.status === 400) {
+      console.log(error.data)
+      toast.error(error?.data || "Email or phone already exists");
+    } else {
+      toast.error("Something went wrong. Please try again.");
+    }
+  }
+};
+
+
+
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
   if (!isDesktop) {
     return (
@@ -77,19 +173,23 @@ const Login = () => {
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Sign In</h2>
             <p className="text-gray-600 text-sm mb-6">Create your account in a seconds</p>
 
-            <form className="space-y-4">
-              <input type="text" placeholder="First Name" className="w-full px-4 py-3 border border-gray-300 rounded-lg" />
-              <input type="text" placeholder="Last Name" className="w-full px-4 py-3 border border-gray-300 rounded-lg" />
-              <input type="email" placeholder="Email Address" className="w-full px-4 py-3 border border-gray-300 rounded-lg" />
+            <form className="space-y-4" onSubmit={handleSignUp}>
+              <input type="text" name='firstName' onChange={handleChange}  placeholder="First Name" className="w-full px-4 py-3 border border-gray-300 rounded-lg" />
+              <input type="text" name='lastName' onChange={handleChange} placeholder="Last Name" className="w-full px-4 py-3 border border-gray-300 rounded-lg" />
+              <input type="email" name='email' onChange={handleChange}placeholder="Email Address" className="w-full px-4 py-3 border border-gray-300 rounded-lg" />
               <div className="flex">
                 <div className="flex items-center px-3 py-3 border border-r-0 border-gray-300 rounded-l-lg bg-gray-50 text-sm">
                   🇦🇿 (+994)
                 </div>
-                <input type="tel" placeholder="xxx xx xx" className="flex-1 px-4 py-3 border border-gray-300 rounded-r-lg" />
+                <input type="tel" name='phoneNumber' onChange={handleChange} placeholder="xxx xx xx" className="flex-1 px-4 py-3 border border-gray-300 rounded-r-lg" />
               </div>
               <div className="relative">
-                <input type="password" id="mobileSignupPassword" placeholder="Create Password" className="w-full px-4 py-3 border border-gray-300 rounded-lg pr-12" />
+                <input type="password" minLength={8}  name='password' onChange={handleChange}  id="mobileSignupPassword" placeholder="Create Password" className="w-full px-4 py-3 border border-gray-300 rounded-lg pr-12" />
                 <button type="button" className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" onClick={() => togglePassword('mobileSignupPassword')}>👁</button>
+              </div>
+              <div className="relative">
+                <input type="password" minLength={8}  name='confirmPassword' onChange={handleChange}  id="mobileAgain" placeholder="Create Password" className="w-full px-4 py-3 border border-gray-300 rounded-lg pr-12" />
+                <button type="button" className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" onClick={() => togglePassword('mobileAgain')}>👁</button>
               </div>
               <div className="flex items-center text-sm">
                 <input type="checkbox" className="w-4 h-4 text-red-600 border-gray-300 rounded mr-2" />
@@ -119,20 +219,20 @@ const Login = () => {
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Log In</h2>
             <p className="text-gray-600 text-sm mb-6">Login your account in a seconds</p>
 
-            <form className="space-y-4">
-              <input type="email" placeholder="Email Address" className="w-full px-4 py-3 border border-gray-300 rounded-lg" />
+            <form className="space-y-4" onSubmit={handleLogin}>
+              <input type="email" required name='email' onChange={handleChange}  placeholder="Email Address"  className="w-full px-4 py-3 border border-gray-300 rounded-lg" />
               <div className="relative">
-                <input type="password" id="mobileLoginPassword" placeholder="Password" className="w-full px-4 py-3 border border-gray-300 rounded-lg pr-12" />
+                <input type="password" required minLength={8} name='password' id="mobileLoginPassword" onChange={handleChange} placeholder="Password" className="w-full px-4 py-3 border border-gray-300 rounded-lg pr-12" />
                 <button type="button" className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" onClick={() => togglePassword('mobileLoginPassword')}>👁</button>
               </div>
               <div className="flex items-center text-sm">
-                <input type="checkbox" className="w-4 h-4 text-red-600 border-gray-300 rounded mr-2" />
+                <input type="checkbox" required className="w-4 h-4 text-red-600 border-gray-300 rounded mr-2" />
                 <span className="text-gray-600">Keep me logged in</span>
               </div>
               <div className="text-right">
                 <button type="button" className="text-red-600 text-sm" onClick={() => setCurrentView('forgotPassword')}>Forgot password?</button>
               </div>
-              <button type="submit" className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold">Log in</button>
+              <button type="submit" required disabled={isLoginLoading} className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold">{isLoginLoading ? <Loader className="animate-spin mx-auto text-white" size={28} /> : 'Log in'}</button>
             </form>
 
             <div className="mt-4 text-center text-sm text-gray-600">
@@ -188,9 +288,6 @@ const Login = () => {
 
             <button type="button" className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold" onClick={() => setCurrentView('resetPassword')}>Verify</button>
 
-            <div className="mt-4 text-center text-sm text-gray-600">
-              Send code again {countdown > 0 && <span>{formatCountdown(countdown)}</span>}
-            </div>
           </div>
         )}
 
@@ -237,7 +334,7 @@ const Login = () => {
   return (
     <div className="flex min-h-screen">
       {/* Left Side - Image Background */}
-      <div className="flex-1 bg-gradient-to-br from-slate-700 to-slate-800 relative">
+      {/* <div className="flex-1 bg-gradient-to-br from-slate-700 to-slate-800 relative">
         <div className="absolute inset-0 bg-black bg-opacity-20"></div>
         <div className="relative z-10 flex items-center justify-center h-full">
           <div className="text-center">
@@ -251,7 +348,7 @@ const Login = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Right Side - Forms */}
       <div className="flex-1 bg-white flex items-center justify-center px-8">
@@ -270,13 +367,13 @@ const Login = () => {
               <h2 className="text-3xl font-bold text-gray-900 mb-2">Log in</h2>
               <p className="text-gray-600 text-sm mb-8">Login your account in a seconds</p>
 
-              <form className="space-y-6">
+              <form onSubmit={handleLogin} className="space-y-6">
                 <div>
-                  <input type="email" placeholder="Email Address" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
+                  <input type="email" required name='email' onChange={handleChange} placeholder="Email Address" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
                 </div>
                 
                 <div className="relative">
-                  <input type="password" id="loginPassword" placeholder="Password" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none pr-12" />
+                  <input type="password" required minLength={8} name='password' onChange={handleChange} id="loginPassword" placeholder="Password" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none pr-12" />
                   <button type="button" className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" onClick={() => togglePassword('loginPassword')}>👁</button>
                 </div>
 
@@ -317,29 +414,34 @@ const Login = () => {
               <h2 className="text-3xl font-bold text-gray-900 mb-2">Sign in</h2>
               <p className="text-gray-600 text-sm mb-8">Create your account in a seconds</p>
 
-              <form className="space-y-6">
+              <form className="space-y-6" onSubmit={handleSignUp}>
                 <div>
-                  <input type="text" placeholder="First Name" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
+                  <input type="text" required name='firstName' onChange={handleChange} placeholder="First Name" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
                 </div>
                 
                 <div>
-                  <input type="text" placeholder="Last Name" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
+                  <input type="text" required name='lastName' onChange={handleChange} placeholder="Last Name" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
                 </div>
                 
                 <div>
-                  <input type="email" placeholder="Email Address" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
+                  <input type="email" required name='email' onChange={handleChange} placeholder="Email Address" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
                 </div>
 
                 <div className="flex">
                   <div className="flex items-center px-3 py-3 border border-r-0 border-gray-300 rounded-l-lg bg-gray-50 text-sm">
                     🇦🇿 (+994)
                   </div>
-                  <input type="tel" placeholder="xxx xx xx" className="flex-1 px-4 py-3 border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
+                  <input type="tel" required name='phoneNumber' onChange={handleChange} placeholder="xxx xx xx" className="flex-1 px-4 py-3 border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
                 </div>
                 
                 <div className="relative">
-                  <input type="password" id="signupPassword" placeholder="Create Password" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none pr-12" />
+                  <input type="password" required minLength={8}  id="signupPassword" name='password' onChange={handleChange}  placeholder="Create Password" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none pr-12" />
                   <button type="button" className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" onClick={() => togglePassword('signupPassword')}>👁</button>
+                </div>
+
+                <div className="relative"> 
+                  <input type="password" required minLength={8}  id="confirmpass"  name='confirmPassword' onChange={handleChange}  placeholder="Create Password" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none pr-12" />
+                  <button type="button" className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" onClick={() => togglePassword('confirmpass')}>👁</button>
                 </div>
 
                 <div className="flex items-center">
@@ -409,10 +511,10 @@ const Login = () => {
               </div>
 
               <button type="button" className="w-full bg-red-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-red-700 transition duration-200" onClick={() => setCurrentView('resetPassword')}>Verify</button>
-
+{/* 
               <div className="mt-4 text-center text-sm text-gray-600">
                 <button type="button" className="text-red-600 hover:underline" onClick={() => setCountdown(20)}>Send code again</button> {countdown > 0 && <span>{formatCountdown(countdown)}</span>}
-              </div>
+              </div> */}
             </div>
           )}
 

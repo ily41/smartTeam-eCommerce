@@ -86,7 +86,7 @@ const Contact = () => {
                             <hr className='text-[#9F9F9F]'/>
                             <p className={`mt-6 text-xl ${isSwapped ? 'text-white' : 'text-[#9F9F9F]'}  font-medium`}>Baki short location</p>
                         </div>
-                        <img className = {`${isSwapped ? 'opacity-100' : 'opacity-0'}  px-5 transition-all duration-500 ease-in-out `} src="./Icons/triangle.svg" alt="" />
+                        <img className = {`${isSwapped ? 'opacity-100' : 'opacity-0'}   px-5 transition-all duration-500 ease-in-out `} src="./Icons/triangle.svg" alt="" />
                     </div>
 
                     {/* branch 2 */}

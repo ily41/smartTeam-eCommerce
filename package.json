@@ -11,11 +11,15 @@
   },
   "dependencies": {
     "@react-google-maps/api": "^2.20.7",
+    "@reduxjs/toolkit": "^2.9.0",
     "@tailwindcss/vite": "^4.1.12",
+    "jwt-decode": "^4.0.0",
     "lucide-react": "^0.542.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-redux": "^9.2.0",
     "react-router": "^7.8.2",
+    "react-toastify": "^11.0.5",
     "swiper": "^11.2.10",
     "swiper-react": "^1.0.0",
     "tailwindcss": "^4.1.12"
