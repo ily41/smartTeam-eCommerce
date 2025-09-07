@@ -226,6 +226,63 @@ const Home = () => {
             
         </section>
 
+        <section className='mt-12 mx-4 inter'>
+            <div className='flex justify-between text-xl font-semibold'>
+                <h1 >Categories</h1>
+            </div>
+
+            <div className='grid grid-cols-3 mt-10 gap-5 text-sm'>
+              <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
+                <div className='max-w-[130px]'>
+                  <img className='' src="./deals/product.avif" alt="" />
+                </div>
+                <p className='text-center '>Surveillance system</p>
+              </div>
+              <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
+                <div className='max-w-[130px]'>
+                  <img className='' src="./deals/product.avif" alt="" />
+                </div>
+                <p className='text-center'>Surveillance system</p>
+              </div>
+              <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
+                <div className='max-w-[130px]'>
+                  <img className='' src="./deals/product.avif" alt="" />
+                </div>
+                <p className='text-center'>Surveillance system</p>
+              </div>
+              <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
+                <div className='max-w-[130px]'>
+                  <img className='' src="./deals/product.avif" alt="" />
+                </div>
+                <p className='text-center'>Surveillance system</p>
+              </div>
+              <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
+                <div className='max-w-[130px]'>
+                  <img className='' src="./deals/product.avif" alt="" />
+                </div>
+                <p className='text-center'>Surveillance system</p>
+              </div>
+              <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
+                <div className='max-w-[130px]'>
+                  <img className='' src="./deals/product.avif" alt="" />
+                </div>
+                <p className='text-center'>Surveillance system</p>
+              </div>
+              <div></div>
+              <div className='bg-white flex self-center justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
+                <div className='max-w-[130px]'>
+                  <img className='' src="./deals/product.avif" alt="" />
+                </div>
+                <p className='text-center'>Surveillance system</p>
+              </div>
+              
+              
+              
+              
+              
+            </div>
+        </section>
+
         <section className='mt-12 mx-4 lg:w-[85vw] lg:mx-auto'>
             <div className='flex justify-between text-xl font-semibold'>
                 <h1 >Recommended items</h1>
