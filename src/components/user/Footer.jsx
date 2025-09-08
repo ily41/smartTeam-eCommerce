@@ -1,6 +1,26 @@
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 const Footer = () => {
+
+    const [open, setOpen] = useState(false)
+    const dropdownRef = useRef(null);
+    
+      useEffect(() => {
+        function handleClickOutside(event) {
+          if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+            setOpen(false); // close dropdown if clicked outside
+          }
+        }
+    
+        if (open) {
+          document.addEventListener("mousedown", handleClickOutside);
+        }
+    
+        return () => {
+          document.removeEventListener("mousedown", handleClickOutside);
+        };
+      }, [open, setOpen]);
+
   return (
     <>
         <footer className='p-10 inter pb-0 '>
@@ -79,12 +99,23 @@ const Footer = () => {
             </div>
     
         </footer>
+
         <div className='mt-4 border-t-1 border-[#DCDCDC] p-4 pl-10 lg:flex lg:px-30 lg:justify-between lg:border-[#DEE2E7] lg:bg-[#EFF2F4] lg:mt-8'>
             <p>&#169; 2025 smartteam.az</p>
-            <div className='hidden lg:flex gap-1'>
-                <img src='./Icons/usa-flag.svg' alt="" />
-                <p>English</p>
-                <img src="./Icons/arrow-up.svg" alt="" />
+            <div className='cursor-pointer relative'>
+                <div onClick={() => setOpen(prev => !prev)} className='  hidden lg:flex gap-1'>
+                    <img src='./Icons/usa-flag.svg' alt="" />
+                    <p>English</p>
+                    <img src="./Icons/arrow-up.svg" alt="" />
+                </div>
+                
+                {open && (
+                <div ref={dropdownRef} className="absolute flex items-center bottom-full gap-2 mb-1 right-0 bg-white border-[1.5px] border-black rounded-sm px-3 py-1 min-w-max z-10">
+                    
+                    <img src='./Icons/az-flag.svg' alt="Azerbaijan flag" className="w-4 h-3" />
+                    <span className="text-gray-700 inter text-sm lg:text-base">Azerbaijan</span>
+                  </div>
+                )}
             </div>
         </div>
     </>

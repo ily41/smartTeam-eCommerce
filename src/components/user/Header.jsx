@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router'
 import Burger from './Burger'
 
@@ -7,6 +7,25 @@ import Burger from './Burger'
 const Header = () => {
 
   const [burgerVi, setBurgerVi] = useState(false)
+  const [open, setOpen] = useState(false)
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpen(false); // close dropdown if clicked outside
+      }
+    }
+
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [open, setOpen]);
+
     
   return (
     <header>
@@ -71,6 +90,7 @@ const Header = () => {
                 </div>
             </div>
         </nav>
+
         <div className="hidden md:block w-full bg-white border-y-1 border-gray-200 px-2 py-4">
           <div className="flex items-center justify-between max-w-[85vw] mx-auto">
                     
@@ -98,17 +118,28 @@ const Header = () => {
             {/* Right Section - Language and Phone */}
             <div className="flex items-center space-x-6">
               {/* Language Dropdown */}
-              <div className="flex items-center space-x-1 cursor-pointer hover:opacity-80 transition-opacity duration-200">
-                <span className="text-gray-700 inter text-sm lg:text-base ">English</span>
-                <svg className="w-4 h-4 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
+              <div className="relative">
+                <div 
+                  onClick={() => setOpen(prev => !prev)} 
+                  className="flex items-center space-x-1 cursor-pointer hover:opacity-80 transition-opacity duration-200"
+                >
+                  <span className="text-gray-700 inter text-sm lg:text-base">English</span>
+                  <svg className="w-4 h-4 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </div>
+
+                {open && (
+                  <div ref={dropdownRef} className="absolute top-full mt-1 right-0 bg-white border-[1.5px] border-black rounded-sm px-3 py-1 whitespace-nowrap z-10">
+                    <span>Azerbaijan</span>
+                  </div>
+                )}
               </div>
-                    
+              
               {/* Phone Number */}
-              <div className=" items-center space-x-2 cursor-pointer   [@media(max-width:870px)]:hidden flex hover:opacity-80 transition-opacity duration-200">
+              <div className="items-center space-x-2 cursor-pointer [@media(max-width:870px)]:hidden flex hover:opacity-80 transition-opacity duration-200">
                 <img src="./Icons/phone.svg" alt="phone" className="w-4 h-4" />
-                <span className="text-gray-700 inter text-sm lg:text-base ">+994 50 xxx xx xx</span>
+                <span className="text-gray-700 inter text-sm lg:text-base">+994 50 xxx xx xx</span>
               </div>
             </div>
           </div>

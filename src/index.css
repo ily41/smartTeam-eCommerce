@@ -8,6 +8,10 @@
   font-family: 'helveticaNow', sans-serif;
 }
 
+* {
+  user-select: none;
+}
+
 .inter {
   font-family: 'inter', sans-serif;
 }
