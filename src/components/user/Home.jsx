@@ -125,9 +125,9 @@ const Home = () => {
                     </p>
                   </div>
   
-                  <button className="px-12 py-4  lg:py-3 rounded-lg text-lg inter lg:text-lg bg-gradient-to-b from-[#FD1206] to-[#DD1205] transition text-white font-medium w-fit">
+                  <Link to='/admin' className="px-12 py-4  lg:py-3 rounded-lg text-lg inter lg:text-lg bg-gradient-to-b from-[#FD1206] to-[#DD1205] transition text-white font-medium w-fit">
                     Shop now
-                  </button>
+                  </Link>
                     </div>
                 </div>
             
