@@ -232,11 +232,11 @@ const Home = () => {
             </div>
 
             <div className='grid grid-cols-3 mt-10 gap-5 text-sm'>
-              <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
+              <div className='bg-white flex flex-row justify-center col-span-3 items-center  gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
                   <img className='' src="./deals/product.avif" alt="" />
                 </div>
-                <p className='text-center '>Surveillance system</p>
+                <p className='text-center text-2xl inter'>Surveillance <br></br>System</p>
               </div>
               <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
@@ -268,7 +268,6 @@ const Home = () => {
                 </div>
                 <p className='text-center'>Surveillance system</p>
               </div>
-              <div></div>
               <div className='bg-white flex self-center justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
                   <img className='' src="./deals/product.avif" alt="" />

@@ -5,7 +5,7 @@ import { LampWallDown } from 'lucide-react'
 
 const Profile = () => {
   return (
-    <section className='bg-[#f7fafc] inter'>
+    <section className='bg-[#f7fafc] inter pb-22'>
         <div className="lg:hidden px-4 pl-7 py-4 border-y bg-white lg:border-transparent border-[#dee2e6] ">
             <div className="mb-4 lg:hidden">
               <SearchUI />

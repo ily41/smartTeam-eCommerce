@@ -1,0 +1,185 @@
+import { useEffect, useRef, useState } from "react";
+import { useEditUserMutation, useGetUserRolesQuery } from "../../../store/API";
+import { ChevronDown, Loader2 } from "lucide-react";
+import { toast } from "react-toastify";
+
+const EditUserUi = ({ setOpen, edit }) => {
+  if (!edit) return null;
+
+  const [editUser, { isLoading }] = useEditUserMutation();
+
+  const { data: optionsData, error, isRolesLoading, refetch } = useGetUserRolesQuery();
+//   console.log("data" + optionsData)
+    console.log("RENDERED")
+  const [options, setOptions] = useState([])
+  useEffect(() => {
+    setOptions(optionsData)
+  },[optionsData])
+  
+
+  const [selected, setSelected] = useState(0);
+  const [checked, setChecked] = useState(true);
+  const [formData, setFormData] = useState({});
+  const [openD, setOpenD] = useState(false);
+  const modalRef = useRef(null);
+
+  // Reset form whenever user changes
+  useEffect(() => {
+    if (edit) {
+      setFormData({
+        id: edit.id,
+        firstName: edit.firstName || "",
+        lastName: edit.lastName || "",
+        phoneNumber: edit.phoneNumber || "",
+        role: edit.role || 0,
+        isActive: edit.isActive ?? true
+      });
+      setSelected(edit.role || 0);
+      setChecked(edit.isActive ?? true);
+    }
+  }, [edit]);
+
+  // Sync dropdown & checkbox with formData
+  useEffect(() => setFormData(prev => ({ ...prev, role: selected })), [selected]);
+  useEffect(() => setFormData(prev => ({ ...prev, isActive: checked })), [checked]);
+
+  // Close modal on outside click
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleEdit = async (e) => {
+    e.preventDefault();
+    try {
+      await editUser(formData).unwrap();
+      toast.success("User updated successfully!");
+      setOpen();
+    } catch (error) {
+      console.log(error);
+      toast.error("Updating user failed");
+    }
+  };
+
+  return (
+    <form
+      ref={modalRef}
+      onSubmit={handleEdit}
+      className="flex flex-col gap-6 p-6 bg-[#1f1f1f] rounded-lg w-96"
+    >
+      {/* First Name */}
+      <div className="flex flex-col">
+        <label className="text-white text-sm mb-1" htmlFor="firstName">
+          First Name <span className="text-red-500">*</span>
+        </label>
+        <input
+          name="firstName"
+          type="text"
+          required
+          value={formData.firstName || ""}
+          onChange={handleChange}
+          className="w-full px-4 py-3 rounded-lg bg-[#2a2a2a] text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-white placeholder:text-gray-400"
+        />
+      </div>
+
+      {/* Last Name */}
+      <div className="flex flex-col">
+        <label className="text-white text-sm mb-1" htmlFor="lastName">
+          Last Name <span className="text-red-500">*</span>
+        </label>
+        <input
+          name="lastName"
+          type="text"
+          required
+          value={formData.lastName || ""}
+          onChange={handleChange}
+          className="w-full px-4 py-3 rounded-lg bg-[#2a2a2a] text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-white placeholder:text-gray-400"
+        />
+      </div>
+
+      {/* Phone Number */}
+      <div className="flex flex-col">
+        <label className="text-white text-sm mb-1" htmlFor="phoneNumber">
+          Phone Number <span className="text-red-500">*</span>
+        </label>
+        <input
+          name="phoneNumber"
+          type="text"
+          required
+          value={formData.phoneNumber || ""}
+          onChange={handleChange}
+          className="w-full px-4 py-3 rounded-lg bg-[#2a2a2a] text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-white placeholder:text-gray-400"
+        />
+      </div>
+
+      {/* User Role */}
+      <div className="flex flex-col relative">
+        <label className="text-white text-sm mb-2 font-medium" htmlFor="role">
+          User Role
+        </label>
+        <div
+          className="relative bg-[#2a2a2a] rounded-lg cursor-pointer border border-gray-600"
+          onClick={() => setOpenD(!openD)}
+        >
+          <div className="flex justify-between items-center px-4 py-3 text-white">
+            {isRolesLoading && options[selected]}
+            <ChevronDown className="w-4 h-4 text-gray-400 pointer-events-none" />
+          </div>
+          {openD && (
+            <ul className="absolute left-0 right-0 mt-1 bg-[#2a2a2a] border border-gray-600 rounded-lg z-10">
+              {!isRolesLoading && options.map((option, index) => (
+                <li
+                  key={option}
+                  className="px-4 py-3 text-white hover:bg-gray-700 cursor-pointer"
+                  onClick={() => {
+                    setSelected(index);
+                    setOpenD(false);
+                  }}
+                >
+                  {option}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+
+      {/* Active Checkbox */}
+      <div className="flex items-center space-x-2">
+        <input
+          type="checkbox"
+          id="customCheckbox"
+          checked={checked}
+          onChange={() => setChecked(!checked)}
+          className="w-5 h-5 rounded border-gray-600 bg-[#2a2a2a] text-blue-500 focus:outline-none cursor-pointer"
+        />
+        <label htmlFor="customCheckbox" className="text-white text-sm select-none">
+          {checked ? "Active" : "Deactive"}
+        </label>
+      </div>
+
+      {/* Save Button */}
+      <div className="flex justify-end">
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-gray-200 transition-all flex items-center justify-center"
+        >
+          {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : "Save"}
+        </button>
+      </div>
+    </form>
+  );
+};
+
+export default EditUserUi;

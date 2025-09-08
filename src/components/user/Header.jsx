@@ -1,16 +1,20 @@
 
 import React, { useState } from 'react'
 import { Link } from 'react-router'
+import Burger from './Burger'
 
 
 const Header = () => {
+
+  const [burgerVi, setBurgerVi] = useState(false)
     
   return (
     <header>
+        <Burger burgerV={burgerVi} setBurgerV={setBurgerVi}/>
         <nav className='border-b-1 border-[#dee2e6]'>
             <div className='flex justify-between lg:justify-around lg:items-center p-6 items-center'>
                 <Link to='/' className='flex lg:flex-1 cursor-pointer lg:justify-center gap-2'>
-                    <img className='md:hidden' src="./Icons/burger.svg" alt="" />
+                    <img onClick={() => setBurgerVi(true)}className='md:hidden cursor-pointer' src="./Icons/burger.svg" alt="" />
                     <img className=' min-w-[100px] max-w-[230px] w-[18vh] lg:w-[20vh] ' src="./Icons/logo.svg" alt="" />
 
                 </Link>
@@ -49,10 +53,10 @@ const Header = () => {
 
 
                 <div className='hidden lg:flex gap-0 lg:gap-5 lg:flex-1  pr-2 '>
-                    <div className='flex flex-col gap-1 items-center cursor-pointer hover:opacity-80 transition-opacity duration-200'>
+                    <Link to='/profile' className='flex flex-col gap-1 items-center cursor-pointer hover:opacity-80 transition-opacity duration-200'>
                         <img src="./Icons/profile-gray.svg" alt="" />
                         <p className='text-gray-500 text-md whitespace-nowrap'>Profile</p>
-                    </div>
+                    </Link>
 
                     <Link to='/favorites' className='flex flex-col gap-1 items-center cursor-pointer hover:opacity-80 transition-opacity duration-200'>
                         <img src="./Icons/favorites-gray.svg" alt="" />
