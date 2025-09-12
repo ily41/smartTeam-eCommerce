@@ -1,99 +1,32 @@
 import { Loader2, Pen, Trash, Package, DollarSign, Palette, Ruler } from "lucide-react";
 import { useState } from "react";
 import { useGetProductsQuery } from "../../store/API";
+import Modal from "../../components/UI/Modal";
+import AddCategoryUIStatic from "../../components/admin/Product/AddProduct";
+import AddProductStatic from "../../components/admin/Product/AddProduct";
 
 const ProductsUI = () => {
-    const { data: products, isLoading, error, status } = useGetProductsQuery();
-    if(isLoading) {
-        console.log("loading...")
-    }else {console.log(products)}
-    console.log(status)
+    const { data: products, isLoading, error, refetch } = useGetProductsQuery();
+    const [open, setOpen] = useState(false)
 
   
   
-  // Mock data for demonstration
-  const mockData = [
-    {
-      id: 1,
-      name: "Premium Cotton T-Shirt",
-      slug: "premium-cotton-tshirt",
-      price: 29.99,
-      stock: 45,
-      images: [{ url: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=200&fit=crop" }],
-      colors: ["Black", "White", "Navy", "Gray", "Red"],
-      sizes: ["XS", "S", "M", "L", "XL"]
-    },
-    {
-      id: 2,
-      name: "Denim Jacket",
-      slug: "denim-jacket",
-      price: 89.99,
-      stock: 8,
-      images: [{ url: "https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=300&h=200&fit=crop" }],
-      colors: ["Blue", "Black", "Light Blue"],
-      sizes: ["S", "M", "L", "XL"]
-    },
-    {
-      id: 3,
-      name: "Running Shoes",
-      slug: "running-shoes",
-      price: 129.99,
-      stock: 0,
-      images: [{ url: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&h=200&fit=crop" }],
-      colors: ["White", "Black", "Blue", "Red", "Green", "Yellow"],
-      sizes: ["7", "8", "9", "10", "11", "12"]
-    },
-    {
-      id: 4,
-      name: "Leather Wallet",
-      slug: "leather-wallet",
-      price: 49.99,
-      stock: 23,
-      images: [{ url: "https://images.unsplash.com/photo-1627123424574-724758594e93?w=300&h=200&fit=crop" }],
-      colors: ["Brown", "Black", "Tan"],
-      sizes: []
-    },
-    {
-      id: 5,
-      name: "Wireless Headphones",
-      slug: "wireless-headphones",
-      price: 199.99,
-      stock: 5,
-      images: [{ url: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&h=200&fit=crop" }],
-      colors: ["Black", "White", "Silver"],
-      sizes: []
-    },
-    {
-      id: 6,
-      name: "Backpack",
-      slug: "backpack",
-      price: 79.99,
-      stock: 12,
-      images: [{ url: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300&h=200&fit=crop" }],
-      colors: ["Black", "Gray", "Navy", "Olive"],
-      sizes: ["One Size"]
-    }
-  ];
 
-  const data = mockData;
 
-  const handleDeleteProduct = async (id) => {
-    // Mock delete functionality
-    if (window.confirm("Are you sure you want to delete this product?")) {
-      alert(`Product with ID ${id} deleted successfully!`);
-    }
+  const handleCloseModal = () => {
+    setOpen(false);
+    refetch();
   };
 
-  const handleEditProduct = (id) => {
-    alert(`Edit product with ID: ${id}`);
-  };
 
-  const handleAddProduct = () => {
-    alert("Add new product clicked!");
-  };
+  
 
   return (
     <div className=" text-white p-4 min-h-screen">
+
+      <Modal open={open} setOpen={handleCloseModal}>
+        <AddProductStatic setOpen={handleCloseModal}/>
+      </Modal>
       <div className="container mx-auto">
         <div className="flex justify-between items-center mb-8">
           <div>
@@ -101,7 +34,7 @@ const ProductsUI = () => {
             <p className="text-gray-400">Manage your product inventory</p>
           </div>
           <button
-            onClick={handleAddProduct}
+            onClick={() => setOpen(prev => !prev)}
             className="md:px-6 md:py-3 px-4 py-2 bg-white text-sm md:text-base transition-all duration-300 rounded-lg font-semibold text-gray-900 shadow-lg transform hover:bg-gray-100 hover:scale-105"
           >
             Add New Product
@@ -129,7 +62,7 @@ const ProductsUI = () => {
                   <div>
                     <p className="text-green-100 text-sm">In Stock</p>
                     <p className="text-white text-2xl font-bold">
-                      {data?.filter(p => p.stock > 0).length || 0}
+                      {products?.filter(p => p.stock > 0).length || 0}
                     </p>
                   </div>
                   <DollarSign className="w-8 h-8 text-green-200" />
@@ -140,7 +73,7 @@ const ProductsUI = () => {
                   <div>
                     <p className="text-orange-100 text-sm">Low Stock</p>
                     <p className="text-white text-2xl font-bold">
-                      {data?.filter(p => p.stock > 0 && p.stock <= 10).length || 0}
+                      {products?.filter(p => p.stock > 0 && p.stock <= 10).length || 0}
                     </p>
                   </div>
                   <Package className="w-8 h-8 text-orange-200" />
@@ -151,7 +84,7 @@ const ProductsUI = () => {
                   <div>
                     <p className="text-red-100 text-sm">Out of Stock</p>
                     <p className="text-white text-2xl font-bold">
-                      {data?.filter(p => p.stock === 0).length || 0}
+                      {products?.filter(p => p.stock === 0).length || 0}
                     </p>
                   </div>
                   <Package className="w-8 h-8 text-red-200" />
@@ -309,7 +242,7 @@ const ProductsUI = () => {
               ))}
             </div>
 
-            {data && data.length === 0 && (
+            {products && products.length === 0 && (
               <div className="text-center py-20">
                 <Package className="w-16 h-16 text-gray-600 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-400 mb-2">No products found</h3>

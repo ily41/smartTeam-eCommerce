@@ -25,6 +25,7 @@ const Category = () => {
     });
     return map;
   }, [categories]);
+  console.log(    categories  )
 
   const handleDeleteCategory = async (id) => {
     try {

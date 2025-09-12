@@ -9,6 +9,7 @@ const EditUserUi = ({ setOpen, edit }) => {
   const [editUser, { isLoading }] = useEditUserMutation();
 
   const { data: optionsData, error, isRolesLoading, refetch } = useGetUserRolesQuery();
+  console.log(optionsData)
   const [options, setOptions] = useState([])
   useEffect(() => {
     setOptions(optionsData)

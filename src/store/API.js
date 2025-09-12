@@ -142,14 +142,34 @@ export const API = createApi({
       },
       })
     }),
-
-    
-
     getProducts: builder.query({
       query: () => ({
         url: '/api/v1/Products',
         method: 'GET'
       }),
+    }),
+    addProduct: builder.mutation({
+      query: ({ name,description,shortDescription,sku,isHotDeal,stockQuantity,categoryId,userRole,price,discountedPrice,discountPercentage }) => ({
+        url: `/api/v1/Products/with-image`,
+        method: 'POST',
+        body: {
+          name,
+          description,
+          shortDescription,
+          sku,
+          isHotDeal,
+          stockQuantity,
+          categoryId,
+          prices: [
+            {
+              userRole,
+              price,
+              discountedPrice,
+              discountPercentage
+            }
+          ]
+        },
+      })
     }),
 
 
@@ -169,5 +189,6 @@ export const {
   useGetUserStaticsQuery,
   useEditUserMutation,
   useDeleteUserMutation,
-  useGetUserRolesQuery
+  useGetUserRolesQuery,
+  useAddProductMutation
 } = API

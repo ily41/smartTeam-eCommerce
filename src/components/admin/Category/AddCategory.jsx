@@ -9,12 +9,12 @@ const AddCategoryUIStatic = ({setOpen, categories}) => {
   console.log(categories)
   
   
+  
   const [formData, setFormData] = useState({
       name: "",
       imgUrl: "",
 
     });
-  console.log(formData)
 
   const handleCategory = async (e) =>{
       console.log("adding ATTEMPT")
@@ -85,30 +85,6 @@ const AddCategoryUIStatic = ({setOpen, categories}) => {
         />
       </div>
 
-      {/* Parent Category Select */}
-      <div className="flex flex-col">
-        <label className="text-white text-sm mb-1" htmlFor="parent">
-          Parent Category (optional)
-        </label>
-        <select
-          onChange={(e) => setParent(e.target.value)}
-          id="parent"
-          className="w-full px-4 py-3 rounded-lg bg-[#2a2a2a] text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
-        >
-          
-          <option value="">No Parent</option>
-          {categories?.length > 0 ? (
-            categories.map((item, index) => (
-              !item.parentCategoryId &&
-              <option key={item.id || index} value={item.id}>
-                {item.name}
-              </option>
-            ))
-          ) : (
-            <option disabled>No categories found</option>
-          )}
-        </select>
-      </div>
 
     
 

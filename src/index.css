@@ -135,3 +135,66 @@
                 font-size: 16px;
             }
         }
+
+
+
+
+/* Universal Dark Theme Scrollbar Class */
+
+.dark-scrollbar {
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: #4a4a4a #2c2c2c;
+}
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+.dark-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.dark-scrollbar::-webkit-scrollbar-track {
+  background: #2c2c2c;
+  border-radius: 4px;
+}
+
+.dark-scrollbar::-webkit-scrollbar-thumb {
+  background: #4a4a4a;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.dark-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #5a5a5a;
+}
+
+.dark-scrollbar::-webkit-scrollbar-thumb:active {
+  background: #6a6a6a;
+}
+
+/* Corner where horizontal and vertical scrollbars meet */
+.dark-scrollbar::-webkit-scrollbar-corner {
+  background: #2c2c2c;
+}
+
+/* 
+Usage: Simply add 'dark-scrollbar' class to any scrollable element
+
+Examples:
+- <div class="dark-scrollbar overflow-y-auto max-h-96">...</div>
+- <div class="product-form dark-scrollbar">...</div>
+- <textarea class="dark-scrollbar">...</textarea>
+- <select class="dark-scrollbar">...</select>
+*/
+
+/* For Chrome, Safari, Edge, Opera */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* For Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
