@@ -1,25 +1,32 @@
 import { useState } from "react";
-import { useAddCategoryMutation } from "../../../store/API";
+import { useAddCategoryMutation, useGetCategoriesQuery } from "../../../store/API";
 import { Loader2 } from "lucide-react";
 import { toast } from "react-toastify";
 
-const AddCategoryUIStatic = ({setOpen}) => {
+const AddCategoryUIStatic = ({setOpen, categories}) => {
   const [addCategory, { isLoading: isCategoryLoading }] = useAddCategoryMutation(); 
-  console.log(isCategoryLoading)
+  const [parent, setParent] = useState(null)
+  console.log(categories)
+  
+  
   const [formData, setFormData] = useState({
       name: "",
-      imgUrl: ""
+      imgUrl: "",
+
     });
+  console.log(formData)
+
   const handleCategory = async (e) =>{
       console.log("adding ATTEMPT")
       e.preventDefault(); 
        try {
         const result = await addCategory({
-            name: formData.name,
-            description: "description",
-            imageUrl: formData.imgUrl,
-            sortOrder: 1,
-        }).unwrap()
+          name: formData.name,
+          description: "description",
+          imageUrl: formData.imgUrl,
+          sortOrder: 1,
+          ...(parent ? { parentCategoryId: parent } : {}) // <-- conditionally add parent
+        }).unwrap();
 
         toast.success("Category added succesfull")
         setFormData({
@@ -38,6 +45,7 @@ const AddCategoryUIStatic = ({setOpen}) => {
     const handleChange = (e) => {
       const { name, value } = e.target;
       setFormData({ ...formData, [name]: value });
+      console.log(formData)
     };
 
   return (
@@ -83,13 +91,22 @@ const AddCategoryUIStatic = ({setOpen}) => {
           Parent Category (optional)
         </label>
         <select
+          onChange={(e) => setParent(e.target.value)}
           id="parent"
           className="w-full px-4 py-3 rounded-lg bg-[#2a2a2a] text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
         >
-          <option value="">None (Top-level category)</option>
-          <option value="books">Books</option>
-          <option value="electronics">Electronics</option>
-          <option value="clothing">Clothing</option>
+          
+          <option value="">No Parent</option>
+          {categories?.length > 0 ? (
+            categories.map((item, index) => (
+              !item.parentCategoryId &&
+              <option key={item.id || index} value={item.id}>
+                {item.name}
+              </option>
+            ))
+          ) : (
+            <option disabled>No categories found</option>
+          )}
         </select>
       </div>
 

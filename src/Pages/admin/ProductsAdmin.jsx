@@ -3,10 +3,11 @@ import { useState } from "react";
 import { useGetProductsQuery } from "../../store/API";
 
 const ProductsUI = () => {
-    const { data: products, isLoading, error } = useGetProductsQuery();
+    const { data: products, isLoading, error, status } = useGetProductsQuery();
     if(isLoading) {
         console.log("loading...")
     }else {console.log(products)}
+    console.log(status)
 
   
   
@@ -92,7 +93,7 @@ const ProductsUI = () => {
   };
 
   return (
-    <div className="bg-gray-900 text-white p-4 min-h-screen">
+    <div className=" text-white p-4 min-h-screen">
       <div className="container mx-auto">
         <div className="flex justify-between items-center mb-8">
           <div>
@@ -118,7 +119,7 @@ const ProductsUI = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-blue-100 text-sm">Total Products</p>
-                    <p className="text-white text-2xl font-bold">{data?.length || 0}</p>
+                    <p className="text-white text-2xl font-bold">{products?.length || 0}</p>
                   </div>
                   <Package className="w-8 h-8 text-blue-200" />
                 </div>
@@ -160,7 +161,7 @@ const ProductsUI = () => {
 
             {/* Products Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {data?.map((product) => (
+              {products?.map((product) => (
                 <div 
                   key={product.id} 
                   className="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
@@ -169,7 +170,7 @@ const ProductsUI = () => {
                   <div className="relative h-48 bg-gray-700">
                     <img
                       className="w-full h-full object-cover"
-                      src={product.images?.[0]?.url || ""}
+                      src={product.primaryImageUrl}
                       alt={product.name}
                       onError={(e) => {
                         e.target.src = "";
@@ -191,11 +192,11 @@ const ProductsUI = () => {
                     </div>
                     {/* Stock Status Badge */}
                     <div className="absolute top-3 left-3">
-                      {product.stock === 0 ? (
+                      {product.stockQuantity === 0 ? (
                         <span className="bg-red-600 text-white px-2 py-1 rounded-full text-xs font-semibold">
                           Out of Stock
                         </span>
-                      ) : product.stock <= 10 ? (
+                      ) : product.stockQuantity <= 10 ? (
                         <span className="bg-orange-600 text-white px-2 py-1 rounded-full text-xs font-semibold">
                           Low Stock
                         </span>
@@ -221,7 +222,7 @@ const ProductsUI = () => {
                     {/* Price */}
                     <div className="mb-4">
                       <span className="text-2xl font-bold text-green-400">
-                        ${product.price}
+                        ${product.currentPrice}
                       </span>
                     </div>
 

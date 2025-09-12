@@ -9,13 +9,10 @@ const EditUserUi = ({ setOpen, edit }) => {
   const [editUser, { isLoading }] = useEditUserMutation();
 
   const { data: optionsData, error, isRolesLoading, refetch } = useGetUserRolesQuery();
-//   console.log("data" + optionsData)
-    console.log("RENDERED")
   const [options, setOptions] = useState([])
   useEffect(() => {
     setOptions(optionsData)
   },[optionsData])
-  
 
   const [selected, setSelected] = useState(0);
   const [checked, setChecked] = useState(true);
@@ -33,11 +30,13 @@ const EditUserUi = ({ setOpen, edit }) => {
         phoneNumber: edit.phoneNumber || "",
         role: edit.role || 0,
         isActive: edit.isActive ?? true
-      });
+      }); 
       setSelected(edit.role || 0);
       setChecked(edit.isActive ?? true);
     }
   }, [edit]);
+
+  console.log(formData)
 
   // Sync dropdown & checkbox with formData
   useEffect(() => setFormData(prev => ({ ...prev, role: selected })), [selected]);
@@ -120,38 +119,34 @@ const EditUserUi = ({ setOpen, edit }) => {
           onChange={handleChange}
           className="w-full px-4 py-3 rounded-lg bg-[#2a2a2a] text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-white placeholder:text-gray-400"
         />
+      
+      
       </div>
 
       {/* User Role */}
-      <div className="flex flex-col relative">
-        <label className="text-white text-sm mb-2 font-medium" htmlFor="role">
-          User Role
+      <div className="flex flex-col">
+        <label className="text-white text-sm mb-1" htmlFor="parent">
+          User Role (required)
         </label>
-        <div
-          className="relative bg-[#2a2a2a] rounded-lg cursor-pointer border border-gray-600"
-          onClick={() => setOpenD(!openD)}
+        <select
+          value={formData.role}
+          onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                role: Number(e.target.value),
+              }))
+            }
+            id="parent"
+          className="w-full px-4 py-3 rounded-lg bg-[#2a2a2a] text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
         >
-          <div className="flex justify-between items-center px-4 py-3 text-white">
-            {isRolesLoading && options[selected]}
-            <ChevronDown className="w-4 h-4 text-gray-400 pointer-events-none" />
-          </div>
-          {openD && (
-            <ul className="absolute left-0 right-0 mt-1 bg-[#2a2a2a] border border-gray-600 rounded-lg z-10">
-              {!isRolesLoading && options.map((option, index) => (
-                <li
-                  key={option}
-                  className="px-4 py-3 text-white hover:bg-gray-700 cursor-pointer"
-                  onClick={() => {
-                    setSelected(index);
-                    setOpenD(false);
-                  }}
-                >
-                  {option}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+          {options?.map((item, index) => 
+            (
+              <option key={item.id || index} value={Number(item.value)}>
+                {item.name}
+              </option>
+            ))
+          }
+        </select>
       </div>
 
       {/* Active Checkbox */}

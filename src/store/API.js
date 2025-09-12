@@ -48,14 +48,15 @@ export const API = createApi({
 
     // *CATEGORIES*
     addCategory: builder.mutation({
-      query: ({ name, imageUrl, description, sortOrder }) => ({
+      query: ({ name, imageUrl, description, sortOrder, parentCategoryId }) => ({
         url: '/api/v1/Categories',
         method: 'POST',
         body: {
           name: name,
           description,
           imageUrl: imageUrl,
-          sortOrder
+          sortOrder,
+          parentCategoryId
         },
       })
     }),

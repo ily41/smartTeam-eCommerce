@@ -3,8 +3,10 @@ import { useEditCategoryMutation } from "../../../store/API";
 import { Loader2, Loader2Icon } from "lucide-react";
 import { toast } from "react-toastify";
 
-const EditCategoryUI = ({item, setOpen}) => {
+const EditCategoryUI = ({item, setOpen, categories}) => {
     const [editCategory, { isLoading: isCategoryLoading }] = useEditCategoryMutation(); 
+    const [parent, setParent] = useState(null)
+    console.log(parent)
     
     const [formData, setFormData] = useState({
       name: "",
@@ -87,20 +89,27 @@ const EditCategoryUI = ({item, setOpen}) => {
       </div>
 
       {/* Parent Category Select */}
-      <div className="flex flex-col">
+      {/* <div className="flex flex-col">
         <label className="text-white text-sm mb-1" htmlFor="parent">
           Parent Category (optional)
         </label>
         <select
+          onChange={(e) => setParent(e.target.value)}
           id="parent"
           className="w-full px-4 py-3 rounded-lg bg-[#2a2a2a] text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
         >
-          <option value="">None (Top-level category)</option>
-          <option value="books">Books</option>
-          <option value="electronics">Electronics</option>
-          <option value="clothing">Clothing</option>
+          <option value="">No Parent</option>
+          {categories?.length > 0 ? (
+            categories.map((item, index) => (
+              <option key={item.id || index} value={item.id}>
+                {item.name}
+              </option>
+            ))
+          ) : (
+            <option disabled>No categories found</option>
+          )}
         </select>
-      </div>
+      </div> */}
 
     
 
