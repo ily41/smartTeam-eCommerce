@@ -2,6 +2,7 @@ import { useState } from "react";
 import { X, Upload, Trash2, Plus } from "lucide-react";
 import { useAddProductMutation, useGetCategoriesQuery, useGetUserRolesQuery } from "../../../store/API";
 import { toast } from "react-toastify";
+import { WiRefresh } from "react-icons/wi";
 
 const ProductFormUI = ({setOpen}) => {
 
@@ -47,56 +48,39 @@ const ProductFormUI = ({setOpen}) => {
     ]
   });
 
-const [imageFiles, setImageFiles] = useState([]);
+const [file, setFile] = useState(null);
+console.log(file)
 
-const handleFileUpload = async (e) => {
-  const files = Array.from(e.target.files);
-  
-  const newPreviews = await Promise.all(
-    files.map(async (file, index) => {
-      return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          resolve({
-            id: `${Date.now()}-${index}`,
-            url: event.target.result,
-            name: file.name,
-            file: file
-          });
-        };
-        reader.readAsDataURL(file);
-      });
-    })
-  );
-  
-  setImageFiles(prev => [...prev, ...files]);
-  setImagePreviews(prev => [...prev, ...newPreviews]);
-  
-  e.target.value = "";
-};
+const handleFileUpload = (e) => {
+  const selectedFile = e.target.files[0]; // get the first file only
+  if (!selectedFile) return;
 
-const removeImage = (id) => {
-  const imageToRemove = imagePreviews.find(img => img.id === id);
-  if (imageToRemove) {
-    setImageFiles(prev => prev.filter(file => file !== imageToRemove.file));
-  }
-  setImagePreviews(prev => prev.filter(img => img.id !== id));
+  setFile(selectedFile);
+  e.target.value = ""; // reset so the same file can be selected again
 };
 
 const handleProduct = async (e) => {
-  console.log("adding ATTEMPT")
-  e.preventDefault(); 
+  console.log("adding ATTEMPT");
+  e.preventDefault();
+
+  if (!file) {
+    toast.error("Please upload an image first");
+    return;
+  }
+
   try {
+    const productDataString = JSON.stringify(formData);
+    console.log("Sending productData as string:", productDataString);
+
     const formDataToSend = new FormData();
-    formDataToSend.append('productData', JSON.stringify(formData));
-    
-    imageFiles.forEach(file => {
-      formDataToSend.append('imageFile', file);
-    });
-    
+    formDataToSend.append("productData", productDataString); 
+    formDataToSend.append("imageFile", file);
+
     const result = await addProduct(formDataToSend).unwrap();
-    
+
     toast.success("Product added successfully");
+
+    // reset form
     setFormData({
       name: "",
       description: "",
@@ -112,26 +96,27 @@ const handleProduct = async (e) => {
         { userRole: 4, price: 0, discountedPrice: 0, discountPercentage: 0 },
       ],
     });
-    setImagePreviews([]);
-    setImageFiles([]);
+
+    setFile(null); // clear file
     setOpen();
   } catch (error) {
-    console.log(error)
-    toast.error(error?.data);
+    console.log(error);
+    toast.error(error?.data || "Failed to add product");
   }
-}
+};
+
 
 <div>
   <label className="block text-sm font-medium mb-2">Product Images</label>
   <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center">
     <input
-      type="file"
-      multiple
-      accept="image/*"
-      onChange={handleFileUpload}
-      className="hidden"
-      id="image-upload"
-    />
+  type="file"
+  accept="image/*"
+  onChange={handleFileUpload}
+  className="hidden"
+  id="image-upload"
+/>
+
     <label
       htmlFor="image-upload"
       className="cursor-pointer flex flex-col items-center gap-2"
@@ -145,26 +130,21 @@ const handleProduct = async (e) => {
       </span>
     </label>
   </div>
-  {imagePreviews.length > 0 && (
+   
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-      {imagePreviews.map((preview) => (
-        <div key={preview.id} className="relative group">
+        <div  className="relative group">
           <img
-            src={preview.url}
-            alt={preview.name}
+            src={file}
             className="w-full h-24 object-cover rounded-md border border-gray-600"
           />
           <button
             type="button"
-            onClick={() => removeImage(preview.id)}
             className="absolute top-1 right-1 bg-red-600 hover:bg-red-700 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
           >
             <Trash2 className="w-3 h-3" />
           </button>
         </div>
-      ))}
     </div>
-  )}
 </div>
 
 
@@ -174,7 +154,7 @@ const handleProduct = async (e) => {
   console.log(formData)
   console.log(JSON.stringify(formData))
 
-  const [imagePreviews, setImagePreviews] = useState([]);
+  
 
   function convertPrices(formData, userRoles) {
   const relevantRoles = userRoles.filter(role => role.name !== "Admin")
@@ -415,14 +395,13 @@ const handleProduct = async (e) => {
         <div>
           <label className="block text-sm font-medium mb-2">Product Images</label>
           <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center">
-            <input
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={handleFileUpload}
-              className="hidden"
-              id="image-upload"
-            />
+             <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileUpload}
+                className="hidden"
+                id="image-upload"
+              />
             <label
               htmlFor="image-upload"
               className="cursor-pointer flex flex-col items-center gap-2"
@@ -438,26 +417,20 @@ const handleProduct = async (e) => {
           </div>
 
           {/* Image Previews */}
-          {imagePreviews.length > 0 && (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-              {imagePreviews.map((preview) => (
-                <div key={preview.id} className="relative group">
+                <div className="relative group">
                   <img
-                    src={preview.url}
-                    alt={preview.name}
+                    src={file}
                     className="w-full h-24 object-cover rounded-md border border-gray-600"
                   />
                   <button
                     type="button"
-                    onClick={() => removeImage(preview.id)}
                     className="absolute top-1 right-1 bg-red-600 hover:bg-red-700 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                   >
                     <Trash2 className="w-3 h-3" />
                   </button>
                 </div>
-              ))}
             </div>
-          )}
         </div>
 
         {/* Submit Button */}
