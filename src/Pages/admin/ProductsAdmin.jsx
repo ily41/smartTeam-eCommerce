@@ -8,10 +8,20 @@ import AddProductStatic from "../../components/admin/Product/AddProduct";
 const ProductsUI = () => {
     const { data: products, isLoading, error, refetch } = useGetProductsQuery();
     const [open, setOpen] = useState(false)
+    console.log(products)
 
   
   
+    const getImageUrl = (imagePath) => {
+      if (!imagePath) return '/placeholder-image.jpg';
 
+      // If running locally, you might need to add your backend URL
+      const baseUrl = process.env.NODE_ENV === 'production' 
+        ? '' // Use relative path in production
+        : 'http://localhost:3001'; // Your backend URL in development
+
+      return `${baseUrl}${imagePath}`;
+    };
 
   const handleCloseModal = () => {
     setOpen(false);
@@ -103,7 +113,7 @@ const ProductsUI = () => {
                   <div className="relative h-48 bg-gray-700">
                     <img
                       className="w-full h-full object-cover"
-                      src={product.primaryImageUrl}
+                      src={getImageUrl(product.primaryImageUrl)}
                       alt={product.name}
                       onError={(e) => {
                         e.target.src = "";

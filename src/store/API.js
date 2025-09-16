@@ -4,9 +4,14 @@ export const API = createApi({
   reducerPath: 'API',
   baseQuery: fetchBaseQuery({ 
     baseUrl: 'http://localhost:5056',
-    prepareHeaders: (headers) => {
-      headers.set('Content-Type', 'application/json');
+    prepareHeaders: (headers, { endpoint, extra, type, body }) => {
+      // Skip Content-Type for addProduct - let FormData handle it
+      const isFormDataRequest = endpoint === 'addProduct' || body instanceof FormData;
       
+      if (!isFormDataRequest) {
+        headers.set('Content-Type', 'application/json');
+      }
+    
       const token = document.cookie
         .split('; ')
         .find(row => row.startsWith('token='))
@@ -82,7 +87,6 @@ export const API = createApi({
       })
     }),
 
-
     // *USERS*
     getMe: builder.query({
       query: () => ({
@@ -142,38 +146,30 @@ export const API = createApi({
       },
       })
     }),
+
+    // *PRODUCTS*
     getProducts: builder.query({
       query: () => ({
         url: '/api/v1/Products',
         method: 'GET'
       }),
     }),
+
     addProduct: builder.mutation({
-      query: ({ name,description,shortDescription,sku,isHotDeal,stockQuantity,categoryId,userRole,price,discountedPrice,discountPercentage }) => ({
-        url: `/api/v1/Products/with-image`,
-        method: 'POST',
-        body: {
-          name,
-          description,
-          shortDescription,
-          sku,
-          isHotDeal,
-          stockQuantity,
-          categoryId,
-          prices: [
-            {
-              userRole,
-              price,
-              discountedPrice,
-              discountPercentage
-            }
-          ]
-        },
-      })
-    }),
-
-
-    
+      query: (formData) => {
+        console.log('FormData check:', formData instanceof FormData);
+        return {
+          url: '/api/v1/Products/with-image',
+          method: 'POST',
+          body: formData,
+          prepareHeaders: (headers) => {
+            // Explicitly remove Content-Type for FormData
+            headers.delete('Content-Type');
+            return headers;
+          },
+        };
+      },
+    })
   }),
 })
 

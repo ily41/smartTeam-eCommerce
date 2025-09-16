@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { X, Upload, Trash2, Plus } from "lucide-react";
 import { useAddProductMutation, useGetCategoriesQuery, useGetUserRolesQuery } from "../../../store/API";
 import { toast } from "react-toastify";
 import { WiRefresh } from "react-icons/wi";
 
 const ProductFormUI = ({setOpen}) => {
+  console.log("work")
 
   const { data: userRoles, error, isRolesLoading, refetch } = useGetUserRolesQuery();
   const { data: categories, isLoading, errorC } = useGetCategoriesQuery();
@@ -49,18 +50,74 @@ const ProductFormUI = ({setOpen}) => {
   });
 
 const [file, setFile] = useState(null);
-console.log(file)
+const [imageUrl, setImageUrl] = useState(null);
+
+  // Method 1: Using useEffect to create URL when file changes
+  useEffect(() => {
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setImageUrl(url);
+
+      // Cleanup: revoke the URL when component unmounts or file changes
+      return () => {
+        URL.revokeObjectURL(url);
+      };
+    } else {
+      setImageUrl(null);
+    }
+  }, [file]);
+
 
 const handleFileUpload = (e) => {
-  const selectedFile = e.target.files[0]; // get the first file only
+  const selectedFile = e.target.files[0]; 
   if (!selectedFile) return;
 
   setFile(selectedFile);
-  e.target.value = ""; // reset so the same file can be selected again
+  e.target.value = ""; 
 };
 
-const handleProduct = async (e) => {
-  console.log("adding ATTEMPT");
+const close = () => {
+  setFormData({
+    name: "",
+    description: "",
+    shortDescription: "",
+    sku: "",
+    isHotDeal: false,
+    stockQuantity: 0,
+    categoryId: "",
+    prices: [
+      {
+        userRole: 1,
+        price: 0,
+        discountedPrice: 0,
+        discountPercentage: 0
+      },
+      {
+        userRole: 2,
+        price: 0,
+        discountedPrice: 0,
+        discountPercentage: 0
+      },
+      {
+        userRole: 3,
+        price: 0,
+        discountedPrice: 0,
+        discountPercentage: 0
+      },
+      {
+        userRole: 4,
+        price: 0,
+        discountedPrice: 0,
+        discountPercentage: 0
+      }
+    ]
+  });
+  setFile(null);
+  setOpen()
+}
+
+
+const handleProductFormData = async (e) => {
   e.preventDefault();
 
   if (!file) {
@@ -69,119 +126,32 @@ const handleProduct = async (e) => {
   }
 
   try {
-    const productDataString = JSON.stringify(formData);
-    console.log("Sending productData as string:", productDataString);
-
     const formDataToSend = new FormData();
+    
+    const productDataString = JSON.stringify(formData);
     formDataToSend.append("productData", productDataString); 
-    formDataToSend.append("imageFile", file);
-
+    formDataToSend.append("imageFile", file, file.name);
+    
+  
+    
     const result = await addProduct(formDataToSend).unwrap();
-
     toast.success("Product added successfully");
+    close()
+    
 
-    // reset form
-    setFormData({
-      name: "",
-      description: "",
-      shortDescription: "",
-      sku: "",
-      isHotDeal: false,
-      stockQuantity: 0,
-      categoryId: "",
-      prices: [
-        { userRole: 1, price: 0, discountedPrice: 0, discountPercentage: 0 },
-        { userRole: 2, price: 0, discountedPrice: 0, discountPercentage: 0 },
-        { userRole: 3, price: 0, discountedPrice: 0, discountPercentage: 0 },
-        { userRole: 4, price: 0, discountedPrice: 0, discountPercentage: 0 },
-      ],
-    });
-
-    setFile(null); // clear file
-    setOpen();
+    
   } catch (error) {
-    console.log(error);
-    toast.error(error?.data || "Failed to add product");
+    console.log('Full error:', error);
   }
 };
 
-
-<div>
-  <label className="block text-sm font-medium mb-2">Product Images</label>
-  <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center">
-    <input
-  type="file"
-  accept="image/*"
-  onChange={handleFileUpload}
-  className="hidden"
-  id="image-upload"
-/>
-
-    <label
-      htmlFor="image-upload"
-      className="cursor-pointer flex flex-col items-center gap-2"
-    >
-      <Upload className="w-8 h-8 text-gray-400" />
-      <span className="text-gray-400">
-        Click to upload images or drag and drop
-      </span>
-      <span className="text-sm text-gray-500">
-        PNG, JPG, GIF up to 10MB each
-      </span>
-    </label>
-  </div>
-   
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-        <div  className="relative group">
-          <img
-            src={file}
-            className="w-full h-24 object-cover rounded-md border border-gray-600"
-          />
-          <button
-            type="button"
-            className="absolute top-1 right-1 bg-red-600 hover:bg-red-700 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-          >
-            <Trash2 className="w-3 h-3" />
-          </button>
-        </div>
-    </div>
-</div>
-
-
-
-
-
-  console.log(formData)
-  console.log(JSON.stringify(formData))
-
-  
-
-  function convertPrices(formData, userRoles) {
-  const relevantRoles = userRoles.filter(role => role.name !== "Admin")
-
-  return relevantRoles.map((role, index) => {
-    const priceRow = formData.prices[index] || {}
-    const price = parseFloat(priceRow.price) || 0
-    const discountedPrice = parseFloat(priceRow.discountedPrice) || 0
-
-    const discountPercentage =
-      price > 0 ? (((price - discountedPrice) / price) * 100).toFixed(2) : 0
-
-    return {
-      userRole: role.value,
-      price,
-      discountedPrice,
-      discountPercentage: Number(discountPercentage),
-    }
-  })
-}
 
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : name == "stockQuantity" ? Number(value) : value
     }));
   };
 
@@ -209,18 +179,6 @@ const handleProduct = async (e) => {
     });
   };
 
-
-
-
-
- 
-
-  // const mockCategories = [
-  //   { id: "cat-1", name: "Electronics" },
-  //   { id: "cat-2", name: "Clothing" },
-  //   { id: "cat-3", name: "Home & Garden" },
-  //   { id: "cat-4", name: "Sports & Outdoors" }
-  // ];
 
   
 
@@ -271,7 +229,6 @@ const handleProduct = async (e) => {
               value={formData.stockQuantity}
               onChange={handleInputChange}
               required
-              min="0"
               className="w-full px-3 py-2 bg-[#2c2c2c] border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="0"
             />
@@ -417,33 +374,40 @@ const handleProduct = async (e) => {
           </div>
 
           {/* Image Previews */}
+
+          {file && 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                <div className="relative group">
-                  <img
-                    src={file}
-                    className="w-full h-24 object-cover rounded-md border border-gray-600"
-                  />
-                  <button
-                    type="button"
-                    className="absolute top-1 right-1 bg-red-600 hover:bg-red-700 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </button>
-                </div>
-            </div>
+                  <div className="relative group">
+                    <img
+                      src={imageUrl}
+                      className="w-full h-24 object-cover rounded-md border "
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {setFile(null)}}
+                      className="absolute top-1 right-1 bg-red-600 hover:bg-red-700 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  </div>
+              </div>
+          
+          }
+            
         </div>
 
         {/* Submit Button */}
         <div className="flex justify-end gap-4 pt-4">
           <button
             type="button"
+            onClick={() => close()}
             className="px-6 py-2 bg-gray-600 hover:bg-gray-700 rounded-md font-semibold"
           >
             Cancel
           </button>
           <button
             type="button"
-            onClick={ handleProduct}
+            onClick={ handleProductFormData}
             className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md font-semibold"
           >
             Add Product
