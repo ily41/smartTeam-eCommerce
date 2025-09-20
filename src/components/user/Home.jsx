@@ -35,14 +35,15 @@ const Home = () => {
         <section onMouseLeave={() => setHoveredCategorie(null)} className="    lg:flex lg:w-[85vw] lg:max-h-[400px] lg:mx-auto lg:shadow-[0_4px_4px_rgba(0,0,0,0.25)] lg:rounded-lg lg:gap-5 lg:bg-white">
             
            <div className='hidden lg:mt-5 lg:m-4  lg:flex flex-col text-black mt-1 whitespace-nowrap'>
-                <div
+                <Link 
+                  to='/subcategories'
                   onMouseEnter={() => setHoveredCategorie("commercial")}
                   onClick={() => setActiveCategorie(activeCategorie === "commercial" ? null : "commercial")}
-                  className={`p-2 pl-3 flex gap-2 lg:mb-3 lg:hover:bg-[#ffe2e1] ${activeCategorie === "commercial" && 'bg-[#ffe2e1]'} cursor-pointer lg:rounded-2xl min-w-[220px] lg:pr-5`}
+                  className={`p-2  pl-3 flex gap-2 lg:mb-3 lg:hover:bg-[#ffe2e1] ${activeCategorie === "commercial" && 'bg-[#ffe2e1]'} cursor-pointer lg:rounded-2xl min-w-[220px] lg:pr-5`}
                 >
                   <img className="w-[24px]" src="./Icons/banner-commercial.svg" alt="" />
                   <span>Commercial-equipment</span>
-                </div>
+                </Link>
             
                 <div
                   onMouseEnter={() => setHoveredCategorie("computers")}
@@ -150,6 +151,196 @@ const Home = () => {
                 </div>
             
         </section>
+
+        <section className='mt-12 mx-4 inter  lg:hidden'>
+            <div className='flex justify-between text-xl font-semibold'>
+                <h1 >Categories</h1>
+            </div>
+
+            <div className='grid grid-cols-3 mt-10 gap-5 text-sm '>
+                <div className='  justify-center flex col-span-3 items-center bg-white  md:hidden  rounded-lg border-1 border-[#DEE2E6] p-4'>
+                  <div className='flex flex-row  max-w-[450px] gap-4 '>
+                    <div className='w-full h-full'>
+                      <img className=' self-start w-full h-full object-contain min-h-[130px] max-h-[190px]' src="./deals/categorieExample.svg" alt="" />
+                    </div>
+                    <div className='flex flex-col text-start self-start'>
+                      <p className=' text-xl inter mb-1'>Surveillance System</p>
+                      <p className='text-md text-[#AFB0B1]'>Reliable routers, switches, and cabling systems for fast, stable, and secure connectivity. Scalable solutions to keep your business connected and future-ready.</p>
+                    </div>
+                  </div>
+                </div>
+
+              <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
+                <div className='max-w-[130px]'>
+                  <img className='' src="./deals/product.avif" alt="" />
+                </div>
+                <p className='text-center'>Surveillance system</p>
+              </div>
+              <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
+                <div className='max-w-[130px]'>
+                  <img className='' src="./deals/product.avif" alt="" />
+                </div>
+                <p className='text-center'>Surveillance system</p>
+              </div>
+              <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
+                <div className='max-w-[130px]'>
+                  <img className='' src="./deals/product.avif" alt="" />
+                </div>
+                <p className='text-center'>Surveillance system</p>
+              </div>
+              <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
+                <div className='max-w-[130px]'>
+                  <img className='' src="./deals/product.avif" alt="" />
+                </div>
+                <p className='text-center'>Surveillance system</p>
+              </div>
+              <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
+                <div className='max-w-[130px]'>
+                  <img className='' src="./deals/product.avif" alt="" />
+                </div>
+                <p className='text-center'>Surveillance system</p>
+              </div>
+              <div className='bg-white flex self-center justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
+                <div className='max-w-[130px]'>
+                  <img className='' src="./deals/product.avif" alt="" />
+                </div>
+                <p className='text-center'>Surveillance system</p>
+              </div>
+              
+              
+              
+              
+              
+            </div>
+        </section>
+
+         <section className='hidden mt-12 bg-white lg:grid grid-cols-6 lg:w-[85vw] lg:mx-auto p-6 rounded-lg shadow-lg'>
+           <img className='w-full h-full object-cover col-span-2 rounded-lg' src="./Banners/left-side.svg" alt="" />
+           
+           <div className="col-span-4 grid grid-cols-2 gap-4 ml-4">
+             
+             <div className="bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-all duration-300 hover:shadow-md">
+               <div className="flex justify-between items-start mb-3">
+                 <div>
+                   <h3 className="font-semibold text-gray-800">Smart watches</h3>
+                   <p className="text-sm text-gray-500">From<br />USD 19</p>
+                 </div>
+                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                   <div className="w-12 h-12 bg-black rounded-lg relative">
+                     <div className="w-10 h-6 bg-white rounded-sm absolute top-1 left-1"></div>
+                     <div className="w-8 h-1 bg-gray-400 absolute bottom-2 left-2"></div>
+                   </div>
+                 </div>
+               </div>
+             </div>
+             
+             <div className="bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-all duration-300 hover:shadow-md">
+               <div className="flex justify-between items-start mb-3">
+                 <div>
+                   <h3 className="font-semibold text-gray-800">Cameras</h3>
+                   <p className="text-sm text-gray-500">From<br />USD 89</p>
+                 </div>
+                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                   <div className="w-12 h-8 bg-black rounded-md relative">
+                     <div className="w-4 h-4 bg-blue-600 rounded-full absolute top-1 right-1"></div>
+                     <div className="w-6 h-2 bg-gray-600 rounded absolute bottom-1 left-1"></div>
+                   </div>
+                 </div>
+               </div>
+             </div>
+             
+             <div className="bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-all duration-300 hover:shadow-md">
+               <div className="flex justify-between items-start mb-3">
+                 <div>
+                   <h3 className="font-semibold text-gray-800">Gaming set</h3>
+                   <p className="text-sm text-gray-500">From<br />USD 35</p>
+                 </div>
+                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                   <div className="w-12 h-10 bg-black rounded-full relative">
+                     <div className="w-8 h-6 bg-blue-500 rounded-full absolute top-1 left-2"></div>
+                     <div className="w-2 h-4 bg-gray-600 absolute bottom-1 left-1"></div>
+                     <div className="w-2 h-4 bg-gray-600 absolute bottom-1 right-1"></div>
+                   </div>
+                 </div>
+               </div>
+             </div>
+       
+             <div className="bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-all duration-300 hover:shadow-md">
+               <div className="flex justify-between items-start mb-3">
+                 <div>
+                   <h3 className="font-semibold text-gray-800">Laptops & PC</h3>
+                   <p className="text-sm text-gray-500">From<br />USD 340</p>
+                 </div>
+                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                   <div className="w-12 h-8 bg-gray-800 rounded relative">
+                     <div className="w-10 h-6 bg-orange-400 rounded-sm absolute top-1 left-1"></div>
+                     <div className="w-8 h-1 bg-gray-600 absolute bottom-1 left-2"></div>
+                   </div>
+                 </div>
+               </div>
+             </div>
+             
+             <div className="bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-all duration-300 hover:shadow-md">
+               <div className="flex justify-between items-start mb-3">
+                 <div>
+                   <h3 className="font-semibold text-gray-800">Headphones</h3>
+                   <p className="text-sm text-gray-500">From<br />USD 10</p>
+                 </div>
+                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                   <div className="relative">
+                     <div className="w-8 h-8 border-4 border-gray-300 rounded-full"></div>
+                     <div className="w-2 h-6 bg-gray-300 absolute -top-3 left-3"></div>
+                   </div>
+                 </div>
+               </div>
+             </div>
+             
+             <div className="bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-all duration-300 hover:shadow-md">
+               <div className="flex justify-between items-start mb-3">
+                 <div>
+                   <h3 className="font-semibold text-gray-800">Smartphones</h3>
+                   <p className="text-sm text-gray-500">From<br />USD 19</p>
+                 </div>
+                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                   <div className="w-8 h-12 bg-gradient-to-br from-teal-400 to-orange-400 rounded-lg relative">
+                     <div className="w-6 h-8 bg-black rounded-sm absolute top-2 left-1 opacity-20"></div>
+                   </div>
+                 </div>
+               </div>
+             </div>
+             
+             <div className="bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-all duration-300 hover:shadow-md">
+               <div className="flex justify-between items-start mb-3">
+                 <div>
+                   <h3 className="font-semibold text-gray-800">Smart watches</h3>
+                   <p className="text-sm text-gray-500">From<br />USD 90</p>
+                 </div>
+                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                   <div className="w-10 h-12 bg-black rounded-lg relative">
+                     <div className="w-2 h-8 bg-gray-600 absolute top-2 left-1"></div>
+                     <div className="w-2 h-8 bg-gray-600 absolute top-2 right-1"></div>
+                     <div className="w-6 h-6 bg-white rounded absolute top-3 left-2"></div>
+                   </div>
+                 </div>
+               </div>
+             </div>
+             
+             <div className="bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-all duration-300 hover:shadow-md">
+               <div className="flex justify-between items-start mb-3">
+                 <div>
+                   <h3 className="font-semibold text-gray-800">Electric kettle</h3>
+                   <p className="text-sm text-gray-500">From<br />USD 240</p>
+                 </div>
+                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                   <div className="w-8 h-10 bg-gradient-to-b from-red-500 to-red-600 rounded-lg relative">
+                     <div className="w-2 h-3 bg-black rounded absolute top-1 right-1"></div>
+                     <div className="w-6 h-6 bg-red-400 rounded-full absolute bottom-1 left-1"></div>
+                   </div>
+                 </div>
+               </div>
+             </div>
+           </div>
+         </section>
         
 
         <section className='lg:flex lg:bg-white lg:mt-8 lg:rounded-lg lg:w-[85vw] mx-auto lg:border-1 lg:border-gray-300'>
@@ -226,61 +417,7 @@ const Home = () => {
             
         </section>
 
-        <section className='mt-12 mx-4 inter'>
-            <div className='flex justify-between text-xl font-semibold'>
-                <h1 >Categories</h1>
-            </div>
-
-            <div className='grid grid-cols-3 mt-10 gap-5 text-sm'>
-              <div className='bg-white flex flex-row justify-center col-span-3 items-center  gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
-                <div className='max-w-[130px]'>
-                  <img className='' src="./deals/product.avif" alt="" />
-                </div>
-                <p className='text-center text-2xl inter'>Surveillance <br></br>System</p>
-              </div>
-              <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
-                <div className='max-w-[130px]'>
-                  <img className='' src="./deals/product.avif" alt="" />
-                </div>
-                <p className='text-center'>Surveillance system</p>
-              </div>
-              <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
-                <div className='max-w-[130px]'>
-                  <img className='' src="./deals/product.avif" alt="" />
-                </div>
-                <p className='text-center'>Surveillance system</p>
-              </div>
-              <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
-                <div className='max-w-[130px]'>
-                  <img className='' src="./deals/product.avif" alt="" />
-                </div>
-                <p className='text-center'>Surveillance system</p>
-              </div>
-              <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
-                <div className='max-w-[130px]'>
-                  <img className='' src="./deals/product.avif" alt="" />
-                </div>
-                <p className='text-center'>Surveillance system</p>
-              </div>
-              <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
-                <div className='max-w-[130px]'>
-                  <img className='' src="./deals/product.avif" alt="" />
-                </div>
-                <p className='text-center'>Surveillance system</p>
-              </div>
-              <div className='bg-white flex self-center justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
-                <div className='max-w-[130px]'>
-                  <img className='' src="./deals/product.avif" alt="" />
-                </div>
-                <p className='text-center'>Surveillance system</p>
-              </div>
-              
-              
-              
-              
-              
-            </div>
-        </section>
+        
 
         <section className='mt-12 mx-4 lg:w-[85vw] lg:mx-auto'>
             <div className='flex justify-between text-xl font-semibold'>

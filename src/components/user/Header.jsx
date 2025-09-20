@@ -2,6 +2,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router'
 import Burger from './Burger'
+import { useGetMeQuery } from "../../store/API";
+
 
 
 const Header = () => {
@@ -9,6 +11,8 @@ const Header = () => {
   const [burgerVi, setBurgerVi] = useState(false)
   const [open, setOpen] = useState(false)
   const dropdownRef = useRef(null);
+
+  
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -58,23 +62,13 @@ const Header = () => {
                 </div>
 
                 
-                <div className='flex lg:flex-1 gap-3 pr-2 flex-shrink-0 lg:hidden'>
-                  <Link to='/profile' className='flex flex-col items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity duration-200'>
-                    <img className='scale-[1.1]' src="./Icons/profile.svg" alt="" />
-                  </Link>
-                  <Link to='/favorites' className='flex flex-col items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity duration-200'>
-                    <img className='scale-[1.1]' src="./Icons/favorites.svg" alt="" />
-                  </Link>
-                  <Link to='/cart'  className='flex flex-col items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity duration-200'>
-                    <img className='scale-[1.1]' src="./Icons/cart.svg" alt="" />
-                  </Link>
-                </div>
+                
 
 
                 <div className='hidden lg:flex gap-0 lg:gap-5 lg:flex-1  pr-2 '>
-                    <Link to='/profile' className='flex flex-col gap-1 items-center cursor-pointer hover:opacity-80 transition-opacity duration-200'>
+                    <Link to={document.cookie ? "/profile" : "/login"} className='flex flex-col gap-1 items-center cursor-pointer hover:opacity-80 transition-opacity duration-200'>
                         <img src="./Icons/profile-gray.svg" alt="" />
-                        <p className='text-gray-500 text-md whitespace-nowrap'>Profile</p>
+                        <p className='text-gray-500 text-md whitespace-nowrap'>{document.cookie ? "Profile" : "Login"}</p>
                     </Link>
 
                     <Link to='/favorites' className='flex flex-col gap-1 items-center cursor-pointer hover:opacity-80 transition-opacity duration-200'>

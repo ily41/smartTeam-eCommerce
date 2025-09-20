@@ -6,7 +6,7 @@ export const API = createApi({
     baseUrl: 'http://localhost:5056',
     prepareHeaders: (headers, { endpoint, extra, type, body }) => {
       // Skip Content-Type for FormData requests - let FormData handle it
-      const isFormDataRequest = endpoint === 'addProduct' || endpoint === 'addCategoryImage' || body instanceof FormData;
+      const isFormDataRequest = endpoint === 'addProduct' || endpoint === 'addCategoryImage' || endpoint === 'addDetailImages' || body instanceof FormData;
       
       if (!isFormDataRequest) {
         headers.set('Content-Type', 'application/json');
@@ -106,7 +106,7 @@ export const API = createApi({
     // *USERS*
     getMe: builder.query({
       query: () => ({
-        url: '/api/v1/Admin/users',
+        url: '/api/v1/Auth/me',
         method: 'GET'
       }),
     }),
@@ -123,6 +123,18 @@ export const API = createApi({
         url: '/api/v1/Admin/users/roles',
         method: 'GET'
       }),
+    }),
+
+    changePassword: builder.mutation({
+      query: ({newPass, currentPass, confirmNewPassword}) => ({
+        url: `/api/v1/Auth/change-password`,
+        method: 'POST',
+        body: {
+          currentPassword: currentPass,
+          newPassword: newPass,
+          confirmNewPassword: confirmNewPassword
+        },
+      })
     }),
 
     getCategories: builder.query({
@@ -216,6 +228,21 @@ export const API = createApi({
       },
     }),
 
+    
+addDetailImages: builder.mutation({
+  query: ({ id, images }) => ({
+    url: `/api/v1/Products/${id}/upload-images`,
+    method: 'POST',
+    body: images, // This should be FormData
+    prepareHeaders: (headers) => {
+      // Remove Content-Type to let browser set it automatically for FormData
+      headers.delete('Content-Type'); 
+      return headers;
+    },
+  }),
+}),
+
+
     deleteProduct: builder.mutation({
       query: ({ id }) => ({
         url: `/api/v1/Products/${id}`,
@@ -238,6 +265,7 @@ export const API = createApi({
       },
       })
     }),
+    
   }),
 })
 
@@ -262,5 +290,7 @@ export const {
   useActivateUserMutation,
   useDeActivateUserMutation,
   useLogoutMutation,
-  useEditUserRoleMutation
+  useEditUserRoleMutation,
+  useChangePasswordMutation,
+  useAddDetailImagesMutation
 } = API

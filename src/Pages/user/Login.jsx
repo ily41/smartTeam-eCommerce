@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLoginMutation, useSignupMutation } from '../../store/API';
 import {jwtDecode} from "jwt-decode";
-import { Loader, X } from 'lucide-react';
+import { Loader, Loader2, X } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
 
@@ -216,7 +216,7 @@ const Login = () => {
         {/* Mobile Log In Form */}
         {currentView === 'login' && (
           <div className="bg-white rounded-lg shadow-lg p-6 mb-4">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Log In</h2>
+            {isLoginLoading ? <Loader className="animate-spin mx-auto text-white" size={28} /> : <h2 className="text-2xl font-bold text-gray-900 mb-2">Log In</h2>}
             <p className="text-gray-600 text-sm mb-6">Login your account in a seconds</p>
 
             <form className="space-y-4" onSubmit={handleLogin}>
@@ -224,10 +224,6 @@ const Login = () => {
               <div className="relative">
                 <input type="password" required minLength={8} name='password' id="mobileLoginPassword" onChange={handleChange} placeholder="Password" className="w-full px-4 py-3 border border-gray-300 rounded-lg pr-12" />
                 <button type="button" className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" onClick={() => togglePassword('mobileLoginPassword')}>👁</button>
-              </div>
-              <div className="flex items-center text-sm">
-                <input type="checkbox" required className="w-4 h-4 text-red-600 border-gray-300 rounded mr-2" />
-                <span className="text-gray-600">Keep me logged in</span>
               </div>
               <div className="text-right">
                 <button type="button" className="text-red-600 text-sm" onClick={() => setCurrentView('forgotPassword')}>Forgot password?</button>
@@ -377,16 +373,9 @@ const Login = () => {
                   <button type="button" className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" onClick={() => togglePassword('loginPassword')}>👁</button>
                 </div>
 
-                <div className="flex items-center">
-                  <input type="checkbox" id="keepLoggedIn" className="w-4 h-4 text-red-600 border-gray-300 rounded" />
-                  <label htmlFor="keepLoggedIn" className="ml-2 text-sm text-gray-600">Keep me logged in</label>
-                </div>
 
-                <div className="text-right">
-                  <button type="button" className="text-red-600 text-sm hover:underline" onClick={() => setCurrentView('forgotPassword')}>Forgot password?</button>
-                </div>
 
-                <button type="submit" className="w-full bg-red-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-red-700 transition duration-200">Log in</button>
+                <button type="submit" className="w-full bg-red-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-red-700 transition duration-200">{isLoginLoading ? <Loader2 className="animate-spin mx-auto text-white" size={28} /> : 'Log in'}</button>
               </form>
 
               <div className="mt-6 text-center text-sm text-gray-500">
@@ -468,93 +457,6 @@ const Login = () => {
               <div className="mt-6 text-center text-sm text-gray-600">
                 Already a member? <button type="button" className="text-blue-600 hover:underline" onClick={() => setCurrentView('login')}>Login</button>
               </div>
-            </div>
-          )}
-
-          {/* Forgot Password Form */}
-          {currentView === 'forgotPassword' && (
-            <div>
-              <button type="button" className="flex items-center text-gray-600 text-sm mb-6 hover:text-gray-800" onClick={() => setCurrentView('login')}>
-                ← Back
-              </button>
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Forgot password?</h2>
-              <p className="text-gray-600 text-sm mb-8">Don't worry! It happens. Please enter the email associated with your account.</p>
-
-              <form className="space-y-6">
-                <div>
-                  <input type="email" placeholder="Enter your email address" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
-                </div>
-
-                <button type="button" className="w-full bg-red-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-red-700 transition duration-200" onClick={() => { setCurrentView('codeVerification'); setCountdown(20); }}>Send a code</button>
-              </form>
-
-              <div className="mt-6 text-center text-sm text-gray-600">
-                Remember password? <button type="button" className="text-blue-600 hover:underline" onClick={() => setCurrentView('login')}>Log in</button>
-              </div>
-            </div>
-          )}
-
-          {/* Code Verification Form */}
-          {currentView === 'codeVerification' && (
-            <div>
-              <button type="button" className="flex items-center text-gray-600 text-sm mb-6 hover:text-gray-800" onClick={() => setCurrentView('forgotPassword')}>
-                ← Back
-              </button>
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Please check your email</h2>
-              <p className="text-gray-600 text-sm mb-8">We've sent a code to <strong>helloworld@gmail.com</strong></p>
-
-              <div className="flex justify-center space-x-2 mb-8 code-input">
-                <input type="text" maxLength="1" className="w-12 h-12 text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none font-bold text-lg" onInput={(e) => moveToNext(e.target, 0)} defaultValue="8" />
-                <input type="text" maxLength="1" className="w-12 h-12 text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none font-bold text-lg" onInput={(e) => moveToNext(e.target, 1)} defaultValue="2" />
-                <input type="text" maxLength="1" className="w-12 h-12 text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none font-bold text-lg" onInput={(e) => moveToNext(e.target, 2)} defaultValue="2" />
-                <input type="text" maxLength="1" className="w-12 h-12 text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none font-bold text-lg" onInput={(e) => moveToNext(e.target, 3)} />
-              </div>
-
-              <button type="button" className="w-full bg-red-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-red-700 transition duration-200" onClick={() => setCurrentView('resetPassword')}>Verify</button>
-{/* 
-              <div className="mt-4 text-center text-sm text-gray-600">
-                <button type="button" className="text-red-600 hover:underline" onClick={() => setCountdown(20)}>Send code again</button> {countdown > 0 && <span>{formatCountdown(countdown)}</span>}
-              </div> */}
-            </div>
-          )}
-
-          {/* Reset Password Form */}
-          {currentView === 'resetPassword' && (
-            <div>
-              <button type="button" className="flex items-center text-gray-600 text-sm mb-6 hover:text-gray-800" onClick={() => setCurrentView('codeVerification')}>
-                ← Back
-              </button>
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Reset password</h2>
-              <p className="text-gray-600 text-sm mb-8">Please type something you'll remember</p>
-
-              <form className="space-y-6">
-                <div className="relative">
-                  <input type="password" id="newPassword" placeholder="must be 8 characters" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none pr-12" />
-                  <button type="button" className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" onClick={() => togglePassword('newPassword')}>👁</button>
-                </div>
-                
-                <div className="relative">
-                  <input type="password" id="confirmPassword" placeholder="repeat password" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none pr-12" />
-                  <button type="button" className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" onClick={() => togglePassword('confirmPassword')}>👁</button>
-                </div>
-
-                <button type="button" className="w-full bg-red-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-red-700 transition duration-200" onClick={() => setCurrentView('passwordChanged')}>Verify</button>
-              </form>
-
-              <div className="mt-6 text-center text-sm text-gray-600">
-                Already have an account? <button type="button" className="text-blue-600 hover:underline" onClick={() => setCurrentView('login')}>Log in</button>
-              </div>
-            </div>
-          )}
-
-          {/* Password Changed Success */}
-          {currentView === 'passwordChanged' && (
-            <div className="text-center">
-              <div className="text-6xl mb-6">✨</div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Password changed</h2>
-              <p className="text-gray-600 text-sm mb-8">Your password has been changed successfully</p>
-
-              <button type="button" className="w-full bg-red-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-red-700 transition duration-200" onClick={() => setCurrentView('login')}>Log in now</button>
             </div>
           )}
         </div>

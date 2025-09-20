@@ -7,6 +7,7 @@ import { MobileFilterButtons } from '../../products/MobileFilters';
 import { ActiveFilters } from '../../products/ActiveFilters';
 import { ProductCard } from '../../products/ProductCard';
 import { Pagination } from '../../products/Pagination';
+import { useGetProductsQuery } from '../../store/API';
 
 
 
@@ -15,6 +16,8 @@ function Products() {
   
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024); 
   const [template, setTemplate] = useState(isMobile ? "cols" : "rows"); // give both cases
+  const { data: products, isLoading, error, refetch } = useGetProductsQuery();
+  
 
   useEffect(() => {
     function handleResize() {
@@ -85,15 +88,17 @@ function Products() {
             </div>
 
               <div className={`${template == "cols" ? 'grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6' : 'flex flex-col gap-4'}`}>
-                <ProductCard col={template === "cols" ? true : false}/>
-                <ProductCard col={template === "cols" ? true : false}/>
-                <ProductCard col={template === "cols" ? true : false}/>
-                <ProductCard col={template === "cols" ? true : false}/>
-                <ProductCard col={template === "cols" ? true : false}/>
-                <ProductCard col={template === "cols" ? true : false}/>
-                <ProductCard col={template === "cols" ? true : false}/>
-                <ProductCard col={template === "cols" ? true : false}/>
-                <ProductCard col={template === "cols" ? true : false}/>
+                {products?.map(item => {
+                  const cardInfo={
+                    url:item.primaryImageUrl,
+                    name:item.name,
+                    price:item.currentPrice
+                  }
+                  return (
+                    <ProductCard col={template === "cols" ? true : false} info={cardInfo}/>
+                  )
+
+                })}
               </div>
             
 

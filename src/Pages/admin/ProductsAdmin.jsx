@@ -10,6 +10,7 @@ import EditProduct from "../../components/admin/Product/EditProduct";
 const ProductsUI = () => {
     const { data: products, isLoading, error, refetch } = useGetProductsQuery();
     const { data: productsSummary, isSummaryLoading } = useGetProductsSummaryQuery();
+    console.log(products)
     
     
     const [open, setOpen] = useState(false)
@@ -92,7 +93,7 @@ const ProductsUI = () => {
               <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6 rounded-xl shadow-lg">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-blue-100 text-sm">Total Products</p>
+                    <p className="text-blue-100 text-sm">Total Products</p> 
                     {isLoading ? (
                       <div className="flex justify-center items-center py-20">
                         <Loader2 className="w-12 h-12 animate-spin text-indigo-500" />

@@ -27,29 +27,29 @@ const Secure = () => {
         <div className='max-w-[95vw] sm:max-w-[90vw] md:max-w-[85vw] md:mt-10 mx-auto pb-25'>
             <div className='py-6 pt-8 text-center '>
                 <h1 className='text-xl font-semibold'>Our Services</h1>
-                <p className='text-[#505050]  '>Our services are designed to provide maximum safety and smooth operation. These systems, installed by our professional team, ensure the highest level of security for your property.</p>
+                <p className='text-[#505050]  max-w-[50vw] mx-auto mt-3'>Our services are designed to provide maximum safety and smooth operation. These systems, installed by our professional team, ensure the highest level of security for your property.</p>
             </div>
             <div className='flex flex-col gap-5 max-w-[90vw] mx-auto md:grid md:grid-cols-2 lg:flex lg:flex-row'>
-                <div className='relative bg-white border-1 border-[#dee2e6] p-7 pt-13 rounded-lg'>
-                    <img className='absolute top-4 right-4 bg-[#ff4b43] p-5 rounded-full' src="./Icons/service-1-1.svg" alt="" />
+                <div className='relative bg-white border-1 border-[#dee2e6] p-7 pt-19 rounded-lg'>
+                    <img className='absolute top-4 right-4 bg-[#ff4b43] p-3 rounded-full' src="./Icons/service-1-1.svg" alt="" />
                     <h1 className='font-semibold text-lg'>Fast and Secure Installation</h1>
                     <p className='text-md text-[#7D7D7D] font-medium max-w-[84%]'>We ensure the software is installed safely and without delays, so you can start using it right away.</p>
                 </div>
 
-                <div className='relative bg-white border-1 border-[#dee2e6] p-7 pt-13 rounded-lg'>
-                    <img className='absolute top-4 right-4 bg-[#ff4b43] p-5 rounded-full' src="./Icons/service-1-2.svg" alt="" />
+                <div className='relative bg-white border-1 border-[#dee2e6] p-7 pt-19 rounded-lg'>
+                    <img className='absolute top-4 right-4 bg-[#ff4b43] p-3 rounded-full' src="./Icons/service-1-2.svg" alt="" />
                     <h1 className='font-semibold text-lg'>Customized Initial Setup</h1>
                     <p className='text-md text-[#7D7D7D] font-medium max-w-[84%]'>All configurations are tailored to match your specific business needs and requirements.</p>
                 </div>
 
-                <div className='relative bg-white border-1 border-[#dee2e6] p-7 pt-13 rounded-lg'>
-                    <img className='absolute top-4 right-4 bg-[#ff4b43] p-5 rounded-full' src="./Icons/service-1-3.svg" alt="" />
+                <div className='relative bg-white border-1 border-[#dee2e6] p-7 pt-19 rounded-lg'>
+                    <img className='absolute top-4 right-4 bg-[#ff4b43] p-3 rounded-full' src="./Icons/service-1-3.svg" alt="" />
                     <h1 className='font-semibold text-lg'>Staff Training & Support</h1>
                     <p className='text-md text-[#7D7D7D] font-medium max-w-[84%]'>Your team receives practical training and guidance to use the system effectively.</p>
                 </div>
 
-                <div className='relative bg-white border-1 border-[#dee2e6] p-7 pt-13 rounded-lg'>
-                    <img className='absolute top-4 right-4 bg-[#ff4b43] p-5 rounded-full' src="./Icons/service-1-4.svg" alt="" />
+                <div className='relative bg-white border-1 border-[#dee2e6] p-7 pt-19 rounded-lg'>
+                    <img className='absolute top-4 right-4 bg-[#ff4b43] p-3 rounded-full' src="./Icons/service-1-4.svg" alt="" />
                     <h1 className='font-semibold text-lg'>Continuous Assistance & Updates</h1>
                     <p className='text-md text-[#7D7D7D] font-medium max-w-[84%]'>Enjoy reliable technical support and regular updates to keep your system running at its best.</p>
                 </div>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { X, Upload, Trash2, Plus } from "lucide-react";
-import { useAddProductMutation, useGetCategoriesQuery, useGetUserRolesQuery } from "../../../store/API";
+import { useAddDetailImagesMutation, useAddProductMutation, useGetCategoriesQuery, useGetUserRolesQuery } from "../../../store/API";
 import { toast } from "react-toastify";
 import { WiRefresh } from "react-icons/wi";
 
@@ -9,9 +9,8 @@ const ProductFormUI = ({setOpen}) => {
   const { data: userRoles, error, isRolesLoading, refetch } = useGetUserRolesQuery();
   const { data: categories, isLoading, errorC } = useGetCategoriesQuery();
   const [addProduct, { isLoading: isProductLoading }] = useAddProductMutation(); 
+  const [addDetailImages, { isLoading: isDetailLoading }] = useAddDetailImagesMutation(); 
 
-
-  
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -48,16 +47,17 @@ const ProductFormUI = ({setOpen}) => {
     ]
   });
 
-const [file, setFile] = useState(null);
-const [imageUrl, setImageUrl] = useState(null);
+  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]); // Changed to array
+  const [imageUrl, setImageUrl] = useState(null);
+  const [imageUrls, setImageUrls] = useState([]); // Changed to array
 
-  // Method 1: Using useEffect to create URL when file changes
+  // Single file preview
   useEffect(() => {
     if (file) {
       const url = URL.createObjectURL(file);
       setImageUrl(url);
 
-      // Cleanup: revoke the URL when component unmounts or file changes
       return () => {
         URL.revokeObjectURL(url);
       };
@@ -66,58 +66,82 @@ const [imageUrl, setImageUrl] = useState(null);
     }
   }, [file]);
 
+  // Multiple files preview
+  useEffect(() => {
+    if (files && files.length > 0) {
+      const urls = Array.from(files).map(file => URL.createObjectURL(file));
+      setImageUrls(urls);
 
-const handleFileUpload = (e) => {
-  const selectedFile = e.target.files[0]; 
-  if (!selectedFile) return;
+      return () => {
+        urls.forEach(url => URL.revokeObjectURL(url));
+      };
+    } else {
+      setImageUrls([]);
+    }
+  }, [files]);
 
-  setFile(selectedFile);
-  e.target.value = ""; 
-};
+  const handleFileUpload = (e) => {
+    const selectedFile = e.target.files[0]; 
+    if (!selectedFile) return;
 
-const close = () => {
-  setFormData({
-    name: "",
-    description: "",
-    shortDescription: "",
-    sku: "",
-    isHotDeal: false,
-    stockQuantity: 0,
-    categoryId: "",
-    prices: [
-      {
-        userRole: 1,
-        price: 0,
-        discountedPrice: 0,
-        discountPercentage: 0
-      },
-      {
-        userRole: 2,
-        price: 0,
-        discountedPrice: 0,
-        discountPercentage: 0
-      },
-      {
-        userRole: 3,
-        price: 0,
-        discountedPrice: 0,
-        discountPercentage: 0
-      },
-      {
-        userRole: 4,
-        price: 0,
-        discountedPrice: 0,
-        discountPercentage: 0
-      }
-    ]
-  });
-  setFile(null);
+    setFile(selectedFile);
+    e.target.value = ""; 
+  };
 
-  setOpen(false)
-}
+  const handleMultipleFileUpload = (e) => {
+    const selectedFiles = Array.from(e.target.files); // Convert FileList to Array
+    if (!selectedFiles || selectedFiles.length === 0) return;
 
+    setFiles(prev => [...prev, ...selectedFiles]); // Append to existing files
+    e.target.value = ""; 
+  };
 
-const handleProductFormData = async (e) => {
+  const removeDetailImage = (indexToRemove) => {
+    setFiles(prev => prev.filter((_, index) => index !== indexToRemove));
+  };
+
+  const close = () => {
+    setFormData({
+      name: "",
+      description: "",
+      shortDescription: "",
+      sku: "",
+      isHotDeal: false,
+      stockQuantity: 0,
+      categoryId: "",
+      prices: [
+        {
+          userRole: 1,
+          price: 0,
+          discountedPrice: 0,
+          discountPercentage: 0
+        },
+        {
+          userRole: 2,
+          price: 0,
+          discountedPrice: 0,
+          discountPercentage: 0
+        },
+        {
+          userRole: 3,
+          price: 0,
+          discountedPrice: 0,
+          discountPercentage: 0
+        },
+        {
+          userRole: 4,
+          price: 0,
+          discountedPrice: 0,
+          discountPercentage: 0
+        }
+      ]
+    });
+    setFile(null);
+    setFiles([]);
+    setOpen(false);
+  }
+
+  const handleProductFormData = async (e) => {
   e.preventDefault();
 
   if (!file) {
@@ -126,27 +150,39 @@ const handleProductFormData = async (e) => {
   }
 
   try {
+    // Create FormData for product
     const formDataToSend = new FormData();
     
     const productDataString = JSON.stringify(formData);
     formDataToSend.append("productData", productDataString); 
     formDataToSend.append("imageFile", file, file.name);
     
-  
-    
+    // Add the product first
     const result = await addProduct(formDataToSend).unwrap();
-    toast.success("Product added successfully");
-    close()
-    
 
+    // If there are detail images, upload them
+    if (files.length > 0) {
+      const detailImagesFormData = new FormData();
+
+      // Append each file to FormData with the same key name
+      files.forEach(file => {
+        detailImagesFormData.append("imageFiles", file, file.name);
+      });
+
+      
+      const resultDetail = await addDetailImages({
+        id: result.id, // Use the actual product ID from the result
+        images: detailImagesFormData // Pass FormData instead of files array
+      }).unwrap();
     
+    }
+
+    toast.success("Product added successfully");
+    close();
   } catch (error) {
-    toast.error(error?.data || "something went wrong");
-    console.log('Full error:', error);
+    toast.error(error?.data?.message || error?.message || "Something went wrong");
   }
 };
-
-
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -160,10 +196,8 @@ const handleProductFormData = async (e) => {
     setFormData((prev) => {
       const updatedPrices = prev.prices.map((priceObj, i) => {
         if (i === index) {
-          // Update the field
           const updatedObj = { ...priceObj, [field]: parseFloat(value) || 0 };
 
-          // Calculate discountPercentage only if price > 0
           const price = updatedObj.price;
           const discountedPrice = updatedObj.discountedPrice;
           const discountPercentage =
@@ -179,9 +213,6 @@ const handleProductFormData = async (e) => {
       return { ...prev, prices: updatedPrices };
     });
   };
-
-
-  
 
   return (
     <div className="bg-[#1f1f1f] text-white p-6 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto dark-scrollbar">
@@ -301,14 +332,12 @@ const handleProductFormData = async (e) => {
         <div>
           <div className="flex justify-between items-center mb-4">
             <label className="block text-sm font-medium">Pricing by User Role</label>
-        
           </div>
           <div className="border border-gray-600 rounded-md">
-            {formData.prices.map((item,index) => (
-              <div className="space-y-4">
-                <div  className="grid grid-cols-1 md:grid-cols-3 gap-10 p-4 bg-[#2c2c2c] rounded-t-md">
+            {formData.prices.map((item, index) => (
+              <div key={index} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-10 p-4 bg-[#2c2c2c] rounded-t-md">
                   {/* User Role */}
-                  
                   <div className="flex items-center">
                     <label className="block text-md font-medium mb-1">{userRoles && userRoles[index+1].name}</label>
                   </div>
@@ -340,29 +369,23 @@ const handleProductFormData = async (e) => {
                       placeholder="0.00"
                     />
                   </div>
-
-
                 </div>
               </div>
             ))}
-          
-            
-
           </div>
-          
         </div>
 
         {/* Images */}
         <div>
           <label className="block text-sm font-medium mb-2">Product Images</label>
           <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center">
-             <input
-                type="file"
-                accept="image/*"
-                onChange={handleFileUpload}
-                className="hidden"
-                id="image-upload"
-              />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileUpload}
+              className="hidden"
+              id="image-upload"
+            />
             <label
               htmlFor="image-upload"
               className="cursor-pointer flex flex-col items-center gap-2"
@@ -378,26 +401,73 @@ const handleProductFormData = async (e) => {
           </div>
 
           {/* Image Previews */}
-
           {file && 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                  <div className="relative group">
-                    <img
-                      src={imageUrl}
-                      className="w-full h-24 object-cover rounded-md border "
-                    />
-                    <button
-                      type="button"
-                      onClick={() => {setFile(null)}}
-                      className="absolute top-1 right-1 bg-red-600 hover:bg-red-700 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </button>
-                  </div>
+              <div className="relative group">
+                <img
+                  src={imageUrl}
+                  alt="Product preview"
+                  className="w-full h-24 object-cover rounded-md border "
+                />
+                <button
+                  type="button"
+                  onClick={() => {setFile(null)}}
+                  className="absolute top-1 right-1 bg-red-600 hover:bg-red-700 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <Trash2 className="w-3 h-3" />
+                </button>
               </div>
-          
+            </div>
           }
-            
+        </div>
+
+        {/* Detailed Images */}
+        <div>
+          <label className="block text-sm font-medium mb-2">Detail Images</label>
+          <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center">
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleMultipleFileUpload}
+              className="hidden"
+              id="detail-image-upload"
+            />
+            <label
+              htmlFor="detail-image-upload"
+              className="cursor-pointer flex flex-col items-center gap-2"
+            >
+              <Upload className="w-8 h-8 text-gray-400" />
+              <span className="text-gray-400">
+                Click to upload images or drag and drop
+              </span>
+              <span className="text-sm text-gray-500">
+                PNG, JPG, GIF up to 10MB each
+              </span>
+            </label>
+          </div>
+
+          {/* Multiple Image Previews */}
+          {files.length > 0 && 
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+              {files.map((file, index) => (
+                <div key={index} className="relative group">
+                  <img
+                    src={imageUrls[index]}
+                    alt={`Detail preview ${index + 1}`}
+                    className="w-full h-24 object-cover rounded-md border "
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeDetailImage(index)}
+                    className="absolute top-1 right-1 bg-red-600 hover:bg-red-700 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          }
         </div>
 
         {/* Submit Button */}
@@ -406,19 +476,19 @@ const handleProductFormData = async (e) => {
             type="button"
             onClick={() => close()}
             className="px-6 py-2 bg-gray-600 hover:bg-gray-700 rounded-md font-semibold"
+            disabled={isProductLoading || isDetailLoading}
           >
             Cancel
           </button>
           <button
             type="button"
-            onClick={ handleProductFormData}
-            className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md font-semibold"
+            onClick={handleProductFormData}
+            disabled={isProductLoading || isDetailLoading}
+            className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Add Product
+            {isProductLoading || isDetailLoading ? "Adding..." : "Add Product"}
           </button>
         </div>
-
-
       </div>
     </div>
   );

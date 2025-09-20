@@ -1,13 +1,14 @@
 import React from 'react';
 import { Heart } from 'lucide-react';
 
-export function ProductCard({col}) {
+export function ProductCard({col, info}) {
+  console.log(info)
   if(col) {
     return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
       <div className="aspect-square p-4 bg-gray-50 ">
         <img
-          src="./deals/productImageExample.svg"
+          src=  {`http://localhost:5056${info.url}`}
           alt="iPhone 12 Mini"
           className="w-full h-full object-contain"
         />
@@ -34,7 +35,7 @@ export function ProductCard({col}) {
       {/* Product Image */}
       <div className="flex-shrink-0">
         <img
-          src="./deals/product.avif"
+          src={`http://localhost:5056${info.url}`}
           alt="Product"
           className="max-w-[150px] object-cover rounded-lg"
         />
@@ -44,7 +45,7 @@ export function ProductCard({col}) {
       <div className="flex flex-col flex-1 space-y-4">
         <div className="flex justify-between items-start">
           <div>
-            <h2 className="text-2xl font-semibold">680 AZN</h2>
+            <h2 className="text-2xl font-semibold">{info.price}</h2>
             <p className="text-gray-500">Pos Komputer</p>
           </div>
 

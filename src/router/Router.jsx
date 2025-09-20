@@ -18,10 +18,13 @@ import AdminLayout from "../Pages/admin/Adminlayout";
 import Users from "../Pages/admin/User";
 import Category from "../Pages/admin/Category";
 import ProductsUI from "../Pages/admin/ProductsAdmin";
+import SubCategories from "../Pages/user/SubCategories";
+import ScrollToTop from "../components/user/ScrollToTop";
 
 const Router = () => {
   return (
     <BrowserRouter>
+      <ScrollToTop /> {/* ✅ Burda çağır */}
       <Routes>
         {/* Login page */}
         <Route path="/login" element={<Login />} />
@@ -48,6 +51,7 @@ const Router = () => {
           <Route path="secure" element={<Secure />} />
           <Route path="software" element={<Software />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="subcategories" element={<SubCategories />} />
         </Route>
 
         {/* Admin layout with Auth wrapper */}
@@ -57,16 +61,12 @@ const Router = () => {
             <Auth>
               <AdminLayout />
             </Auth>
-
-
           }
         >
           <Route index element={<Users />} />
-          <Route path= 'category' element={<Category />} />
-          <Route path= 'products' element={<ProductsUI />} />
+          <Route path="category" element={<Category />} />
+          <Route path="products" element={<ProductsUI />} />
         </Route>
-
-        
       </Routes>
     </BrowserRouter>
   );
