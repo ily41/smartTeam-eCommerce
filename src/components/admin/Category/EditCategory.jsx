@@ -53,7 +53,7 @@ const EditCategoryUI = ({item, setOpen, categories}) => {
 
   return (
     <form 
-        onSubmit={handleCategory}
+      onSubmit={handleCategory}
       className="flex flex-col gap-6 p-6 bg-[#1f1f1f] rounded-lg w-96"
     >
       {/* Name Field */}

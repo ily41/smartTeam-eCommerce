@@ -1,14 +1,37 @@
 import { Loader2, Pen, Trash, Package, DollarSign, Palette, Ruler } from "lucide-react";
 import { useState } from "react";
-import { useGetProductsQuery } from "../../store/API";
+import { useActivateUserMutation, useDeActivateUserMutation, useDeleteProductMutation, useGetProductsQuery, useGetProductsSummaryQuery } from "../../store/API";
 import Modal from "../../components/UI/Modal";
 import AddCategoryUIStatic from "../../components/admin/Product/AddProduct";
 import AddProductStatic from "../../components/admin/Product/AddProduct";
+import { toast } from "react-toastify";
+import EditProduct from "../../components/admin/Product/EditProduct";
 
 const ProductsUI = () => {
     const { data: products, isLoading, error, refetch } = useGetProductsQuery();
+    const { data: productsSummary, isSummaryLoading } = useGetProductsSummaryQuery();
+    
+    
     const [open, setOpen] = useState(false)
-    console.log(products)
+    const [modalType, setModalType] = useState(null); 
+    const [cat, setCat] = useState(null)
+
+    const [deleteCategory] =   useDeleteProductMutation();
+
+
+    const handleDeleteProduct = async (id) => {
+      try {
+        await deleteCategory({ id }).unwrap();
+        toast.success("Product deleted successfully");
+        handleCloseModal();
+      } catch (error) {
+        console.log(error);
+        toast.error(error?.data || "Deleting Product Failed");
+      }
+    };
+
+    
+
 
   
   
@@ -24,6 +47,8 @@ const ProductsUI = () => {
     };
 
   const handleCloseModal = () => {
+    console.log("works")
+    setModalType(false)
     setOpen(false);
     refetch();
   };
@@ -34,9 +59,15 @@ const ProductsUI = () => {
   return (
     <div className=" text-white p-4 min-h-screen">
 
-      <Modal open={open} setOpen={handleCloseModal}>
+      <Modal open={modalType == "add"} setOpen={handleCloseModal}>
         <AddProductStatic setOpen={handleCloseModal}/>
       </Modal>
+      
+      <Modal open={modalType === "edit"} setOpen={handleCloseModal}>
+        <EditProduct setOpen={handleCloseModal}  edit ={cat}/>
+      </Modal>
+
+
       <div className="container mx-auto">
         <div className="flex justify-between items-center mb-8">
           <div>
@@ -44,7 +75,7 @@ const ProductsUI = () => {
             <p className="text-gray-400">Manage your product inventory</p>
           </div>
           <button
-            onClick={() => setOpen(prev => !prev)}
+            onClick={() => setModalType("add")}
             className="md:px-6 md:py-3 px-4 py-2 bg-white text-sm md:text-base transition-all duration-300 rounded-lg font-semibold text-gray-900 shadow-lg transform hover:bg-gray-100 hover:scale-105"
           >
             Add New Product
@@ -62,7 +93,13 @@ const ProductsUI = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-blue-100 text-sm">Total Products</p>
-                    <p className="text-white text-2xl font-bold">{products?.length || 0}</p>
+                    {isLoading ? (
+                      <div className="flex justify-center items-center py-20">
+                        <Loader2 className="w-12 h-12 animate-spin text-indigo-500" />
+                      </div>
+                    ) : (
+                    <p className="text-white text-2xl font-bold">{productsSummary?.totalProducts}</p>
+                    )}
                   </div>
                   <Package className="w-8 h-8 text-blue-200" />
                 </div>
@@ -71,9 +108,13 @@ const ProductsUI = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-green-100 text-sm">In Stock</p>
-                    <p className="text-white text-2xl font-bold">
-                      {products?.filter(p => p.stock > 0).length || 0}
-                    </p>
+                    {isLoading ? (
+                      <div className="flex justify-center items-center py-20">
+                        <Loader2 className="w-12 h-12 animate-spin text-indigo-500" />
+                      </div>
+                    ) : (
+                    <p className="text-white text-2xl font-bold">{productsSummary?.inStockProducts}</p>
+                    )}
                   </div>
                   <DollarSign className="w-8 h-8 text-green-200" />
                 </div>
@@ -82,9 +123,13 @@ const ProductsUI = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-orange-100 text-sm">Low Stock</p>
-                    <p className="text-white text-2xl font-bold">
-                      {products?.filter(p => p.stock > 0 && p.stock <= 10).length || 0}
-                    </p>
+                    {isLoading ? (
+                      <div className="flex justify-center items-center py-20">
+                        <Loader2 className="w-12 h-12 animate-spin text-indigo-500" />
+                      </div>
+                    ) : (
+                    <p className="text-white text-2xl font-bold">{productsSummary?.lowStockProducts}</p>
+                    )}
                   </div>
                   <Package className="w-8 h-8 text-orange-200" />
                 </div>
@@ -93,9 +138,13 @@ const ProductsUI = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-red-100 text-sm">Out of Stock</p>
-                    <p className="text-white text-2xl font-bold">
-                      {products?.filter(p => p.stock === 0).length || 0}
-                    </p>
+                    {isLoading ? (
+                      <div className="flex justify-center items-center py-20">
+                        <Loader2 className="w-12 h-12 animate-spin text-indigo-500" />
+                      </div>
+                    ) : (
+                    <p className="text-white text-2xl font-bold">{productsSummary?.outOfStockProducts}</p>
+                    )}
                   </div>
                   <Package className="w-8 h-8 text-red-200" />
                 </div>
@@ -104,7 +153,9 @@ const ProductsUI = () => {
 
             {/* Products Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {products?.map((product) => (
+              {products?.map((product) => {
+                console.log(product.primaryImageUrl)
+              return(
                 <div 
                   key={product.id} 
                   className="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
@@ -113,7 +164,7 @@ const ProductsUI = () => {
                   <div className="relative h-48 bg-gray-700">
                     <img
                       className="w-full h-full object-cover"
-                      src={getImageUrl(product.primaryImageUrl)}
+                      src={`http://localhost:5056${product.primaryImageUrl}`}
                       alt={product.name}
                       onError={(e) => {
                         e.target.src = "";
@@ -121,7 +172,10 @@ const ProductsUI = () => {
                     />
                     <div className="absolute top-3 right-3 flex gap-2">
                       <button
-                        onClick={() => handleEditProduct(product.id)}
+                        onClick={() => {
+                          setModalType("edit")
+                          setCat(product)
+                        }}
                         className="bg-blue-600 hover:bg-blue-700 p-2 rounded-lg shadow-lg transform hover:scale-110 transition-all duration-200"
                       >
                         <Pen className="w-4 h-4 text-white" />
@@ -249,7 +303,7 @@ const ProductsUI = () => {
                     )}
                   </div>
                 </div>
-              ))}
+              )})}
             </div>
 
             {products && products.length === 0 && (
@@ -258,7 +312,7 @@ const ProductsUI = () => {
                 <h3 className="text-xl font-semibold text-gray-400 mb-2">No products found</h3>
                 <p className="text-gray-500 mb-6">Get started by adding your first product</p>
                 <button
-                  onClick={handleAddProduct}
+                onClick={() => setModalType("add")}
                   className="px-6 py-3 bg-white transition rounded-lg font-semibold text-gray-900 hover:bg-gray-100"
                 >
                   Add Product

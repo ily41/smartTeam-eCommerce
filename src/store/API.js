@@ -5,8 +5,8 @@ export const API = createApi({
   baseQuery: fetchBaseQuery({ 
     baseUrl: 'http://localhost:5056',
     prepareHeaders: (headers, { endpoint, extra, type, body }) => {
-      // Skip Content-Type for addProduct - let FormData handle it
-      const isFormDataRequest = endpoint === 'addProduct' || body instanceof FormData;
+      // Skip Content-Type for FormData requests - let FormData handle it
+      const isFormDataRequest = endpoint === 'addProduct' || endpoint === 'addCategoryImage' || body instanceof FormData;
       
       if (!isFormDataRequest) {
         headers.set('Content-Type', 'application/json');
@@ -87,6 +87,22 @@ export const API = createApi({
       })
     }),
 
+    addCategoryImage: builder.mutation({
+      query: (formData) => {
+        console.log('FormData check for category:', formData instanceof FormData);
+        return {
+          url: '/api/v1/Categories/with-image',
+          method: 'POST',
+          body: formData,
+          prepareHeaders: (headers) => {
+            // Explicitly remove Content-Type for FormData
+            headers.delete('Content-Type');
+            return headers;
+          },
+        };
+      },
+    }),
+
     // *USERS*
     getMe: builder.query({
       query: () => ({
@@ -147,7 +163,29 @@ export const API = createApi({
       })
     }),
 
+    activateUser: builder.mutation({
+      query: ({ id }) => ({
+        url: `/api/v1/Admin/users/${id}/activate`,
+        method: 'POST',
+      })
+    }),
+
+    deActivateUser: builder.mutation({
+      query: ({ id }) => ({
+        url: `/api/v1/Admin/users/${id}/deactivate`,
+        method: 'POST',
+      })
+    }),
+
+    logout: builder.mutation({
+      query: () => ({
+        url: `/api/v1/Auth/logout`,
+        method: 'POST',
+      })
+    }),
+
     // *PRODUCTS*
+
     getProducts: builder.query({
       query: () => ({
         url: '/api/v1/Products',
@@ -155,9 +193,16 @@ export const API = createApi({
       }),
     }),
 
+    getProductsSummary: builder.query({
+      query: () => ({
+        url: '/api/v1/Admin/products/stock/summary',
+        method: 'GET'
+      }),
+    }),
+
     addProduct: builder.mutation({
       query: (formData) => {
-        console.log('FormData check:', formData instanceof FormData);
+        console.log('FormData check for product:', formData instanceof FormData);
         return {
           url: '/api/v1/Products/with-image',
           method: 'POST',
@@ -169,7 +214,30 @@ export const API = createApi({
           },
         };
       },
-    })
+    }),
+
+    deleteProduct: builder.mutation({
+      query: ({ id }) => ({
+        url: `/api/v1/Products/${id}`,
+        method: 'DELETE',
+      })
+    }),
+
+    editProduct: builder.mutation({
+      query: ({ name,description,shortDescription,isActive,isHotDeal,stockQuantity,categoryId, id }) => ({
+        url: `/api/v1/Products/${id}`,
+        method: 'PUT',
+        body: {
+          name,
+          description,
+          shortDescription,
+          isActive,
+          isHotDeal,
+          stockQuantity,
+          categoryId
+      },
+      })
+    }),
   }),
 })
 
@@ -180,11 +248,19 @@ export const {
   useGetCategoriesQuery,
   useGetProductsQuery,
   useAddCategoryMutation,
+  useAddCategoryImageMutation,
   useEditCategoryMutation,
   useDeleteCategoryMutation,
   useGetUserStaticsQuery,
   useEditUserMutation,
   useDeleteUserMutation,
   useGetUserRolesQuery,
-  useAddProductMutation
+  useAddProductMutation,
+  useDeleteProductMutation,
+  useEditProductMutation,
+  useGetProductsSummaryQuery,
+  useActivateUserMutation,
+  useDeActivateUserMutation,
+  useLogoutMutation,
+  useEditUserRoleMutation
 } = API

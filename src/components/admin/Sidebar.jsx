@@ -3,11 +3,15 @@ import {
   Menu, X, Package, Grid3X3, Users, BarChart3, Settings, LogOut, ChevronLeft, ChevronRight, Home, 
   User} from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
+import { useLogoutMutation } from '../../store/API';
 
 
 const SideBar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+
+  const [logout, { isLoading: isLoading }] = useLogoutMutation(); 
+  
 
   const menuItems = [
     { icon: User, label: 'Users', active: false, to:'/admin' },
@@ -16,12 +20,25 @@ const SideBar = () => {
     { icon: Settings, label: 'Settings', active: false },
   ];
 
+
   const toggleSidebar = () => setIsOpen(!isOpen);
   const toggleCollapse = () => setIsCollapsed(!isCollapsed);
   const navigate = useNavigate()
-  const handleClick = () => {
-    localStorage.clear()
+  const handleClick = async () => {
+    try {
+      const result = await logout().unwrap()
+      console.log(result)
+    }catch {
+      toast.error(error?.data?.slice(1,100) || "Editin category failed");
+
+    }
+     document.cookie.split(";").forEach(cookie => {
+      document.cookie = cookie
+        .replace(/^ +/, "")
+        .replace(/=.*/, `=;expires=${new Date(0).toUTCString()};path=/`);
+    });
     navigate('/login')
+    
   }
   return (
     <>
