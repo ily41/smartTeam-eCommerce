@@ -159,6 +159,7 @@ const ProductFormUI = ({setOpen}) => {
     
     // Add the product first
     const result = await addProduct(formDataToSend).unwrap();
+    console.log(result)
 
     // If there are detail images, upload them
     if (files.length > 0) {

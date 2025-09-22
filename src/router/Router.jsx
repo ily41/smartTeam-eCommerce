@@ -20,6 +20,8 @@ import Category from "../Pages/admin/Category";
 import ProductsUI from "../Pages/admin/ProductsAdmin";
 import SubCategories from "../Pages/user/SubCategories";
 import ScrollToTop from "../components/user/ScrollToTop";
+import BannersUI from "../components/admin/Banner/BannerUi";
+import FilterUi from "../components/admin/Filters/FilterUi";
 
 const Router = () => {
   return (
@@ -66,6 +68,8 @@ const Router = () => {
           <Route index element={<Users />} />
           <Route path="category" element={<Category />} />
           <Route path="products" element={<ProductsUI />} />
+          <Route path="banners" element={<BannersUI />} />
+          <Route path="filters" element={<FilterUi />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -1,3 +1,4 @@
+
 MAiN THINGS TO DO
 	User
 		homepage gets									NEEDED
@@ -5,12 +6,11 @@ MAiN THINGS TO DO
 		detail page 									NEEDED
 		cart											NEEDED
 		favorites										NEEDED
-		profile +
-
+		profile 										+v 
 		FUNCTIONALITIES
 			filter										NEEDED
 			search										NEEDED
-			breadcrumbs +	
+			breadcrumbs 								+	
 			
 
 		
@@ -21,13 +21,13 @@ MAiN THINGS TO DO
 		custom filter									NEEDED
 		adminpanel banner changing						NEEDED
 		adminpanel hot deals zaman ayarlarmasi			NEEDED
-		product detail images elave olunmasi +	
+		product detail images elave olunmasi 			+	
 
 
 UI
 	User	
-		category page + 
-		services icons  +
+		category page 									+ 
+		services icons  								+
 		numbers 										NEEDED
 		locations for contact and footer map 			NEEDED
 		slider 											NEEDED
