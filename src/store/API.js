@@ -65,8 +65,8 @@ export const API = createApi({
     }),
     
     getSubCategories: builder.query({
-      query: () => ({
-        url: '/api/v1/Categories/root',
+      query: (id) => ({
+        url: `/api/v1/Categories/${id}/subcategories`,
         method: 'GET',
       }),
     }),
@@ -347,6 +347,7 @@ export const {
   useSignupMutation,
   useGetMeQuery,
   useGetCategoriesQuery,
+  useGetSubcategoriesQuery,
   useGetParentCategoriesQuery,
 
   useGetProductsQuery,

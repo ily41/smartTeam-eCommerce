@@ -4,15 +4,20 @@ import SearchUI from '../UI/SearchUI'
 import HomePageUI from '../UI/HomePageUI'
 import { Link } from 'react-router'
 import BannerSlider from '../UI/BannerSlider'
-import {  useGetHotDealsQuery, useGetParentCategoriesQuery } from '../../store/API'
+import {  useGetHotDealsQuery, useGetParentCategoriesQuery, useGetSubcategoriesQuery } from '../../store/API'
 
 const Home = () => {
     const [hoveredCategorie, setHoveredCategorie] = useState(null)
     const [activeCategorie,setActiveCategorie ] = useState(null)
     const { data: hotDeals, isLoading, error, refetch } = useGetHotDealsQuery();
     const { data: parentCategories, isParentLoading,  refetchCategories } = useGetParentCategoriesQuery();
-    console.log(parentCategories)
-    
+    console.log(hotDeals)
+
+    const getSubCategories = () => {
+      const { data: subCategories, isSubLoading,  refetchcSub } = useGetSubcategoriesQuery();
+      /////// FUNKSIYADAN ISTIFADE EDIB HOVERI YAZ
+    }
+
     // Category icon mapping
     const getCategoryIcon = (slug) => {
         const iconMap = {
@@ -66,7 +71,7 @@ const Home = () => {
                       className={`p-2  pl-3 flex gap-2 lg:mb-3 lg:hover:bg-[#ffe2e1] ${activeCategorie === item.slug && 'bg-[#ffe2e1]'} cursor-pointer lg:rounded-2xl min-w-[220px] lg:pr-5`}
                     >
                       <img className="w-[24px]" src={getCategoryIcon(item.slug)} alt="" />
-                      <span>{item.name}</span>
+                      <span>{item. name}</span>
                     </Link>
                   )
                 })}
@@ -284,83 +289,106 @@ const Home = () => {
          </section>
         
 
-        <section className='lg:flex lg:bg-white lg:mt-8 lg:rounded-lg lg:w-[85vw] mx-auto lg:border-1 px-4 lg:border-gray-300'>
-            <div className='py-4 pr-9 lg:border-r-1 border-gray-300 '>
-                <div className='inter lg:mb-5 border-t-gray-300 py-4 lg:p-0'>
-                    <h1 className='text-xl font-semibold mb-1'>Deals and offers</h1>
-                    <p className='text-md font-medium text-gray-600'>Electronic equipments</p>
+       <section className='lg:flex lg:bg-white lg:mt-8 lg:rounded-lg lg:w-[85vw] mx-auto lg:border lg:border-gray-300 pl-4'>
+        {/* Left section with timer */}
+        <div className='py-4 lg:pr-9 lg:border-r lg:border-gray-300 lg:min-w-[200px]'>
+          <div className='inter lg:mb-5 border-t border-gray-300 py-4 lg:border-t-0 lg:p-0'>
+            <h1 className='text-xl font-semibold mb-1'>Deals and offers</h1>
+            <p className='text-md font-medium text-gray-600'>Electronic equipments</p>
+          </div>
+                    
+          {/* Timer - hidden on mobile, shown on lg+ */}
+          <div className='hidden lg:flex gap-2'>
+            <div className='inter text-sm min-w-[50px] bg-gray-600 text-white p-2 rounded-lg items-center flex flex-col'>
+              <p className='font-semibold'>04</p>
+              <p>Days</p>
+            </div>
+            <div className='inter text-sm min-w-[50px] bg-gray-600 text-white p-2 rounded-lg items-center flex flex-col'>
+              <p className='font-semibold'>13</p>
+              <p>Hour</p>
+            </div>
+            <div className='inter text-sm min-w-[50px] bg-gray-600 text-white p-2 rounded-lg items-center flex flex-col'>
+              <p className='font-semibold'>34</p>
+              <p>Min</p>
+            </div>
+            <div className='inter text-sm min-w-[50px] bg-gray-600 text-white p-2 rounded-lg items-center flex flex-col'>
+              <p className='font-semibold'>56</p>
+              <p>Sec</p>
+            </div>
+          </div>
+        </div>
+                    
+        {/* Products grid - responsive */}
+        <div className='flex-1'>
+          <div className='flex'>
+            {/* Mobile: Show 2 items */}
+            <div className='flex sm:hidden w-full'>
+              {hotDeals?.slice(0, 2).map(item => (
+                <div 
+                  key={item.id} 
+                  className='relative py-5 inter border border-gray-300 lg:border-t-0 lg:border-b-0 bg-white w-full flex flex-col items-center gap-2'
+                >
+                  <div className='w-full flex justify-center'>
+                    <img 
+                      className='w-full max-w-[140px]  h-auto object-contain px-2' 
+                      src={`http://localhost:5056${item.primaryImageUrl}`} 
+                      alt="Smart watch" 
+                    />
+                  </div>
+                  <p className='text-md font-semibold text-center px-2 leading-tight'>{item.name}</p>
+                  <div className='absolute top-2 right-2 w-8 h-8 p-6 flex justify-center items-center rounded-full bg-red-500 text-white inter'>
+                    <p className='text-xs font-semibold '>{item.discountPercentage}%</p>
+                  </div>
                 </div>
-                <div className='hidden lg:flex gap-2'>
-
-                    <div className='inter text-sm min-w-[50px] bg-[#606060] text-white p-2 rounded-lg items-center flex flex-col'>
-                        <p className='font-semibold'>04</p>
-                        <p>Days</p>
-                    </div>
-
-                    <div className='inter text-sm min-w-[50px] bg-[#606060] text-white p-2 rounded-lg items-center flex flex-col'>
-                        <p className='font-semibold'>13</p>
-                        <p>Hour</p>
-                    </div>
-
-                    <div className='inter text-sm min-w-[50px] bg-[#606060] text-white p-2 rounded-lg items-center flex flex-col'>
-                        <p className='font-semibold'>34</p>
-                        <p>Min </p>
-                    </div>
-
-                    <div className='inter text-sm min-w-[50px] bg-[#606060] text-white p-2 rounded-lg items-center flex flex-col'>
-                        <p className='font-semibold'>56</p>
-                        <p>Sec </p>
-                    </div>
-                </div>
-                
-            </div>
-
-            <div className='flex md:hidden flex-1 rounded-lg'>
-              {hotDeals?.slice(0,3).map(item => {
-
-                return (
-                  <div key={item.id} className='relative py-5 inter border-1 lg:border-t-0 bg-white lg:border-b-0 border-gray-300 w-full flex flex-col items-center  gap-1 lg:min-h-[15vh] lg:p-3  '>
-                    <img className='w-full  max-w-[120px] min-w-[100px] px-2  ' src={`http://localhost:5056${item.primaryImageUrl}`} alt="" />
-                    <p className='sm:whitespace-nowrap text-md'>Smart watches</p>
-                    <div className='absolute top-2 right-2 lg:top-3 lg:right-3 p-6 w-0 h-0 flex justify-center items-center  rounded-[50%] bg-[#FF4B43] text-white inter '>
-                        <p className='text-xs text-center font-semibold lg:text-sm'>-25%</p>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-
-            <div className='hidden [media(min-width:1400px)]:hidden md:flex flex-1 rounded-lg'>
-              {hotDeals?.slice(0,3).map(item => {
-
-                return (
-                  <div key={item.id} className='relative py-5 inter border-1 lg:border-t-0 bg-white lg:border-b-0 border-gray-300 w-full flex flex-col items-center  gap-1 lg:min-h-[15vh] lg:p-3  '>
-                    <img className='  min-w-[200px] px-2  ' src={`http://localhost:5056${item.primaryImageUrl}`} alt="" />
-                    <p className='sm:whitespace-nowrap text-md'>Smart watches</p>
-                    <div className='absolute top-2 right-2 lg:top-3 lg:right-3 p-6 w-0 h-0 flex justify-center items-center  rounded-[50%] bg-[#FF4B43] text-white inter '>
-                        <p className='text-xs text-center font-semibold lg:text-sm'>-25%</p>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-
-            <div className='hidden [media(min-width:1400px)]:flex flex-1 rounded-lg'>
-              {hotDeals?.slice(0,4).map(item => {
-
-                return (
-                  <div key={item.id} className='relative py-5 inter border-1 lg:border-t-0 bg-white lg:border-b-0 border-gray-300 w-full flex flex-col items-center  gap-1 lg:min-h-[15vh] lg:p-3  '>
-                    <img className='  min-w-[200px] px-2  ' src={`http://localhost:5056${item.primaryImageUrl}`} alt="" />
-                    <p className='sm:whitespace-nowrap text-md'>Smart watches</p>
-                    <div className='absolute top-2 right-2 lg:top-3 lg:right-3 p-6 w-0 h-0 flex justify-center items-center  rounded-[50%] bg-[#FF4B43] text-white inter '>
-                        <p className='text-xs text-center font-semibold lg:text-sm'>-25%</p>
-                    </div>
-                  </div>
-                )
-              })}
+              ))}
             </div>
             
-        </section>
+            {/* Tablet (sm to lg): Show 3 items */}
+            <div className='hidden sm:flex lg:hidden w-full'>
+              {hotDeals?.slice(0, 3).map(item => (
+                <div 
+                  key={item.id} 
+                  className='relative py-5 inter border border-gray-300 bg-white w-full flex flex-col items-center gap-2'
+                >
+                  <div className='w-full flex justify-center'>
+                    <img 
+                      className='w-full max-w-[140px] h-auto object-contain px-2' 
+                      src={`http://localhost:5056${item.primaryImageUrl}`} 
+                      alt="Smart watch" 
+                    />
+                  </div>
+                  <p className='text-md font-semibold text-center px-2 leading-tight'>{item.name}</p>
+                  <div className='absolute top-2 right-2 w-8 h-8 p-6 flex justify-center items-center rounded-full bg-red-500 text-white inter'>
+                    <p className='text-xs font-semibold'>{item.discountPercentage}%</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {/* Desktop (lg+): Show 4 items */}
+            <div className='hidden lg:flex w-full'>
+              {hotDeals?.slice(0, 4).map(item => (
+                <div 
+                  key={item.id} 
+                  className='relative py-5 inter border border-gray-300 border-t-0 border-b-0 bg-white w-full flex flex-col items-center gap-2 min-h-[15vh] p-3'
+                >
+                  <div className='w-full flex justify-center'>
+                    <img 
+                      className='w-full max-w-[160px] h-auto object-contain px-2' 
+                      src={`http://localhost:5056${item.primaryImageUrl}`} 
+                      alt="Smart watch" 
+                    />
+                  </div>
+                  <p className='text-md font-semibold text-center px-2 leading-tight'>{item.name}</p>
+                  <div className='absolute top-2 right-2 w-8 h-8 p-6 flex justify-center items-center rounded-full bg-red-500 text-white inter'>
+                    <p className='text-xs font-semibold'>{item.discountPercentage}%</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
 
         
 
