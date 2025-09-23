@@ -1,20 +1,35 @@
-import React, { act, useState } from 'react'
+import React, { act, useEffect, useState } from 'react'
 import MyMap from '../UI/googleMaps'
 import SearchUI from '../UI/SearchUI'
 import HomePageUI from '../UI/HomePageUI'
 import { Link } from 'react-router'
 import BannerSlider from '../UI/BannerSlider'
-import {  useGetHotDealsQuery, useGetParentCategoriesQuery, useGetSubcategoriesQuery } from '../../store/API'
+import {  useGetBannersQuery, useGetHotDealsQuery, useGetParentCategoriesQuery, useGetSubCategoriesQuery } from '../../store/API'
+import { Loader2 } from 'lucide-react'
 
 const Home = () => {
     const [hoveredCategorie, setHoveredCategorie] = useState(null)
+    const [hoveredName, setHoveredName] = useState(null)
     const [activeCategorie,setActiveCategorie ] = useState(null)
     const { data: hotDeals, isLoading, error, refetch } = useGetHotDealsQuery();
     const { data: parentCategories, isParentLoading,  refetchCategories } = useGetParentCategoriesQuery();
+    
     console.log(hotDeals)
 
+    const { data: subCategories, isLoading: isSubLoading, refetch: refetchSub } =
+    useGetSubCategoriesQuery(hoveredCategorie, { skip: !hoveredCategorie });
+
+    useEffect(() => {
+      if (subCategories) {
+        console.log(subCategories)
+      }
+    }, [subCategories])
+
+
+
+    
     const getSubCategories = () => {
-      const { data: subCategories, isSubLoading,  refetchcSub } = useGetSubcategoriesQuery();
+      
       /////// FUNKSIYADAN ISTIFADE EDIB HOVERI YAZ
     }
 
@@ -29,7 +44,7 @@ const Home = () => {
             'ofis-avadanliqlari': './Icons/banner-printer.svg',
             'sebeke-avadanliqlari': './Icons/banner-global.svg',
         };
-        return iconMap[slug] || './Icons/banner-commercial.svg'; // fallback icon
+        return iconMap[slug] || './Icons/banner-commercial.svg';
     };
 
     
@@ -66,7 +81,7 @@ const Home = () => {
                     <Link 
                       key={item.id}
                       to={`/subcategories/${item.slug}`}
-                      onMouseEnter={() => setHoveredCategorie(item.slug)}
+                      onMouseEnter={() => {setHoveredCategorie(item.id), setHoveredName(item.name)}}
                       onClick={() => setActiveCategorie(activeCategorie === item.slug ? null : item.slug)}
                       className={`p-2  pl-3 flex gap-2 lg:mb-3 lg:hover:bg-[#ffe2e1] ${activeCategorie === item.slug && 'bg-[#ffe2e1]'} cursor-pointer lg:rounded-2xl min-w-[220px] lg:pr-5`}
                     >
@@ -84,7 +99,24 @@ const Home = () => {
             </div>
             
             <div className={`${activeCategorie ? 'lg:flex' : hoveredCategorie ? 'lg:flex' : 'hidden' } hidden gap-10 p-10 border-l-1 whitespace-nowrap flex-wrap border-[#E0E0E0]`}>
-                <div className='flex flex-col gap-2'>
+                  {isSubLoading ? <Loader2 className="w-12 h-12 animate-spin text-indigo-500" /> : 
+                  <div className='flex flex-col gap-4 '>
+                    <h1 className='text-xl font-semibold text-center'>{hoveredName}</h1>
+                    <div className={`grid  ${subCategories?.length <4 ? 'grid-cols-1' : 'grid-cols-2'} gap-x-10  gap-y-4`}>
+                      {
+                      subCategories?.map(item => {
+                        return (
+                          <div className=''>
+                            <p className='text-lg text-center'>{item.name}</p>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                  }
+                
+                                 
+                {/*<div className='flex flex-col gap-2'>
                     <h1 className='text-xl font-semibold'>Analog camera systems</h1>
                     <p className='text-lg'>scales</p>
                     <p className='text-lg'>cash drawers</p>
@@ -93,12 +125,7 @@ const Home = () => {
                     <h1 className='text-xl font-semibold'>Analog camera systems</h1>
                     <p className='text-lg'>scales</p>
                     <p className='text-lg'>cash drawers</p>
-                </div>
-                <div className='flex flex-col gap-2'>
-                    <h1 className='text-xl font-semibold'>Analog camera systems</h1>
-                    <p className='text-lg'>scales</p>
-                    <p className='text-lg'>cash drawers</p>
-                </div>
+                </div> */}
             </div>
             
         </section>
@@ -390,7 +417,7 @@ const Home = () => {
         </div>
       </section>
 
-        
+
 
         <section className='mt-12 mx-4 lg:w-[85vw] lg:mx-auto'>
             <div className='flex justify-between text-xl font-semibold'>

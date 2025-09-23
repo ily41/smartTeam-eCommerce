@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router';
+import { useGetBannersQuery } from '../../store/API';
 
 const BannerSlider = () => {
   // Mock banner data - replace with your API data
@@ -35,6 +36,9 @@ const BannerSlider = () => {
       image: "./Banners/headerBanner.svg"
     }
   ];
+  const { data: bannersD, isBannersLoading,  } = useGetBannersQuery();
+  console.log(bannersD)
+
 
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
@@ -77,11 +81,11 @@ const BannerSlider = () => {
         className="flex transition-transform duration-500 ease-in-out h-fit"
         style={{ transform: `translateX(-${currentSlide * 100}%)` }}
       >
-        {banners.map((banner, index) => (
+        {bannersD?.map((banner, index) => (
           <div key={banner.id} className="w-full flex-shrink-0   relative">
             <img 
               className="w-full object-cover rounded-lg lg:h-[400px] h-[35vh] lg:p-2" 
-              src={banner.image} 
+              src={`http://localhost:5056${banner.imageUrl}`}
               alt={`Banner ${index + 1}`} 
             />
             
@@ -105,7 +109,6 @@ const BannerSlider = () => {
               </div>
 
               <Link 
-                to={banner.buttonLink} 
                 className="px-12 py-4 lg:py-3 rounded-lg text-lg inter lg:text-lg bg-gradient-to-b from-[#FD1206] to-[#DD1205] transition text-white font-medium w-fit hover:shadow-lg transform hover:scale-105"
               >
                 {banner.buttonText}

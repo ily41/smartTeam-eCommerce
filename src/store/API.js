@@ -302,6 +302,13 @@ export const API = createApi({
       }),
     }),
 
+    deleteBanner: builder.mutation({
+      query: ({ id }) => ({
+        url: `/api/v1/Admin/banners/${id}`,
+        method: 'DELETE',
+      }),
+    }),
+
     addBanner: builder.mutation({
       query: formData => ({
         url: '/api/v1/Admin/banners/with-image',
@@ -342,14 +349,14 @@ export const {
   useAddFilterMutation,
   useGetFiltersQuery,
   useGetBannersQuery,
+  useDeleteBannerMutation,
   useAddBannerMutation,
   useLoginMutation,
   useSignupMutation,
   useGetMeQuery,
   useGetCategoriesQuery,
-  useGetSubcategoriesQuery,
+  useGetSubCategoriesQuery,
   useGetParentCategoriesQuery,
-
   useGetProductsQuery,
   useGetHotDealsQuery, 
   useGetRecommendedQuery,
