@@ -2,14 +2,11 @@ import React from "react";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 
 const center = {
-  lat: 40.4093, // Baku
-  lng: 49.8671,
+  lat: 40.3423741, lng: 49.8412698,
 };
 
 const markers = [
-  { lat: 40.4093, lng: 49.8671, title: "Baku Center" },
-  { lat: 40.4929, lng: 49.7689, title: "Sumqayit" },
-];
+{ lat: 40.3423741, lng: 49.8412698, title: "Smartteam" },];
 
 function MyMap() {
   return (
@@ -18,7 +15,7 @@ function MyMap() {
         <GoogleMap
           mapContainerStyle={{ width: "100%", height: "100%" }}
           center={center}
-          zoom={10}
+          zoom={15}
           options={{
             mapTypeControl: true,
             fullscreenControl: true,

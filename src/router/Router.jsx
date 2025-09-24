@@ -62,7 +62,7 @@ const Router = () => {
           element={
             <Auth>
               <AdminLayout />
-            </Auth>
+            </Auth> 
           }
         >
           <Route index element={<Users />} />

@@ -133,7 +133,7 @@ const Header = () => {
               {/* Phone Number */}
               <div className="items-center space-x-2 cursor-pointer [@media(max-width:870px)]:hidden flex hover:opacity-80 transition-opacity duration-200">
                 <img src="./Icons/phone.svg" alt="phone" className="w-4 h-4" />
-                <span className="text-gray-700 inter text-sm lg:text-base">+994 50 xxx xx xx</span>
+                <span className="text-gray-700 inter text-sm lg:text-base">+994 055 674 06 49</span>
               </div>
             </div>
           </div>

@@ -43,10 +43,11 @@ const mockBanners = [
 
 
 const AddBannerModal = ({ isOpen, onClose }) => {
-
-  const [file, setFile] = useState(null)
+  const [file, setFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
   const [formData, setFormData] = useState({
     title: "",
+    description: "",
     linkUrl: "",
     buttonText: "",
     type: 0,
@@ -54,7 +55,7 @@ const AddBannerModal = ({ isOpen, onClose }) => {
     sortOrder: 0,
     startDate: "2025-09-21T13:38:28.551Z",
     endDate: "2025-09-21T13:38:28.551Z"
-});
+  });
  
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -78,7 +79,7 @@ const AddBannerModal = ({ isOpen, onClose }) => {
     const bannerDataString = JSON.stringify(cleanFormData);
     
     console.log("Banner data JSON string:", bannerDataString);
-    console.log("File info:", { name: file.name, size: file.size, type: file.type });
+    console.log("File info:", file, { name: file.name, size: file.size, type: file.type });
     
     // Use 'bannerData' as the key (not 'productData')
     formDataToSend.append("bannerData", bannerDataString); 
@@ -89,7 +90,7 @@ const AddBannerModal = ({ isOpen, onClose }) => {
       const result = await addBanner(formDataToSend).unwrap();
       console.log("Success result:", result);
       toast.success("Banner added successfully!");
-      refetch()
+      refetch();
 
       onClose();
 
@@ -105,6 +106,7 @@ const AddBannerModal = ({ isOpen, onClose }) => {
         endDate: "2025-09-21T13:38:28.551Z"
       });
       setFile(null);
+      setImagePreview(null);
     } catch (error) {
       console.error("Error adding banner:", error);
       console.error("Error details:", error.data || error);
@@ -113,9 +115,38 @@ const AddBannerModal = ({ isOpen, onClose }) => {
   };
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFile(file);
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      // Check file size (10MB limit)
+      if (selectedFile.size > 10 * 1024 * 1024) {
+        toast.error("File size must be less than 10MB");
+        return;
+      }
+      
+      // Check file type
+      if (!selectedFile.type.startsWith('image/')) {
+        toast.error("Please select a valid image file");
+        return;
+      }
+
+      setFile(selectedFile);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target.result);
+      };
+      reader.readAsDataURL(selectedFile);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setFile(null);
+    setImagePreview(null);
+    // Reset the file input
+    const fileInput = document.getElementById('banner-image-input');
+    if (fileInput) {
+      fileInput.value = '';
     }
   };
 
@@ -126,7 +157,7 @@ const AddBannerModal = ({ isOpen, onClose }) => {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-2">
-            Banner Title
+            Banner Title *
           </label>
           <input
             type="text"
@@ -138,61 +169,116 @@ const AddBannerModal = ({ isOpen, onClose }) => {
           />
         </div>
 
-        {/* <div>
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">
+            Button Text
+          </label>
+          <input
+            type="text"
+            value={formData.buttonText}
+            onChange={(e) => setFormData(prev => ({ ...prev, buttonText: e.target.value }))}
+            className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="e.g., Shop Now, Learn More"
+          />
+        </div>
+
+
+        <div>
           <label className="block text-sm font-medium text-gray-300 mb-2">
             Description
           </label>
           <textarea
             value={formData.description}
-            onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-            rows={3}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, description: e.target.value }))
+            }
             className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="Enter banner description"
+            rows={4} // you can adjust height
+            placeholder="Enter a description..."
           />
-        </div> */}
+        </div>
 
-        {/* <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
-            Link URL
-          </label>
-          <input
-            type="url"
-            value={formData.link}
-            onChange={(e) => setFormData(prev => ({ ...prev, link: e.target.value }))}
-            className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="https://example.com/page"
-          />
-        </div> */}
 
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-2">
-            Banner Image
+            Banner Image *
           </label>
-          <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-600 border-dashed rounded-lg hover:border-gray-500 transition-colors">
-            <div className="space-y-1 text-center">
-              <Image className="mx-auto h-12 w-12 text-gray-400" />
-              <div className="flex text-sm text-gray-400">
-                <label className="relative cursor-pointer bg-gray-700 rounded-md font-medium text-blue-400 hover:text-blue-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500 px-2 py-1">
-                  <span>Upload a file</span>
+          
+          {!imagePreview ? (
+            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-600 border-dashed rounded-lg hover:border-gray-500 transition-colors">
+              <div className="space-y-1 text-center">
+                <Image className="mx-auto h-12 w-12 text-gray-400" />
+                <div className="flex text-sm text-gray-400">
+                  <label className="relative cursor-pointer bg-gray-700 rounded-md font-medium text-blue-400 hover:text-blue-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500 px-2 py-1">
+                    <span>Upload a file</span>
+                    <input
+                      id="banner-image-input"
+                      type="file"
+                      className="sr-only"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      required
+                    />
+                  </label>
+                  <p className="pl-1">or drag and drop</p>
+                </div>
+                <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+              </div>
+            </div>
+          ) : (
+            <div className="relative">
+              <div className="relative rounded-lg overflow-hidden border-2 border-gray-600">
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-full h-48 object-cover"
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-200">
+                  <button
+                    type="button"
+                    onClick={handleRemoveImage}
+                    className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full transition-colors duration-200"
+                  >
+                    <Trash className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+              
+              <div className="mt-3 flex items-center justify-between bg-gray-700 rounded-lg p-3">
+                <div className="flex items-center space-x-3">
+                  <Image className="w-5 h-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm text-white font-medium">{file?.name}</p>
+                    <p className="text-xs text-gray-400">
+                      {file ? (file.size / 1024 / 1024).toFixed(2) : 0} MB
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleRemoveImage}
+                  className="text-red-400 hover:text-red-300 p-1"
+                >
+                  <Trash className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="mt-2">
+                <label className="relative cursor-pointer bg-gray-700 rounded-md font-medium text-blue-400 hover:text-blue-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500 px-3 py-2 text-sm inline-block">
+                  <span>Change Image</span>
                   <input
                     type="file"
                     className="sr-only"
                     accept="image/*"
                     onChange={handleImageChange}
-                    required
                   />
                 </label>
-                <p className="pl-1">or drag and drop</p>
               </div>
-              <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
             </div>
-          </div>
-          {file && (
-            <p className="mt-2 text-sm text-green-400">
-              Selected: {file.name}
-            </p>
           )}
         </div>
+
+
 
         <div className="flex items-center">
           <input
@@ -210,9 +296,17 @@ const AddBannerModal = ({ isOpen, onClose }) => {
         <div className="flex gap-4 pt-4">
           <button
             type="submit"
-            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
+            disabled={isBannerLoading}
+            className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
           >
-            Create Banner
+            {isBannerLoading ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Creating...
+              </>
+            ) : (
+              "Create Banner"
+            )}
           </button>
           <button
             type="button"
@@ -441,6 +535,7 @@ const EditBannerModal = ({ isOpen, onClose, banner }) => {
                 console.log(banner.imageUrl)
               
               return (
+                
                   <div 
                                 key={banner.id} 
                                 className="bg-gray-800 border  border-gray-700 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300"
@@ -448,6 +543,7 @@ const EditBannerModal = ({ isOpen, onClose, banner }) => {
                                 <div className="md:flex">
                                   {/* Banner Image */}
                                   <div className="md:w-1/3 relative min-h-[180px] h-64 md:h-auto bg-gray-700">
+                                  
                                     <img
                                       className="w-full h-full  object-cover"
                                       src={`http://localhost:5056${banner.imageUrl}`}

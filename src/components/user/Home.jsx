@@ -4,7 +4,7 @@ import SearchUI from '../UI/SearchUI'
 import HomePageUI from '../UI/HomePageUI'
 import { Link } from 'react-router'
 import BannerSlider from '../UI/BannerSlider'
-import {  useGetBannersQuery, useGetHotDealsQuery, useGetParentCategoriesQuery, useGetSubCategoriesQuery } from '../../store/API'
+import {  useGetBannersQuery, useGetHotDealsQuery, useGetParentCategoriesQuery, useGetRecommendedQuery, useGetSubCategoriesQuery } from '../../store/API'
 import { Loader2 } from 'lucide-react'
 
 const Home = () => {
@@ -12,26 +12,15 @@ const Home = () => {
     const [hoveredName, setHoveredName] = useState(null)
     const [activeCategorie,setActiveCategorie ] = useState(null)
     const { data: hotDeals, isLoading, error, refetch } = useGetHotDealsQuery();
-    const { data: parentCategories, isParentLoading,  refetchCategories } = useGetParentCategoriesQuery();
-    
+    const { data: recommended, isRecommendedLoading } = useGetRecommendedQuery();
     console.log(hotDeals)
 
+    const { data: parentCategories, isParentLoading,  refetchCategories } = useGetParentCategoriesQuery();
     const { data: subCategories, isLoading: isSubLoading, refetch: refetchSub } =
     useGetSubCategoriesQuery(hoveredCategorie, { skip: !hoveredCategorie });
 
-    useEffect(() => {
-      if (subCategories) {
-        console.log(subCategories)
-      }
-    }, [subCategories])
-
-
-
     
-    const getSubCategories = () => {
-      
-      /////// FUNKSIYADAN ISTIFADE EDIB HOVERI YAZ
-    }
+
 
     // Category icon mapping
     const getCategoryIcon = (slug) => {
@@ -56,7 +45,7 @@ const Home = () => {
         <div className='p-5 pb-0 md:pb-5'>
             <SearchUI />
         </div>
-        
+{/*         
         <div className='flex p-5 pb-8 overflow-x-auto gap-2 text-center scrollbar-hide bg-[#f7fafc] lg:hidden'>
             <div className='min-w-[20%] w-fit flex-shrink-0 whitespace-nowrap bg-white p-2 rounded-lg font-medium border-1 border-[#DEE2E6] transition-all duration-200 hover:bg-gray-300 cursor-pointer'>
                 <span className='inter'>Hello bextiyar</span>
@@ -70,9 +59,9 @@ const Home = () => {
             <div className='min-w-[20%] w-fit flex-shrink-0 whitespace-nowrap bg-white p-2 rounded-lg font-medium border-1 border-[#DEE2E6] transition-all duration-200 hover:bg-gray-300 cursor-pointer'>
                 <span className='inter'>Sports</span>
             </div>
-        </div>
+        </div> */}
 
-        <section onMouseLeave={() => setHoveredCategorie(null)} className="    lg:flex lg:w-[85vw] lg:max-h-[400px] lg:mx-auto lg:shadow-[0_4px_4px_rgba(0,0,0,0.25)] lg:rounded-lg lg:gap-5 lg:bg-white">
+        <section onMouseLeave={() => setHoveredCategorie(null)} className="    lg:flex lg:w-[85vw] mt-10 lg:max-h-[400px] lg:mx-auto lg:shadow-[0_4px_4px_rgba(0,0,0,0.25)] lg:rounded-lg lg:gap-5 lg:bg-white">
             
            <div className='hidden lg:mt-5 lg:m-4  lg:flex flex-col text-black mt-1 whitespace-nowrap'>
 
@@ -136,53 +125,53 @@ const Home = () => {
             </div>
 
             <div className='grid grid-cols-3 mt-10 gap-5 text-sm '>
-                <div className='  justify-center flex col-span-3 items-center bg-white  md:hidden  rounded-lg border-1 border-[#DEE2E6] p-4'>
-                  <div className='flex flex-row  max-w-[450px] gap-4 '>
-                    <div className='w-full h-full'>
-                      <img className=' self-start w-full h-full object-contain min-h-[130px] max-h-[190px]' src="./deals/categorieExample.svg" alt="" />
+                <div className='  justify-center md:justify-start flex col-span-3 items-center bg-white  lg:hidden  rounded-lg border-1 border-[#DEE2E6] p-4'>
+                  <div className='flex flex-row  gap-4 '>
+                    <div className='w-full h-full flex-2 my-auto object-cover'>
+                      <img className=' w-full flex-shrink-0 object-contain max-h-[160px]' src="./deals/network.svg" alt="" />
                     </div>
-                    <div className='flex flex-col text-start self-start'>
-                      <p className=' text-xl inter mb-1'>Surveillance System</p>
-                      <p className='text-md text-[#AFB0B1]'>Reliable routers, switches, and cabling systems for fast, stable, and secure connectivity. Scalable solutions to keep your business connected and future-ready.</p>
+                    <div className='flex flex-col flex-3 w-full text-start self-start'>
+                      <p className=' text-xl inter mb-1 md:text-2xl'>Network Equipment</p>
+                      <p className='text-md text-[#AFB0B1] md:text-lg '>Reliable routers, switches, and cabling systems for fast, stable, and secure connectivity.  Scalable solutions to keep your business connected and future-ready.</p>
                     </div>
                   </div>
                 </div>
 
               <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
-                  <img className='' src="./deals/product.avif" alt="" />
+                  <img className='min-h-[120px]' src="./deals/homeComputer.svg" alt="" />
                 </div>
-                <p className='text-center'>Surveillance system</p>
+                <p className='text-center'>Computers</p>
               </div>
               <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
-                  <img className='' src="./deals/product.avif" alt="" />
+                  <img className='min-h-[120px]' src="./deals/homeLaptop.svg" alt="" />
                 </div>
-                <p className='text-center'>Surveillance system</p>
+                <p className='text-center'>Laptops</p>
               </div>
               <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
-                  <img className='' src="./deals/product.avif" alt="" />
+                  <img className='min-h-[120px]' src="./deals/homePrinter.svg" alt="" />
                 </div>
-                <p className='text-center'>Surveillance system</p>
+                <p className='text-center'>Office Equipment</p>
               </div>
               <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
-                  <img className='' src="./deals/product.avif" alt="" />
+                  <img className='min-h-[120px]' src="./deals/homeBarcode.svg" alt="" />
                 </div>
-                <p className='text-center'>Surveillance system</p>
+                <p className='text-center'>Commercial Equipment</p>
               </div>
               <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
-                  <img className='' src="./deals/product.avif" alt="" />
+                  <img className='min-h-[120px]' src="./deals/homeSurveillance.svg" alt="" />
                 </div>
                 <p className='text-center'>Surveillance system</p>
               </div>
               <div className='bg-white flex self-center justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
-                  <img className='' src="./deals/product.avif" alt="" />
+                  <img className='min-h-[120px]' src="./deals/homeKeyboard.svg" alt="" />
                 </div>
-                <p className='text-center'>Surveillance system</p>
+                <p className='text-center'>Computer Equipment</p>
               </div>
             </div>
         </section>
@@ -316,32 +305,22 @@ const Home = () => {
          </section>
         
 
-       <section className='lg:flex lg:bg-white lg:mt-8 lg:rounded-lg lg:w-[85vw] mx-auto lg:border lg:border-gray-300 pl-4'>
+       <section className='lg:flex lg:bg-white lg:mt-8 lg:rounded-lg lg:w-[85vw] mx-auto lg:border lg:border-gray-300 px-4 lg:pr-0'>
         {/* Left section with timer */}
-        <div className='py-4 lg:pr-9 lg:border-r lg:border-gray-300 lg:min-w-[200px]'>
-          <div className='inter lg:mb-5 border-t border-gray-300 py-4 lg:border-t-0 lg:p-0'>
+        <div className='py-4 lg:pr-9 lg:border-r my-auto lg:border-gray-300 lg:min-w-[200px]'>
+          <div className='inter   py-4 lg:border-t-0 lg:p-0'>
             <h1 className='text-xl font-semibold mb-1'>Deals and offers</h1>
-            <p className='text-md font-medium text-gray-600'>Electronic equipments</p>
           </div>
                     
           {/* Timer - hidden on mobile, shown on lg+ */}
-          <div className='hidden lg:flex gap-2'>
-            <div className='inter text-sm min-w-[50px] bg-gray-600 text-white p-2 rounded-lg items-center flex flex-col'>
-              <p className='font-semibold'>04</p>
-              <p>Days</p>
-            </div>
-            <div className='inter text-sm min-w-[50px] bg-gray-600 text-white p-2 rounded-lg items-center flex flex-col'>
-              <p className='font-semibold'>13</p>
-              <p>Hour</p>
-            </div>
-            <div className='inter text-sm min-w-[50px] bg-gray-600 text-white p-2 rounded-lg items-center flex flex-col'>
-              <p className='font-semibold'>34</p>
-              <p>Min</p>
-            </div>
-            <div className='inter text-sm min-w-[50px] bg-gray-600 text-white p-2 rounded-lg items-center flex flex-col'>
-              <p className='font-semibold'>56</p>
-              <p>Sec</p>
-            </div>
+          <div className='hidden lg:block text-[#8C8C8C]'>
+            <p>Get the hottest discounts on top</p>
+            <p>electronics — limited-time offers</p>
+            <p>you don’t want to miss!</p>
+          </div>
+
+          <div className='hidden lg:block'>
+            <span className='flex gap-2 text-[#E60C03] font-semibold mt-3'>Explore now <img src="./Icons/rightarrowHome.svg" alt="" /></span>
           </div>
         </div>
                     
@@ -427,16 +406,13 @@ const Home = () => {
             </div>
 
             <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5  gap-2 mt-5 whitespace-nowrap'>
-                <HomePageUI deal={false} />
-                <HomePageUI deal={false} />
-                <HomePageUI deal={false} />
-                <HomePageUI deal={false} />
-                <HomePageUI deal={false} />
-                <HomePageUI deal={false} />
-                <HomePageUI deal={false} />
-                <HomePageUI deal={false} />
-                <HomePageUI deal={false} />
-                <HomePageUI deal={false} />
+
+              {isRecommendedLoading ? <Loader2 className="w-12 h-12 animate-spin text-indigo-500" /> : recommended?.recentlyAdded.map(item => {
+                return (
+                  <HomePageUI deal={false} product={item} url={item.primaryImageUrl}/>
+                )
+              })}
+                
                 
                 
             </div>
@@ -450,16 +426,11 @@ const Home = () => {
             </div>
 
             <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 mt-5 whitespace-nowrap'>
-                <HomePageUI  deal={true}/>
-                <HomePageUI  deal={true}/>
-                <HomePageUI  deal={true}/>
-                <HomePageUI  deal={true}/>
-                <HomePageUI  deal={true}/>
-                <HomePageUI  deal={true}/>
-                <HomePageUI  deal={true}/>
-                <HomePageUI  deal={true}/>
-                <HomePageUI  deal={true}/>
-                <HomePageUI  deal={true}/>
+              {isLoading ? <Loader2 className="w-12 h-12 animate-spin text-indigo-500" /> : hotDeals?.map(item => {
+                return (
+                  <HomePageUI deal={true} product={item} url={item.primaryImageUrl}/>
+                )
+              })}
                 
             </div>
         </section>
