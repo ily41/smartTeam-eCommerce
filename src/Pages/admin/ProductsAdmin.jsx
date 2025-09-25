@@ -1,13 +1,14 @@
-import { Loader2, Pen, Trash, Package, DollarSign, Palette, Ruler } from "lucide-react";
+import { Loader2, Pen, Trash, Package, DollarSign, Palette, Ruler, Eye } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import { useActivateUserMutation, useDeActivateUserMutation, useDeleteProductMutation, useGetProductsQuery, useGetProductsSummaryQuery } from "../../store/API";
 import Modal from "../../components/UI/Modal";
-import AddCategoryUIStatic from "../../components/admin/Product/AddProduct";
 import AddProductStatic from "../../components/admin/Product/AddProduct";
-import { toast } from "react-toastify";
 import EditProduct from "../../components/admin/Product/EditProduct";
+import { toast } from "react-toastify";
 
 const ProductsUI = () => {
+    const navigate = useNavigate();
     const { data: products, isLoading, error, refetch } = useGetProductsQuery();
     const { data: productsSummary, isSummaryLoading } = useGetProductsSummaryQuery();
     console.log(products)
@@ -29,6 +30,10 @@ const ProductsUI = () => {
         console.log(error);
         toast.error(error?.data || "Deleting Product Failed");
       }
+    };
+
+    const handleViewProduct = (product) => {
+      navigate(`/admin/products/${product.id}`);
     };
 
     
@@ -164,26 +169,41 @@ const ProductsUI = () => {
                   {/* Product Image */}
                   <div className="relative h-48 bg-gray-700">
                     <img
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover cursor-pointer"
                       src={`http://localhost:5056${product.primaryImageUrl}`}
                       alt={product.name}
+                      onClick={() => handleViewProduct(product)}
                       onError={(e) => {
                         e.target.src = "";
                       }}
                     />
                     <div className="absolute top-3 right-3 flex gap-2">
+                      {/* View Product Button */}
                       <button
-                        onClick={() => {
+                        onClick={() => handleViewProduct(product)}
+                        className="bg-green-600 hover:bg-green-700 p-2 rounded-lg shadow-lg transform hover:scale-110 transition-all duration-200"
+                        title="View Product"
+                      >
+                        <Eye className="w-4 h-4 text-white" />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
                           setModalType("edit")
                           setCat(product)
                         }}
                         className="bg-blue-600 hover:bg-blue-700 p-2 rounded-lg shadow-lg transform hover:scale-110 transition-all duration-200"
+                        title="Edit Product"
                       >
                         <Pen className="w-4 h-4 text-white" />
                       </button>
                       <button
-                        onClick={() => handleDeleteProduct(product.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteProduct(product.id);
+                        }}
                         className="bg-red-600 hover:bg-red-700 p-2 rounded-lg shadow-lg transform hover:scale-110 transition-all duration-200"
+                        title="Delete Product"
                       >
                         <Trash className="w-4 h-4 text-white" />
                       </button>
@@ -206,10 +226,13 @@ const ProductsUI = () => {
                     </div>
                   </div>
 
-                  {/* Product Info */}
-                  <div className="p-5">
+                  {/* Product Info - Clickable */}
+                  <div 
+                    className="p-5 cursor-pointer"
+                    onClick={() => handleViewProduct(product)}
+                  >
                     <div className="mb-3">
-                      <h3 className="text-lg font-semibold text-white mb-1 truncate">
+                      <h3 className="text-lg font-semibold text-white mb-1 truncate hover:text-blue-400 transition-colors">
                         {product.name}
                       </h3>
                       <p className="text-gray-400 text-sm truncate">
@@ -231,7 +254,7 @@ const ProductsUI = () => {
                           <Package className="w-4 h-4" />
                           Stock
                         </span>
-                        <span className="text-white font-medium">{product.stock}</span>
+                        <span className="text-white font-medium">{product.stockQuantity}</span>
                       </div>
 
                       {product.colors && product.colors.length > 0 && (

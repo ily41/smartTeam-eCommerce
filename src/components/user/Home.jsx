@@ -45,7 +45,7 @@ const Home = () => {
         <div className='p-5 pb-0 md:pb-5'>
             <SearchUI />
         </div>
-{/*         
+        {/*         
         <div className='flex p-5 pb-8 overflow-x-auto gap-2 text-center scrollbar-hide bg-[#f7fafc] lg:hidden'>
             <div className='min-w-[20%] w-fit flex-shrink-0 whitespace-nowrap bg-white p-2 rounded-lg font-medium border-1 border-[#DEE2E6] transition-all duration-200 hover:bg-gray-300 cursor-pointer'>
                 <span className='inter'>Hello bextiyar</span>

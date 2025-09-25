@@ -217,6 +217,13 @@ export const API = createApi({
         method: 'GET',
       }),
     }),
+
+    getProduct: builder.query({
+      query: (id) => ({
+        url: `/api/v1/Products/${id}`,
+        method: 'GET',
+      }),
+    }),
     getHotDeals: builder.query({
       query: () => ({
         url: '/api/v1/Products/hot-deals',
@@ -291,6 +298,42 @@ export const API = createApi({
           stockQuantity,
           categoryId,
         },
+      }),
+    }),
+
+    // *PRODUCT SPECIFICATIONS*
+    getProductSpecifications: builder.query({
+      query: (id) => ({
+        url: `/api/v1/Products/${id}/specifications`,
+        method: 'GET',
+      }),
+    }),
+
+    addProductSpecifications: builder.mutation({
+      query: ({ id, productId, specificationGroups }) => ({
+        url: `/api/v1/Products/${id}/specifications`,
+        method: 'POST',
+        body: {
+          productId,
+          specificationGroups,
+        },
+      }),
+    }),
+
+    updateProductSpecifications: builder.mutation({
+      query: ({ id, specificationGroups }) => ({
+        url: `/api/v1/Products/${id}/specifications`,
+        method: 'PUT',
+        body: {
+          specificationGroups,
+        },
+      }),
+    }),
+
+    deleteProductSpecifications: builder.mutation({
+      query: ({ id }) => ({
+        url: `/api/v1/Products/${id}/specifications`,
+        method: 'DELETE',
       }),
     }),
 
@@ -372,7 +415,12 @@ export const {
   useAddProductMutation,
   useDeleteProductMutation,
   useEditProductMutation,
+  useGetProductQuery,
   useGetProductsSummaryQuery,
+  useGetProductSpecificationsQuery,
+  useAddProductSpecificationsMutation,
+  useUpdateProductSpecificationsMutation,
+  useDeleteProductSpecificationsMutation,
   useActivateUserMutation,
   useDeActivateUserMutation,
   useLogoutMutation,

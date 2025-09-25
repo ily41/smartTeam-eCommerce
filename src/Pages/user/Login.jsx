@@ -86,7 +86,6 @@ const Login = () => {
   );
 
   const handleLogin = async (e) =>{
-    console.log("login ATTEMPT")
     e.preventDefault(); 
      try {
       const result = await login({
@@ -96,11 +95,12 @@ const Login = () => {
 
       setCookie("token", result.token, result.expiresAt)
       const token = jwtDecode(result.token);
+      console.log(token)
 
       toast.success("Login successful!")
       
 
-      if (token.role === "NormalUser") {
+      if (token.role != "Admin") {
         if (from && from !== '/') {
           navigate(from, { replace: true })
         } else {

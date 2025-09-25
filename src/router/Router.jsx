@@ -22,11 +22,13 @@ import SubCategories from "../Pages/user/SubCategories";
 import ScrollToTop from "../components/user/ScrollToTop";
 import BannersUI from "../components/admin/Banner/BannerUi";
 import FilterUi from "../components/admin/Filters/FilterUi";
+import AddProductSpecifications from "../components/admin/Product/AddProductSpec";
+import ProductSpec from "../Pages/admin/ProductSpec"
 
 const Router = () => {
   return (
     <BrowserRouter>
-      <ScrollToTop /> {/* ✅ Burda çağır */}
+      <ScrollToTop />
       <Routes>
         {/* Login page */}
         <Route path="/login" element={<Login />} />
@@ -44,7 +46,7 @@ const Router = () => {
         >
           <Route index element={<Home />} />
           <Route path="products" element={<Products />} />
-          <Route path="details" element={<Details />} />
+          <Route path="/details/:id" element={<Details />} />
           <Route path="cart" element={<Cart />} />
           <Route path="favorites" element={<WishList />} />
           <Route path="about" element={<About />} />
@@ -68,6 +70,7 @@ const Router = () => {
           <Route index element={<Users />} />
           <Route path="category" element={<Category />} />
           <Route path="products" element={<ProductsUI />} />
+          <Route path="products/:id" element={<ProductSpec />} />
           <Route path="banners" element={<BannersUI />} />
           <Route path="filters" element={<FilterUi />} />
         </Route>
