@@ -66,19 +66,36 @@ const Header = () => {
 
 
                 <div className='hidden lg:flex gap-0 lg:gap-5 lg:flex-1  pr-2 '>
-                    <Link to={document.cookie ? "/profile" : "/login"} className='flex flex-col gap-1 items-center cursor-pointer hover:opacity-80 transition-opacity duration-200'>
-                        <img src="./Icons/profile-gray.svg" alt="" />
-                        <p className='text-gray-500 text-md whitespace-nowrap'>{document.cookie ? "Profile" : "Login"}</p>
+                    <Link 
+                      to={document.cookie ? "/profile" : "/login"} 
+                      className='flex flex-col gap-1 items-center cursor-pointer hover:opacity-80 transition-opacity duration-200'
+                    >
+                      <img src="./Icons/profile-gray.svg" alt="" />
+                      <p className='text-gray-500 text-md whitespace-nowrap'>
+                        {document.cookie ? "Profile" : "Login"}
+                      </p>
                     </Link>
-
-                    <Link to='/favorites' className='flex flex-col gap-1 items-center cursor-pointer hover:opacity-80 transition-opacity duration-200'>
-                        <img src="./Icons/favorites-gray.svg" alt="" />
-                        <p className='text-gray-500 text-md whitespace-nowrap'>Favorites</p>
+                      
+                    {/* Favorites */}
+                    <Link 
+                      to={document.cookie ? "/favorites" : "/login"} 
+                      className='flex flex-col gap-1 items-center cursor-pointer hover:opacity-80 transition-opacity duration-200'
+                    >
+                      <img src="./Icons/favorites-gray.svg" alt="" />
+                      <p className='text-gray-500 text-md whitespace-nowrap'>
+                        Favorites
+                      </p>
                     </Link>
-
-                    <Link to='/cart' className='flex flex-col gap-1 items-center cursor-pointer hover:opacity-80 transition-opacity duration-200'>
-                        <img src="./Icons/cart-gray.svg" alt="" />
-                        <p className='text-gray-500 text-md whitespace-nowrap'>My Cart</p>
+                      
+                    {/* My Cart */}
+                    <Link 
+                      to={document.cookie ? "/cart" : "/login"} 
+                      className='flex flex-col gap-1 items-center cursor-pointer hover:opacity-80 transition-opacity duration-200'
+                    >
+                      <img src="./Icons/cart-gray.svg" alt="" />
+                      <p className='text-gray-500 text-md whitespace-nowrap'>
+                        My Cart
+                      </p>
                     </Link>
                     
                 </div>

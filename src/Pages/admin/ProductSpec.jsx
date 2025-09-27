@@ -31,12 +31,12 @@ const ProductDetailPage = () => {
 
   // API hooks
   const { data: product, isLoading: productLoading } = useGetProductQuery(id);
+  
   const { data: specifications, isLoading: specsLoading, refetch: refetchSpecs } = useGetProductSpecificationsQuery(id);
   const [addSpecs, { isLoading: adding }] = useAddProductSpecificationsMutation();
   const [updateSpecs, { isLoading: updating }] = useUpdateProductSpecificationsMutation();
   const [deleteSpecs] = useDeleteProductSpecificationsMutation();
-  console.log(product)
-
+console.log("PRODUCt" +product)
   // Initialize editing state when specifications load
   React.useEffect(() => {
     if (specifications?.specificationGroups) {
@@ -64,10 +64,13 @@ const ProductDetailPage = () => {
   };
 
   const removeSpecGroup = (groupIndex) => {
-    if (specificationGroups.length > 1) {
-      setSpecificationGroups(specificationGroups.filter((_, index) => index !== groupIndex));
-    }
+    setSpecificationGroups(prev => 
+      prev.length > 1 
+        ? prev.filter((_, index) => index !== groupIndex) 
+        : prev
+    );
   };
+
 
   const updateGroupName = (groupIndex, groupName) => {
     const updated = [...specificationGroups];
@@ -76,18 +79,32 @@ const ProductDetailPage = () => {
   };
 
   const addItemToGroup = (groupIndex) => {
-    const updated = [...specificationGroups];
-    updated[groupIndex].items.push({ name: '', value: '', unit: '', type: 0 });
-    setSpecificationGroups(updated);
+    setSpecificationGroups(prev => 
+      prev.map((group, index) => 
+        index === groupIndex
+          ? { ...group, items: [...group.items, { name: '', value: '', unit: '', type: 0 }] }
+          : group
+      )
+    );
   };
 
+
   const removeItemFromGroup = (groupIndex, itemIndex) => {
-    const updated = [...specificationGroups];
-    if (updated[groupIndex].items.length > 1) {
-      updated[groupIndex].items.splice(itemIndex, 1);
-      setSpecificationGroups(updated);
-    }
-  };
+  setSpecificationGroups(prev =>
+    prev.map((group, gIndex) =>
+      gIndex === groupIndex
+        ? {
+            ...group,
+            items:
+              group.items.length > 1
+                ? group.items.filter((_, i) => i !== itemIndex)
+                : group.items, // əgər 1 item qalıbsa silmirik
+          }
+        : group
+    )
+  );
+};
+
 
   const updateItem = (groupIndex, itemIndex, field, value) => {
     const updated = [...specificationGroups];
@@ -229,17 +246,24 @@ const ProductDetailPage = () => {
                 <DollarSign className="w-5 h-5" />
                 Pricing
               </h3>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-4 gap-4">
+                
                 <div>
-                  <p className="text-gray-400 text-sm">Current Price</p>
+                  <p className="text-gray-400 text-sm">Original Price</p>
                   <p className="text-2xl font-bold text-green-400">${product.prices[0].discountedPrice}</p>
                 </div>
-                {product.originalPrice && (
-                  <div>
-                    <p className="text-gray-400 text-sm">Original Price</p>
-                    <p className="text-xl text-gray-500 line-through">${product.originalPrice}</p>
-                  </div>
-                )}
+                <div>
+                  <p className="text-gray-400 text-sm">Retail Price</p>
+                  <p className="text-2xl font-bold text-green-400">${product.prices[1].discountedPrice}</p>
+                </div>
+                <div>
+                  <p className="text-gray-400 text-sm">WholeSale Price</p>
+                  <p className="text-2xl font-bold text-green-400">${product.prices[2].discountedPrice}</p>
+                </div>
+                <div>
+                  <p className="text-gray-400 text-sm">Vip Price</p>
+                  <p className="text-2xl font-bold text-green-400">${product.prices[3].discountedPrice}</p>
+                </div>
               </div>
             </div>
 

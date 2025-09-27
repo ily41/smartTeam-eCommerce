@@ -1,24 +1,111 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Grid, List } from 'lucide-react';
-import { Breadcrumb } from '../../products/Breadcrumb'
+import { Breadcrumb } from '../../products/Breadcrumb';
 import SearchUI from '../../components/UI/SearchUI';
 import { FilterSidebar } from '../../products/FilterSidebar';
 import { MobileFilterButtons } from '../../products/MobileFilters';
 import { ActiveFilters } from '../../products/ActiveFilters';
 import { ProductCard } from '../../products/ProductCard';
 import { Pagination } from '../../products/Pagination';
-import { useGetProductsQuery } from '../../store/API';
+import { useAddCartItemMutation } from '../../store/API';
+import { toast } from 'react-toastify';
 
-
+// Skeleton Components
+const ProductCardSkeleton = ({ col }) => (
+  <div className={`bg-white rounded-lg border border-gray-200 overflow-hidden ${col ? '' : 'flex'}`}>
+    {col ? (
+      <>
+        <div className="w-full aspect-square bg-gray-200 animate-pulse" />
+        <div className="p-4 space-y-3">
+          <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4" />
+          <div className="h-4 bg-gray-200 rounded animate-pulse w-1/2" />
+          <div className="h-6 bg-gray-200 rounded animate-pulse w-1/3" />
+        </div>
+      </>
+    ) : (
+      <>
+        <div className="w-48 h-48 bg-gray-200 animate-pulse flex-shrink-0" />
+        <div className="p-4 flex-1 space-y-3">
+          <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4" />
+          <div className="h-4 bg-gray-200 rounded animate-pulse w-1/2" />
+          <div className="h-6 bg-gray-200 rounded animate-pulse w-1/4" />
+        </div>
+      </>
+    )}
+  </div>
+);
 
 function Products() {
-
-  
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024); 
-  const [template, setTemplate] = useState(isMobile ? "cols" : "rows"); // give both cases
-  const { data: products, isLoading, error, refetch } = useGetProductsQuery();
+  const [template, setTemplate] = useState(isMobile ? "cols" : "rows");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10); 
+  const [products, setProducts] = useState([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [categoryName, setCategoryName] = useState('');
+  const [sortBy, setSortBy] = useState('');
   
+  const [addCartItem, { isLoading: isAddingToCart }] = useAddCartItemMutation();
 
+  // Calculate total pages based on API totalItems
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Memoize the filter results handler to prevent re-creation on every render
+  const handleFilterResults = useCallback((data) => {
+    console.log('Filter results received:', data);
+    
+    if (data?.products) {
+      setProducts(data.products);
+      setTotalItems(data.totalCount || data.products.length);
+      
+      // Update category name if available
+      if (data.categoryName) {
+        setCategoryName(data.categoryName);
+      }
+    } else {
+      setProducts([]);
+      setTotalItems(0);
+    }
+  }, []); // No dependencies - this function doesn't need to change
+
+  const handleSortChange = (e) => {
+    const value = e.target.value;
+    setSortBy(value);
+    // Reset to first page when sorting changes
+    setCurrentPage(1);
+  };
+
+  const handleAddToCart = async (id) => {
+    if (!id) {
+      console.error('Product not available');
+      return;
+    }
+
+    try {
+      const result = await addCartItem({
+        productId: id,
+        quantity: 1
+      }).unwrap();
+      
+      toast.success('Product added to cart');
+      console.log(result);
+    } catch (err) {
+      console.error('Failed to add product to cart:', err);
+      
+      if (err?.status === 401 || err?.data?.status === 401) {
+        toast.error("Please log in first");
+      } else {
+        toast.error("Failed to add product to cart");
+      }
+    }
+  };
+  
   useEffect(() => {
     function handleResize() {
       setIsMobile(window.innerWidth < 1024);
@@ -32,78 +119,133 @@ function Products() {
     setTemplate(isMobile ? "cols" : "rows"); 
   }, [isMobile]);
   
-
   return (
-    <div className="min-h-screen bg-[#f7fafc] inter ">
+    <div className="min-h-screen bg-[#f7fafc] inter">
       <div className='lg:hidden px-4 py-4 border-y-1 border-[#dee2e6] bg-white'>
-            <div className='mb-4'>
-                <SearchUI />
-            </div>
-            <Breadcrumb />
-            
+        <div className='mb-4'>
+          <SearchUI />
+        </div>
+        <Breadcrumb />
       </div>
+      
       <div className='lg:hidden bg-white px-4 py-4'>
-        <h1 className="text-2xl font-medium text-gray-900">Office Laptops (25)</h1>
+        <h1 className="text-2xl font-medium text-gray-900">
+          {categoryName || 'Products'} ({totalItems})
+        </h1>
       </div>
        
-      <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 ">
+      <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
         <div className='hidden lg:block lg:pl-4'>
-            <Breadcrumb />
+          <Breadcrumb />
         </div>
         
-
         <div className="lg:flex lg:gap-8 lg:mt-5">
-
           <div className="hidden lg:block lg:w-64 lg:flex-shrink-0">
-            <FilterSidebar />
+            <FilterSidebar 
+              onFilterResults={handleFilterResults}
+              onLoadingChange={setIsLoading}
+              currentSort={sortBy}
+              currentPage={currentPage - 1} // Convert to 0-based for API
+              pageSize={itemsPerPage}
+            />
           </div>
 
           <div className="flex-1">
             <MobileFilterButtons />
 
             <div className="hidden lg:flex items-center justify-between bg-white p-3 rounded-lg border-[#dee2e6] border-1">
-              <span className="text-sm text-gray-600">12,911 items in <span className='font-semibold'>Office Laptops</span></span>
+              {isLoading ? (
+                <>
+                  <div className="h-5 bg-gray-200 rounded animate-pulse w-48" />
+                  <div className="flex items-center space-x-4">
+                    <div className="h-10 bg-gray-200 rounded animate-pulse w-32" />
+                    <div className="h-10 bg-gray-200 rounded animate-pulse w-20" />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <span className="text-sm text-gray-600">
+                    {totalItems.toLocaleString()} items
+                    {categoryName && (
+                      <> in <span className='font-semibold'>{categoryName}</span></>
+                    )}
+                  </span>
 
-              <div className="hidden lg:flex items-center space-x-4">
-                <select className="border border-gray-300 rounded-md px-3 py-2 text-sm">
-                  <option>Sort by</option>
-                  <option>Price: Low to High</option>
-                  <option>Price: High to Low</option>
-                  <option>Newest First</option>
-                </select>
-                <div className="flex border border-gray-300 rounded-md overflow-hidden">
-                  <button onClick = {() => setTemplate("cols")} className={`p-2 ${template == "cols" ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'}  cursor-pointer`}>
-                    <Grid  className="w-4 h-4 " />
-                  </button>
+                  <div className="hidden lg:flex items-center space-x-4">
+                    <select 
+                      className="border border-gray-300 rounded-md px-3 py-2 text-sm"
+                      value={sortBy}
+                      onChange={handleSortChange}
+                    >
+                      <option value="">Sort by</option>
+                      <option value="price_asc">Price: Low to High</option>
+                      <option value="price_desc">Price: High to Low</option>
+                      <option value="newest">Newest First</option>
+                      <option value="name_asc">Name: A to Z</option>
+                      <option value="name_desc">Name: Z to A</option>
+                    </select>
+                    <div className="flex border border-gray-300 rounded-md overflow-hidden">
+                      <button 
+                        onClick={() => setTemplate("cols")} 
+                        className={`p-2 ${template === "cols" ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'} cursor-pointer`}
+                      >
+                        <Grid className="w-4 h-4" />
+                      </button>
 
-                  <button onClick = {() => setTemplate("rows")} className={`p-2 ${template == "cols" ? 'bg-white text-gray-900' : 'bg-gray-900 text-white'}  cursor-pointer`}>
-                    <List  className="w-4 h-4 " />
-                  </button>
-                </div>
-              </div>
+                      <button 
+                        onClick={() => setTemplate("rows")} 
+                        className={`p-2 ${template === "cols" ? 'bg-white text-gray-900' : 'bg-gray-900 text-white'} cursor-pointer`}
+                      >
+                        <List className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
 
             <div className="hidden lg:block">
               <ActiveFilters />
             </div>
 
-              <div className={`${template == "cols" ? 'grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6' : 'flex flex-col gap-4'}`}>
-                {products?.map(item => {
-                  const cardInfo={
-                    url:item.primaryImageUrl,
-                    name:item.name,
-                    price:item.currentPrice
-                  }
+            <div className={`mt-4 ${template === "cols" ? 'grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6' : 'flex flex-col gap-4'}`}>
+              {isLoading ? (
+                Array.from({ length: 6 }).map((_, index) => (
+                  <ProductCardSkeleton key={index} col={template === "cols"} />
+                ))
+              ) : products.length > 0 ? (
+                products.map((item, index) => {
+                  const cardInfo = {
+                    url: item.primaryImageUrl,
+                    name: item.name,
+                    price: item.currentPrice,
+                    id: item.id
+                  };
                   return (
-                    <ProductCard col={template === "cols" ? true : false} info={cardInfo}/>
-                  )
+                    <ProductCard 
+                      key={item.id || index} 
+                      col={template === "cols"} 
+                      info={cardInfo}
+                      handleAddToCart={handleAddToCart}
+                      isAddingToCart={isAddingToCart}
+                    />
+                  );
+                })
+              ) : (
+                <div className="col-span-full text-center py-12">
+                  <p className="text-gray-500 text-lg">No products found</p>
+                  <p className="text-gray-400 text-sm mt-2">Try adjusting your filters</p>
+                </div>
+              )}
+            </div>
 
-                })}
-              </div>
-            
-
-            {/* Pagination */}
-            <Pagination />
+            {!isLoading && totalPages > 1 && (
+              <Pagination 
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+            )}
           </div>
         </div>
       </div>

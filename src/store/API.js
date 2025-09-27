@@ -301,6 +301,19 @@ export const API = createApi({
       }),
     }),
 
+    filterProducts: builder.mutation({
+      query: formData => ({
+        url: '/api/v1/Products/filter',
+        method: 'POST',
+        body: formData,
+        prepareHeaders: headers => {
+          headers.delete('Content-Type');
+          return headers;
+        },
+      }),
+    }),
+
+
     // *PRODUCT SPECIFICATIONS*
     getProductSpecifications: builder.query({
       query: (id) => ({
@@ -370,11 +383,12 @@ export const API = createApi({
         url: '/api/v1/Admin/filters',
         method: 'GET',
       }),
+      providesTags: ['Filters'],
     }),
 
     addFilter: builder.mutation({
       query: ({ name, isActive, sortOrder, options }) => ({
-        url: '/api/v1/Categories',
+        url: '/api/v1/Admin/filters',
         method: 'POST',
         body: {
           name,
@@ -383,14 +397,82 @@ export const API = createApi({
           sortOrder: sortOrder ?? 0,
           options,
         },
+        invalidatesTags: ['Filters'],
       }),
     }),
+
+    removeFilter: builder.mutation({
+      query: ({ id }) => ({
+        url: `/api/v1/Admin/filters/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Filters'], 
+    }),
+
+
+
+    // *CART*
+    addCartItem: builder.mutation({
+      query: ({ productId, quantity }) => ({
+        url: '/api/v1/cart/items',
+        method: 'POST',
+        body: { productId, quantity },
+      }),
+      invalidatesTags: ['Cart'],
+    }),
+
+    getCartItems: builder.query({
+      query: () => ({
+        url: '/api/v1/Cart',
+        method: 'GET',
+      }),
+      providesTags: ['Cart'],
+    }),
+
+    updateCartItemQuantity: builder.mutation({
+      query: ({ cartItemId, quantity }) => ({
+        url: `/api/v1/Cart/items/${cartItemId}`,
+        method: 'PUT',
+        body: { quantity },
+      }),
+      invalidatesTags: ['Cart'], // so getCartItems refetches automatically
+    }),
+
+    removeCartItem: builder.mutation({
+      query: ({ id }) => ({
+        url: `/api/v1/Cart/items/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Cart'], 
+    }),
+
+    removeCart: builder.mutation({
+      query: () => ({
+        url: `/api/v1/Cart/`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Cart'], 
+    }),
+
+
+    // Whatssap
+   createWhatsappOrder: builder.mutation({
+    query: (orderData) => ({
+      url: 'api/v1/Cart/whatsapp-order',
+      method: 'POST',
+      body: orderData,
+    }),
+  }),
+
+
+
   }),
 });
 
 export const {
   useAddFilterMutation,
   useGetFiltersQuery,
+  useRemoveFilterMutation,
   useGetBannersQuery,
   useDeleteBannerMutation,
   useAddBannerMutation,
@@ -421,10 +503,17 @@ export const {
   useAddProductSpecificationsMutation,
   useUpdateProductSpecificationsMutation,
   useDeleteProductSpecificationsMutation,
+  useFilterProductsMutation,
   useActivateUserMutation,
   useDeActivateUserMutation,
   useLogoutMutation,
   useEditUserRoleMutation,
   useChangePasswordMutation,
   useAddDetailImagesMutation,
+  useAddCartItemMutation,
+  useGetCartItemsQuery,
+  useUpdateCartItemQuantityMutation,
+  useRemoveCartItemMutation,
+  useRemoveCartMutation,
+  useCreateWhatsappOrderMutation
 } = API;

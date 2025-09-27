@@ -1,30 +1,21 @@
 import React, { useState } from 'react';
 import { Plus, Edit2, Trash2, ChevronDown, ChevronUp, Save, X, Eye, EyeOff, Loader2 } from 'lucide-react';
-import { useAddFilterMutation, useGetFiltersQuery } from '../../../store/API';
+import { useAddFilterMutation, useGetFiltersQuery, useRemoveFilterMutation } from '../../../store/API';
 import { toast } from 'react-toastify';
-
-// Fixed FilterUi component
-// Main fixes implemented:
-// 1) options state was being treated inconsistently (sometimes set to an object). Now options is always an array.
-// 2) newOption updates were wrongly calling setOptions — fixed to setNewOption.
-// 3) addOption / removeOption / toggleOptionStatus now update the options array properly.
-// 4) openModal syncs options state when editing a filter.
-// 5) submit bundles options into payload when calling addFilter.
 
 const FilterUi = () => {
   const [selectedFilter, setSelectedFilter] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState('add'); // 'add' | 'edit' | 'view'
+  const [modalMode, setModalMode] = useState('add'); 
   const [loading, setLoading] = useState(false);
   const [expandedFilters, setExpandedFilters] = useState({});
 
   const { data: filters, isLoading: isFilterDataLoading, refetch } = useGetFiltersQuery();
   const [addFilter] = useAddFilterMutation();
+  const [removeFilter, { isLoading: isRemoving }] = useRemoveFilterMutation();
 
-  // options is always an array
   const [options, setOptions] = useState([]);
 
-  // central form state
   const [formData, setFormData] = useState({
     name: '',
     type: 0,
@@ -50,7 +41,6 @@ const FilterUi = () => {
     setModalMode(mode);
 
     if (filter) {
-      // sync both formData and options state from the filter we received
       setFormData({
         name: filter.name ?? '',
         type: filter.type ?? 0,
@@ -62,7 +52,6 @@ const FilterUi = () => {
       setOptions(Array.isArray(filter.options) ? [...filter.options] : []);
       setSelectedFilter(filter);
     } else {
-      // new filter
       setFormData({ name: '', value:"", type: 'checkbox', isActive: true, displayOrder: 0, options: [] });
       setOptions([]);
       setSelectedFilter(null);
@@ -86,11 +75,8 @@ const FilterUi = () => {
 
   const addOption = () => {
     if (!newOption.displayName || !newOption.value) return;
-
     const opt = { ...newOption, id: Date.now() };
     setOptions(prev => [...prev, opt]);
-
-    // clear newOption inputs
     setNewOption({ value: '', displayName: '', color: 'red', iconUrl: '', isActive: true, sortOrder: 0 });
   };
 
@@ -105,34 +91,34 @@ const FilterUi = () => {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-        
-        console.log(formData)
-        console.log(options)
-      const payload = { ...formData, options };
-      // If your API has separate add / update endpoints, use the correct mutation here.
-      // For demo we use addFilter for both (adjust for your real API).
-    //   const result = await addFilter(payload).unwrap?.();
-      const resultE = await addFilter({
-          name: formData.name,           
-          type: formData.type,
-          isActive: formData.isActive,
-          sortOrder: formData.sortOrder ?? 0,
-          options: options,
-          slug: "somethignNEw"
-        }).unwrap?.();
-        console.log(resultE)
-      toast.success("Filter added successfully!")
-      refetch()
+      await addFilter({
+        name: formData.name,
+        type: formData.type,
+        isActive: formData.isActive,
+        sortOrder: formData.sortOrder ?? 0,
+        options: options,
+        slug: formData.value || "new-filter"
+      }).unwrap();
+      toast.success("Filter added successfully!");
+      refetch();
+      closeModal();
     } catch (err) {
       console.error('submit error', err);
+      toast.error("Adding filter failed");
     }
     setLoading(false);
-    closeModal();
   };
 
-  const deleteFilter = (filterId) => {
-    if (window.confirm('Are you sure you want to delete this filter?')) {
-      // implement delete API call
+  const deleteFilter = async (filterId) => {
+    console.log(filterId)
+
+    try {
+      await removeFilter({id: filterId}).unwrap();
+      toast.success("Filter deleted successfully");
+      closeModal(); 
+    } catch (error) {
+      console.error(error);
+      toast.error(error?.data?.message || "Deleting Filter Failed");
     }
   };
 
@@ -148,12 +134,8 @@ const FilterUi = () => {
             <h1 className="text-4xl font-bold text-white mb-2">Filter Management</h1>
             <p className="text-gray-400 mt-1">Manage product filters and their options</p>
           </div>
-          <button
-            onClick={() => openModal('add')}
-            className="px-6 py-3 bg-white text-gray-900 font-semibold rounded-lg shadow-lg transform hover:bg-gray-100 hover:scale-105 transition-all duration-200 flex items-center gap-2"
-          >
-            <Plus className="w-5 h-5" />
-            Add Filter
+          <button onClick={() => openModal('add')} className="px-6 py-3 bg-white text-gray-900 font-semibold rounded-lg shadow-lg flex items-center gap-2 hover:bg-gray-100 transition-all duration-200">
+            <Plus className="w-5 h-5" /> Add Filter
           </button>
         </div>
 
@@ -173,7 +155,9 @@ const FilterUi = () => {
                       <div>
                         <div className="flex items-center gap-3 mb-1">
                           <h3 className="text-xl font-semibold text-white">{filter.name}</h3>
-                          <span className={`px-3 py-1 text-sm font-semibold rounded-full ${filter.isActive ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>{filter.isActive ? 'Active' : 'Inactive'}</span>
+                          <span className={`px-3 py-1 text-sm font-semibold rounded-full ${filter.isActive ? 'bg-green-600' : 'bg-red-600'} text-white`}>
+                            {filter.isActive ? 'Active' : 'Inactive'}
+                          </span>
                           <span className="px-3 py-1 text-sm bg-gray-700 text-gray-300 rounded-full font-medium">{filter.typeName ?? filter.type}</span>
                         </div>
                         <p className="text-gray-400">/{filter.slug}</p>
@@ -181,15 +165,11 @@ const FilterUi = () => {
                     </div>
 
                     <div className="flex items-center gap-3">
-                      <button
-                        onClick={() => toggleFilterStatus(filter.id)}
-                        className={`p-3 rounded-lg shadow-lg transform hover:scale-110 transition-all duration-200 ${filter.isActive ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`}
-                        title={filter.isActive ? 'Deactivate' : 'Activate'}
-                      >
+                      <button onClick={() => toggleFilterStatus(filter.id)} className={`p-3 rounded-lg shadow-lg transform hover:scale-110 transition-all duration-200 ${filter.isActive ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`} title={filter.isActive ? 'Deactivate' : 'Activate'}>
                         {filter.isActive ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                       </button>
                       <button onClick={() => openModal('edit', filter)} className="p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-lg transform hover:scale-110 transition-all duration-200" title="Edit"><Edit2 className="w-4 h-4" /></button>
-                      <button onClick={() => deleteFilter(filter.id)} className="p-3 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-lg transform hover:scale-110 transition-all duration-200" title="Delete"><Trash2 className="w-4 h-4" /></button>
+                      <button onClick={() => deleteFilter(filter.id)} disabled={isRemoving} className="p-3 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-lg transform hover:scale-110 transition-all duration-200" title="Delete"><Trash2 className="w-4 h-4" /></button>
                     </div>
                   </div>
 
@@ -203,7 +183,9 @@ const FilterUi = () => {
                               <span className="font-medium text-white text-lg">{option.displayName ?? option.label}</span>
                               <span className="text-gray-400 ml-3">({option.value})</span>
                             </div>
-                            <span className={`px-3 py-1 text-sm font-semibold rounded-full ${option.isActive ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>{option.isActive ? 'Active' : 'Inactive'}</span>
+                            <span className={`px-3 py-1 text-sm font-semibold rounded-full ${option.isActive ? 'bg-green-600' : 'bg-red-600'} text-white`}>
+                              {option.isActive ? 'Active' : 'Inactive'}
+                            </span>
                           </div>
                         ))}
                       </div>
@@ -215,6 +197,7 @@ const FilterUi = () => {
           </div>
         </div>
 
+        {/* Modal */}
         {isModalOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
             <div className="bg-gray-800 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-gray-700">
@@ -224,6 +207,7 @@ const FilterUi = () => {
                   <button onClick={closeModal} className="p-2 hover:bg-gray-700 rounded-lg transition-colors"><X className="w-5 h-5 text-gray-400" /></button>
                 </div>
 
+                {/* Form content */}
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -240,7 +224,7 @@ const FilterUi = () => {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">Display Order</label>
-                      <input type="number" name="displayOrder" value={formData.displayOrder} onChange={handleInputChange} disabled={modalMode === 'view'} className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus: focus:border-transparent disabled:bg-gray-600" min="0" />
+                      <input type="number" name="displayOrder" value={formData.displayOrder} onChange={handleInputChange} disabled={modalMode === 'view'} className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:border-transparent disabled:bg-gray-600" min="0" />
                     </div>
                     <div className="flex items-center justify-center">
                       <label className="flex items-center mt-6">
@@ -252,7 +236,6 @@ const FilterUi = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-4">Options</label>
-
                     {modalMode !== 'view' && (
                       <div className="flex gap-2 mb-4">
                         <input type="text" placeholder="Option label" value={newOption.displayName} onChange={(e) => setNewOption(prev => ({ ...prev, displayName: e.target.value }))} className="flex-1 px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent" />

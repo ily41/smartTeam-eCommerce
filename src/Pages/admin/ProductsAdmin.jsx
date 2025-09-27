@@ -11,7 +11,6 @@ const ProductsUI = () => {
     const navigate = useNavigate();
     const { data: products, isLoading, error, refetch } = useGetProductsQuery();
     const { data: productsSummary, isSummaryLoading } = useGetProductsSummaryQuery();
-    console.log(products)
     
     
     const [open, setOpen] = useState(false)

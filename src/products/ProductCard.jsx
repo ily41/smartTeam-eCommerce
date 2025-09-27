@@ -1,87 +1,95 @@
 import React from 'react';
-import { Heart } from 'lucide-react';
+import { Link } from 'react-router';
+import { ShoppingCart } from 'lucide-react';
 
-export function ProductCard({col, info}) {
-  console.log(info)
-  if(col) {
+export function ProductCard({ col, info, handleAddToCart, isAddingToCart }) {
+  const { url, name, price, id } = info;
+  console.log(url)
+
+  // CRITICAL FIX: Stop event propagation to prevent nested link issues
+  const handleCartClick = (e) => {
+    e.preventDefault(); // Prevent any default link behavior
+    e.stopPropagation(); // Stop event from bubbling to parent Link
+    if (handleAddToCart) {
+      handleAddToCart(id);
+    }
+  };
+
+  if (col) {
+    // Column layout (grid view)
     return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-      <div className="aspect-square p-4 bg-gray-50 ">
-        <img
-          src=  {`http://localhost:5056${info.url}`}
-          alt="iPhone 12 Mini"
-          className="w-full h-full object-contain"
-        />
-      </div>
-      <div className="p-4 relative">
-        <div className="mb-8">
-          <p className="text-lg lg:text-xl font-semibold text-gray-900">680 AZN</p>
-          <p className="text-sm lg:text-md text-gray-600">Pos Komputer</p>
-        </div>
-
-        <button className="w-full text-sm lg:text-md bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-md font-medium transition-colors duration-200">
-          Add to the cart
-        </button>
+      <div className="border rounded-xl bg-white overflow-hidden flex flex-col">
+        {/* Image link - separate from content */}
+        <Link to={`/details/${id}`} className="block">
+          <img 
+            src={`http://localhost:5056${url}`} 
+            alt={name}
+            className="w-full aspect-square object-cover"
+          />
+        </Link>
         
-        <button className="absolute top-4 right-4 p-3 rounded-lg border-[#DEE2E7] bg-white shadow-sm">
-          <Heart  color = "red" className="w-4 h-4 lg:w-5 lg:h-5 text-gray-400" />
-        </button>
-      </div>
-    </div>
-  )
-  }else {
-    return (
-       <div className="border rounded-xl p-4 bg-white flex items-center gap-6 ">
-      {/* Product Image */}
-      <div className="flex-shrink-0">
-        <img
-          src={`http://localhost:5056${info.url}`}
-          alt="Product"
-          className="max-w-[150px] object-cover rounded-lg"
-        />
-      </div>
-
-      {/* Product Info */}
-      <div className="flex flex-col flex-1 space-y-4">
-        <div className="flex justify-between items-start">
-          <div>
-            <h2 className="text-2xl font-semibold">{info.price}</h2>
-            <p className="text-gray-500">Pos Komputer</p>
-          </div>
-
-          <button className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50">
-            <Heart className="w-6 h-6 text-red-500" />
-          </button>
-        </div>
-
-        <div className='grid grid-cols-2'>
-        {/* Features */}
-          <div className="flex flex-wrap gap-2 mb-9">
-            <span className="px-3 py-1 rounded-md border text-gray-700 text-sm">
-              16GB RAM
-            </span>
-            <span className="px-3 py-1 rounded-md border text-gray-700 text-sm">
-              Intel® Core™ i7
-            </span>
-            <span className="px-3 py-1 rounded-md border text-gray-700 text-sm">
-              Gray
-            </span>
-            <span className="px-3 py-1 rounded-md border text-gray-700 text-sm">
-              Intel® Core™ i7
-            </span>
-            <span className="px-3 py-1 rounded-md border text-gray-700 text-sm">
-              Intel® Core™ i7
-            </span>
-          </div>
-
-          {/* Add to Cart */}
-          <button className="bg-red-600 text-white h-[50px] self-end rounded-lg text-lg hover:bg-red-700 transition">
-            Add to the cart
+        <div className="p-4 flex flex-col flex-1">
+          {/* Product info link - separate from button */}
+          <Link to={`/details/${id}`} className="block flex-1">
+            <h3 className="text-sm lg:text-base font-medium text-gray-900 line-clamp-2 mb-2">
+              {name}
+            </h3>
+            <p className="text-lg font-bold text-gray-900">
+              ${price?.toFixed(2)}
+            </p>
+          </Link>
+          
+          {/* Button is NOT wrapped in Link - uses onClick instead */}
+          <button
+            onClick={handleCartClick}
+            disabled={isAddingToCart}
+            className="w-full mt-3 py-2 px-4 bg-red-500 hover:bg-red-600 disabled:bg-gray-400 text-white rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+          >
+            <ShoppingCart className="w-4 h-4" />
+            {isAddingToCart ? 'Adding...' : 'Add to Cart'}
           </button>
         </div>
       </div>
-    </div>
-    )
+    );
   }
-  
+
+  // Row layout (list view)
+  return (
+    <div className="border rounded-xl p-4 bg-white flex items-center gap-6">
+      {/* Image link - separate */}
+      <Link to={`/details/${id}`} className="flex-shrink-0">
+        <img 
+          src={`http://localhost:5056${url}`} 
+          alt={name}
+          className="w-32 h-32 lg:w-40 lg:h-40 object-cover rounded-lg"
+        />
+      </Link>
+      
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between flex-1 gap-4">
+        <div className="flex-1">
+          {/* Product info link - separate */}
+          <Link to={`/details/${id}`} className="block">
+            <h3 className="text-base lg:text-lg font-medium text-gray-900 line-clamp-2 mb-2">
+              {name}
+            </h3>
+          </Link>
+          <p className="text-xl font-bold text-gray-900">
+            ${price?.toFixed(2)}
+          </p>
+        </div>
+        
+        <div className="flex items-center gap-3">
+          {/* Button is NOT wrapped in Link */}
+          <button
+            onClick={handleCartClick}
+            disabled={isAddingToCart}
+            className="px-6 py-2 bg-red-500 hover:bg-red-600 disabled:bg-gray-400 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2 whitespace-nowrap"
+          >
+            <ShoppingCart className="w-4 h-4" />
+            {isAddingToCart ? 'Adding...' : 'Add to Cart'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }

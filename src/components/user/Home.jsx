@@ -4,23 +4,87 @@ import SearchUI from '../UI/SearchUI'
 import HomePageUI from '../UI/HomePageUI'
 import { Link } from 'react-router'
 import BannerSlider from '../UI/BannerSlider'
-import {  useGetBannersQuery, useGetHotDealsQuery, useGetParentCategoriesQuery, useGetRecommendedQuery, useGetSubCategoriesQuery } from '../../store/API'
+import {  useAddCartItemMutation, useGetBannersQuery, useGetHotDealsQuery, useGetParentCategoriesQuery, useGetRecommendedQuery, useGetSubCategoriesQuery } from '../../store/API'
 import { Loader2 } from 'lucide-react'
+import { toast } from 'react-toastify'
+
+// Skeleton Components
+const CategorySkeleton = () => (
+  <div className="p-2 pl-3 flex gap-2 lg:mb-3 cursor-pointer lg:rounded-2xl min-w-[220px] lg:pr-5 animate-pulse">
+    <div className="w-[24px] h-[24px] bg-gray-300 rounded"></div>
+    <div className="h-4 bg-gray-300 rounded w-32"></div>
+  </div>
+);
+
+const SubCategorySkeleton = () => (
+  <div className="flex flex-col gap-4 animate-pulse">
+    <div className="h-6 bg-gray-300 rounded w-48 mx-auto"></div>
+    <div className="grid grid-cols-2 gap-x-10 gap-y-4">
+      {[...Array(4)].map((_, i) => (
+        <div key={i} className="h-4 bg-gray-300 rounded w-24"></div>
+      ))}
+    </div>
+  </div>
+);
+
+const ProductCardSkeleton = () => (
+  <div className="bg-white rounded-lg border border-gray-200 p-3 animate-pulse">
+    <div className="aspect-square bg-gray-300 rounded-lg mb-3"></div>
+    <div className="space-y-2">
+      <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+      <div className="h-3 bg-gray-300 rounded w-1/2"></div>
+    </div>
+  </div>
+);
+
+const HotDealCardSkeleton = () => (
+  <div className="relative py-5 border border-gray-300 bg-white w-full flex flex-col items-center gap-2 animate-pulse">
+    <div className="w-full flex justify-center">
+      <div className="w-full max-w-[140px] lg:max-w-[160px] h-32 bg-gray-300 rounded"></div>
+    </div>
+    <div className="h-4 bg-gray-300 rounded w-3/4 mx-2"></div>
+    <div className="absolute top-2 right-2 w-8 h-8 bg-gray-300 rounded-full"></div>
+  </div>
+);
 
 const Home = () => {
     const [hoveredCategorie, setHoveredCategorie] = useState(null)
     const [hoveredName, setHoveredName] = useState(null)
     const [activeCategorie,setActiveCategorie ] = useState(null)
     const { data: hotDeals, isLoading, error, refetch } = useGetHotDealsQuery();
-    const { data: recommended, isRecommendedLoading } = useGetRecommendedQuery();
-    console.log(hotDeals)
+    const { data: recommended, isLoading: isRecommendedLoading } = useGetRecommendedQuery();
+    const [addCartItem, { isLoading: isAddingToCart, error: cartError }] = useAddCartItemMutation();
+    
 
-    const { data: parentCategories, isParentLoading,  refetchCategories } = useGetParentCategoriesQuery();
+    const { data: parentCategories, isLoading: isParentLoading, refetchCategories } = useGetParentCategoriesQuery();
     const { data: subCategories, isLoading: isSubLoading, refetch: refetchSub } =
     useGetSubCategoriesQuery(hoveredCategorie, { skip: !hoveredCategorie });
 
-    
 
+    const handleAddToCart = async (id) => {
+        if (!id) {
+          console.error('Product not available');
+          return;
+        }
+    
+        try {
+          const result = await addCartItem({
+            productId: id,
+            quantity: 1
+          }).unwrap();
+          console.log(result)
+          
+          
+        } catch (err) {
+          console.error('Failed to add product to cart:', err);
+          
+          if (err?.status === 401 || err?.data?.status === 401) {
+            toast.error("Please log in first");
+          } else {
+            toast.error("Failed to add product to cart");
+          }
+        }
+      };
 
     // Category icon mapping
     const getCategoryIcon = (slug) => {
@@ -36,8 +100,6 @@ const Home = () => {
         return iconMap[slug] || './Icons/banner-commercial.svg';
     };
 
-    
-
   return (
     <>
       <main className=' bg-[#f7fafc] lg:pt-5'>
@@ -45,94 +107,73 @@ const Home = () => {
         <div className='p-5 pb-0 md:pb-5'>
             <SearchUI />
         </div>
-        {/*         
-        <div className='flex p-5 pb-8 overflow-x-auto gap-2 text-center scrollbar-hide bg-[#f7fafc] lg:hidden'>
-            <div className='min-w-[20%] w-fit flex-shrink-0 whitespace-nowrap bg-white p-2 rounded-lg font-medium border-1 border-[#DEE2E6] transition-all duration-200 hover:bg-gray-300 cursor-pointer'>
-                <span className='inter'>Hello bextiyar</span>
-            </div>
-            <div className='min-w-[20%] w-fit flex-shrink-0 whitespace-nowrap bg-white p-2 rounded-lg font-medium border-1 border-[#DEE2E6] transition-all duration-200 hover:bg-gray-300 cursor-pointer'>
-                <span className='inter'>All categories</span>
-            </div>
-            <div className='min-w-[20%] w-fit flex-shrink-0 whitespace-nowrap bg-white p-2 rounded-lg font-medium border-1 border-[#DEE2E6] transition-all duration-200 hover:bg-gray-300 cursor-pointer'>
-                <span className='inter'>Technology</span>
-            </div>
-            <div className='min-w-[20%] w-fit flex-shrink-0 whitespace-nowrap bg-white p-2 rounded-lg font-medium border-1 border-[#DEE2E6] transition-all duration-200 hover:bg-gray-300 cursor-pointer'>
-                <span className='inter'>Sports</span>
-            </div>
-        </div> */}
 
-        <section onMouseLeave={() => setHoveredCategorie(null)} className="    lg:flex lg:w-[85vw] mt-10 lg:max-h-[400px] lg:mx-auto lg:shadow-[0_4px_4px_rgba(0,0,0,0.25)] lg:rounded-lg lg:gap-5 lg:bg-white">
+        <section onMouseLeave={() => setHoveredCategorie(null)} className="lg:flex lg:w-[85vw] mt-10 lg:max-h-[400px] lg:mx-auto lg:shadow-[0_4px_4px_rgba(0,0,0,0.25)] lg:rounded-lg lg:gap-5 lg:bg-white">
             
-           <div className='hidden lg:mt-5 lg:m-4  lg:flex flex-col text-black mt-1 whitespace-nowrap'>
-
-                {parentCategories?.map((item) => {
-                  return (
-                    <Link 
-                      key={item.id}
-                      to={`/subcategories/${item.slug}`}
-                      onMouseEnter={() => {setHoveredCategorie(item.id), setHoveredName(item.name)}}
-                      onClick={() => setActiveCategorie(activeCategorie === item.slug ? null : item.slug)}
-                      className={`p-2  pl-3 flex gap-2 lg:mb-3 lg:hover:bg-[#ffe2e1] ${activeCategorie === item.slug && 'bg-[#ffe2e1]'} cursor-pointer lg:rounded-2xl min-w-[220px] lg:pr-5`}
-                    >
-                      <img className="w-[24px]" src={getCategoryIcon(item.slug)} alt="" />
-                      <span>{item. name}</span>
-                    </Link>
-                  )
-                })}
+           <div className='hidden lg:mt-5 lg:m-4 lg:flex flex-col text-black mt-1 whitespace-nowrap'>
+                {isParentLoading ? (
+                  // Skeleton for parent categories
+                  <>
+                    {[...Array(7)].map((_, i) => (
+                      <CategorySkeleton key={i} />
+                    ))}
+                  </>
+                ) : (
+                  parentCategories?.map((item) => {
+                    return (
+                      <Link 
+                        key={item.id}
+                        to={`/subcategories/${item.slug}`}
+                        onMouseEnter={() => {setHoveredCategorie(item.id), setHoveredName(item.name)}}
+                        onClick={() => setActiveCategorie(activeCategorie === item.slug ? null : item.slug)}
+                        className={`p-2 pl-3 flex gap-2 lg:mb-3 lg:hover:bg-[#ffe2e1] ${activeCategorie === item.slug && 'bg-[#ffe2e1]'} cursor-pointer lg:rounded-2xl min-w-[220px] lg:pr-5`}
+                      >
+                        <img className="w-[24px]" src={getCategoryIcon(item.slug)} alt="" />
+                        <span>{item.name}</span>
+                      </Link>
+                    )
+                  })
+                )}
             </div>
-
 
             <div className={` lg:${hoveredCategorie && 'hidden border-l-1' || activeCategorie && 'hidden border-l-1' }  border-[#E0E0E0]`}>
-                    
-                    <BannerSlider />
+                <BannerSlider />
             </div>
             
             <div className={`${activeCategorie ? 'lg:flex' : hoveredCategorie ? 'lg:flex' : 'hidden' } hidden gap-10 p-10 border-l-1 whitespace-nowrap flex-wrap border-[#E0E0E0]`}>
-                  {isSubLoading ? <Loader2 className="w-12 h-12 animate-spin text-indigo-500" /> : 
+                {isSubLoading ? (
+                  <SubCategorySkeleton />
+                ) : (
                   <div className='flex flex-col gap-4 '>
                     <h1 className='text-xl font-semibold text-center'>{hoveredName}</h1>
-                    <div className={`grid  ${subCategories?.length <4 ? 'grid-cols-1' : 'grid-cols-2'} gap-x-10  gap-y-4`}>
-                      {
-                      subCategories?.map(item => {
+                    <div className={`grid ${subCategories?.length < 4 ? 'grid-cols-1' : 'grid-cols-2'} gap-x-10 gap-y-4`}>
+                      {subCategories?.map(item => {
                         return (
-                          <div className=''>
+                          <div key={item.id} className=''>
                             <p className='text-lg text-center'>{item.name}</p>
                           </div>
                         )
                       })}
                     </div>
                   </div>
-                  }
-                
-                                 
-                {/*<div className='flex flex-col gap-2'>
-                    <h1 className='text-xl font-semibold'>Analog camera systems</h1>
-                    <p className='text-lg'>scales</p>
-                    <p className='text-lg'>cash drawers</p>
-                </div>
-                <div className='flex flex-col gap-2'>
-                    <h1 className='text-xl font-semibold'>Analog camera systems</h1>
-                    <p className='text-lg'>scales</p>
-                    <p className='text-lg'>cash drawers</p>
-                </div> */}
+                )}
             </div>
-            
         </section>
 
-        <section className='mt-12 mx-4 inter  lg:hidden'>
+        <section className='mt-12 mx-4 inter lg:hidden'>
             <div className='flex justify-between text-xl font-semibold'>
-                <h1 >Categories</h1>
+                <h1>Categories</h1>
             </div>
 
             <div className='grid grid-cols-3 mt-10 gap-5 text-sm '>
-                <div className='  justify-center md:justify-start flex col-span-3 items-center bg-white  lg:hidden  rounded-lg border-1 border-[#DEE2E6] p-4'>
-                  <div className='flex flex-row  gap-4 '>
+                <div className='justify-center md:justify-start flex col-span-3 items-center bg-white lg:hidden rounded-lg border-1 border-[#DEE2E6] p-4'>
+                  <div className='flex flex-row gap-4 '>
                     <div className='w-full h-full flex-2 my-auto object-cover'>
                       <img className=' w-full flex-shrink-0 object-contain max-h-[160px]' src="./deals/network.svg" alt="" />
                     </div>
                     <div className='flex flex-col flex-3 w-full text-start self-start'>
                       <p className=' text-xl inter mb-1 md:text-2xl'>Network Equipment</p>
-                      <p className='text-md text-[#AFB0B1] md:text-lg '>Reliable routers, switches, and cabling systems for fast, stable, and secure connectivity.  Scalable solutions to keep your business connected and future-ready.</p>
+                      <p className='text-md text-[#AFB0B1] md:text-lg '>Reliable routers, switches, and cabling systems for fast, stable, and secure connectivity. Scalable solutions to keep your business connected and future-ready.</p>
                     </div>
                   </div>
                 </div>
@@ -308,7 +349,7 @@ const Home = () => {
        <section className='lg:flex lg:bg-white lg:mt-8 lg:rounded-lg lg:w-[85vw] mx-auto lg:border lg:border-gray-300 px-4 lg:pr-0'>
         {/* Left section with timer */}
         <div className='py-4 lg:pr-9 lg:border-r my-auto lg:border-gray-300 lg:min-w-[200px]'>
-          <div className='inter   py-4 lg:border-t-0 lg:p-0'>
+          <div className='inter py-4 lg:border-t-0 lg:p-0'>
             <h1 className='text-xl font-semibold mb-1'>Deals and offers</h1>
           </div>
                     
@@ -316,7 +357,7 @@ const Home = () => {
           <div className='hidden lg:block text-[#8C8C8C]'>
             <p>Get the hottest discounts on top</p>
             <p>electronics — limited-time offers</p>
-            <p>you don’t want to miss!</p>
+            <p>you don't want to miss!</p>
           </div>
 
           <div className='hidden lg:block'>
@@ -329,119 +370,145 @@ const Home = () => {
           <div className='flex'>
             {/* Mobile: Show 2 items */}
             <div className='flex sm:hidden w-full'>
-              {hotDeals?.slice(0, 2).map(item => (
-                <div 
-                  key={item.id} 
-                  className='relative py-5 inter border border-gray-300 lg:border-t-0 lg:border-b-0 bg-white w-full flex flex-col items-center gap-2'
-                >
-                  <div className='w-full flex justify-center'>
-                    <img 
-                      className='w-full max-w-[140px]  h-auto object-contain px-2' 
-                      src={`http://localhost:5056${item.primaryImageUrl}`} 
-                      alt="Smart watch" 
-                    />
+              {isLoading ? (
+                <>
+                  <HotDealCardSkeleton />
+                  <HotDealCardSkeleton />
+                </>
+              ) : (
+                hotDeals?.slice(0, 2).map(item => (
+                  <div 
+                    key={item.id} 
+                    className='relative py-5 inter border border-gray-300 lg:border-t-0 lg:border-b-0 bg-white w-full flex flex-col items-center gap-2'
+                  >
+                    <div className='w-full flex justify-center'>
+                      <img 
+                        className='w-full max-w-[140px] h-auto object-contain px-2' 
+                        src={`http://localhost:5056${item.primaryImageUrl}`} 
+                        alt="Smart watch" 
+                      />
+                    </div>
+                    <p className='text-md font-semibold text-center px-2 leading-tight'>{item.name}</p>
+                    <div className='absolute top-2 right-2 w-8 h-8 p-6 flex justify-center items-center rounded-full bg-red-500 text-white inter'>
+                      <p className='text-xs font-semibold '>{item.discountPercentage}%</p>
+                    </div>
                   </div>
-                  <p className='text-md font-semibold text-center px-2 leading-tight'>{item.name}</p>
-                  <div className='absolute top-2 right-2 w-8 h-8 p-6 flex justify-center items-center rounded-full bg-red-500 text-white inter'>
-                    <p className='text-xs font-semibold '>{item.discountPercentage}%</p>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
             
             {/* Tablet (sm to lg): Show 3 items */}
             <div className='hidden sm:flex lg:hidden w-full'>
-              {hotDeals?.slice(0, 3).map(item => (
-                <div 
-                  key={item.id} 
-                  className='relative py-5 inter border border-gray-300 bg-white w-full flex flex-col items-center gap-2'
-                >
-                  <div className='w-full flex justify-center'>
-                    <img 
-                      className='w-full max-w-[140px] h-auto object-contain px-2' 
-                      src={`http://localhost:5056${item.primaryImageUrl}`} 
-                      alt="Smart watch" 
-                    />
+              {isLoading ? (
+                <>
+                  <HotDealCardSkeleton />
+                  <HotDealCardSkeleton />
+                  <HotDealCardSkeleton />
+                </>
+              ) : (
+                hotDeals?.slice(0, 3).map(item => (
+                  <div 
+                    key={item.id} 
+                    className='relative py-5 inter border border-gray-300 bg-white w-full flex flex-col items-center gap-2'
+                  >
+                    <div className='w-full flex justify-center'>
+                      <img 
+                        className='w-full max-w-[140px] h-auto object-contain px-2' 
+                        src={`http://localhost:5056${item.primaryImageUrl}`} 
+                        alt="Smart watch" 
+                      />
+                    </div>
+                    <p className='text-md font-semibold text-center px-2 leading-tight'>{item.name}</p>
+                    <div className='absolute top-2 right-2 w-8 h-8 p-6 flex justify-center items-center rounded-full bg-red-500 text-white inter'>
+                      <p className='text-xs font-semibold'>{item.discountPercentage}%</p>
+                    </div>
                   </div>
-                  <p className='text-md font-semibold text-center px-2 leading-tight'>{item.name}</p>
-                  <div className='absolute top-2 right-2 w-8 h-8 p-6 flex justify-center items-center rounded-full bg-red-500 text-white inter'>
-                    <p className='text-xs font-semibold'>{item.discountPercentage}%</p>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
             
             {/* Desktop (lg+): Show 4 items */}
             <div className='hidden lg:flex w-full'>
-              {hotDeals?.slice(0, 4).map(item => (
-                <div 
-                  key={item.id} 
-                  className='relative py-5 inter border border-gray-300 border-t-0 border-b-0 bg-white w-full flex flex-col items-center gap-2 min-h-[15vh] p-3'
-                >
-                  <div className='w-full flex justify-center'>
-                    <img 
-                      className='w-full max-w-[160px] h-auto object-contain px-2' 
-                      src={`http://localhost:5056${item.primaryImageUrl}`} 
-                      alt="Smart watch" 
-                    />
+              {isLoading ? (
+                <>
+                  <HotDealCardSkeleton />
+                  <HotDealCardSkeleton />
+                  <HotDealCardSkeleton />
+                  <HotDealCardSkeleton />
+                </>
+              ) : (
+                hotDeals?.slice(0, 4).map(item => (
+                  <div 
+                    key={item.id} 
+                    className='relative py-5 inter border border-gray-300 border-t-0 border-b-0 bg-white w-full flex flex-col items-center gap-2 min-h-[15vh] p-3'
+                  >
+                    <div className='w-full flex justify-center'>
+                      <img 
+                        className='w-full max-w-[160px] h-auto object-contain px-2' 
+                        src={`http://localhost:5056${item.primaryImageUrl}`} 
+                        alt="Smart watch" 
+                      />
+                    </div>
+                    <p className='text-md font-semibold text-center px-2 leading-tight'>{item.name}</p>
+                    <div className='absolute top-2 right-2 w-8 h-8 p-6 flex justify-center items-center rounded-full bg-red-500 text-white inter'>
+                      <p className='text-xs font-semibold'>{item.discountPercentage}%</p>
+                    </div>
                   </div>
-                  <p className='text-md font-semibold text-center px-2 leading-tight'>{item.name}</p>
-                  <div className='absolute top-2 right-2 w-8 h-8 p-6 flex justify-center items-center rounded-full bg-red-500 text-white inter'>
-                    <p className='text-xs font-semibold'>{item.discountPercentage}%</p>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
         </div>
       </section>
 
-
-
         <section className='mt-12 mx-4 lg:w-[85vw] lg:mx-auto'>
             <div className='flex justify-between text-xl font-semibold'>
-                <h1 >Recommended items</h1>
+                <h1>Recommended items</h1>
                 <Link to='./products'><h1 className='text-[#E60C03] cursor-pointer text-lg'>More </h1></Link>
-
             </div>
 
-            <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5  gap-2 mt-5 whitespace-nowrap'>
-
-              {isRecommendedLoading ? <Loader2 className="w-12 h-12 animate-spin text-indigo-500" /> : recommended?.recentlyAdded.map(item => {
-                return (
-                  <HomePageUI deal={false} product={item} url={item.primaryImageUrl}/>
-                )
-              })}
-                
-                
-                
+            <div className="grid grid-cols-2 sm:grid-cols-3 [@media(min-width:1300px)]:grid-cols-5 lg:grid-cols-4 gap-2 mt-5 whitespace-nowrap">
+              {isRecommendedLoading ? (
+                <>
+                  {[...Array(8)].map((_, i) => (
+                    <ProductCardSkeleton key={i} />
+                  ))}
+                </>
+              ) : (
+                recommended?.recentlyAdded.map(item => (
+                  <HomePageUI key={item.id} deal={false} product={item} url={item.primaryImageUrl} handleAddToCart={handleAddToCart} isAddingToCart={isAddingToCart} />
+                ))
+              )}
             </div>
         </section>
 
         <section className='mt-12 mx-4 lg:w-[85vw] lg:mx-auto'>
             <div className='flex justify-between text-xl font-semibold'>
-                <h1 >Hot Deals</h1>
+                <h1>Hot Deals</h1>
                 <h1 className='text-[#E60C03] text-lg'>More</h1>
-
             </div>
 
-            <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 mt-5 whitespace-nowrap'>
-              {isLoading ? <Loader2 className="w-12 h-12 animate-spin text-indigo-500" /> : hotDeals?.map(item => {
-                return (
-                  <HomePageUI deal={true} product={item} url={item.primaryImageUrl}/>
-                )
-              })}
-                
+            <div className="grid grid-cols-2 sm:grid-cols-3 [@media(min-width:1300px)]:grid-cols-5 lg:grid-cols-4 gap-2 mt-5 whitespace-nowrap">
+              {isLoading ? (
+                <>
+                  {[...Array(8)].map((_, i) => (
+                    <ProductCardSkeleton key={i} />
+                  ))}
+                </>
+              ) : (
+                hotDeals?.map(item => (
+                  <HomePageUI key={item.id} deal={true} product={item} url={item.primaryImageUrl} handleAddToCart={handleAddToCart} isAddingToCart={isAddingToCart}/>
+                ))
+              )}
             </div>
         </section>
 
-        <section className='my-12  mx-4  lg:w-[85vw] lg:mx-auto'>
+        <section className='my-12 mx-4 lg:w-[85vw] lg:mx-auto'>
             <div className='text-2xl mb-8 font-semibold'>
                 <h1>Location</h1>
             </div>
             <MyMap />
         </section>
-
 
       </main>
     </>
