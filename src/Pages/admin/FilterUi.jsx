@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, Edit2, Trash2, ChevronDown, ChevronUp, Save, X, Eye, EyeOff, Loader2 } from 'lucide-react';
-import { useAddFilterMutation, useGetFiltersQuery, useRemoveFilterMutation } from '../../../store/API';
+import { useAddFilterMutation, useGetFiltersQuery, useRemoveFilterMutation } from '../../store/API';
 import { toast } from 'react-toastify';
 
 const FilterUi = () => {
@@ -11,6 +11,7 @@ const FilterUi = () => {
   const [expandedFilters, setExpandedFilters] = useState({});
 
   const { data: filters, isLoading: isFilterDataLoading, refetch } = useGetFiltersQuery();
+  console.log(filters)
   const [addFilter] = useAddFilterMutation();
   const [removeFilter, { isLoading: isRemoving }] = useRemoveFilterMutation();
 
@@ -27,7 +28,7 @@ const FilterUi = () => {
   const [newOption, setNewOption] = useState({
     value: '',
     displayName: '',
-    color: 'red',
+    color: '',
     iconUrl: '',
     isActive: true,
     sortOrder: 0

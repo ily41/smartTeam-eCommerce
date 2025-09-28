@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Menu, X, Package, Grid3X3, Users, BarChart3, Settings, LogOut, ChevronLeft, ChevronRight, Home, User, Filter} from 'lucide-react';
+import { Menu, X, Package, Grid3X3, Users, BarChart3, Settings, LogOut, ChevronLeft, ChevronRight, Home, User, Filter, Tags} from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { useLogoutMutation } from '../../store/API';
 import { PiFlagBanner } from 'react-icons/pi';
@@ -19,6 +19,7 @@ const SideBar = () => {
     { icon: PiFlagBanner, label: 'Banners', active: false, to:'banners' },
     { icon: Filter, label: 'Filters', active: false, to:'filters' },
     { icon: Settings, label: 'Settings', active: false },
+    { icon: Tags, label: 'Assign Filter', active: false, to:'product-filters'  },
   ];
 
 

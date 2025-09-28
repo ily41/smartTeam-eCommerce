@@ -4,7 +4,6 @@ import { ShoppingCart } from 'lucide-react';
 
 export function ProductCard({ col, info, handleAddToCart, isAddingToCart }) {
   const { url, name, price, id } = info;
-  console.log(url)
 
   // CRITICAL FIX: Stop event propagation to prevent nested link issues
   const handleCartClick = (e) => {

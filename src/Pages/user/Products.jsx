@@ -7,7 +7,7 @@ import { MobileFilterButtons } from '../../products/MobileFilters';
 import { ActiveFilters } from '../../products/ActiveFilters';
 import { ProductCard } from '../../products/ProductCard';
 import { Pagination } from '../../products/Pagination';
-import { useAddCartItemMutation } from '../../store/API';
+import { useAddCartItemMutation, useGetProductsQuery } from '../../store/API';
 import { toast } from 'react-toastify';
 
 // Skeleton Components
@@ -40,13 +40,25 @@ function Products() {
   const [template, setTemplate] = useState(isMobile ? "cols" : "rows");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10); 
+  const {data: productDefault, isLoading: isLoadingProducts } = useGetProductsQuery();
   const [products, setProducts] = useState([]);
   const [totalItems, setTotalItems] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [categoryName, setCategoryName] = useState('');
   const [sortBy, setSortBy] = useState('');
+  const [filtersApplied, setFiltersApplied] = useState(false);
+  const [activeFilters, setActiveFilters] = useState([]);
   
   const [addCartItem, { isLoading: isAddingToCart }] = useAddCartItemMutation();
+  
+
+  // Set default products when they load and no filters are applied
+  useEffect(() => {
+    if (productDefault && !filtersApplied) {
+      setProducts(productDefault);
+      setTotalItems(productDefault.length);
+    }
+  }, [productDefault, filtersApplied]);
 
   // Calculate total pages based on API totalItems
   const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -57,22 +69,42 @@ function Products() {
   };
 
   // Memoize the filter results handler to prevent re-creation on every render
-  const handleFilterResults = useCallback((data) => {
-    console.log('Filter results received:', data);
-    
-    if (data?.products) {
+  const handleFilterResults = useCallback((data, filters = []) => {
+    // Update active filters
+    setActiveFilters(filters);
+
+    if (data === null) {
+      // No filters applied - use default products
+      setFiltersApplied(false);
+      if (productDefault) {
+        setProducts(productDefault);
+        setTotalItems(productDefault.length);
+      }
+      setCategoryName('');
+    } else if (data?.products) {
+      // Filters applied - use filtered results
+      setFiltersApplied(true);
       setProducts(data.products);
-      setTotalItems(data.totalCount || data.products.length);
+      setTotalItems(data.totalCount || data.products?.length);
       
       // Update category name if available
       if (data.categoryName) {
         setCategoryName(data.categoryName);
       }
     } else {
+      // No results found
+      setFiltersApplied(true);
       setProducts([]);
       setTotalItems(0);
     }
-  }, []); // No dependencies - this function doesn't need to change
+  }, [productDefault]);
+
+  const handleRemoveFilter = (filterToRemove) => {
+    // This is a placeholder - you'll need to implement the actual logic
+    // to communicate back to FilterSidebar to remove the specific filter
+    console.log('Remove filter:', filterToRemove);
+    // You may need to lift this state up or use a different approach
+  };
 
   const handleSortChange = (e) => {
     const value = e.target.value;
@@ -94,7 +126,6 @@ function Products() {
       }).unwrap();
       
       toast.success('Product added to cart');
-      console.log(result);
     } catch (err) {
       console.error('Failed to add product to cart:', err);
       
@@ -118,6 +149,9 @@ function Products() {
   useEffect(() => {
     setTemplate(isMobile ? "cols" : "rows"); 
   }, [isMobile]);
+
+  // Determine if we should show loading state
+  const shouldShowLoading = isLoading || (isLoadingProducts && !filtersApplied);
   
   return (
     <div className="min-h-screen bg-[#f7fafc] inter">
@@ -145,7 +179,7 @@ function Products() {
               onFilterResults={handleFilterResults}
               onLoadingChange={setIsLoading}
               currentSort={sortBy}
-              currentPage={currentPage - 1} // Convert to 0-based for API
+              currentPage={currentPage - 1}
               pageSize={itemsPerPage}
             />
           </div>
@@ -154,7 +188,7 @@ function Products() {
             <MobileFilterButtons />
 
             <div className="hidden lg:flex items-center justify-between bg-white p-3 rounded-lg border-[#dee2e6] border-1">
-              {isLoading ? (
+              {shouldShowLoading ? (
                 <>
                   <div className="h-5 bg-gray-200 rounded animate-pulse w-48" />
                   <div className="flex items-center space-x-4">
@@ -205,16 +239,19 @@ function Products() {
             </div>
 
             <div className="hidden lg:block">
-              <ActiveFilters />
+              <ActiveFilters 
+                filters={activeFilters}
+                onRemoveFilter={handleRemoveFilter}
+              />
             </div>
 
             <div className={`mt-4 ${template === "cols" ? 'grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6' : 'flex flex-col gap-4'}`}>
-              {isLoading ? (
+              {shouldShowLoading ? (
                 Array.from({ length: 6 }).map((_, index) => (
                   <ProductCardSkeleton key={index} col={template === "cols"} />
                 ))
-              ) : products.length > 0 ? (
-                products.map((item, index) => {
+              ) : products?.length > 0 ? (
+                products?.map((item, index) => {
                   const cardInfo = {
                     url: item.primaryImageUrl,
                     name: item.name,
@@ -239,7 +276,7 @@ function Products() {
               )}
             </div>
 
-            {!isLoading && totalPages > 1 && (
+            {!shouldShowLoading && totalPages > 1 && (
               <Pagination 
                 currentPage={currentPage}
                 totalPages={totalPages}

@@ -21,9 +21,10 @@ import ProductsUI from "../Pages/admin/ProductsAdmin";
 import SubCategories from "../Pages/user/SubCategories";
 import ScrollToTop from "../components/user/ScrollToTop";
 import BannersUI from "../components/admin/Banner/BannerUi";
-import FilterUi from "../components/admin/Filters/FilterUi";
+import FilterUi from "../Pages/admin/FilterUi";
 import AddProductSpecifications from "../components/admin/Product/AddProductSpec";
 import ProductSpec from "../Pages/admin/ProductSpec"
+import AssignFilter from "../Pages/admin/AssignFilter"
 
 const Router = () => {
   return (
@@ -73,6 +74,7 @@ const Router = () => {
           <Route path="products/:id" element={<ProductSpec />} />
           <Route path="banners" element={<BannersUI />} />
           <Route path="filters" element={<FilterUi />} />
+          <Route path="product-filters" element={<AssignFilter />} />
         </Route>
       </Routes>
     </BrowserRouter>

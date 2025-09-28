@@ -30,6 +30,8 @@ export const API = createApi({
     },
   }),
 
+  tagTypes: ['Categories', 'Users', 'Products', 'Banners', 'Filters', 'Cart', 'Auth'],
+
   endpoints: builder => ({
     // *AUTHENTICATION*
     login: builder.mutation({
@@ -38,6 +40,7 @@ export const API = createApi({
         method: 'POST',
         body: { email, password },
       }),
+      invalidatesTags: ['Auth'],
     }),
 
     signup: builder.mutation({
@@ -53,6 +56,7 @@ export const API = createApi({
           confirmPassword,
         },
       }),
+      invalidatesTags: ['Auth'],
     }),
 
     // *CATEGORIES*
@@ -62,6 +66,7 @@ export const API = createApi({
         url: '/api/v1/Categories/root',
         method: 'GET',
       }),
+      providesTags: ['Categories'],
     }),
     
     getSubCategories: builder.query({
@@ -69,6 +74,7 @@ export const API = createApi({
         url: `/api/v1/Categories/${id}/subcategories`,
         method: 'GET',
       }),
+      providesTags: ['Categories'],
     }),
 
     addCategory: builder.mutation({
@@ -83,6 +89,7 @@ export const API = createApi({
           parentCategoryId,
         },
       }),
+      invalidatesTags: ['Categories'],
     }),
 
     editCategory: builder.mutation({
@@ -97,6 +104,7 @@ export const API = createApi({
           sortOrder,
         },
       }),
+      invalidatesTags: ['Categories'],
     }),
 
     deleteCategory: builder.mutation({
@@ -104,6 +112,7 @@ export const API = createApi({
         url: `/api/v1/Categories/${id}`,
         method: 'DELETE',
       }),
+      invalidatesTags: ['Categories'],
     }),
 
     addCategoryImage: builder.mutation({
@@ -116,6 +125,7 @@ export const API = createApi({
           return headers;
         },
       }),
+      invalidatesTags: ['Categories'],
     }),
 
     // *USERS*
@@ -124,6 +134,7 @@ export const API = createApi({
         url: '/api/v1/Auth/me',
         method: 'GET',
       }),
+      providesTags: ['Auth'],
     }),
 
     getUsers: builder.query({
@@ -131,6 +142,7 @@ export const API = createApi({
         url: '/api/v1/Admin/Users',
         method: 'GET',
       }),
+      providesTags: ['Users'],
     }),
 
     getUserStatics: builder.query({
@@ -138,6 +150,7 @@ export const API = createApi({
         url: '/api/v1/Admin/users/statistics',
         method: 'GET',
       }),
+      providesTags: ['Users'],
     }),
 
     getUserRoles: builder.query({
@@ -145,6 +158,7 @@ export const API = createApi({
         url: '/api/v1/Admin/users/roles',
         method: 'GET',
       }),
+      providesTags: ['Users'],
     }),
 
     changePassword: builder.mutation({
@@ -157,6 +171,7 @@ export const API = createApi({
           confirmNewPassword,
         },
       }),
+      invalidatesTags: ['Auth'],
     }),
 
     getCategories: builder.query({
@@ -164,6 +179,7 @@ export const API = createApi({
         url: '/api/v1/Categories',
         method: 'GET',
       }),
+      providesTags: ['Categories'],
     }),
 
     editUser: builder.mutation({
@@ -172,6 +188,7 @@ export const API = createApi({
         method: 'PUT',
         body: { firstName, lastName, phoneNumber, role, isActive },
       }),
+      invalidatesTags: ['Users'],
     }),
 
     deleteUser: builder.mutation({
@@ -179,6 +196,7 @@ export const API = createApi({
         url: `/api/v1/Admin/users/${id}`,
         method: 'DELETE',
       }),
+      invalidatesTags: ['Users'],
     }),
 
     editUserRole: builder.mutation({
@@ -187,6 +205,7 @@ export const API = createApi({
         method: 'PUT',
         body: { role },
       }),
+      invalidatesTags: ['Users'],
     }),
 
     activateUser: builder.mutation({
@@ -194,6 +213,7 @@ export const API = createApi({
         url: `/api/v1/Admin/users/${id}/activate`,
         method: 'POST',
       }),
+      invalidatesTags: ['Users'],
     }),
 
     deActivateUser: builder.mutation({
@@ -201,6 +221,7 @@ export const API = createApi({
         url: `/api/v1/Admin/users/${id}/deactivate`,
         method: 'POST',
       }),
+      invalidatesTags: ['Users'],
     }),
 
     logout: builder.mutation({
@@ -208,6 +229,7 @@ export const API = createApi({
         url: '/api/v1/Auth/logout',
         method: 'POST',
       }),
+      invalidatesTags: ['Auth', 'Cart'],
     }),
 
     // *PRODUCTS*
@@ -216,6 +238,7 @@ export const API = createApi({
         url: '/api/v1/Products',
         method: 'GET',
       }),
+      providesTags: ['Products'],
     }),
 
     getProduct: builder.query({
@@ -223,26 +246,31 @@ export const API = createApi({
         url: `/api/v1/Products/${id}`,
         method: 'GET',
       }),
+      providesTags: (result, error, id) => [{ type: 'Products', id }],
     }),
+
     getHotDeals: builder.query({
       query: () => ({
         url: '/api/v1/Products/hot-deals',
         method: 'GET',
       }),
+      providesTags: ['Products'],
     }),
+
     getRecommended: builder.query({
       query: () => ({
         url: '/api/v1/Products/recommendations',
         method: 'GET',
       }),
+      providesTags: ['Products'],
     }),
     
-
     getProductsSummary: builder.query({
       query: () => ({
         url: '/api/v1/Admin/products/stock/summary',
         method: 'GET',
       }),
+      providesTags: ['Products'],
     }),
 
     addProduct: builder.mutation({
@@ -255,18 +283,20 @@ export const API = createApi({
           return headers;
         },
       }),
+      invalidatesTags: ['Products'],
     }),
 
     addDetailImages: builder.mutation({
       query: ({ id, images }) => ({
         url: `/api/v1/Products/${id}/upload-images`,
         method: 'POST',
-        body: images, // FormData
+        body: images,
         prepareHeaders: headers => {
           headers.delete('Content-Type');
           return headers;
         },
       }),
+      invalidatesTags: (result, error, { id }) => [{ type: 'Products', id }, 'Products'],
     }),
 
     deleteProduct: builder.mutation({
@@ -274,6 +304,7 @@ export const API = createApi({
         url: `/api/v1/Products/${id}`,
         method: 'DELETE',
       }),
+      invalidatesTags: ['Products'],
     }),
 
     editProduct: builder.mutation({
@@ -299,6 +330,7 @@ export const API = createApi({
           categoryId,
         },
       }),
+      invalidatesTags: (result, error, { id }) => [{ type: 'Products', id }, 'Products'],
     }),
 
     filterProducts: builder.mutation({
@@ -313,13 +345,13 @@ export const API = createApi({
       }),
     }),
 
-
     // *PRODUCT SPECIFICATIONS*
     getProductSpecifications: builder.query({
       query: (id) => ({
         url: `/api/v1/Products/${id}/specifications`,
         method: 'GET',
       }),
+      providesTags: (result, error, id) => [{ type: 'Products', id }],
     }),
 
     addProductSpecifications: builder.mutation({
@@ -331,6 +363,7 @@ export const API = createApi({
           specificationGroups,
         },
       }),
+      invalidatesTags: (result, error, { id }) => [{ type: 'Products', id }],
     }),
 
     updateProductSpecifications: builder.mutation({
@@ -341,6 +374,7 @@ export const API = createApi({
           specificationGroups,
         },
       }),
+      invalidatesTags: (result, error, { id }) => [{ type: 'Products', id }],
     }),
 
     deleteProductSpecifications: builder.mutation({
@@ -348,6 +382,7 @@ export const API = createApi({
         url: `/api/v1/Products/${id}/specifications`,
         method: 'DELETE',
       }),
+      invalidatesTags: (result, error, { id }) => [{ type: 'Products', id }],
     }),
 
     // *BANNERS*
@@ -356,6 +391,7 @@ export const API = createApi({
         url: '/api/v1/Admin/banners',
         method: 'GET',
       }),
+      providesTags: ['Banners'],
     }),
 
     deleteBanner: builder.mutation({
@@ -363,6 +399,7 @@ export const API = createApi({
         url: `/api/v1/Admin/banners/${id}`,
         method: 'DELETE',
       }),
+      invalidatesTags: ['Banners'],
     }),
 
     addBanner: builder.mutation({
@@ -375,12 +412,13 @@ export const API = createApi({
           return headers;
         },
       }),
+      invalidatesTags: ['Banners'],
     }),
 
     // *FILTERS*
     getFilters: builder.query({
       query: () => ({
-        url: '/api/v1/Admin/filters',
+        url: '/api/v1/Products/filters',
         method: 'GET',
       }),
       providesTags: ['Filters'],
@@ -397,8 +435,8 @@ export const API = createApi({
           sortOrder: sortOrder ?? 0,
           options,
         },
-        invalidatesTags: ['Filters'],
       }),
+      invalidatesTags: ['Filters'],
     }),
 
     removeFilter: builder.mutation({
@@ -409,7 +447,34 @@ export const API = createApi({
       invalidatesTags: ['Filters'], 
     }),
 
+    assignFilter: builder.mutation({
+      query: (filterData) => ({
+        url: '/api/v1/Admin/products/filters/assign',
+        method: 'POST',
+        body: filterData,
+      }),
+      invalidatesTags: ['Filter', 'Product'],
+    }),
 
+    getCategoryFilters: builder.query({
+      query: (categoryId) => ({
+        url: `/api/v1/Products/category/${categoryId}/filters`,
+        method: 'GET',
+      }),
+      providesTags: (result, error, categoryId) => [
+        { type: 'CategoryFilters', id: categoryId }
+      ],
+    }),
+
+    // Bulk filter assignment mutation
+    assignFiltersBulk: builder.mutation({
+      query: (bulkFilterData) => ({
+        url: '/api/v1/Admin/products/filters/bulk-assign',
+        method: 'POST',
+        body: bulkFilterData,
+      }),
+      invalidatesTags: ['Filter', 'Product'],
+    }),
 
     // *CART*
     addCartItem: builder.mutation({
@@ -435,7 +500,7 @@ export const API = createApi({
         method: 'PUT',
         body: { quantity },
       }),
-      invalidatesTags: ['Cart'], // so getCartItems refetches automatically
+      invalidatesTags: ['Cart'],
     }),
 
     removeCartItem: builder.mutation({
@@ -454,18 +519,15 @@ export const API = createApi({
       invalidatesTags: ['Cart'], 
     }),
 
-
-    // Whatssap
-   createWhatsappOrder: builder.mutation({
-    query: (orderData) => ({
-      url: 'api/v1/Cart/whatsapp-order',
-      method: 'POST',
-      body: orderData,
+    // Whatsapp
+    createWhatsappOrder: builder.mutation({
+      query: (orderData) => ({
+        url: 'api/v1/Cart/whatsapp-order',
+        method: 'POST',
+        body: orderData,
+      }),
+      invalidatesTags: ['Cart'],
     }),
-  }),
-
-
-
   }),
 });
 
@@ -473,27 +535,47 @@ export const {
   useAddFilterMutation,
   useGetFiltersQuery,
   useRemoveFilterMutation,
+  useAssignFilterMutation,     
+  useAssignFiltersBulkMutation,
+  useGetCategoryFiltersQuery,
+
+
+
   useGetBannersQuery,
   useDeleteBannerMutation,
   useAddBannerMutation,
+
+
   useLoginMutation,
   useSignupMutation,
   useGetMeQuery,
+
+
   useGetCategoriesQuery,
   useGetSubCategoriesQuery,
   useGetParentCategoriesQuery,
-  useGetProductsQuery,
-  useGetHotDealsQuery, 
-  useGetRecommendedQuery,
   useAddCategoryMutation,
   useAddCategoryImageMutation,
   useEditCategoryMutation,
   useDeleteCategoryMutation,
+
+
+  useGetProductsQuery,
+  useGetHotDealsQuery, 
+  useGetRecommendedQuery,
+
+
+  
+  
   useGetUserStaticsQuery,
   useEditUserMutation,
   useDeleteUserMutation,
   useGetUserRolesQuery,
   useGetUsersQuery,
+  useActivateUserMutation,
+  useDeActivateUserMutation,
+
+
   useAddProductMutation,
   useDeleteProductMutation,
   useEditProductMutation,
@@ -504,12 +586,17 @@ export const {
   useUpdateProductSpecificationsMutation,
   useDeleteProductSpecificationsMutation,
   useFilterProductsMutation,
-  useActivateUserMutation,
-  useDeActivateUserMutation,
+  useAddDetailImagesMutation,
+
+
+  
+
+
+  
   useLogoutMutation,
   useEditUserRoleMutation,
   useChangePasswordMutation,
-  useAddDetailImagesMutation,
+  
   useAddCartItemMutation,
   useGetCartItemsQuery,
   useUpdateCartItemQuantityMutation,

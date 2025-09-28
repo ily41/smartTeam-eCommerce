@@ -1,39 +1,23 @@
 import React from 'react';
 import { X } from 'lucide-react';
 
-export function ActiveFilters() {
+export function ActiveFilters({ filters, onRemoveFilter }) {
+  if (!filters || filters.length === 0) {
+    return null;
+  }
+
   return (
-    <div className="flex flex-wrap items-center gap-3 mb-4 my-3">
-      <span className="inline-flex items-center px-3 bg-white border-[#237CFF] rounded-md py-1 text-sm   border">
-        Samsung
-        <button className="ml-2 hover:text-gray-900">
-          <X className="w-3 h-3" />
+    <div className="mt-4 flex flex-wrap gap-2">
+      {filters.map((filter) => (
+        <button
+          key={filter.key}
+          onClick={() => onRemoveFilter(filter)}
+          className="inline-flex items-center gap-2 px-3 py-1.5 bg-red-50 text-red-700 rounded-full text-sm hover:bg-red-100 transition-colors"
+        >
+          <span>{filter.label}</span>
+          <X className="w-3.5 h-3.5" />
         </button>
-      </span>
-
-      <span className="inline-flex items-center px-3 bg-white border-[#237CFF] rounded-md py-1 text-sm   border">
-        Apple
-        <button className="ml-2 hover:text-gray-900">
-          <X className="w-3 h-3" />
-        </button>
-      </span>
-
-      <span className="inline-flex items-center px-3 bg-white border-[#237CFF] rounded-md py-1 text-sm   border">
-        Pocco
-        <button className="ml-2 hover:text-gray-900">
-          <X className="w-3 h-3" />
-        </button>
-      </span>
-      
-      <span className="inline-flex items-center px-3 bg-white border-[#237CFF] rounded-md py-1 text-sm   border">
-        Metallic
-        <button className="ml-2 hover:text-gray-900">
-          <X className="w-3 h-3" />
-        </button>
-      </span>
-      <button className="text-sm text-red-500 hover:text-red-600 font-medium">
-        Clear all filter
-      </button>
+      ))}
     </div>
   );
 }
