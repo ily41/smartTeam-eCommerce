@@ -57,8 +57,10 @@ const Home = () => {
     
 
     const { data: parentCategories, isLoading: isParentLoading, refetchCategories } = useGetParentCategoriesQuery();
-    const { data: subCategories, isLoading: isSubLoading, refetch: refetchSub } =
-    useGetSubCategoriesQuery(hoveredCategorie, { skip: !hoveredCategorie });
+    console.log(parentCategories)
+       const subCategories = hoveredCategorie 
+       ? parentCategories?.find(cat => cat.id === hoveredCategorie)?.subCategories 
+       : null;
 
 
     const handleAddToCart = async (id) => {
@@ -102,7 +104,7 @@ const Home = () => {
 
   return (
     <>
-      <main className=' bg-[#f7fafc] lg:pt-5'>
+      <main className='bg-[#f7fafc] lg:pt-5'>
         
         <div className='p-5 pb-0 md:pb-5'>
             <SearchUI />
@@ -112,7 +114,6 @@ const Home = () => {
             
            <div className='hidden lg:mt-5 lg:m-4 lg:flex flex-col text-black mt-1 whitespace-nowrap'>
                 {isParentLoading ? (
-                  // Skeleton for parent categories
                   <>
                     {[...Array(7)].map((_, i) => (
                       <CategorySkeleton key={i} />
@@ -123,10 +124,10 @@ const Home = () => {
                     return (
                       <Link 
                         key={item.id}
-                        to={`/subcategories/${item.slug}`}
-                        onMouseEnter={() => {setHoveredCategorie(item.id), setHoveredName(item.name)}}
+                        to={`/${item.slug}`}
+                        onMouseEnter={() => {setHoveredCategorie(item.id); setHoveredName(item.name)}}
                         onClick={() => setActiveCategorie(activeCategorie === item.slug ? null : item.slug)}
-                        className={`p-2 pl-3 flex gap-2 lg:mb-3 lg:hover:bg-[#ffe2e1] ${activeCategorie === item.slug && 'bg-[#ffe2e1]'} cursor-pointer lg:rounded-2xl min-w-[220px] lg:pr-5`}
+                        className={`p-2 pl-3 flex gap-2 lg:mb-3 lg:hover:bg-[#ffe2e1] ${activeCategorie === item.slug ? 'bg-[#ffe2e1]' : ''} cursor-pointer lg:rounded-2xl min-w-[220px] lg:pr-5`}
                       >
                         <img className="w-[24px]" src={getCategoryIcon(item.slug)} alt="" />
                         <span>{item.name}</span>
@@ -136,28 +137,166 @@ const Home = () => {
                 )}
             </div>
 
-            <div className={` lg:${hoveredCategorie && 'hidden border-l-1' || activeCategorie && 'hidden border-l-1' }  border-[#E0E0E0]`}>
+            <div className={`${hoveredCategorie || activeCategorie ? 'lg:hidden' : ''} border-[#E0E0E0]`}>
                 <BannerSlider />
             </div>
             
-            <div className={`${activeCategorie ? 'lg:flex' : hoveredCategorie ? 'lg:flex' : 'hidden' } hidden gap-10 p-10 border-l-1 whitespace-nowrap flex-wrap border-[#E0E0E0]`}>
-                {isSubLoading ? (
-                  <SubCategorySkeleton />
+            <div className={`${activeCategorie || hoveredCategorie ? 'lg:flex' : 'hidden'} hidden border-l border-[#E0E0E0] flex-1 overflow-y-auto`}>
+                {isParentLoading ? (
+                  <div className="w-full p-10">
+                    <SubCategorySkeleton />
+                  </div>
                 ) : (
-                  <div className='flex flex-col gap-4 '>
-                    <h1 className='text-xl font-semibold text-center'>{hoveredName}</h1>
-                    <div className={`grid ${subCategories?.length < 4 ? 'grid-cols-1' : 'grid-cols-2'} gap-x-10 gap-y-4`}>
-                      {subCategories?.map(item => {
-                        return (
-                          <div key={item.id} className=''>
-                            <p className='text-lg text-center'>{item.name}</p>
+                  <div className={`${activeCategorie || hoveredCategorie ? 'lg:flex' : 'hidden'} hidden border-l border-[#E0E0E0] flex-1 overflow-y-auto`}>
+                      {isParentLoading ? (
+                        <div className="w-full p-10">
+                          <SubCategorySkeleton />
+                        </div>
+                      ) : (
+                        <div className='w-full p-8 py-10 animate-fadeIn'>
+                          <h1 className='text-2xl font-bold text-gray-800 mb-8 pb-4 border-b-2 border-[#E60C03] animate-slideDown'>{hoveredName}</h1>
+                          <div className={`grid ${subCategories?.length <= 3 ? 'grid-cols-1' : subCategories?.length <= 6 ? 'grid-cols-2' : 'grid-cols-3'} gap-4`}>
+                            {subCategories?.map((item, index) => {
+                              return (
+                                <Link 
+                                  key={item.id}
+                                  to={`/products/${item.slug || '#'}`}
+                                  className='group relative flex items-center justify-between gap-3 p-4 rounded-xl bg-gradient-to-r from-gray-50 to-white border border-gray-200 hover:border-[#E60C03] hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer animate-slideIn overflow-hidden'
+                                  style={{ animationDelay: `${index * 50}ms` }}
+                                >
+                                  {/* Animated background on hover */}
+                                  <div className='absolute inset-0 bg-gradient-to-r from-[#ffe2e1] to-[#fff5f5] opacity-0 group-hover:opacity-100 transition-opacity duration-300'></div>
+
+                                  {/* Text */}
+                                  <div className='relative z-10 flex-1'>
+                                    <p className='text-base font-medium text-gray-700 group-hover:text-[#E60C03] transition-all duration-300'>{item.name}</p>
+                                  </div>
+
+                                  {/* Arrow icon */}
+                                  <div className='relative z-10 opacity-0 group-hover:opacity-100 transform translate-x-[-10px] group-hover:translate-x-0 transition-all duration-300'>
+                                    <svg className='w-5 h-5 text-[#E60C03]' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5l7 7-7 7' />
+                                    </svg>
+                                  </div>
+                                </Link>
+                              )
+                            })}
                           </div>
-                        )
-                      })}
-                    </div>
+                          
+                          <style jsx>{`
+                            @keyframes fadeIn {
+                              from {
+                                opacity: 0;
+                              }
+                              to {
+                                opacity: 1;
+                              }
+                            }
+
+                            @keyframes slideDown {
+                              from {
+                                opacity: 0;
+                                transform: translateY(-10px);
+                              }
+                              to {
+                                opacity: 1;
+                                transform: translateY(0);
+                              }
+                            }
+
+                            @keyframes slideIn {
+                              from {
+                                opacity: 0;
+                                transform: translateX(-20px);
+                              }
+                              to {
+                                opacity: 1;
+                                transform: translateX(0);
+                              }
+                            }
+
+                            .animate-fadeIn {
+                              animation: fadeIn 0.3s ease-out;
+                            }
+
+                            .animate-slideDown {
+                              animation: slideDown 0.4s ease-out;
+                            }
+
+                            .animate-slideIn {
+                              animation: slideIn 0.4s ease-out forwards;
+                              opacity: 0;
+                            }
+                          `}</style>
+                        </div>
+                      )}
                   </div>
                 )}
             </div>
+        </section>
+
+
+        <section>
+          <section className='mt-12 mx-4 lg:w-[85vw] lg:mx-auto'>
+          <div className='text-xl font-semibold mb-6'>
+            <h1>Featured Brands</h1>
+          </div>
+          
+          <div className='relative overflow-hidden bg-white rounded-lg border border-gray-200 p-6'>
+            <div className='flex animate-scroll gap-8 items-center'>
+              {/* First set of logos */}
+              <div className='flex gap-8 items-center min-w-max'>
+                <img src='./slider/slider1.svg' alt='LG' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
+                <img src='./slider/slider2.svg' alt='Dell' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
+                <img src='./slider/slider3.svg' alt='' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
+                <img src='./slider/slider4.svg' alt='Oppo' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
+                <img src='./slider/slider5.svg' alt='Asus' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
+                <img src='./slider/slider6.svg' alt='Samsung' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
+                <img src='./slider/slider7.svg' alt='HP' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
+                <img src='./slider/slider8.svg' alt='Lenovo' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
+                <img src='./slider/slider9.svg' alt='Apple' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
+                <img src='./slider/slider10.svg' alt='Acer' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
+                <img src='./slider/slider11.svg' alt='Sony' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
+                <img src='./slider/slider12.svg' alt='Microsoft' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
+              </div>
+              
+              {/* Duplicate set for seamless loop */}
+              <div className='flex gap-8 items-center min-w-max'>
+                <img src='./slider/slider1.svg' alt='LG' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
+                <img src='./slider/slider2.svg' alt='Dell' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
+                <img src='./slider/slider3.svg' alt='' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
+                <img src='./slider/slider4.svg' alt='Oppo' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
+                <img src='./slider/slider5.svg' alt='Asus' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
+                <img src='./slider/slider6.svg' alt='Samsung' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
+                <img src='./slider/slider7.svg' alt='HP' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
+                <img src='./slider/slider8.svg' alt='Lenovo' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
+                <img src='./slider/slider9.svg' alt='Apple' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
+                <img src='./slider/slider10.svg' alt='Acer' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
+                <img src='./slider/slider11.svg' alt='Sony' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
+                <img src='./slider/slider12.svg' alt='Microsoft' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
+              </div>
+            </div>
+          </div>
+          
+          <style jsx>{`
+            @keyframes scroll {
+              0% {
+                transform: translateX(0);
+              }
+              100% {
+                transform: translateX(-50%);
+              }
+            }
+            
+            .animate-scroll {
+              animation: scroll 30s linear infinite;
+            }
+            
+            .animate-scroll:hover {
+              animation-play-state: paused;
+            }
+          `}</style>
+        </section>
         </section>
 
         <section className='mt-12 mx-4 inter lg:hidden'>
@@ -165,50 +304,50 @@ const Home = () => {
                 <h1>Categories</h1>
             </div>
 
-            <div className='grid grid-cols-3 mt-10 gap-5 text-sm '>
-                <div className='justify-center md:justify-start flex col-span-3 items-center bg-white lg:hidden rounded-lg border-1 border-[#DEE2E6] p-4'>
-                  <div className='flex flex-row gap-4 '>
-                    <div className='w-full h-full flex-2 my-auto object-cover'>
-                      <img className=' w-full flex-shrink-0 object-contain max-h-[160px]' src="./deals/network.svg" alt="" />
+            <div className='grid grid-cols-3 mt-10 gap-5 text-sm'>
+                <div className='justify-center md:justify-start flex col-span-3 items-center bg-white lg:hidden rounded-lg border border-[#DEE2E6] p-4'>
+                  <div className='flex flex-row gap-4'>
+                    <div className='w-full h-full flex-shrink-0 my-auto object-cover max-w-[140px] md:max-w-[160px]'>
+                      <img className='w-full object-contain max-h-[160px]' src="./deals/network.svg" alt="" />
                     </div>
-                    <div className='flex flex-col flex-3 w-full text-start self-start'>
-                      <p className=' text-xl inter mb-1 md:text-2xl'>Network Equipment</p>
-                      <p className='text-md text-[#AFB0B1] md:text-lg '>Reliable routers, switches, and cabling systems for fast, stable, and secure connectivity. Scalable solutions to keep your business connected and future-ready.</p>
+                    <div className='flex flex-col w-full text-start self-start'>
+                      <p className='text-xl inter mb-1 md:text-2xl'>Network Equipment</p>
+                      <p className='text-sm md:text-base text-[#AFB0B1]'>Reliable routers, switches, and cabling systems for fast, stable, and secure connectivity. Scalable solutions to keep your business connected and future-ready.</p>
                     </div>
                   </div>
                 </div>
 
-              <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
+              <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
                   <img className='min-h-[120px]' src="./deals/homeComputer.svg" alt="" />
                 </div>
                 <p className='text-center'>Computers</p>
               </div>
-              <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
+              <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
                   <img className='min-h-[120px]' src="./deals/homeLaptop.svg" alt="" />
                 </div>
                 <p className='text-center'>Laptops</p>
               </div>
-              <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
+              <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
                   <img className='min-h-[120px]' src="./deals/homePrinter.svg" alt="" />
                 </div>
                 <p className='text-center'>Office Equipment</p>
               </div>
-              <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
+              <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
                   <img className='min-h-[120px]' src="./deals/homeBarcode.svg" alt="" />
                 </div>
                 <p className='text-center'>Commercial Equipment</p>
               </div>
-              <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
+              <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
                   <img className='min-h-[120px]' src="./deals/homeSurveillance.svg" alt="" />
                 </div>
                 <p className='text-center'>Surveillance system</p>
               </div>
-              <div className='bg-white flex self-center justify-center items-center flex-col gap-4 rounded-lg border-1 border-[#DEE2E6] p-4'>
+              <div className='bg-white self-center justify-center items-center flex flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
                   <img className='min-h-[120px]' src="./deals/homeKeyboard.svg" alt="" />
                 </div>
@@ -228,7 +367,7 @@ const Home = () => {
                    <h3 className="font-semibold text-gray-800">Smart watches</h3>
                    <p className="text-sm text-gray-500">From<br />USD 19</p>
                  </div>
-                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
                    <div className="w-12 h-12 bg-black rounded-lg relative">
                      <div className="w-10 h-6 bg-white rounded-sm absolute top-1 left-1"></div>
                      <div className="w-8 h-1 bg-gray-400 absolute bottom-2 left-2"></div>
@@ -243,7 +382,7 @@ const Home = () => {
                    <h3 className="font-semibold text-gray-800">Cameras</h3>
                    <p className="text-sm text-gray-500">From<br />USD 89</p>
                  </div>
-                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
                    <div className="w-12 h-8 bg-black rounded-md relative">
                      <div className="w-4 h-4 bg-blue-600 rounded-full absolute top-1 right-1"></div>
                      <div className="w-6 h-2 bg-gray-600 rounded absolute bottom-1 left-1"></div>
@@ -258,7 +397,7 @@ const Home = () => {
                    <h3 className="font-semibold text-gray-800">Gaming set</h3>
                    <p className="text-sm text-gray-500">From<br />USD 35</p>
                  </div>
-                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
                    <div className="w-12 h-10 bg-black rounded-full relative">
                      <div className="w-8 h-6 bg-blue-500 rounded-full absolute top-1 left-2"></div>
                      <div className="w-2 h-4 bg-gray-600 absolute bottom-1 left-1"></div>
@@ -274,7 +413,7 @@ const Home = () => {
                    <h3 className="font-semibold text-gray-800">Laptops & PC</h3>
                    <p className="text-sm text-gray-500">From<br />USD 340</p>
                  </div>
-                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
                    <div className="w-12 h-8 bg-gray-800 rounded relative">
                      <div className="w-10 h-6 bg-orange-400 rounded-sm absolute top-1 left-1"></div>
                      <div className="w-8 h-1 bg-gray-600 absolute bottom-1 left-2"></div>
@@ -289,7 +428,7 @@ const Home = () => {
                    <h3 className="font-semibold text-gray-800">Headphones</h3>
                    <p className="text-sm text-gray-500">From<br />USD 10</p>
                  </div>
-                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
                    <div className="relative">
                      <div className="w-8 h-8 border-4 border-gray-300 rounded-full"></div>
                      <div className="w-2 h-6 bg-gray-300 absolute -top-3 left-3"></div>
@@ -304,7 +443,7 @@ const Home = () => {
                    <h3 className="font-semibold text-gray-800">Smartphones</h3>
                    <p className="text-sm text-gray-500">From<br />USD 19</p>
                  </div>
-                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
                    <div className="w-8 h-12 bg-gradient-to-br from-teal-400 to-orange-400 rounded-lg relative">
                      <div className="w-6 h-8 bg-black rounded-sm absolute top-2 left-1 opacity-20"></div>
                    </div>
@@ -318,7 +457,7 @@ const Home = () => {
                    <h3 className="font-semibold text-gray-800">Smart watches</h3>
                    <p className="text-sm text-gray-500">From<br />USD 90</p>
                  </div>
-                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
                    <div className="w-10 h-12 bg-black rounded-lg relative">
                      <div className="w-2 h-8 bg-gray-600 absolute top-2 left-1"></div>
                      <div className="w-2 h-8 bg-gray-600 absolute top-2 right-1"></div>
@@ -334,7 +473,7 @@ const Home = () => {
                    <h3 className="font-semibold text-gray-800">Electric kettle</h3>
                    <p className="text-sm text-gray-500">From<br />USD 240</p>
                  </div>
-                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
                    <div className="w-8 h-10 bg-gradient-to-b from-red-500 to-red-600 rounded-lg relative">
                      <div className="w-2 h-3 bg-black rounded absolute top-1 right-1"></div>
                      <div className="w-6 h-6 bg-red-400 rounded-full absolute bottom-1 left-1"></div>
@@ -385,42 +524,12 @@ const Home = () => {
                       <img 
                         className='w-full max-w-[140px] h-auto object-contain px-2' 
                         src={`http://localhost:5056${item.primaryImageUrl}`} 
-                        alt="Smart watch" 
+                        alt="Product" 
                       />
                     </div>
                     <p className='text-md font-semibold text-center px-2 leading-tight'>{item.name}</p>
                     <div className='absolute top-2 right-2 w-8 h-8 p-6 flex justify-center items-center rounded-full bg-red-500 text-white inter'>
-                      <p className='text-xs font-semibold '>{item.discountPercentage}%</p>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-            
-            {/* Tablet (sm to lg): Show 3 items */}
-            <div className='hidden sm:flex lg:hidden w-full'>
-              {isLoading ? (
-                <>
-                  <HotDealCardSkeleton />
-                  <HotDealCardSkeleton />
-                  <HotDealCardSkeleton />
-                </>
-              ) : (
-                hotDeals?.slice(0, 3).map(item => (
-                  <div 
-                    key={item.id} 
-                    className='relative py-5 inter border border-gray-300 bg-white w-full flex flex-col items-center gap-2'
-                  >
-                    <div className='w-full flex justify-center'>
-                      <img 
-                        className='w-full max-w-[140px] h-auto object-contain px-2' 
-                        src={`http://localhost:5056${item.primaryImageUrl}`} 
-                        alt="Smart watch" 
-                      />
-                    </div>
-                    <p className='text-md font-semibold text-center px-2 leading-tight'>{item.name}</p>
-                    <div className='absolute top-2 right-2 w-8 h-8 p-6 flex justify-center items-center rounded-full bg-red-500 text-white inter'>
-                      <p className='text-xs font-semibold'>{item.discountPercentage}%</p>
+                      <p className='text-xs font-semibold'>-{item.discountPercentage}%</p>
                     </div>
                   </div>
                 ))
@@ -446,12 +555,12 @@ const Home = () => {
                       <img 
                         className='w-full max-w-[160px] h-auto object-contain px-2' 
                         src={`http://localhost:5056${item.primaryImageUrl}`} 
-                        alt="Smart watch" 
+                        alt="Product" 
                       />
                     </div>
                     <p className='text-md font-semibold text-center px-2 leading-tight'>{item.name}</p>
                     <div className='absolute top-2 right-2 w-8 h-8 p-6 flex justify-center items-center rounded-full bg-red-500 text-white inter'>
-                      <p className='text-xs font-semibold'>{item.discountPercentage}%</p>
+                      <p className='text-xs font-semibold'>-{item.discountPercentage}%</p>
                     </div>
                   </div>
                 ))
@@ -464,7 +573,7 @@ const Home = () => {
         <section className='mt-12 mx-4 lg:w-[85vw] lg:mx-auto'>
             <div className='flex justify-between text-xl font-semibold'>
                 <h1>Recommended items</h1>
-                <Link to='./products'><h1 className='text-[#E60C03] cursor-pointer text-lg'>More </h1></Link>
+                <Link to='./products'><h1 className='text-[#E60C03] cursor-pointer text-lg'>More</h1></Link>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 [@media(min-width:1300px)]:grid-cols-5 lg:grid-cols-4 gap-2 mt-5 whitespace-nowrap">
@@ -485,7 +594,7 @@ const Home = () => {
         <section className='mt-12 mx-4 lg:w-[85vw] lg:mx-auto'>
             <div className='flex justify-between text-xl font-semibold'>
                 <h1>Hot Deals</h1>
-                <h1 className='text-[#E60C03] text-lg'>More</h1>
+                <h1 className='text-[#E60C03] cursor-pointer text-lg'>More</h1>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 [@media(min-width:1300px)]:grid-cols-5 lg:grid-cols-4 gap-2 mt-5 whitespace-nowrap">
@@ -514,5 +623,7 @@ const Home = () => {
     </>
   )
 }
+
+
 
 export default Home

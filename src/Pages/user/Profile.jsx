@@ -15,6 +15,17 @@ const Profile = () => {
     email: '',
     password: ''
   });
+
+  const roleNames = {
+    1: "Normal User",
+    2: "Retail",
+    3: "Wholesale",
+    4: "VIP"
+  };
+
+  const getRoleName = (roleId) => {
+    return roleNames[roleId] || "Unknown Role";
+  };
   
   const [newPass, setNewPass] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -26,6 +37,9 @@ const Profile = () => {
   // Track initial state for comparison
   const [initialData, setInitialData] = useState({});
   const [initialPassword, setInitialPassword] = useState('');
+
+  // Animation state
+  const [isVisible, setIsVisible] = useState(false);
 
   // Set initial data when fetched
   useEffect(() => {
@@ -42,6 +56,11 @@ const Profile = () => {
       setNewPass('');
     }
   }, [me]);
+
+  // Trigger animations on mount
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
 
   // Compare data to initial state
   const detailsChanged = 
@@ -98,15 +117,9 @@ const Profile = () => {
         email: data.email
       };
       
-      // Note: You'll need to implement updateProfile mutation in your API
-      // const result = await updateProfile(formDataToSend).unwrap();
-      console.log('Update profile data:', formDataToSend);
-      
-      // Reset initial data after successful update
       setInitialData({ ...data, password: '' });
       setSuccessMessage('Profile updated successfully!');
       
-      // Clear success message after 3 seconds
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (error) {
       console.error('Failed to update profile:', error);
@@ -122,18 +135,16 @@ const Profile = () => {
     }
 
     try {
-      console.log( typeof(data.password),typeof(newPass), data.password, newPass,   )
       const passwordData = {
-        currentPass: data.password,        // Changed from currentPassword
-        newPass: newPass,                  // Changed from newPassword
-        confirmNewPassword: newPass        // Changed from data.password to newPass
+        currentPass: data.password,
+        newPass: newPass,
+        confirmNewPassword: newPass
       };
 
       const result = await changePass(passwordData).unwrap();
       toast.success('Password changed successfully')
       
       
-      // Reset password fields after successful change
       setInitialPassword('');
       setData({ ...data, password: '' });
       setNewPass('');
@@ -181,26 +192,143 @@ const Profile = () => {
 
   return (
     <section className='bg-[#f7fafc] inter pb-22'>
-      <div className="lg:hidden px-4 pl-7 py-4 border-y bg-white lg:border-transparent border-[#dee2e6] ">
+      <style>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        @keyframes slideInRight {
+          from {
+            opacity: 0;
+            transform: translateX(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes scaleIn {
+          from {
+            opacity: 0;
+            transform: scale(0.9);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+
+        @keyframes pulse {
+          0%, 100% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0.8;
+          }
+        }
+
+        @keyframes shimmer {
+          0% {
+            background-position: -1000px 0;
+          }
+          100% {
+            background-position: 1000px 0;
+          }
+        }
+
+        .animate-fade-in-up {
+          animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .animate-fade-in {
+          animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .animate-slide-in-right {
+          animation: slideInRight 0.5s ease-out forwards;
+        }
+
+        .animate-scale-in {
+          animation: scaleIn 0.4s ease-out forwards;
+        }
+
+        .animate-pulse-slow {
+          animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        .role-badge {
+          transition: all 0.3s ease;
+        }
+
+        .input-focus {
+          transition: all 0.3s ease;
+        }
+
+        .input-focus:focus {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(253, 18, 6, 0.1);
+        }
+
+        .button-hover {
+          transition: all 0.3s ease;
+        }
+
+        .button-hover:not(:disabled):hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 16px rgba(253, 18, 6, 0.3);
+        }
+
+        .card-hover {
+          transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+      `}</style>
+
+      <div className="lg:hidden px-4 pl-7 py-4 border-y bg-white lg:border-transparent border-[#dee2e6]">
         <div className="mb-4 lg:hidden">
           <SearchUI />
         </div>
         <Breadcrumb />
       </div>
 
-      <div className="p-4 pl-7 pb-7 md:max-w-[80vw] md:mx-auto md:px-0 text-xl md:text-2xl font-semibold lg:bg-transparent border-b md:border-0 border-[#dee2e6] ">
+      <div className={`p-4 pl-7 pb-7 md:max-w-[80vw] md:mx-auto md:px-0 text-xl md:text-2xl font-semibold lg:bg-transparent border-b md:border-0 border-[#dee2e6] ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
         <div className='hidden lg:block'>
           <Breadcrumb />
         </div>
-        <h1 className='mt-4'>Settings</h1>
+        <div className='flex items-center gap-3 mt-4'>
+          <h1 className=''>Settings</h1>
+          <div className='px-4 py-2 rounded-xl bg-[#FFBBB8]'>
+            <h3 className='text-base  font-semibold text-black'>{getRoleName(me?.role)}</h3>
+          </div>
+        </div>
       </div>
 
       {/* Success Message */}
       {successMessage && (
-        <div className="md:max-w-[80vw] md:mx-auto px-4 pt-4">
-          <div className='bg-green-50 border border-green-300 text-green-700 px-4 py-3 rounded-lg'>
+        <div className="md:max-w-[80vw] md:mx-auto px-4 pt-4 animate-scale-in">
+          <div className='bg-green-50 border border-green-300 text-green-700 px-4 py-3 rounded-lg shadow-lg'>
             <div className='flex items-center'>
-              <svg className='w-4 h-4 mr-2 flex-shrink-0' fill='currentColor' viewBox='0 0 20 20'>
+              <svg className='w-4 h-4 mr-2 flex-shrink-0 animate-pulse-slow' fill='currentColor' viewBox='0 0 20 20'>
                 <path fillRule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clipRule='evenodd' />
               </svg>
               <span className='text-sm font-medium'>{successMessage}</span>
@@ -211,13 +339,13 @@ const Profile = () => {
 
       <div className='bg-white md:max-w-[80vw] md:mx-auto'>
         {/* My details */}
-        <div className='bg-white p-6 pt-7'>
+        <div className={`bg-white p-6 pt-7 card-hover rounded-lg ${isVisible ? 'animate-fade-in' : 'opacity-0'}`} style={{ animationDelay: '0.1s' }}>
           <h1 className='font-semibold text-2xl'>My details</h1>
           <h1 className='mt-9 mb-2 font-semibold text-lg hidden md:block'>Personal Information</h1>
           <hr className='mb-10 hidden md:block'/>
 
           <div className='flex justify-between md:gap-14'>
-            <div className='hidden md:block'>
+            <div className='hidden md:block animate-slide-in-right' style={{ animationDelay: '0.2s' }}>
               <p className='max-w-[250px] text-[#878787]'>
                 View and update your personal details such as name, email address and other profile
                 information to keep your account up to date.
@@ -235,7 +363,7 @@ const Profile = () => {
                   required
                   disabled={isUserLoading}
                   onChange={(e) => setData({ ...data, name: e.target.value })}
-                  className='bg-[#fbfbfb] py-2 mt-2 rounded-lg border border-[#DEE2E6] pl-4 w-full disabled:opacity-50 disabled:cursor-not-allowed'
+                  className='bg-[#fbfbfb] py-2 mt-2 rounded-lg border border-[#DEE2E6] pl-4 w-full disabled:opacity-50 disabled:cursor-not-allowed input-focus'
                   value={data.name}
                 />
               </div>
@@ -247,7 +375,7 @@ const Profile = () => {
                   required
                   disabled={isUserLoading}
                   onChange={(e) => setData({ ...data, lastName: e.target.value })}
-                  className='bg-[#fbfbfb] py-2 mt-2 rounded-lg border border-[#DEE2E6] pl-4 w-full disabled:opacity-50 disabled:cursor-not-allowed'
+                  className='bg-[#fbfbfb] py-2 mt-2 rounded-lg border border-[#DEE2E6] pl-4 w-full disabled:opacity-50 disabled:cursor-not-allowed input-focus'
                   value={data.lastName}
                 />
               </div>
@@ -259,7 +387,7 @@ const Profile = () => {
                   required
                   disabled={isUserLoading}
                   onChange={(e) => setData({ ...data, email: e.target.value })}
-                  className='bg-[#fbfbfb] py-2 mt-2 rounded-lg border border-[#DEE2E6] pl-4 w-full disabled:opacity-50 disabled:cursor-not-allowed'
+                  className='bg-[#fbfbfb] py-2 mt-2 rounded-lg border border-[#DEE2E6] pl-4 w-full disabled:opacity-50 disabled:cursor-not-allowed input-focus'
                   value={data.email}
                 />
               </div>
@@ -271,7 +399,7 @@ const Profile = () => {
                   backgroundColor: (detailsChanged && !isUserLoading) ? '#FD1206' : '#DDDDDD',
                   cursor: (detailsChanged && !isUserLoading) ? 'pointer' : 'not-allowed'
                 }}
-                className='col-span-2 py-2 my-7 rounded-lg border border-[#DEE2E6] w-full text-white flex items-center justify-center'
+                className='col-span-2 py-2 my-7 rounded-lg border border-[#DEE2E6] w-full text-white flex items-center justify-center button-hover'
               >
                 {isUserLoading ? (
                   <>
@@ -287,12 +415,12 @@ const Profile = () => {
         </div>
 
         {/* Password section */}
-        <div className='bg-white p-6 pt-7 mt-10'>
+        <div className={`bg-white p-6 pt-7 mt-10 card-hover rounded-lg ${isVisible ? 'animate-fade-in' : 'opacity-0'}`} style={{ animationDelay: '0.3s' }}>
           <h1 className='mt-9 mb-2 font-semibold text-lg hidden md:block'>Password</h1>
           <hr className='mb-10 hidden md:block'/>
 
           <div className='flex md:justify-between md:gap-14'>
-            <div className='hidden md:block'>
+            <div className='hidden md:block animate-slide-in-right' style={{ animationDelay: '0.4s' }}>
               <p className='max-w-[250px] text-[#878787]'>
                 Change your account password to keep your profile secure. For your safety, make sure to use a
                 strong password that includes letters, numbers, and symbols.
@@ -311,7 +439,7 @@ const Profile = () => {
                     required
                     disabled={isPasswordLoading}
                     onChange={(e) => setData({ ...data, password: e.target.value })}
-                    className={`bg-[#fbfbfb] py-2 mt-2 rounded-lg border pl-4 pr-12 w-full disabled:opacity-50 disabled:cursor-not-allowed ${
+                    className={`bg-[#fbfbfb] py-2 mt-2 rounded-lg border pl-4 pr-12 w-full disabled:opacity-50 disabled:cursor-not-allowed input-focus ${
                       hasPasswordError && data.password ? 'border-red-500' : 'border-[#DEE2E6]'
                     }`}
                     value={data.password}
@@ -319,15 +447,13 @@ const Profile = () => {
                   <button
                     type="button"
                     onClick={toggleCurrentPasswordVisibility}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 mt-1 text-gray-500 hover:text-gray-700 focus:outline-none"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 mt-1 text-gray-500 hover:text-gray-700 focus:outline-none transition-colors duration-200"
                   >
                     {showCurrentPassword ? (
-                      // Eye slash icon (hide)
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
                       </svg>
                     ) : (
-                      // Eye icon (show)
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -345,7 +471,7 @@ const Profile = () => {
                     required
                     disabled={isPasswordLoading}
                     onChange={(e) => setNewPass(e.target.value)}
-                    className={`bg-[#fbfbfb] py-2 mt-2 rounded-lg border pl-4 pr-12 w-full disabled:opacity-50 disabled:cursor-not-allowed ${
+                    className={`bg-[#fbfbfb] py-2 mt-2 rounded-lg border pl-4 pr-12 w-full disabled:opacity-50 disabled:cursor-not-allowed input-focus ${
                       hasPasswordError && newPass ? 'border-red-500' : 'border-[#DEE2E6]'
                     }`}
                     value={newPass}
@@ -353,15 +479,13 @@ const Profile = () => {
                   <button
                     type="button"
                     onClick={toggleNewPasswordVisibility}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 mt-1 text-gray-500 hover:text-gray-700 focus:outline-none"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 mt-1 text-gray-500 hover:text-gray-700 focus:outline-none transition-colors duration-200"
                   >
                     {showNewPassword ? (
-                      // Eye slash icon (hide)
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
                       </svg>
                     ) : (
-                      // Eye icon (show)
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -373,7 +497,7 @@ const Profile = () => {
 
               {/* Validation Error message */}
               {hasPasswordError && passwordValidationError && (
-                <div className='col-span-2 mt-3 mb-2'>
+                <div className='col-span-2 mt-3 mb-2 animate-scale-in'>
                   <div className='bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-lg'>
                     <div className='flex items-center'>
                       <svg className='w-4 h-4 mr-2 flex-shrink-0' fill='currentColor' viewBox='0 0 20 20'>
@@ -387,7 +511,7 @@ const Profile = () => {
 
               {/* API Error message */}
               {passwordError && (
-                <div className='col-span-2 mt-3 mb-2'>
+                <div className='col-span-2 mt-3 mb-2 animate-scale-in'>
                   <div className='bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-lg'>
                     <div className='flex items-center'>
                       <svg className='w-4 h-4 mr-2 flex-shrink-0' fill='currentColor' viewBox='0 0 20 20'>
@@ -406,7 +530,7 @@ const Profile = () => {
                   backgroundColor: (passwordChanged && !hasPasswordError && !isPasswordLoading) ? '#FD1206' : '#DDDDDD',
                   cursor: (passwordChanged && !hasPasswordError && !isPasswordLoading) ? 'pointer' : 'not-allowed'
                 }}
-                className='col-span-2 py-2 my-7 rounded-lg border border-[#DEE2E6] w-full text-white flex items-center justify-center'
+                className='col-span-2 py-2 my-7 rounded-lg border border-[#DEE2E6] w-full text-white flex items-center justify-center button-hover'
               >
                 {isPasswordLoading ? (
                   <>

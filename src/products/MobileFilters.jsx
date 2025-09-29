@@ -1,33 +1,38 @@
-import React, { useEffect, useState } from 'react';
-import { SlidersHorizontal, Filter, X, ChevronUp,ChevronDown } from 'lucide-react';
+import React, { useEffect, useState, useRef } from 'react';
+import { SlidersHorizontal, Filter, X, ChevronUp, ChevronDown } from 'lucide-react';
+import { useFilterProductsMutation, useGetCategoriesQuery, useGetCategoryFiltersQuery, useGetFiltersQuery, useGetParentCategoriesQuery } from '../store/API';
 
+export function MobileFilterButtons({ onFilterResults, onLoadingChange, currentSort, onSortChange, currentPage, pageSize }) {
+  const [isSort, setIsSort] = useState(false);
+  const [isFilter, setIsFilter] = useState(false);
+  const [showAllCategories, setShowAllCategories] = useState(false);
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
+  const [selectedFilters, setSelectedFilters] = useState({});
 
-export function MobileFilterButtons() {
-  const [isSort, setIsSort] = useState(false)
-  const [isFilter, setIsFilter] = useState(false)
+  const { data: categories, isLoading: isCategoriesLoading } = useGetCategoriesQuery();
+  const { data: ParentCat, isLoading: isParentCatLoading } = useGetParentCategoriesQuery();
+  const { data: customFilters, isLoading: isCustomLoading } = useGetFiltersQuery();
+  
+  const selectedCategoryId = selectedCategories.length > 0 ? selectedCategories[0] : null;
+  const { data: categoryFilters, isLoading: isCategoryFiltersLoading } = useGetCategoryFiltersQuery(
+    selectedCategoryId, 
+    { skip: !selectedCategoryId }
+  );
+
+  const [filterProducts, { isLoading: isFiltering }] = useFilterProductsMutation();
+  const hasFiltersApplied = useRef(false);
+  const debounceTimer = useRef(null);
+
+  const filtersToShow = selectedCategoryId && categoryFilters ? categoryFilters : customFilters;
+  const isFiltersLoading = selectedCategoryId ? isCategoryFiltersLoading : isCustomLoading;
 
   const [expandedSections, setExpandedSections] = useState({
-    price: true,
-    brand: true,
-    features: true,
     category: true,
-    priceRange: true,
-    condition: false
+    priceRange: true
   });
 
-  const [selectedBrands, setSelectedBrands] = useState(['Samsung', 'Apple', 'Pocco']);
-  const [selectedFeatures, setSelectedFeatures] = useState(['Samsung', 'Apple', 'Pocco']);
-  const [selectedCategories, setSelectedCategories] = useState([]);
-  const [selectedConditions, setSelectedConditions] = useState([]);
-  const [selectedMetallic, setSelectedMetallic] = useState(true);
-
-  const toggleSection = (section) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [section]: !prev[section]
-    }));
-  };
-  
   useEffect(() => {
     if (isFilter) {
       document.body.style.overflow = "hidden";
@@ -35,38 +40,272 @@ export function MobileFilterButtons() {
       document.body.style.overflow = "";
     }
     return () => {
-      document.body.style.overflow = ""; // cleanup
+      document.body.style.overflow = "";
     };
   }, [isFilter]);
 
-  const toggleBrand = (brand) => {
-    setSelectedBrands(prev => 
-      prev.includes(brand) 
-        ? prev.filter(b => b !== brand)
-        : [...prev, brand]
-    );
+  // Initialize selectedFilters when filters load
+  useEffect(() => {
+    if (filtersToShow) {
+      const initialFilters = {};
+      filtersToShow.forEach(filter => {
+        if (!selectedFilters[filter.id]) {
+          initialFilters[filter.id] = {
+            filterId: filter.id,
+            filterOptionIds: [],
+            customValue: '',
+            minValue: 0,
+            maxValue: 0
+          };
+        }
+      });
+      
+      setSelectedFilters(prev => ({
+        ...prev,
+        ...initialFilters
+      }));
+
+      // Set expanded state for each filter
+      setExpandedSections(prev => {
+        const newSections = { ...prev };
+        filtersToShow.forEach(filter => {
+          if (newSections[`filter-${filter.id}`] === undefined) {
+            newSections[`filter-${filter.id}`] = true;
+          }
+        });
+        return newSections;
+      });
+    }
+  }, [filtersToShow]);
+
+  // Reset filters when category changes
+  useEffect(() => {
+    if (selectedCategoryId) {
+      setSelectedFilters({});
+    }
+  }, [selectedCategoryId]);
+
+  const toggleSection = (section) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
   };
 
-  const toggleFeature = (feature) => {
-    setSelectedFeatures(prev => 
-      prev.includes(feature) 
-        ? prev.filter(f => f !== feature)
-        : [...prev, feature]
-    );
+  const handleCategoryChange = (categoryId) => {
+    setSelectedCategories(prev => {
+      if (prev.includes(categoryId)) {
+        return prev.filter(id => id !== categoryId);
+      }
+      return [categoryId];
+    });
   };
 
-  const toggleCategory = (category) => {
-    setSelectedCategories(prev => 
-      prev.includes(category) 
-        ? prev.filter(c => c !== category)
-        : [...prev, category]
+  const handleFilterChange = (isChecked, filterId, optionId) => {
+    setSelectedFilters(prev => {
+      const updatedFilters = { ...prev };
+      
+      if (!updatedFilters[filterId]) {
+        updatedFilters[filterId] = {
+          filterId: filterId,
+          filterOptionIds: [],
+          customValue: '',
+          minValue: 0,
+          maxValue: 0
+        };
+      }
+
+      if (isChecked) {
+        if (!updatedFilters[filterId].filterOptionIds.includes(optionId)) {
+          updatedFilters[filterId].filterOptionIds.push(optionId);
+        }
+      } else {
+        updatedFilters[filterId].filterOptionIds = updatedFilters[filterId].filterOptionIds.filter(
+          id => id !== optionId
+        );
+      }
+
+      return updatedFilters;
+    });
+  };
+
+  const buildFilterCriteria = () => {
+    const criteria = [];
+    
+    Object.values(selectedFilters).forEach(filter => {
+      if (filter.filterOptionIds.length > 0 || filter.customValue || filter.minValue > 0 || filter.maxValue > 0) {
+        criteria.push({
+          filterId: filter.filterId,
+          filterOptionIds: filter.filterOptionIds.length > 0 ? filter.filterOptionIds : null,
+          customValue: filter.customValue || null,
+          minValue: filter.minValue || null,
+          maxValue: filter.maxValue || null
+        });
+      }
+    });
+    
+    return criteria;
+  };
+
+  const buildActiveFilters = () => {
+    const activeFilters = [];
+    
+    if (selectedCategories.length > 0 && categories) {
+      selectedCategories.forEach(categoryId => {
+        const category = categories.find(cat => cat.id === categoryId);
+        if (category) {
+          activeFilters.push({
+            id: `category-${categoryId}`,
+            key: `category-${categoryId}`,
+            label: category.name,
+            type: 'category',
+            value: categoryId
+          });
+        }
+      });
+    }
+
+    if (customFilters) {
+      Object.values(selectedFilters).forEach(filter => {
+        if (filter.filterOptionIds && filter.filterOptionIds.length > 0) {
+          const customFilter = customFilters.find(cf => cf.id === filter.filterId);
+          if (customFilter) {
+            filter.filterOptionIds.forEach(optionId => {
+              const option = customFilter.options?.find(opt => opt.id === optionId);
+              if (option) {
+                activeFilters.push({
+                  id: `filter-${filter.filterId}-${optionId}`,
+                  key: `filter-${filter.filterId}-${optionId}`,
+                  label: `${customFilter.name}: ${option.displayName || option.label}`,
+                  type: 'custom',
+                  filterId: filter.filterId,
+                  optionId: optionId
+                });
+              }
+            });
+          }
+        }
+      });
+    }
+
+    if (minPrice || maxPrice) {
+      const priceLabel = minPrice && maxPrice 
+        ? `Price: $${minPrice} - $${maxPrice}`
+        : minPrice 
+          ? `Price: $${minPrice}+`
+          : `Price: up to $${maxPrice}`;
+      
+      activeFilters.push({
+        id: 'price-range',
+        key: 'price-range',
+        label: priceLabel,
+        type: 'price',
+        minPrice,
+        maxPrice
+      });
+    }
+
+    return activeFilters;
+  };
+
+  const hasActiveFilters = () => {
+    const hasCategories = selectedCategories.length > 0;
+    const hasPrice = minPrice || maxPrice;
+    const hasCustomFilters = Object.values(selectedFilters).some(filter => 
+      filter.filterOptionIds?.length > 0 || 
+      filter.customValue || 
+      filter.minValue > 0 || 
+      filter.maxValue > 0
     );
+    
+    return hasCategories || hasPrice || hasCustomFilters;
+  };
+
+  const applyFilters = async () => {
+    const hasActiveFiltersApplied = hasActiveFilters();
+    
+    if (!hasActiveFiltersApplied) {
+      hasFiltersApplied.current = false;
+      if (onFilterResults) {
+        onFilterResults(null, []);
+      }
+      return;
+    }
+
+    hasFiltersApplied.current = true;
+
+    let sortByValue, sortOrderValue;
+    if (currentSort) {
+      const sortParts = currentSort.split('_');
+      if (sortParts[0] === 'price') {
+        sortByValue = 'price';
+        sortOrderValue = sortParts[1];
+      } else if (sortParts[0] === 'name') {
+        sortByValue = 'name';
+        sortOrderValue = sortParts[1];
+      } else if (currentSort === 'newest') {
+        sortByValue = 'createdDate';
+        sortOrderValue = 'desc';
+      }
+    }
+
+    const filterCriteria = buildFilterCriteria();
+
+    const filterPayload = {
+      categoryId: selectedCategories.length > 0 ? selectedCategories[0] : null,
+      filterCriteria: filterCriteria.length > 0 ? filterCriteria : [],
+      minPrice: minPrice ? parseFloat(minPrice) : null,
+      maxPrice: maxPrice ? parseFloat(maxPrice) : null,
+      sortBy: sortByValue || null,
+      sortOrder: sortOrderValue || null,
+      page: currentPage || 0,
+      pageSize: pageSize || 20
+    };
+
+    if (onLoadingChange) {
+      onLoadingChange(true);
+    }
+
+    try {
+      const result = await filterProducts(filterPayload).unwrap();
+      const activeFilters = buildActiveFilters();
+
+      if (onFilterResults) {
+        onFilterResults(result, activeFilters);
+      }
+    } catch (error) {
+      console.error('Failed to filter products:', error);
+      if (onFilterResults) {
+        onFilterResults({ products: [], totalCount: 0 }, []);
+      }
+    } finally {
+      if (onLoadingChange) {
+        onLoadingChange(false);
+      }
+    }
+  };
+
+  const handleClearFilters = () => {
+    setSelectedCategories([]);
+    setSelectedFilters({});
+    setMinPrice('');
+    setMaxPrice('');
+    hasFiltersApplied.current = false;
+    if (onFilterResults) {
+      onFilterResults(null, []);
+    }
+  };
+
+  const handleShowResults = () => {
+    applyFilters();
+    setIsFilter(false);
   };
 
   const FilterSection = ({ title, isExpanded, onToggle, children }) => (
     <div className="border-b border-gray-200">
       <button 
         onClick={onToggle}
+        type="button"
         className="w-full px-4 py-4 flex justify-between items-center text-left"
       >
         <span className="text-lg font-medium text-gray-900">{title}</span>
@@ -102,302 +341,176 @@ export function MobileFilterButtons() {
       <span className="ml-3 text-gray-700">{label}</span>
     </label>
   );
+
   return (
     <>
-       <div className={`fixed inset-0 bg-white z-50 flex flex-col  ${isFilter ? 'block' : 'hidden' }`}>
-      {/* Header */}
-      <div className="flex justify-between items-center p-4 border-b border-gray-200">
-        <h1 className="text-xl font-medium text-gray-900">Filters</h1>
-        <button onClick={() => {setIsFilter(false)}} className="p-1">
-          <X size={24} className="text-gray-600" />
-        </button>
-      </div>
+      {/* Mobile Filter Modal */}
+      <div className={`fixed inset-0 bg-white z-50 flex flex-col ${isFilter ? 'block' : 'hidden'}`}>
+        <div className="flex justify-between items-center p-4 border-b border-gray-200">
+          <h1 className="text-xl font-medium text-gray-900">Filters</h1>
+          <button onClick={() => setIsFilter(false)} className="p-1">
+            <X size={24} className="text-gray-600" />
+          </button>
+        </div>
 
-      {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto">
-        {/* Price Range Slider */}
-        <FilterSection
-          title="Price"
-          isExpanded={expandedSections.price}
-          onToggle={() => toggleSection('price')}
-        >
-          <div className="py-4">
-            <div className="relative mb-6">
-              <div className="h-2 bg-gray-200 rounded-full">
-                <div className="h-2 bg-red-500 rounded-full" style={{ width: '30%' }}></div>
-              </div>
-              <div className="flex justify-between mt-2 text-sm text-gray-500">
-                <span>45₼</span>
-                <span>870₼</span>
+        <div className="flex-1 overflow-y-auto">
+          {/* Category Filter */}
+          <FilterSection
+            title="Category"
+            isExpanded={expandedSections.category}
+            onToggle={() => toggleSection('category')}
+          >
+            <div className="space-y-1">
+              {ParentCat?.slice(0, showAllCategories ? ParentCat.length : 5).map(item => (
+                <CheckboxItem
+                  key={item.id}
+                  label={item.name}
+                  checked={selectedCategories.includes(item.id)}
+                  onChange={() => handleCategoryChange(item.id)}
+                />
+              ))}
+              {ParentCat?.length > 5 && (
+                <button
+                  onClick={() => setShowAllCategories(!showAllCategories)}
+                  className="text-sm text-red-500 hover:text-red-600 font-medium mt-2"
+                >
+                  {showAllCategories ? 'See less' : 'See all'}
+                </button>
+              )}
+            </div>
+          </FilterSection>
+
+          {/* Custom Filters */}
+          {isFiltersLoading ? (
+            <div className="p-4">
+              <div className="animate-pulse space-y-4">
+                <div className="h-5 bg-gray-200 rounded w-1/3" />
+                <div className="space-y-2">
+                  <div className="h-4 bg-gray-200 rounded w-full" />
+                  <div className="h-4 bg-gray-200 rounded w-4/5" />
+                </div>
               </div>
             </div>
-          </div>
-        </FilterSection>
-
-        {/* Brand */}
-        <FilterSection
-          title="Brand"
-          isExpanded={expandedSections.brand}
-          onToggle={() => toggleSection('brand')}
-        >
-          <div className="space-y-1">
-            <CheckboxItem 
-              label="Samsung" 
-              checked={selectedBrands.includes('Samsung')} 
-              onChange={() => toggleBrand('Samsung')}
-            />
-            <CheckboxItem 
-              label="Apple" 
-              checked={selectedBrands.includes('Apple')} 
-              onChange={() => toggleBrand('Apple')}
-            />
-            <CheckboxItem 
-              label="Huawei" 
-              checked={selectedBrands.includes('Huawei')} 
-              onChange={() => toggleBrand('Huawei')}
-            />
-            <CheckboxItem 
-              label="Pocco" 
-              checked={selectedBrands.includes('Pocco')} 
-              onChange={() => toggleBrand('Pocco')}
-            />
-            <CheckboxItem 
-              label="Lenovo" 
-              checked={selectedBrands.includes('Lenovo')} 
-              onChange={() => toggleBrand('Lenovo')}
-            />
-            <button className="text-red-500 text-sm mt-2">See all</button>
-          </div>
-        </FilterSection>
-
-        {/* Features */}
-        <FilterSection
-          title="Features"
-          isExpanded={expandedSections.features}
-          onToggle={() => toggleSection('features')}
-        >
-          <div className="space-y-1">
-            <CheckboxItem 
-              label="Samsung" 
-              checked={selectedFeatures.includes('Samsung')} 
-              onChange={() => toggleFeature('Samsung')}
-            />
-            <CheckboxItem 
-              label="Apple" 
-              checked={selectedFeatures.includes('Apple')} 
-              onChange={() => toggleFeature('Apple')}
-            />
-            <CheckboxItem 
-              label="Huawei" 
-              checked={selectedFeatures.includes('Huawei')} 
-              onChange={() => toggleFeature('Huawei')}
-            />
-            <CheckboxItem 
-              label="Pocco" 
-              checked={selectedFeatures.includes('Pocco')} 
-              onChange={() => toggleFeature('Pocco')}
-            />
-            <CheckboxItem 
-              label="Lenovo" 
-              checked={selectedFeatures.includes('Lenovo')} 
-              onChange={() => toggleFeature('Lenovo')}
-            />
-          </div>
-        </FilterSection>
-
-        {/* Category */}
-        <FilterSection
-          title="Category"
-          isExpanded={expandedSections.category}
-          onToggle={() => toggleSection('category')}
-        >
-          <div className="space-y-1">
-            <CheckboxItem 
-              label="Mobile accessory" 
-              checked={selectedCategories.includes('Mobile accessory')} 
-              onChange={() => toggleCategory('Mobile accessory')}
-            />
-            <CheckboxItem 
-              label="Electronics" 
-              checked={selectedCategories.includes('Electronics')} 
-              onChange={() => toggleCategory('Electronics')}
-            />
-            <CheckboxItem 
-              label="Smartphones" 
-              checked={selectedCategories.includes('Smartphones')} 
-              onChange={() => toggleCategory('Smartphones')}
-            />
-            <CheckboxItem 
-              label="Modern tech" 
-              checked={selectedCategories.includes('Modern tech')} 
-              onChange={() => toggleCategory('Modern tech')}
-            />
-            <button className="text-red-500 text-sm mt-2">See all</button>
-          </div>
-        </FilterSection>
-
-        {/* Additional Features */}
-        <FilterSection
-          title="Features"
-          isExpanded={expandedSections.features}
-          onToggle={() => toggleSection('features')}
-        >
-          <div className="space-y-1">
-            <CheckboxItem 
-              label="Metallic" 
-              checked={selectedMetallic} 
-              onChange={() => setSelectedMetallic(!selectedMetallic)}
-            />
-            <CheckboxItem 
-              label="Plastic cover" 
-              checked={false} 
-              onChange={() => {}}
-            />
-            <CheckboxItem 
-              label="8GB Ram" 
-              checked={false} 
-              onChange={() => {}}
-            />
-            <CheckboxItem 
-              label="Super power" 
-              checked={false} 
-              onChange={() => {}}
-            />
-            <CheckboxItem 
-              label="Large Memory" 
-              checked={false} 
-              onChange={() => {}}
-            />
-            <button className="text-red-500 text-sm mt-2">See all</button>
-          </div>
-        </FilterSection>
-
-        {/* Price Range */}
-        <FilterSection
-          title="Price range"
-          isExpanded={expandedSections.priceRange}
-          onToggle={() => toggleSection('priceRange')}
-        >
-          <div className="py-4">
-            <div className="relative mb-6">
-              <div className="h-2 bg-gray-200 rounded-full">
-                <div className="h-2 bg-red-500 rounded-full" style={{ width: '40%' }}></div>
-              </div>
-              <div className="flex justify-between mt-2 text-sm text-gray-500">
-                <span>45₼</span>
-                <span>870₼</span>
-              </div>
-            </div>
-          </div>
-        </FilterSection>
-
-        {/* Condition */}
-        <FilterSection
-          title="Condition"
-          isExpanded={expandedSections.condition}
-          onToggle={() => toggleSection('condition')}
-        >
-          <div className="space-y-1">
-            <CheckboxItem 
-              label="New" 
-              checked={selectedConditions.includes('New')} 
-              onChange={() => toggleCategory('New')}
-            />
-            <CheckboxItem 
-              label="Used" 
-              checked={selectedConditions.includes('Used')} 
-              onChange={() => toggleCategory('Used')}
-            />
-            <CheckboxItem 
-              label="Refurbished" 
-              checked={selectedConditions.includes('Refurbished')} 
-              onChange={() => toggleCategory('Refurbished')}
-            />
-          </div>
-        </FilterSection>
-      </div>
-
-      {/* Footer Buttons */}
-      <div className="p-4 border-t border-gray-200 flex gap-3">
-        <button className="flex-1 py-3 px-4 border border-gray-300 rounded-lg text-gray-700 font-medium">
-          Clear
-        </button>
-        <button className="flex-1 py-3 px-4 bg-red-500 text-white rounded-lg font-medium">
-          Show
-        </button>
-      </div>
-    </div>
-      <div className="flex gap-2 mb-4 lg:hidden relative">
-        {/* Container with fixed dimensions to prevent layout shift */}
-        <div className="flex gap-2 w-full">
-          {/* Sorting button/panel */}
-          <div className="flex-1 min-w-0">
-      <button
-        onClick={() => setIsSort(!isSort)}
-        className={` ${isSort && 'rounded-b-none border-b-0 ' }
-          flex items-center justify-center gap-2 py-2 px-4 border border-gray-300 rounded-md bg-white
-          hover:bg-gray-50 transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) w-full
-        `}
-      >
-        <SlidersHorizontal className="w-4 h-4 flex-shrink-0" />
-        <span className='whitepsace-nowrap'>Sorting</span>
-      </button>
-      
-      {/* Sorting dropdown panel */}
-      <div 
-        className={`
-          overflow-hidden transition-all duration-500 rounded-b-lg cubic-bezier(0.4, 0, 0.2, 1)
-          ${isSort ? "max-h-80 opacity-100 " : "max-h-0 opacity-0"}
-        `}
-      >
-        <div className="border border-gray-300 border-t-0 rounded-b-lg bg-white shadow-lg">
-
-          
-          <div className="py-2 rounded-b-lg">
-            {[
-              'Popular',
-              'Newest', 
-              'Oldest',
-              'Price (from highest)',
-              'Price (from lowest)'
-            ].map((option, index) => (
-              <button
-                key={option}
-                className="w-full text-start px-4 py-2 hover:bg-gray-50  transition-colors duration-200"
-                onClick={() => {
-                  // Handle sorting option selection
-                  console.log('Selected:', option);
-                  setIsSort(false); // Close dropdown after selection
-                }}
+          ) : (
+            filtersToShow?.map(filter => (
+              <FilterSection
+                key={filter.id}
+                title={filter.name}
+                isExpanded={expandedSections[`filter-${filter.id}`]}
+                onToggle={() => toggleSection(`filter-${filter.id}`)}
               >
-                {option}
-              </button>
-            ))}
-          </div>
+                <div className="space-y-1">
+                  {filter.options?.map(option => (
+                    <CheckboxItem
+                      key={option.id}
+                      label={option.displayName || option.label}
+                      checked={selectedFilters[filter.id]?.filterOptionIds?.includes(option.id) || false}
+                      onChange={(e) => handleFilterChange(e.target.checked, filter.id, option.id)}
+                    />
+                  ))}
+                </div>
+              </FilterSection>
+            ))
+          )}
+
+          {/* Price Range */}
+          <FilterSection
+            title="Price Range"
+            isExpanded={expandedSections.priceRange}
+            onToggle={() => toggleSection('priceRange')}
+          >
+            <div className="flex items-center space-x-2" onMouseDown={(e) => e.stopPropagation()} onTouchStart={(e) => e.stopPropagation()}>
+              <input
+                type="number"
+                placeholder="Min"
+                value={minPrice}
+                onChange={(e) => setMinPrice(e.target.value)}
+                onFocus={(e) => e.stopPropagation()}
+                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                min="0"
+              />
+              <span className="text-gray-500">-</span>
+              <input
+                type="number"
+                placeholder="Max"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(e.target.value)}
+                onFocus={(e) => e.stopPropagation()}
+                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                min="0"
+              />
+            </div>
+          </FilterSection>
+        </div>
+
+        <div className="p-4 border-t border-gray-200 flex gap-3">
+          <button 
+            onClick={handleClearFilters}
+            className="flex-1 py-3 px-4 border border-gray-300 rounded-lg text-gray-700 font-medium"
+          >
+            Clear
+          </button>
+          <button 
+            onClick={handleShowResults}
+            className="flex-1 py-3 px-4 bg-red-500 text-white rounded-lg font-medium"
+            disabled={isFiltering}
+          >
+            {isFiltering ? 'Loading...' : 'Show'}
+          </button>
         </div>
       </div>
+
+      {/* Mobile Sort & Filter Buttons */}
+      <div className="flex gap-2 mb-4 lg:hidden relative">
+        <div className="flex gap-2 w-full">
+          <div className="flex-1 min-w-0">
+            <button
+              onClick={() => setIsSort(!isSort)}
+              className={`${isSort && 'rounded-b-none border-b-0'} flex items-center justify-center gap-2 py-2 px-4 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition-all duration-500 w-full`}
+            >
+              <SlidersHorizontal className="w-4 h-4 flex-shrink-0" />
+              <span className='whitespace-nowrap'>Sorting</span>
+            </button>
+            
+            <div className={`overflow-hidden transition-all duration-500 rounded-b-lg ${isSort ? "max-h-80 opacity-100" : "max-h-0 opacity-0"}`}>
+              <div className="border border-gray-300 border-t-0 rounded-b-lg bg-white shadow-lg">
+                <div className="py-2 rounded-b-lg">
+                  {[
+                    { label: 'Newest First', value: 'newest' },
+                    { label: 'Price: Low to High', value: 'price_asc' },
+                    { label: 'Price: High to Low', value: 'price_desc' },
+                    { label: 'Name: A to Z', value: 'name_asc' },
+                    { label: 'Name: Z to A', value: 'name_desc' }
+                  ].map((option) => (
+                    <button
+                      key={option.value}
+                      className={`w-full text-start px-4 py-2 hover:bg-gray-50 transition-colors duration-200 ${currentSort === option.value ? 'bg-gray-100 font-medium' : ''}`}
+                      onClick={() => {
+                        if (onSortChange) {
+                          onSortChange({ target: { value: option.value } });
+                        }
+                        setIsSort(false);
+                      }}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Filtering button */}
           <button
             onClick={() => setIsFilter(true)}
-            className={`
-              flex items-center justify-center gap-2  rounded-md bg-gray-900 text-white hover:bg-gray-800
-              transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) overflow-hidden min-w-0
-              ${(isSort)
-                ? "flex-shrink-[999] w-0 p-0 opacity-0" 
-                : "flex-1 opacity-100"
-              }
-            `}
+            className={`flex items-center justify-center gap-2 rounded-md bg-gray-900 text-white hover:bg-gray-800 transition-all duration-500 overflow-hidden min-w-0 ${isSort ? "flex-shrink-[999] w-0 p-0 opacity-0" : "flex-1 opacity-100"}`}
           >
-            <Filter className={`w-4 h-4 flex-shrink-0 transition-opacity duration-300 ${(isSort) ? "opacity-0" : "opacity-100"}`} />
-            <span className={`whitespace-nowrap transition-opacity duration-300 ${(isSort) ? "opacity-0" : "opacity-100"}`}>
+            <Filter className={`w-4 h-4 flex-shrink-0 transition-opacity duration-300 ${isSort ? "opacity-0" : "opacity-100"}`} />
+            <span className={`whitespace-nowrap transition-opacity duration-300 ${isSort ? "opacity-0" : "opacity-100"}`}>
               Filtering
             </span>
           </button>
         </div>
       </div>
     </>
-
   );
 }

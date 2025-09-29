@@ -46,7 +46,7 @@ const Router = () => {
           }
         >
           <Route index element={<Home />} />
-          <Route path="products" element={<Products />} />
+          <Route path="products/:slug?" element={<Products />} />
           <Route path="/details/:id" element={<Details />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/facorites/:id" element={<WishList />} />
@@ -56,7 +56,7 @@ const Router = () => {
           <Route path="secure" element={<Secure />} />
           <Route path="software" element={<Software />} />
           <Route path="profile" element={<Profile />} />
-          <Route path="subcategories" element={<SubCategories />} />
+          <Route path="/:slug" element={<SubCategories />} />
         </Route>
 
         {/* Admin layout with Auth wrapper */}

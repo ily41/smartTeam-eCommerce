@@ -1,36 +1,14 @@
-
-MAiN THINGS TO DO
-	User
-		homepage gets									NEEDED
-		product page gets								NEEDED
-		detail page 									NEEDED
-		cart											NEEDED
-		favorites										NEEDED
-		profile 										+v 
-		FUNCTIONALITIES
-			filter										NEEDED
-			search										NEEDED
-			breadcrumbs 								+	
-			
-
-		
-		
-
-	Admin
-
-		custom filter									NEEDED
-		adminpanel banner changing						NEEDED
-		adminpanel hot deals zaman ayarlarmasi			NEEDED
-		product detail images elave olunmasi 			+	
+favorties
+slider
+search
 
 
-UI
-	User	
-		category page 									+ 
-		services icons  								+
-		numbers 										NEEDED
-		locations for contact and footer map 			NEEDED
-		slider 											NEEDED
+products page names
+
+
+
+what to put in more (recommended hot deals)
+
 
 
 

@@ -7,8 +7,9 @@ import { MobileFilterButtons } from '../../products/MobileFilters';
 import { ActiveFilters } from '../../products/ActiveFilters';
 import { ProductCard } from '../../products/ProductCard';
 import { Pagination } from '../../products/Pagination';
-import { useAddCartItemMutation, useGetProductsQuery } from '../../store/API';
+import { useAddCartItemMutation, useGetProductsQuery, useGetCategoriesQuery } from '../../store/API';
 import { toast } from 'react-toastify';
+import { useParams } from 'react-router';
 
 // Skeleton Components
 const ProductCardSkeleton = ({ col }) => (
@@ -36,21 +37,32 @@ const ProductCardSkeleton = ({ col }) => (
 );
 
 function Products() {
+
+  const {slug} = useParams()
+  const categoryName = slug?.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024); 
   const [template, setTemplate] = useState(isMobile ? "cols" : "rows");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10); 
   const {data: productDefault, isLoading: isLoadingProducts } = useGetProductsQuery();
+  const {data: categories} = useGetCategoriesQuery();
   const [products, setProducts] = useState([]);
   const [totalItems, setTotalItems] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [categoryName, setCategoryName] = useState('');
   const [sortBy, setSortBy] = useState('');
   const [filtersApplied, setFiltersApplied] = useState(false);
   const [activeFilters, setActiveFilters] = useState([]);
   
   const [addCartItem, { isLoading: isAddingToCart }] = useAddCartItemMutation();
   
+  // Find category ID from slug
+  const categoryId = React.useMemo(() => {
+    if (!slug || !categories) return null;
+    const category = categories.find(cat => 
+      cat.name.toLowerCase().replace(/\s+/g, '-') === slug.toLowerCase()
+    );
+    return category?.id || null;
+  }, [slug, categories]);
 
   // Set default products when they load and no filters are applied
   useEffect(() => {
@@ -80,19 +92,14 @@ function Products() {
         setProducts(productDefault);
         setTotalItems(productDefault.length);
       }
-      setCategoryName('');
     } else if (data?.products) {
       // Filters applied - use filtered results
       setFiltersApplied(true);
       setProducts(data.products);
       setTotalItems(data.totalCount || data.products?.length);
-      
-      // Update category name if available
-      if (data.categoryName) {
-        setCategoryName(data.categoryName);
-      }
+     
     } else {
-      // No results found
+      
       setFiltersApplied(true);
       setProducts([]);
       setTotalItems(0);
@@ -181,12 +188,21 @@ function Products() {
               currentSort={sortBy}
               currentPage={currentPage - 1}
               pageSize={itemsPerPage}
+              hideCategoryFilter={!!slug}
+              forcedCategoryId={categoryId}
             />
           </div>
 
           <div className="flex-1">
-            <MobileFilterButtons />
-
+            <MobileFilterButtons 
+              onFilterResults={handleFilterResults}
+              onLoadingChange={setIsLoading}
+              currentSort={sortBy}
+              onSortChange={handleSortChange}
+              currentPage={currentPage - 1}
+              pageSize={itemsPerPage}
+              forcedCategoryId={categoryId}
+            />
             <div className="hidden lg:flex items-center justify-between bg-white p-3 rounded-lg border-[#dee2e6] border-1">
               {shouldShowLoading ? (
                 <>

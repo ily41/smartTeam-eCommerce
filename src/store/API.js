@@ -77,6 +77,14 @@ export const API = createApi({
       providesTags: ['Categories'],
     }),
 
+    getCategory: builder.query({
+      query: (slug) => ({
+        url: `/api/v1/Categories/slug/${slug}`,
+        method: 'GET',
+      }),
+      providesTags: ['Categories'],
+    }),
+
     addCategory: builder.mutation({
       query: ({ name, imageUrl, description, sortOrder, parentCategoryId }) => ({
         url: '/api/v1/Categories',
@@ -257,10 +265,15 @@ export const API = createApi({
       providesTags: ['Products'],
     }),
 
-    getRecommended: builder.query({
-      query: () => ({
+   getRecommended: builder.query({
+      query: ({ categoryId, productId, limit }) => ({
         url: '/api/v1/Products/recommendations',
         method: 'GET',
+        params: {
+          categoryId,
+          productId,
+          limit,
+        },
       }),
       providesTags: ['Products'],
     }),
@@ -343,6 +356,18 @@ export const API = createApi({
           return headers;
         },
       }),
+    }),
+
+    searchProducts: builder.query({
+      query: ({q}) => ({
+        url: '/api/v1/Products/search',
+        method: 'GET',
+        params: {
+          q
+        },
+
+      }),
+      providesTags: ['Products'],
     }),
 
     // *PRODUCT SPECIFICATIONS*
@@ -558,6 +583,7 @@ export const {
   useAddCategoryImageMutation,
   useEditCategoryMutation,
   useDeleteCategoryMutation,
+  useGetCategoryQuery,
 
 
   useGetProductsQuery,
@@ -587,6 +613,7 @@ export const {
   useDeleteProductSpecificationsMutation,
   useFilterProductsMutation,
   useAddDetailImagesMutation,
+  useSearchProductsQuery,
 
 
   

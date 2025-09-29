@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useFilterProductsMutation, useGetCategoriesQuery, useGetCategoryFiltersQuery, useGetFiltersQuery, useGetParentCategoriesQuery, useGetProductQuery } from '../store/API';
 
-export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, currentPage, pageSize }) {
+export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, currentPage, pageSize, hideCategoryFilter = false, forcedCategoryId = null }) {
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [minPrice, setMinPrice] = useState('');
@@ -10,21 +10,21 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
 
   const { data: categories, isLoading: isCategoriesLoading } = useGetCategoriesQuery();
   const { data: ParentCat, isLoading: isParentCatLoading } = useGetParentCategoriesQuery();
-  console.log(categories)
   const { data: customFilters, isLoading: isCustomLoading } = useGetFiltersQuery();
   
-  // Get category-specific filters when a category is selected
-  const selectedCategoryId = selectedCategories.length > 0 ? selectedCategories[0] : null;
+  // Use forcedCategoryId if provided, otherwise use selected category
+  const activeCategoryId = forcedCategoryId || (selectedCategories.length > 0 ? selectedCategories[0] : null);
+  
   const { data: categoryFilters, isLoading: isCategoryFiltersLoading } = useGetCategoryFiltersQuery(
-    selectedCategoryId, 
-    { skip: !selectedCategoryId }
+    activeCategoryId, 
+    { skip: !activeCategoryId }
   );
+  
   const buildActiveFilters = () => {
     const activeFilters = [];
     
-  
-    // Add category filters
-    if (selectedCategories.length > 0 && categories) {
+    // Add category filters only if not hidden
+    if (!hideCategoryFilter && selectedCategories.length > 0 && categories) {
       selectedCategories.forEach(categoryId => {
         const category = categories.find(cat => cat.id === categoryId);
         if (category) {
@@ -83,6 +83,7 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
   
     return activeFilters;
   };
+  
   // Initialize selectedFilters state properly
   const [selectedFilters, setSelectedFilters] = useState({});
   
@@ -94,8 +95,8 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
   const debounceTimer = useRef(null);
 
   // Determine which filters to show - category-specific or general
-  const filtersToShow = selectedCategoryId && categoryFilters ? categoryFilters : customFilters;
-  const isFiltersLoading = selectedCategoryId ? isCategoryFiltersLoading : isCustomLoading;
+  const filtersToShow = activeCategoryId && categoryFilters ? categoryFilters : customFilters;
+  const isFiltersLoading = activeCategoryId ? isCategoryFiltersLoading : isCustomLoading;
 
   // Initialize selectedFilters when filters load or change
   useEffect(() => {
@@ -124,11 +125,11 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
 
   // Reset filters when category changes
   useEffect(() => {
-    if (selectedCategoryId) {
+    if (activeCategoryId) {
       // Reset all filters when category changes
       setSelectedFilters({});
     }
-  }, [selectedCategoryId]);
+  }, [activeCategoryId]);
 
   const toggleShowAll = () => {
     setShowAllCategories(prev => !prev);
@@ -194,7 +195,7 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
 
   // Check if any filters are active
   const hasActiveFilters = () => {
-    const hasCategories = selectedCategories.length > 0;
+    const hasCategories = !hideCategoryFilter && selectedCategories.length > 0;
     const hasPrice = minPrice || maxPrice;
     const hasCustomFilters = Object.values(selectedFilters).some(filter => 
       filter.filterOptionIds?.length > 0 || 
@@ -202,8 +203,9 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
       filter.minValue > 0 || 
       filter.maxValue > 0
     );
+    const hasForcedCategory = !!forcedCategoryId;
     
-    return hasCategories || hasPrice || hasCustomFilters;
+    return hasCategories || hasPrice || hasCustomFilters || hasForcedCategory;
   };
 
   // Apply filters
@@ -219,9 +221,10 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
       const hasActiveFiltersApplied = hasActiveFilters();
       
       if (!hasActiveFiltersApplied) {
+        // Reset to show all products when no filters are active
+        hasFiltersApplied.current = false;
         if (onFilterResults) {
-            const activeFilters = buildActiveFilters();////////////////
-           onFilterResults(result, activeFilters);
+          onFilterResults(null, []); // Pass null to indicate no filters, empty array for active filters
         }
         return;
       }
@@ -246,8 +249,11 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
       // Build filter payload
       const filterCriteria = buildFilterCriteria();
 
+      // Determine which category ID to use
+      const categoryIdToUse = forcedCategoryId || (selectedCategories.length > 0 ? selectedCategories[0] : null);
+
       const filterPayload = {
-        categoryId: selectedCategories.length > 0 ? selectedCategories[0] : null,
+        categoryId: categoryIdToUse,
         filterCriteria: filterCriteria.length > 0 ? filterCriteria : [],
         minPrice: minPrice ? parseFloat(minPrice) : null,
         maxPrice: maxPrice ? parseFloat(maxPrice) : null,
@@ -266,17 +272,18 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
     
       try {
         const result = await filterProducts(filterPayload).unwrap();
+        const activeFilters = buildActiveFilters();
 
-        // Notify parent component with results
+        // Notify parent component with results and active filters
         if (onFilterResults) {
-          onFilterResults(result);
+          onFilterResults(result, activeFilters);
         }
       } catch (error) {
         console.error('Failed to filter products:', error);
 
         // Still notify parent to stop loading
         if (onFilterResults) {
-          onFilterResults({ products: [], totalCount: 0 });
+          onFilterResults({ products: [], totalCount: 0 }, []);
         }
       } finally {
         // Notify parent that loading has finished
@@ -292,7 +299,7 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
         clearTimeout(debounceTimer.current);
       }
     };
-  }, [selectedCategories, selectedFilters, minPrice, maxPrice, currentSort, currentPage, pageSize]);
+  }, [selectedCategories, selectedFilters, minPrice, maxPrice, currentSort, currentPage, pageSize, hideCategoryFilter, forcedCategoryId]);
 
   if (isCategoriesLoading) {
     return (
@@ -311,41 +318,45 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
 
   return (
     <div className="rounded-lg bg-white border border-gray-200">
-      <hr className="mx-4 border-[#dee2e6]" />
-      
-      {/* Category Filter */}
-      <details open>
-        <summary className="w-full flex items-center justify-between p-4 text-left cursor-pointer">
-          <span className="font-medium text-gray-900">Category</span>
-          <ChevronDown className="chevron w-4 h-4 text-gray-500 transition-transform duration-200" />
-        </summary>
-        <div className="px-4 pb-4 space-y-2">
-          {categories
-            ?.slice(0, showAllCategories ? categories.length : 5)
-            .map(item => (
-              <label key={item.id} className="flex items-center space-x-2 cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  className="w-4 h-4 text-red-500 border-gray-300 rounded focus:ring-red-500"
-                  checked={selectedCategories.includes(item.id)}
-                  onChange={() => handleCategoryChange(item.id)}
-                />
-                <span className="text-sm text-gray-700">{item.name}</span>
-              </label>
-            ))}
+      {!hideCategoryFilter && (
+        <>
+          <hr className="mx-4 border-[#dee2e6]" />
+          
+          {/* Category Filter */}
+          <details open>
+            <summary className="w-full flex items-center justify-between p-4 text-left cursor-pointer">
+              <span className="font-medium text-gray-900">Category</span>
+              <ChevronDown className="chevron w-4 h-4 text-gray-500 transition-transform duration-200" />
+            </summary>
+            <div className="px-4 pb-4 space-y-2">
+              {ParentCat
+                ?.slice(0, showAllCategories ? categories.length : 5)
+                .map(item => (
+                  <label key={item.id} className="flex items-center space-x-2 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      className="w-4 h-4 text-red-500 border-gray-300 rounded focus:ring-red-500"
+                      checked={selectedCategories.includes(item.id)}
+                      onChange={() => handleCategoryChange(item.id)}
+                    />
+                    <span className="text-sm text-gray-700">{item.name}</span>
+                  </label>
+                ))}
 
-          {categories?.length > 5 && (
-            <button
-              onClick={toggleShowAll}
-              className="text-sm text-red-500 hover:text-red-600 font-medium"
-            >
-              {showAllCategories ? 'See less' : 'See all'}
-            </button>
-          )}
-        </div>
-      </details>
+              {ParentCat?.length > 5 && (
+                <button
+                  onClick={toggleShowAll}
+                  className="text-sm text-red-500 hover:text-red-600 font-medium"
+                >
+                  {showAllCategories ? 'See less' : 'See all'}
+                </button>
+              )}
+            </div>
+          </details>
 
-      <hr className="mx-4 border-[#dee2e6]" />
+          <hr className="mx-4 border-[#dee2e6]" />
+        </>
+      )}
 
       {/* Custom Filters - Show category-specific or general filters */}
       {isFiltersLoading ? (
