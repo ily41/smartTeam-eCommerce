@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router';
-import { useGetBannersQuery } from '../../store/API';
+import { useGetBannersQuery, useGetCategoriesQuery, useGetParentCategoriesQuery } from '../../store/API';
 
 const BannerSlider = () => {
 
 
 
   const { data: bannersD, isBannersLoading,  } = useGetBannersQuery();
-
+  
 
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
@@ -81,7 +81,7 @@ const BannerSlider = () => {
 
                <p className="hidden lg:block text-xl inter">
                 {banner.description
-                  .split(" ") // ✅ split string into words
+                  .split(" ") 
                   .map((word, index) => (
                     <React.Fragment key={index}>
                       {word}{" "}
@@ -92,6 +92,7 @@ const BannerSlider = () => {
               </div>
 
               <Link 
+                to={`${banner.linkUrl}`}
                 className="px-12 py-4 lg:py-3 rounded-lg text-lg inter lg:text-lg bg-gradient-to-b from-[#FD1206] to-[#DD1205] transition text-white font-medium w-fit hover:shadow-lg transform hover:scale-105"
               >
                 {banner.buttonText}
