@@ -553,6 +553,77 @@ export const API = createApi({
       }),
       invalidatesTags: ['Cart'],
     }),
+
+    // Favorites
+    addFavorite: builder.mutation({
+      query: ({ productId }) => ({
+        url: '/api/v1/Favorites',
+        method: 'POST',
+        body: { productId },
+      }),
+      invalidatesTags: ['Favorites', 'Product'],
+        }),
+
+    removeFavorite: builder.mutation({
+      query: ({ productId }) => ({
+        url: `/api/v1/Favorites/${productId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Favorites', 'Product'],
+        }),
+
+    getFavorites: builder.query({
+      query: ({ page = 1, pageSize = 20 }) => ({
+        url: '/api/v1/Favorites',
+        method: 'GET',
+        params: { page, pageSize },
+      }),
+      providesTags: ['Favorites'],
+        }),
+
+    getFavoriteStatus: builder.query({
+      query: ({ productId }) => ({
+        url: `/api/v1/Favorites/status/${productId}`,
+        method: 'GET',
+      }),
+      providesTags: (result, error, { productId }) => [
+        { type: 'Favorites', id: productId }
+      ],
+        }),
+
+    toggleFavorite: builder.mutation({
+      query: ({ productId }) => ({
+        url: `/api/v1/Favorites/toggle/${productId}`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Favorites', 'Product'],
+        }),
+
+    bulkCheckFavoriteStatus: builder.mutation({
+      query: (productIds) => ({
+        url: '/api/v1/Favorites/bulk-status',
+        method: 'POST',
+        body: productIds,
+      }),
+      // Note: This returns status data, so you might want to update cache instead of invalidating
+        }),
+
+    getFavoritesCount: builder.query({
+      query: () => ({
+        url: '/api/v1/Favorites/count',
+        method: 'GET',
+      }),
+      providesTags: ['Favorites'],
+        }),
+
+    clearFavorites: builder.mutation({
+      query: () => ({
+        url: '/api/v1/Favorites/clear',
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Favorites'],
+    }),
+
   }),
 });
 
@@ -629,5 +700,15 @@ export const {
   useUpdateCartItemQuantityMutation,
   useRemoveCartItemMutation,
   useRemoveCartMutation,
-  useCreateWhatsappOrderMutation
+  useCreateWhatsappOrderMutation,
+
+  useAddFavoriteMutation,
+  useRemoveFavoriteMutation,
+  useGetFavoritesQuery,
+  useGetFavoriteStatusQuery,
+  useToggleFavoriteMutation,
+  useBulkCheckFavoriteStatusMutation,
+  useGetFavoritesCountQuery,
+  useClearFavoritesMutation,
+  
 } = API;

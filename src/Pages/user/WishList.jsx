@@ -1,139 +1,237 @@
 import React, { useState } from 'react'
 import SearchUI from '../../components/UI/SearchUI'
 import { Breadcrumb } from '../../products/Breadcrumb'
-import { Heart, Minus, Plus, ShoppingCart, Trash2 } from 'lucide-react';
+import { Heart, Loader2, Check, Trash2 } from 'lucide-react';
+import { 
+  useGetFavoritesQuery, 
+  useRemoveFavoriteMutation, 
+  useAddCartItemMutation,
+  useClearFavoritesMutation 
+} from '../../store/API';
+import { toast } from 'react-toastify';
+import { Link } from 'react-router';
 
 const WishList = () => {
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: 'Laptop',
-      size: 'Medium',
-      color: 'Blue',
-      material: 'Plastic',
-      price: 680,
-      quantity: 1,
-    },
-    {
-      id: 2,
-      name: 'Laptop',
-      size: 'Medium',
-      color: 'Blue',
-      material: 'Plastic',
-      price: 680,
-      quantity: 1,
-    },
-    {
-      id: 2,
-      name: 'Laptop',
-      size: 'Medium',
-      color: 'Blue',
-      material: 'Plastic',
-      price: 680,
-      quantity: 1,
-    },
-    {
-      id: 2,
-      name: 'Laptop',
-      size: 'Medium',
-      color: 'Blue',
-      material: 'Plastic',
-      price: 680,
-      quantity: 1,
-    },
-    {
-      id: 2,
-      name: 'Laptop',
-      size: 'Medium',
-      color: 'Blue',
-      material: 'Plastic',
-      price: 680,
-      quantity: 1,
-    },
-    {
-      id: 2,
-      name: 'Laptop',
-      size: 'Medium',
-      color: 'Blue',
-      material: 'Plastic',
-      price: 680,
-      quantity: 1,
-    },
-    {
-      id: 2,
-      name: 'Laptop',
-      size: 'Medium',
-      color: 'Blue',
-      material: 'Plastic',
-      price: 680,
-      quantity: 1,
-    },
-    {
-      id: 2,
-      name: 'Laptop',
-      size: 'Medium',
-      color: 'Blue',
-      material: 'Plastic',
-      price: 680,
-      quantity: 1,
-    },
-  ]);
+  const [page, setPage] = useState(1);
+  const pageSize = 20;
+  const [loadingProductId, setLoadingProductId] = useState(null);
+  const [showSuccess, setShowSuccess] = useState(null);
 
-  const removeItem = (id) => {
-    setCartItems((prev) => prev.filter((item) => item.id !== id));
+  // Fetch favorites
+  const { data: favoritesData, isLoading, error } = useGetFavoritesQuery({ page, pageSize });
+  console.log(favoritesData)
+  
+  // Mutations
+  const [removeFavorite, { isLoading: isRemovingFavorite }] = useRemoveFavoriteMutation();
+  const [addCartItem, { isLoading: isAddingToCart }] = useAddCartItemMutation();
+  const [clearFavorites] = useClearFavoritesMutation();
+
+  const favorites = favoritesData?.favorites || [];
+  const totalCount = favoritesData?.totalCount || 0;
+
+  const handleRemoveFavorite = async (e, productId) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    try {
+      await removeFavorite({ productId }).unwrap();
+      toast.success('Removed from favorites');
+    } catch (err) {
+      toast.error('Failed to remove from favorites');
+      console.error('Remove favorite error:', err);
+    }
   };
+
+  const handleAddToCart = async (e, productId) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    setLoadingProductId(productId);
+    
+    try {
+      await addCartItem({ productId, quantity: 1 }).unwrap();
+      setShowSuccess(productId);
+      
+      setTimeout(() => {
+        setShowSuccess(null);
+        setLoadingProductId(null);
+      }, 2000);
+    } catch (err) {
+      setLoadingProductId(null);
+      
+      if (err?.status === 401 || err?.data?.status === 401) {
+        toast.error("Please log in first");
+      } else {
+        toast.error("Failed to add to cart");
+      }
+      console.error('Add to cart error:', err);
+    }
+  };
+
+  const handleClearAll = async () => {
+    if (window.confirm('Are you sure you want to clear all favorites?')) {
+      try {
+        await clearFavorites().unwrap();
+        toast.success('All favorites cleared');
+      } catch (err) {
+        toast.error('Failed to clear favorites');
+        console.error('Clear favorites error:', err);
+      }
+    }
+  };
+
+  const renderButton = (productId) => {
+    const isThisProductLoading = isAddingToCart && loadingProductId === productId;
+    
+    if (isThisProductLoading) {
+      return (
+        <button
+          disabled
+          className="w-full cursor-not-allowed flex justify-center items-center text-sm lg:text-md bg-red-400 text-white py-2 px-4 rounded-md font-medium transition-colors duration-200"
+        >
+          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+          Adding...
+        </button>
+      );
+    }
+    
+    if (showSuccess === productId) {
+      return (
+        <button
+          disabled
+          className="w-full cursor-default flex justify-center items-center text-sm lg:text-md bg-green-500 text-white py-2 px-4 rounded-md font-medium transition-colors duration-200"
+        >
+          <Check className="w-4 h-4 mr-2" />
+          Added to cart
+        </button>
+      );
+    }
+
+    return (
+      <button
+        onClick={(e) => handleAddToCart(e, productId)}
+        className="w-full cursor-pointer flex justify-center items-center text-sm lg:text-md bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-md font-medium transition-colors duration-200"
+      >
+        Add to cart
+      </button>
+    );
+  };
+
+  if (isLoading) {
+    return (
+      <section className="inter bg-[#f7fafc] min-h-screen flex items-center justify-center">
+        <div className="text-xl">Loading favorites...</div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="inter bg-[#f7fafc] min-h-screen flex items-center justify-center">
+        <div className="text-xl text-red-600">Error loading favorites</div>
+      </section>
+    );
+  }
 
   return (
     <section className="inter bg-[#f7fafc] whitepsace-nowrap pb-8">
       {/* Mobile Search + Breadcrumb */}
-      <div className="lg:hidden px-4 pl-7 py-4 border-y bg-white lg:border-transparent border-[#dee2e6] ">
+      <div className="lg:hidden px-4 pl-7 py-4 border-y bg-white lg:border-transparent border-[#dee2e6]">
         <div className="mb-4 lg:hidden">
           <SearchUI />
         </div>
         <Breadcrumb />
       </div>
-      
-      
 
       <div className="min-h-[80vh] lg:max-w-[90vw] lg:mx-auto border border-[#dee2e6] lg:border-0">
         <div className='p-4 pl-7 pb-0 hidden lg:block'>
           <Breadcrumb />
         </div>
         
-        <div className=" p-4 pl-7 text-xl md:text-2xl font-semibold bg-white lg:bg-transparent border-b lg:border-0 border-[#dee2e6] mb-3">
-          <h1>Favorites ({cartItems.length})</h1>
+        <div className="p-4 pl-7 text-xl md:text-2xl font-semibold bg-white lg:bg-transparent border-b lg:border-0 border-[#dee2e6] mb-3 flex justify-between items-center">
+          <h1>Favorites ({totalCount})</h1>
+          {favorites?.length > 0 && (
+            <button 
+              onClick={handleClearAll}
+              className="text-sm text-red-600 hover:text-red-700 font-normal flex items-center gap-2"
+            >
+              <Trash2 className="w-4 h-4" />
+              Clear All
+            </button>
+          )}
         </div>
 
         <div className="lg:bg-transparent rounded-lg flex flex-col mx-auto md:mx-0 max-w-[95vh] md:max-w-full lg:flex-row lg:gap-4 shadow-sm lg:shadow-none p-4 space-y-4">
-          <div className='flex-5 flex gap-5 flex-col  lg:rounded-lg '>
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {cartItems.map((item, index) => (
-              
-                 <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                     <div class="relative">
-                         <img className='mx-auto max-w-[150px] py-3 md:max-w-[200px] ' src="./deals/product.avif" alt="" />
-                         <button class="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md hover:bg-gray-50">
-                             <svg class="w-5 h-5 text-red-500 fill-current" viewBox="0 0 24 24">
-                                 <path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5 2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z"/>
-                             </svg>
-                         </button>
-                     </div>
-                     <div class="p-4">
-                         <h3 class="text-xl font-bold text-gray-900 mb-1">680 AZN</h3>
-                         <p class="text-gray-600 mb-2">LapTop</p>
+          <div className='flex-5 flex gap-5 flex-col lg:rounded-lg'>
+            {favorites?.length === 0 ? (
+              <div className="text-center py-12 bg-white rounded-lg">
+                <Heart className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+                <p className="text-xl text-gray-600">Your favorites list is empty</p>
+                <p className="text-gray-500 mt-2">Start adding products you love!</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 [@media(min-width:1300px)]:grid-cols-5 lg:grid-cols-4 gap-2 whitespace-nowrap">
+                {favorites?.map((item) => (
+                  <Link 
+                    key={item.id} 
+                    to={`/details/${item.product.productId}`}
+                    className='bg-white p-1 border-1 cursor-pointer border-gray-300 rounded-lg transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-gray-400 relative'
+                  >
+                    <img 
+                      className='w-full rounded-lg p-3' 
+                      src={item.product.imageUrl ? `http://localhost:5056${item.product.imageUrl}` : "./deals/product.avif"} 
+                      alt={item.product.name || 'Product'}
+                    />
+                    <div className='font-semibold p-2 inter'>
+                      <h1 className='text-lg'>{item.product.currentPrice} AZN</h1>
+                      <p className='font-medium mb-3 line-clamp-2'>{item.product.name || 'Product'}</p>
+                      {item.product.shortDescription && (
+                        <p className='text-gray-600 font-normal whitespace-normal [@media(min-width:450px)]:break-words line-clamp-3 text-sm'>
+                          {item.product.shortDescription}
+                        </p>
+                      )}
+                    </div>
+                    <div className='flex gap-3 p-2'>
+                      {renderButton(item.product.productId)}
 
-                         <button class="w-full bg-red-600 whitespace-nowrap hover:bg-red-700 text-white font-medium py-3 px-4 rounded-md transition-colors duration-200">
-                              Add to the Cart
-                         </button>
-                     </div>
-                 </div>
-             
+                      <button 
+                        onClick={(e) => handleRemoveFavorite(e, item.product.productId)}
+                        disabled={isRemovingFavorite}
+                        className="p-3 rounded-lg border-[#DEE2E7] bg-white shadow-sm hover:bg-gray-50 transition-colors disabled:opacity-50"
+                      >
+                        <Heart 
+                          className="w-4 h-4 lg:w-5 lg:h-5 fill-red-500 text-red-500"
+                        />
+                      </button>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
 
-            ))}
-            </div>
-
+            {/* Pagination */}
+            {totalCount > pageSize && (
+              <div className="flex justify-center gap-2 mt-6">
+                <button
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className="px-4 py-2 bg-white border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                >
+                  Previous
+                </button>
+                <span className="px-4 py-2 bg-white border border-gray-300 rounded-md">
+                  Page {page} of {Math.ceil(totalCount / pageSize)}
+                </span>
+                <button
+                  onClick={() => setPage(p => p + 1)}
+                  disabled={page >= Math.ceil(totalCount / pageSize)}
+                  className="px-4 py-2 bg-white border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                >
+                  Next
+                </button>
+              </div>
+            )}
           </div>
-
         </div>
       </div>
     </section>

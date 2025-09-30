@@ -77,8 +77,6 @@ const SubCategories = () => {
     limit: 6
   });
   
-  console.log(similar?.recentlyAdded);
-  console.log(subs);
 
   // Show skeleton while loading
   if (isLoading) {
@@ -103,7 +101,6 @@ const SubCategories = () => {
         {/* Categories Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
           {subs?.subCategories?.map((category, index) => {
-            console.log(category);
             return (
               <CategoryCard 
                 key={index} 

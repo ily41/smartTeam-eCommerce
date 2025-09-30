@@ -1,19 +1,31 @@
 import { Heart, Loader2, Check } from 'lucide-react'
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router'
+import { useToggleFavoriteMutation, useGetFavoriteStatusQuery } from '../../store/API'; // adjust path
+import { toast } from 'react-toastify';
 
 const HomePageUI = ({deal, product, url, handleAddToCart, isAddingToCart}) => {
     const [loadingProductId, setLoadingProductId] = useState(null);
     const [showSuccess, setShowSuccess] = useState(false);
+    
+    // Get favorite status for this product
+    const { data: favoriteStatus } = useGetFavoriteStatusQuery({ productId: product.id });
+    const [toggleFavorite, { isLoading: isTogglingFavorite }] = useToggleFavoriteMutation();
+    const [localFavorite, setLocalFavorite] = useState(false);
 
-    // Reset success state when loading starts
+    // Update local favorite state when API data arrives
+    useEffect(() => {
+        if (favoriteStatus) {
+            setLocalFavorite(favoriteStatus.isFavorite);
+        }
+    }, [favoriteStatus]);
+
     useEffect(() => {
         if (isAddingToCart && loadingProductId === product.id) {
             setShowSuccess(false);
         }
     }, [isAddingToCart, loadingProductId, product.id]);
 
-    // Show success when loading finishes for this product
     useEffect(() => {
         if (!isAddingToCart && loadingProductId === product.id && !showSuccess) {
             setShowSuccess(true);
@@ -31,6 +43,25 @@ const HomePageUI = ({deal, product, url, handleAddToCart, isAddingToCart}) => {
         
         setLoadingProductId(productId);
         await handleAddToCart(productId);
+    };
+
+    const handleFavoriteClick = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Optimistic update
+        const newFavoriteState = !localFavorite;
+        setLocalFavorite(newFavoriteState);
+        
+        try {
+            await toggleFavorite({ productId: product.id }).unwrap();
+            toast.success(newFavoriteState ? 'Added to favorites' : 'Removed from favorites');
+        } catch (err) {
+            // Revert on error
+            setLocalFavorite(!newFavoriteState);
+            toast.error('Failed to update favorites');
+            console.error('Toggle favorite error:', err);
+        }
     };
 
     const renderButton = (productId) => {
@@ -89,8 +120,16 @@ const HomePageUI = ({deal, product, url, handleAddToCart, isAddingToCart}) => {
                 <div className='flex gap-3 p-2'>
                     {renderButton(product.id)}
 
-                    <button className="p-3 rounded-lg border-[#DEE2E7] bg-white shadow-sm">
-                      <Heart color="red" className="w-4 h-4 lg:w-5 lg:h-5 text-gray-400" />
+                    <button 
+                        onClick={handleFavoriteClick}
+                        disabled={isTogglingFavorite}
+                        className="p-3 rounded-lg border-[#DEE2E7] bg-white shadow-sm hover:bg-gray-50 transition-colors disabled:opacity-50"
+                    >
+                      <Heart 
+                        className={`w-4 h-4 lg:w-5 lg:h-5 transition-colors ${
+                            localFavorite ? 'fill-red-500 text-red-500' : 'text-gray-400'
+                        }`}
+                      />
                     </button>
                 </div>
             </Link>
@@ -108,8 +147,16 @@ const HomePageUI = ({deal, product, url, handleAddToCart, isAddingToCart}) => {
                 <div className='flex gap-3 p-2'>
                     {renderButton(product.id)}
 
-                    <button className="p-3 rounded-lg border-[#DEE2E7] bg-white shadow-sm">
-                      <Heart color="red" className="w-4 h-4 lg:w-5 lg:h-5 text-gray-400" />
+                    <button 
+                        onClick={handleFavoriteClick}
+                        disabled={isTogglingFavorite}
+                        className="p-3 rounded-lg border-[#DEE2E7] bg-white shadow-sm hover:bg-gray-50 transition-colors disabled:opacity-50"
+                    >
+                      <Heart 
+                        className={`w-4 h-4 lg:w-5 lg:h-5 transition-colors ${
+                            localFavorite ? 'fill-red-500 text-red-500' : 'text-gray-400'
+                        }`}
+                      />
                     </button>
                 </div>
             </Link>
