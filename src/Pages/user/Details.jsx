@@ -181,6 +181,7 @@ const DesktopDetailsSkeleton = () => (
 function Details() {
   const { id } = useParams();
   const [quantity, setQuantity] = useState(1);
+  const [hovered, setHovered] = useState(null)
 
   
   const [addCartItem, { isLoading: isAddingToCart, error: cartError }] = useAddCartItemMutation();
@@ -193,6 +194,7 @@ function Details() {
   } = useGetProductQuery(id, {
     skip: !id 
   });
+  console.log(product)
 
   const { data: productSpec, isLoading: isSpecLoading } = useGetProductSpecificationsQuery(product?.id);
 
@@ -455,13 +457,19 @@ function Details() {
                   onSlideChange={(swiper) => setActiveSlide(swiper.activeIndex)}
                   onSwiper={setSwiperRef}
                 >
-                  <SwiperSlide className='relative h-64 py-5 pt-8 rounded-lg'>
-                    <img 
-                      src={`http://localhost:5056${product.imageUrl}` || './deals/product.avif'}
-                      alt={product.name}
-                      className="h-48 object-contain mx-auto rounded-lg" 
-                    />
-                  </SwiperSlide>
+                  {product?.images.map(item => {
+
+                    return (
+                      <SwiperSlide className='relative h-64 py-5 pt-8 rounded-lg'>
+                        <img 
+                          src={`http://localhost:5056${item.imageUrl}` || './deals/product.avif'}
+                          alt={product.name}
+                          className="h-48 object-contain mx-auto rounded-lg" 
+                        />
+                      </SwiperSlide>
+                    )
+                  })}
+                 
                   <SwiperSlide className='relative h-64 py-5 pt-8 rounded-lg'>
                     <img 
                       src={`http://localhost:5056${product.imageUrl}` || './deals/product.avif'}
@@ -495,14 +503,14 @@ function Details() {
             {/* Thumbnails as Navigation */}
             <div className="px-4 pb-6 bg-white">
               <div className="flex space-x-2 justify-center">
-                {[1,2,3].map((item, index) => (
+                {product?.images.map((item, index) => (
                   <button 
                     key={item} 
                     className={`w-16 h-16 rounded-lg border-2 ${activeSlide === index ? 'border-red-500' : 'border-gray-200'} overflow-hidden`}
                     onClick={() => swiperRef?.slideTo(index)}
                   >
                     <img 
-                      src={`http://localhost:5056${product.imageUrl}` || './deals/product.avif'}
+                      src={`http://localhost:5056${item.imageUrl}` || './deals/product.avif'}
                       alt={`${product.name} ${index + 1}`}
                       className="w-full h-full object-cover"
                     />
@@ -583,24 +591,47 @@ function Details() {
               <div className="bg-white rounded-lg p-4 w-full flex h-full justify-center flex-col items-center py-9 sm:border-1 sm:border-[#DEE2E6]">
                 <div className='w-fit'>
                   <img 
-                    src={`http://localhost:5056${product.imageUrl}` || "./deals/productImageExample.svg"}
+                    src={hovered ? `http://localhost:5056${hovered}` : `http://localhost:5056${product.imageUrl}`  || "./deals/productImageExample.svg"}
                     alt={product.name}
-                    className="h-80 object-cover rounded-lg"
+                    className="h-80 object-cover rounded-lg transition-opacity duration-300 ease-in-out"
+                    key={hovered || product.imageUrl} // Force re-render for fade effect
+                    style={{ animation: 'fadeIn 0.3s ease-in-out' }}
                   />
                 </div>
-                
+
                 {/* Thumbnails */}
                 <div className="flex space-x-2 mt-4">
-                  {[1,2,3,4].map((item, index) => (
-                    <div key={item} className={`w-16 h-16 rounded-lg border-2 ${index === 0 ? 'border-red-500' : 'border-gray-200'} overflow-hidden`}>
-                      <img 
-                        src={`http://localhost:5056${product.imageUrl}` || "./deals/productImageExample.svg"}
-                        alt={`${product.name} ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  ))}
+                  {product?.images.map((item, index) => {
+    console.log(item)
+    return (
+    <div 
+      key={item} 
+      onMouseEnter={() => setHovered(item.imageUrl)} 
+      onMouseLeave={() => setHovered(null)} 
+      className={`w-16 h-16 rounded-lg border-2 border-gray-200 overflow-hidden cursor-pointer transition-all duration-200 ease-in-out hover:scale-110 hover:shadow-lg ${hovered === item.imageUrl ? 'ring-2 ring-red-500 ring-offset-2' : ''}`}
+    >
+      <img 
+        src={`http://localhost:5056${item.imageUrl}` || "./deals/productImageExample.svg"}
+        alt={`${product.name} ${index + 1}`}
+        className="w-full h-full object-cover transition-transform duration-200 hover:scale-105"
+      />
+    </div>
+    )
+                  })}
                 </div>
+                
+                <style jsx>{`
+                  @keyframes fadeIn {
+                    from {
+                      opacity: 0;
+                    }
+                    to {
+                      opacity: 1;
+                    }
+                  }
+                `}</style>
+
+                
               </div>
             </div>
 

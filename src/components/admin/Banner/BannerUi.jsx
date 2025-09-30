@@ -82,7 +82,18 @@ const { data: categories, isCatsLoading,  } = useGetParentCategoriesQuery();
 
     const handleCategorySelect = (option) => {
       setSelectedCategoryId(option.id);
-      setFormData(prev => ({ ...prev, linkUrl: `/${option.slug}` }));
+        
+      // Generate appropriate URL based on category level
+      let url;
+      if (option.level === 0) {
+        // Parent category: /parentcat
+        url = `/${option.slug}`;
+      } else {
+        // Subcategory (level 1 or 2): /products/subcat
+        url = `/products/${option.slug}`;
+      }
+      
+      setFormData(prev => ({ ...prev, linkUrl: url }));
       setIsDropdownOpen(false);
     };
 
@@ -643,89 +654,89 @@ const EditBannerModal = ({ isOpen, onClose, banner }) => {
               return (
                 
                   <div 
-                                key={banner.id} 
-                                className="bg-gray-800 border  border-gray-700 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300"
+                    key={banner.id} 
+                    className="bg-gray-800 border  border-gray-700 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300"
+                  >
+                  <div className="md:flex">
+                    {/* Banner Image */}
+                    <div className="md:w-1/3 relative min-h-[180px] h-64 md:h-auto bg-gray-700">
+                    
+                      <img
+                        className="w-full h-full  object-cover"
+                        src={`http://localhost:5056${banner.imageUrl}`}
+                        alt={banner.title}
+                        onError={(e) => {
+                          e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200' viewBox='0 0 400 200'%3E%3Crect width='400' height='200' fill='%23374151'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%239CA3AF' font-size='16'%3ENo Image%3C/text%3E%3C/svg%3E";
+                        }}
+                      />
+                      
+                      {/* Status Badge */}
+                      <div className="absolute top-3 left-3">
+                        <span className={`${banner.isActive ? 'bg-green-600' : 'bg-red-600'} text-white px-3 py-1 rounded-full text-sm font-semibold`}>
+                          {banner.isActive ? 'Active' : 'Inactive'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Banner Content */}
+                    <div className="md:w-2/3 p-6 flex flex-col justify-between">
+                      <div>
+                        <div className="flex justify-between items-start mb-4">
+                          <div className="flex-1">
+                            <h3 className="text-2xl font-bold text-white mb-2">
+                              {banner.title}
+                            </h3>
+                            <p className="text-gray-400 text-base leading-relaxed">
+                              {banner.description}
+                            </p>
+                          </div>
+                          
+                          {/* Action Buttons */}
+                          <div className="flex gap-2 ml-4">
+                            <button
+                              onClick={() => {
+                                setModalType("edit");
+                                setSelectedBanner(banner);
+                              }}
+                              className="bg-blue-600 hover:bg-blue-700 p-3 rounded-lg shadow-lg transform hover:scale-110 transition-all duration-200"
+                            >
+                              <Pen className="w-4 h-4 text-white" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteBanner(banner.id)}
+                              className="bg-red-600 hover:bg-red-700 p-3 rounded-lg shadow-lg transform hover:scale-110 transition-all duration-200"
+                            >
+                              <Trash className="w-4 h-4 text-white" />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Banner Details */}
+                        <div className="space-y-3">
+                          {banner.linkUrl && (
+                            <div className="flex items-center text-sm">
+                              <span className="text-gray-400 w-20">Link:</span>
+                              <a 
+                                href={banner.linkUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-400 hover:text-blue-300 hover:underline"
                               >
-                                <div className="md:flex">
-                                  {/* Banner Image */}
-                                  <div className="md:w-1/3 relative min-h-[180px] h-64 md:h-auto bg-gray-700">
-                                  
-                                    <img
-                                      className="w-full h-full  object-cover"
-                                      src={`http://localhost:5056${banner.imageUrl}`}
-                                      alt={banner.title}
-                                      onError={(e) => {
-                                        e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200' viewBox='0 0 400 200'%3E%3Crect width='400' height='200' fill='%23374151'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%239CA3AF' font-size='16'%3ENo Image%3C/text%3E%3C/svg%3E";
-                                      }}
-                                    />
-                                    
-                                    {/* Status Badge */}
-                                    <div className="absolute top-3 left-3">
-                                      <span className={`${banner.isActive ? 'bg-green-600' : 'bg-red-600'} text-white px-3 py-1 rounded-full text-sm font-semibold`}>
-                                        {banner.isActive ? 'Active' : 'Inactive'}
-                                      </span>
-                                    </div>
-                                  </div>
-              
-                                  {/* Banner Content */}
-                                  <div className="md:w-2/3 p-6 flex flex-col justify-between">
-                                    <div>
-                                      <div className="flex justify-between items-start mb-4">
-                                        <div className="flex-1">
-                                          <h3 className="text-2xl font-bold text-white mb-2">
-                                            {banner.title}
-                                          </h3>
-                                          <p className="text-gray-400 text-base leading-relaxed">
-                                            {banner.description}
-                                          </p>
-                                        </div>
-                                        
-                                        {/* Action Buttons */}
-                                        <div className="flex gap-2 ml-4">
-                                          <button
-                                            onClick={() => {
-                                              setModalType("edit");
-                                              setSelectedBanner(banner);
-                                            }}
-                                            className="bg-blue-600 hover:bg-blue-700 p-3 rounded-lg shadow-lg transform hover:scale-110 transition-all duration-200"
-                                          >
-                                            <Pen className="w-4 h-4 text-white" />
-                                          </button>
-                                          <button
-                                            onClick={() => handleDeleteBanner(banner.id)}
-                                            className="bg-red-600 hover:bg-red-700 p-3 rounded-lg shadow-lg transform hover:scale-110 transition-all duration-200"
-                                          >
-                                            <Trash className="w-4 h-4 text-white" />
-                                          </button>
-                                        </div>
-                                      </div>
-              
-                                      {/* Banner Details */}
-                                      <div className="space-y-3">
-                                        {banner.linkUrl && (
-                                          <div className="flex items-center text-sm">
-                                            <span className="text-gray-400 w-20">Link:</span>
-                                            <a 
-                                              href={banner.linkUrl}
-                                              target="_blank"
-                                              rel="noopener noreferrer"
-                                              className="text-blue-400 hover:text-blue-300 hover:underline"
-                                            >
-                                              {banner.linkUrl}
-                                            </a>
-                                          </div>
-                                        )}
-                                        
-                                        <div className="flex items-center text-sm">
-                                          <span className="text-gray-400 w-20">Created:</span>
-                                          <span className="text-gray-300">
-                                            {formatDate(banner.createdAt)}
-                                          </span>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
+                                {banner.linkUrl}
+                              </a>
+                            </div>
+                          )}
+                          
+                          <div className="flex items-center text-sm">
+                            <span className="text-gray-400 w-20">Created:</span>
+                            <span className="text-gray-300">
+                              {formatDate(banner.createdAt)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                   </div>
               )
 

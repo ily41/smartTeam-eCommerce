@@ -9,9 +9,14 @@ export function Breadcrumb() {
   const formatName = (value) =>
     value.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
+  // Filter out segments that look like IDs
+  const isId = (value) => {
+    // Check if it's a number or looks like a UUID/ObjectId
+    return /^[0-9]+$/.test(value) || /^[a-f0-9]{24}$/i.test(value) || /^[0-9a-f-]{36}$/i.test(value);
+  };
+
   return (
     <nav className="flex items-center space-x-2 text-sm text-[#8B96A5] inter">
-      {/* Home link always visible */}
       <Link
         to="/"
         className="hover:text-gray-900 transition-colors text-sm lg:text-lg"
@@ -20,6 +25,9 @@ export function Breadcrumb() {
       </Link>
 
       {pathnames.map((value, index) => {
+        // Skip if it looks like an ID
+        if (isId(value)) return null;
+
         const to = `/${pathnames.slice(0, index + 1).join("/")}`;
         const isLast = index === pathnames.length - 1;
 
