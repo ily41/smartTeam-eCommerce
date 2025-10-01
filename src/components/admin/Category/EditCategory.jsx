@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 const EditCategoryUI = ({item, setOpen, categories}) => {
     const [editCategory, { isLoading: isCategoryLoading }] = useEditCategoryMutation(); 
     const [parent, setParent] = useState(null)
-    console.log(parent)
+    console.log(item)
     
     const [formData, setFormData] = useState({
       name: "",

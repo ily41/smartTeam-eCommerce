@@ -32,7 +32,6 @@ const EditProduct = ({setOpen, edit}) => {
       }
     }, [edit]);
 
-    console.log(formData)
 
     const handleInputChange = (e) => {
       const { name, value, type, checked } = e.target;
@@ -54,7 +53,6 @@ const EditProduct = ({setOpen, edit}) => {
             stockQuantity: formData.stockQuantity,
             categoryId: formData.categoryId,
         }).unwrap()
-        console.log(result)
 
         toast.success("Category updated succesfull")
         

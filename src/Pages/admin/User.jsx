@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 const Users = () => {
     const { data: users, error, isLoading, refetch } = useGetUsersQuery();
     const { data: userRoles, isRolesLoading  } = useGetUserRolesQuery();
+    console.log(userRoles)
     const { data: userStatistics, error: Serror, isLoading: SisLoading, refetch: refetchStatistics } = useGetUserStaticsQuery();
     const [deleteUser, { isDeleteLoading }] = useDeleteUserMutation();
     const [editRole, { isRoleLoading }] = useEditUserRoleMutation();
@@ -16,16 +17,14 @@ const Users = () => {
     const [modalType, setModalType] = useState(null);
     const [edit, setEdit] = useState(null)
     const [activeDropdown, setActiveDropdown] = useState(null);
-    console.log(activeDropdown)
     const [isUpdatingRole, setIsUpdatingRole] = useState(null);
-    const dropdownRef = useRef(null);
 
     const [activateUser, { isLoading: isActivateLoading }] = useActivateUserMutation();
     const [deActivateUser, { isLoading: isDeActivateUserLoading }] = useDeActivateUserMutation();
 
     const availableRoles = [
         { key: 'Admin', label: 'Admin', icon: FaUserShield },
-        { key: 'normalUsers', label: 'Normal User', icon: FaUser },
+        { key: 'NormalUser', label: 'Normal User', icon: FaUser },
         { key: 'Retail', label: 'Retail', icon: FaStore },
         { key: 'Wholesale', label: 'Wholesale', icon: FaBoxes },
         { key: 'VIP', label: 'VIP', icon: FaCrown }
@@ -33,7 +32,9 @@ const Users = () => {
 
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+            // Check if click is outside all dropdowns
+            const clickedOutside = !event.target.closest('.role-dropdown-container');
+            if (clickedOutside) {
                 setActiveDropdown(null);
             }
         };
@@ -45,14 +46,14 @@ const Users = () => {
     }, []);
 
     const handleRoleChange = async (userId, newRole) => {
-        console.log("works")
         setIsUpdatingRole(userId);
-        console.log(userId, newRole)
         try {
-
-            const result = await editRole(userId, newRole).unwrap();
+            console.log(userId)
+            console.log(newRole)
+            const result = await editRole({ id: userId, role: newRole }).unwrap();
             
-            toast.success(`Role updated to ${newRole} successfully`);
+            const roleLabel = availableRoles.find(r => r.key === newRole)?.label || newRole;
+            toast.success(`Role updated to ${userRoles[newRole].name} successfully`);
             refetch();
             refetchStatistics();
             setActiveDropdown(null);
@@ -65,7 +66,6 @@ const Users = () => {
     };
 
     const handleActivateUser = async (id) => {
-        console.log(id)
         try {
             const result = await activateUser({ id }).unwrap();
             refetch()
@@ -78,7 +78,6 @@ const Users = () => {
         try {
             const result = await deActivateUser({ id }).unwrap();
             refetch()
-            console.log(result)
         } catch (error) {
             console.log(error)
         }
@@ -102,10 +101,12 @@ const Users = () => {
     };
 
     const handleDelete = async (id) => {
+        console.log(id)
         try {
             const result = await deleteUser({
                 id
             }).unwrap()
+            console.log(result)
 
             toast.success("User deleted succesfully")
             handleCloseModal()
@@ -146,10 +147,6 @@ const Users = () => {
                     <h1 className="text-2xl font-bold text-white">Users</h1>
                     <p className="text-gray-400 mt-1">Manage user accounts and permissions</p>
                 </div>
-                <button className="bg-white text-gray-900 px-4 py-2 rounded-lg font-medium hover:bg-gray-100 transition-colors duration-200 flex items-center gap-2">
-                    <FaUserPlus className="text-sm" />
-                    Add New User
-                </button>
             </div>
 
             {/* Stats Cards */}
@@ -273,66 +270,72 @@ const Users = () => {
                                 </div>
                             </div>
 
-        <div className="p-6 pb-4">
-            <div className="flex flex-col items-center text-center">
-                <div className="w-20 h-20 rounded-full overflow-hidden mb-4 border-4 border-gray-600">
-                    <img
-                        src='https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face'
-                        className="w-full h-full object-cover"
-                        alt={`${item.firstName} ${item.lastName}`}
-                    />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-1">{item.firstName} {item.lastName}</h3>
-                <p className="text-gray-400 text-sm mb-3">{item.email}</p>
-                {/* Role Dropdown */}
-                <div className="relative" ref={dropdownRef}>
-                    <div
-                        className={`px-3 py-1 rounded-full cursor-pointer text-xs font-medium flex items-center gap-2 hover:opacity-80 transition-opacity ${getRoleColor(item.roleName)} ${isUpdatingRole === item.id ? 'opacity-50' : ''}`}
-                    >
-                        {isUpdatingRole === item.id ? (
-                            <LoaderIcon className="w-3 h-3 animate-spin" />
-                        ) : ( 
-                            <>
-                                {React.createElement(getRoleIcon(item.roleName), { className: "text-xs" })}
-                                <span>{availableRoles.find(r => r.key === item.roleName)?.label || item.roleName}</span>
-                                <FaChevronDown className={`text-xs transition-transform ${activeDropdown === item.id ? 'rotate-180' : ''}`} />
-                            </>
-                        )}
-                    </div>
-                    {/* Dropdown Menu */}
-                    {activeDropdown === item.id && (
-                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 w-48 bg-gray-700 border border-gray-600 rounded-lg shadow-xl z-50 overflow-hidden">
-                            <div className="py-1">
-                                {userRoles.map(role => {
-                                    const IconComponent = availableRoles[role.value].icon;
-                                    const isCurrentRole = item.roleName === role.name;
+                            <div className="p-6 pb-4">
+                                <div className="flex flex-col items-center text-center">
+                                    <div className="w-20 h-20 rounded-full overflow-hidden mb-4 border-4 border-gray-600">
+                                        <img
+                                            src='https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face'
+                                            className="w-full h-full object-cover"
+                                            alt={`${item.firstName} ${item.lastName}`}
+                                        />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-white mb-1">{item.firstName} {item.lastName}</h3>
+                                    <p className="text-gray-400 text-sm mb-3">{item.email}</p>
                                     
-                                    return (
-                                        <button
-                                            key={role.value}
-                                            onClick={() => handleRoleChange(item.id, role.value)}
-                                            className={`w-full px-4 py-2 text-sm text-left hover:bg-gray-600 transition-colors flex items-center gap-3 ${isCurrentRole ? 'bg-gray-600 cursor-default' : 'cursor-pointer'
-                                                }`}
-                                            disabled={isCurrentRole || isUpdatingRole === item.id}
+                                    {/* Role Dropdown */}
+                                    <div className="relative role-dropdown-container">
+                                        <div
+                                            onClick={() => setActiveDropdown(activeDropdown === item.id ? null : item.id)}
+                                            className={`px-3 py-1 rounded-full cursor-pointer text-xs font-medium flex items-center gap-2 hover:opacity-80 transition-opacity ${getRoleColor(item.roleName)} ${isUpdatingRole === item.id ? 'opacity-50 pointer-events-none' : ''}`}
                                         >
-                                            <div className={`flex items-center justify-center w-5 h-5 rounded-full text-xs ${getRoleColor(role.value).replace('bg-', 'bg-').replace('/20', '/30')}`}>
-                                                <IconComponent className="text-xs" />
-                                            </div>
-                                            <span className={`flex-1 ${isCurrentRole ? 'text-white' : 'text-gray-200'}`}>
-                                                {availableRoles[role.value].label}
-                                            </span>
-                                            {isCurrentRole && (
-                                                <FaCheck className="text-green-400 text-xs" />
+                                            {isUpdatingRole === item.id ? (
+                                                <LoaderIcon className="w-3 h-3 animate-spin" />
+                                            ) : ( 
+                                                <>
+                                                    {React.createElement(getRoleIcon(item.roleName), { className: "text-xs" })}
+                                                    <span>{availableRoles.find(r => r.key === item.roleName)?.label || item.roleName}</span>
+                                                    <FaChevronDown className={`text-xs transition-transform ${activeDropdown === item.id ? 'rotate-180' : ''}`} />
+                                                </>
                                             )}
-                                        </button>
-                                    );
-                                })}
+                                        </div>
+                                        
+                                        {/* Dropdown Menu */}
+                                        {activeDropdown === item.id && (
+                                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 w-48 bg-gray-700 border border-gray-600 rounded-lg shadow-xl z-50 overflow-hidden">
+                                                <div className="py-1">
+                                                    {userRoles?.map(role => {
+                                                        
+                                                       
+                                                        const roleConfig = availableRoles.find(r => r.key === role.name);
+                                                        console.log(role)
+                                                        const IconComponent = roleConfig.icon;
+                                                        const isCurrentRole = item.roleName === role.name;
+                                                        
+                                                        return (
+                                                            <button
+                                                                key={role.value}
+                                                                onClick={() => !isCurrentRole && handleRoleChange(item.id, role.value)}
+                                                                className={`w-full px-4 py-2 text-sm text-left hover:bg-gray-600 transition-colors flex items-center gap-3 ${isCurrentRole ? 'bg-gray-600 cursor-default' : 'cursor-pointer'}`}
+                                                                disabled={isCurrentRole || isUpdatingRole === item.id}
+                                                            >
+                                                                <div className={`flex items-center justify-center w-5 h-5 rounded-full text-xs ${getRoleColor(role.name).replace('bg-', 'bg-').replace('/20', '/30')}`}>
+                                                                    <IconComponent className="text-xs" />
+                                                                </div>
+                                                                <span className={`flex-1 ${isCurrentRole ? 'text-white' : 'text-gray-200'}`}>
+                                                                    {roleConfig.label}
+                                                                </span>
+                                                                {isCurrentRole && (
+                                                                    <FaCheck className="text-green-400 text-xs" />
+                                                                )}
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    )}
-                </div>
-            </div>
-        </div>
 
                             <div className="px-6 pb-6 space-y-3">
                                 <div className="flex items-center justify-between text-sm">

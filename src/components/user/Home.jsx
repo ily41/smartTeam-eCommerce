@@ -514,9 +514,9 @@ const Home = () => {
                   <HotDealCardSkeleton />
                   <HotDealCardSkeleton />
                 </>
-              ) : (
+              ) : (                          
                 hotDeals?.slice(0, 2).map(item => (
-                  <div 
+                  <Link to={`/details/${item.id}`} 
                     key={item.id} 
                     className='relative py-5 inter border border-gray-300 lg:border-t-0 lg:border-b-0 bg-white w-full flex flex-col items-center gap-2'
                   >
@@ -531,7 +531,7 @@ const Home = () => {
                     <div className='absolute top-2 right-2 w-8 h-8 p-6 flex justify-center items-center rounded-full bg-red-500 text-white inter'>
                       <p className='text-xs font-semibold'>-{item.discountPercentage}%</p>
                     </div>
-                  </div>
+                  </Link>
                 ))
               )}
             </div>
@@ -547,7 +547,7 @@ const Home = () => {
                 </>
               ) : (
                 hotDeals?.slice(0, 4).map(item => (
-                  <div 
+                  <Link to={`/details/${item.id}`}  
                     key={item.id} 
                     className='relative py-5 inter border border-gray-300 border-t-0 border-b-0 bg-white w-full flex flex-col items-center gap-2 min-h-[15vh] p-3'
                   >
@@ -562,7 +562,7 @@ const Home = () => {
                     <div className='absolute top-2 right-2 w-8 h-8 p-6 flex justify-center items-center rounded-full bg-red-500 text-white inter'>
                       <p className='text-xs font-semibold'>-{item.discountPercentage}%</p>
                     </div>
-                  </div>
+                  </Link>
                 ))
               )}
             </div>

@@ -440,6 +440,23 @@ export const API = createApi({
       invalidatesTags: ['Banners'],
     }),
 
+    updateBanner: builder.mutation({
+      query: ({ id, bannerData, imageFile }) => {
+        const formData = new FormData();
+        formData.append("bannerData", JSON.stringify(bannerData));
+        if (imageFile) {
+          formData.append("imageFile", imageFile);
+        }
+        
+        return {
+          url: `/api/v1/Admin/banners/${id}`,
+          method: 'PUT',
+          body: formData,
+        };
+      },
+      invalidatesTags: ['Banners'],
+    }),
+
     // *FILTERS*
     getFilters: builder.query({
       query: () => ({
@@ -635,17 +652,13 @@ export const {
   useAssignFiltersBulkMutation,
   useGetCategoryFiltersQuery,
 
-
-
   useGetBannersQuery,
   useDeleteBannerMutation,
   useAddBannerMutation,
-
-
+  useUpdateBannerMutation,
   useLoginMutation,
   useSignupMutation,
   useGetMeQuery,
-
 
   useGetCategoriesQuery,
   useGetSubCategoriesQuery,
@@ -656,14 +669,10 @@ export const {
   useDeleteCategoryMutation,
   useGetCategoryQuery,
 
-
   useGetProductsQuery,
   useGetHotDealsQuery, 
   useGetRecommendedQuery,
 
-
-  
-  
   useGetUserStaticsQuery,
   useEditUserMutation,
   useDeleteUserMutation,
@@ -671,7 +680,6 @@ export const {
   useGetUsersQuery,
   useActivateUserMutation,
   useDeActivateUserMutation,
-
 
   useAddProductMutation,
   useDeleteProductMutation,
@@ -686,11 +694,6 @@ export const {
   useAddDetailImagesMutation,
   useSearchProductsQuery,
 
-
-  
-
-
-  
   useLogoutMutation,
   useEditUserRoleMutation,
   useChangePasswordMutation,

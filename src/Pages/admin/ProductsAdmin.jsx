@@ -52,7 +52,6 @@ const ProductsUI = () => {
     };
 
   const handleCloseModal = () => {
-    console.log("works")
     setModalType(false)
     setOpen(false);
     refetch();
@@ -159,7 +158,6 @@ const ProductsUI = () => {
             {/* Products Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {products?.map((product) => {
-                console.log(product.primaryImageUrl)
               return(
                 <div 
                   key={product.id} 

@@ -31,13 +31,13 @@ const ProductDetailPage = () => {
 
   // API hooks
   const { data: product, isLoading: productLoading } = useGetProductQuery(id);
+  console.log(product)
   
   const { data: specifications, isLoading: specsLoading, refetch: refetchSpecs } = useGetProductSpecificationsQuery(id);
   const [addSpecs, { isLoading: adding }] = useAddProductSpecificationsMutation();
   const [updateSpecs, { isLoading: updating }] = useUpdateProductSpecificationsMutation();
   const [deleteSpecs] = useDeleteProductSpecificationsMutation();
-console.log("PRODUCt" +product)
-  // Initialize editing state when specifications load
+
   React.useEffect(() => {
     if (specifications?.specificationGroups) {
       setSpecificationGroups(specifications.specificationGroups);
@@ -90,20 +90,20 @@ console.log("PRODUCt" +product)
 
 
   const removeItemFromGroup = (groupIndex, itemIndex) => {
-  setSpecificationGroups(prev =>
-    prev.map((group, gIndex) =>
-      gIndex === groupIndex
-        ? {
-            ...group,
-            items:
-              group.items.length > 1
-                ? group.items.filter((_, i) => i !== itemIndex)
-                : group.items, // əgər 1 item qalıbsa silmirik
-          }
-        : group
-    )
-  );
-};
+    setSpecificationGroups(prev =>
+      prev.map((group, gIndex) =>
+        gIndex === groupIndex
+          ? {
+              ...group,
+              items:
+                group.items.length > 1
+                  ? group.items.filter((_, i) => i !== itemIndex)
+                  : group.items, // əgər 1 item qalıbsa silmirik
+            }
+          : group
+      )
+    );
+  };
 
 
   const updateItem = (groupIndex, itemIndex, field, value) => {
@@ -293,37 +293,63 @@ console.log("PRODUCt" +product)
 
             
 
-            {/* Management Actions */}
-            <div className="flex gap-3">
-              <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors">
-                <Edit className="w-4 h-4" />
-                Edit Product
-              </button>
-              <button className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors">
-                View Images
-              </button>
+          
+          </div>
+          
+          {/* Product Details */}
+          <div className="bg-gray-800 col-span-2 rounded-lg p-4">
+            <h3 className="text-lg font-semibold mb-3">Product Details</h3>
+            <div className="space-y-3">
+              <div>
+                <p className="text-gray-400 text-sm">Category</p>
+                <p className="text-white">{product.categoryName || 'Uncategorized'}</p>
+              </div>
+              <div>
+                <p className="text-gray-400 text-sm">Description</p>
+                <p className="text-gray-300">{product.description}</p>
+              </div>
+              {product.shortDescription && (
+                <div>
+                  <p className="text-gray-400 text-sm">Short Description</p>
+                  <p className="text-gray-300">{product.shortDescription}</p>
+                </div>
+              )}
             </div>
           </div>
-          {/* Product Details */}
-            <div className="bg-gray-800 col-span-2 rounded-lg p-4">
-              <h3 className="text-lg font-semibold mb-3">Product Details</h3>
-              <div className="space-y-3">
-                <div>
-                  <p className="text-gray-400 text-sm">Category</p>
-                  <p className="text-white">{product.categoryName || 'Uncategorized'}</p>
-                </div>
-                <div>
-                  <p className="text-gray-400 text-sm">Description</p>
-                  <p className="text-gray-300">{product.description}</p>
-                </div>
-                {product.shortDescription && (
-                  <div>
-                    <p className="text-gray-400 text-sm">Short Description</p>
-                    <p className="text-gray-300">{product.shortDescription}</p>
+
+          {/* Product Images Gallery */}
+          {product.images && product.images.length > 0 && (
+            <div className="bg-gray-800 col-span-2 rounded-lg p-6">
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <Package className="w-5 h-5" />
+                Product Images ({product.images.length})
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {product.images.map((image, index) => (
+                  <div key={image.id} className="relative group">
+                    <div className="aspect-square bg-gray-700 rounded-lg overflow-hidden">
+                      <img
+                        src={`http://localhost:5056${image.imageUrl}`}
+                        alt={image.altText || `Product image ${index + 1}`}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        onError={(e) => {
+                          e.target.src = "/placeholder-image.jpg";
+                        }}
+                      />
+                    </div>
+                    {image.isPrimary && (
+                      <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded-md font-semibold">
+                        Primary
+                      </div>
+                    )}
+                    <div className="absolute bottom-2 right-2 bg-gray-900/80 text-white text-xs px-2 py-1 rounded">
+                      #{image.sortOrder}
+                    </div>
                   </div>
-                )}
+                ))}
               </div>
             </div>
+          )}
         </div>
 
         {/* Specifications Section */}

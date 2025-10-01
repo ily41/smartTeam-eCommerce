@@ -118,7 +118,7 @@ const Cart = () => {
 const createOrder = async () => {
   try {
     const orderPayload = {
-      phoneNumber: "0556427815", 
+      phoneNumber: "0704050424", 
       customerName: me?.fullName || "",
       customerPhone: me?.phoneNumber?.replace(/\D/g, '') || "0000000",
       items: cartItemsD?.items?.map(item => ({

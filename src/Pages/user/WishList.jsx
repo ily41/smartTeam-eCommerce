@@ -6,22 +6,26 @@ import {
   useGetFavoritesQuery, 
   useRemoveFavoriteMutation, 
   useAddCartItemMutation,
-  useClearFavoritesMutation 
+  useClearFavoritesMutation, 
+  useGetRecommendedQuery
 } from '../../store/API';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router';
+import SimilarProducts from '../../components/UI/SimilarRecommendedProducts'
 
 const WishList = () => {
   const [page, setPage] = useState(1);
   const pageSize = 20;
   const [loadingProductId, setLoadingProductId] = useState(null);
   const [showSuccess, setShowSuccess] = useState(null);
+  const {data: recommendation, isRecLoading} = useGetRecommendedQuery({limit: 6})
+  console.log(recommendation)
+  
 
-  // Fetch favorites
   const { data: favoritesData, isLoading, error } = useGetFavoritesQuery({ page, pageSize });
   console.log(favoritesData)
   
-  // Mutations
+
   const [removeFavorite, { isLoading: isRemovingFavorite }] = useRemoveFavoriteMutation();
   const [addCartItem, { isLoading: isAddingToCart }] = useAddCartItemMutation();
   const [clearFavorites] = useClearFavoritesMutation();
@@ -136,10 +140,7 @@ const WishList = () => {
   return (
     <section className="inter bg-[#f7fafc] whitepsace-nowrap pb-8">
       {/* Mobile Search + Breadcrumb */}
-      <div className="lg:hidden px-4 pl-7 py-4 border-y bg-white lg:border-transparent border-[#dee2e6]">
-        <div className="mb-4 lg:hidden">
-          <SearchUI />
-        </div>
+      <div className="lg:hidden px-4 pl-7 py-4  bg-white lg:border-transparent ">
         <Breadcrumb />
       </div>
 
@@ -233,6 +234,11 @@ const WishList = () => {
             )}
           </div>
         </div>
+
+        <SimilarProducts
+                  products={recommendation?.recentlyAdded} 
+                  isLoading={isRecLoading} 
+                />
       </div>
     </section>
   );
