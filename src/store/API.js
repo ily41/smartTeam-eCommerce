@@ -343,7 +343,7 @@ export const API = createApi({
           categoryId,
         },
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'Products', id }, 'Products'],
+      invalidatesTags:['Products'],
     }),
 
     filterProducts: builder.mutation({
@@ -441,22 +441,14 @@ export const API = createApi({
     }),
 
     updateBanner: builder.mutation({
-      query: ({ id, bannerData, imageFile }) => {
-        const formData = new FormData();
-        formData.append("bannerData", JSON.stringify(bannerData));
-        if (imageFile) {
-          formData.append("imageFile", imageFile);
-        }
-        
-        return {
-          url: `/api/v1/Admin/banners/${id}`,
-          method: 'PUT',
-          body: formData,
-        };
-      },
-      invalidatesTags: ['Banners'],
-    }),
-
+  query: ({ id, ...data }) => ({
+    url: `/api/v1/Admin/banners/${id}`,
+    method: 'PUT',
+    body: data,
+    // Remove prepareHeaders - let it use default JSON content-type
+  }),
+  invalidatesTags: ['Banners'],
+}),
     // *FILTERS*
     getFilters: builder.query({
       query: () => ({

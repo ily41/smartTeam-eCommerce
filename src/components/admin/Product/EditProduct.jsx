@@ -14,7 +14,7 @@ const EditProduct = ({setOpen, edit}) => {
       isHotDeal:  edit?.isHotDeal,
       isActive: edit?.isActive,
       stockQuantity:  edit?.stockQuantity,
-      categoryId:  edit?.categoryName,
+      categoryId:  edit?.categoryId,
     });
 
     useEffect(() => {
@@ -27,7 +27,7 @@ const EditProduct = ({setOpen, edit}) => {
           isHotDeal: edit.isHotDeal,
           isActive: edit.isActive,
           stockQuantity: edit.stockQuantity,
-          categoryId: edit.categoryName, // əgər id lazımdırsa burda düzəlt
+          categoryId: edit.categoryId, 
         });
       }
     }, [edit]);
@@ -45,21 +45,23 @@ const EditProduct = ({setOpen, edit}) => {
       e.preventDefault(); 
        try {
         const result = await editProduct({
+            id: edit.id,
             name: formData.name,
             description: formData.description,
             shortDescription: formData.shortDescription,
             isHotDeal: formData.isHotDeal,
-            isACtive: formData.isActive,
+            isActive: true,
             stockQuantity: formData.stockQuantity,
             categoryId: formData.categoryId,
         }).unwrap()
+        console.log(result)
 
-        toast.success("Category updated succesfull")
+        toast.success("Product updated succesfull")
         
         setOpen()
       }catch (error){
         console.log(error)
-          toast.error(error?.data?.slice(1,100) || "Editin category failed");
+          toast.error(error?.data?.slice(1,100) || "Editin Product failed");
       }
     }
     
@@ -137,19 +139,6 @@ const EditProduct = ({setOpen, edit}) => {
           </label>
         </div>
 
-        <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            id="isActive"
-            name="isActive"
-            checked={formData.isActive}
-            onChange={handleInputChange}
-            className="w-4 h-4 text-indigo-600 bg-[#2c2c2c] border-gray-600 rounded focus:ring-indigo-500 focus:ring-2"
-          />
-          <label htmlFor="isHotDeal" className="text-sm font-medium">
-            Mark as Active
-          </label>
-        </div>
 
         {/* Description */}
         <div>

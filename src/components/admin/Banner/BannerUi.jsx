@@ -438,21 +438,26 @@ const BannersUI = () => {
     const handleSubmit = async (e) => {
       e.preventDefault();
 
-      const cleanFormData = {
-        ...formData,
-        type: Number(formData.type),
-        sortOrder: Number(formData.sortOrder),
-        isActive: Boolean(formData.isActive)
-      };
-      console.log(banner.id)
-        console.log(file)
 
       try {
+        console.log(banner.id)
+        console.log(formData)
         
+        const cleanFormData = {
+          title: formData.title,
+          description: formData.description,
+          linkUrl: formData.linkUrl,
+          buttonText: formData.buttonText,
+          type: Number(formData.type),
+          isActive: Boolean(formData.isActive),
+          sortOrder: Number(formData.sortOrder),
+          startDate: formData.startDate,
+          endDate: formData.endDate
+        };
+      
         await updateBanner({
           id: banner.id,
-          bannerData: cleanFormData,
-          imageFile: file
+          ...cleanFormData  // Spread the data at the same level as id
         }).unwrap();
 
         toast.success("Banner updated successfully!");
@@ -464,37 +469,7 @@ const BannersUI = () => {
       }
     };
 
-    const handleImageChange = (e) => {
-      const selectedFile = e.target.files[0];
-      if (selectedFile) {
-        if (selectedFile.size > 10 * 1024 * 1024) {
-          toast.error("File size must be less than 10MB");
-          return;
-        }
 
-        if (!selectedFile.type.startsWith('image/')) {
-          toast.error("Please select a valid image file");
-          return;
-        }
-
-        setFile(selectedFile);
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          setImagePreview(e.target.result);
-        };
-        reader.readAsDataURL(selectedFile);
-      }
-    };
-
-    const handleRemoveImage = () => {
-      setFile(null);
-      setImagePreview(null);
-      const fileInput = document.getElementById('edit-banner-image-input');
-      if (fileInput) {
-        fileInput.value = '';
-      }
-    };
 
     return (
       <div className="bg-gray-800 rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -552,83 +527,6 @@ const BannersUI = () => {
               className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Enter banner description"
             />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Update Banner Image (Optional)
-            </label>
-
-            {/* Current Image Preview */}
-            {banner?.imageUrl && !imagePreview && (
-              <div className="mb-4">
-                <p className="text-sm text-gray-400 mb-2">Current Image:</p>
-                <img
-                  src={`http://localhost:5056${banner.imageUrl}`}
-                  alt="Current banner"
-                  className="w-full h-48 object-cover rounded-lg border-2 border-gray-600"
-                />
-              </div>
-            )}
-
-            {!imagePreview ? (
-              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-600 border-dashed rounded-lg hover:border-gray-500 transition-colors">
-                <div className="space-y-1 text-center">
-                  <Image className="mx-auto h-12 w-12 text-gray-400" />
-                  <div className="flex text-sm text-gray-400">
-                    <label className="relative cursor-pointer bg-gray-700 rounded-md font-medium text-blue-400 hover:text-blue-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500 px-2 py-1">
-                      <span>Upload new file</span>
-                      <input
-                        id="edit-banner-image-input"
-                        type="file"
-                        className="sr-only"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                      />
-                    </label>
-                  </div>
-                  <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
-                </div>
-              </div>
-            ) : (
-              <div className="relative">
-                <div className="relative rounded-lg overflow-hidden border-2 border-gray-600">
-                  <img
-                    src={imagePreview}
-                    alt="New preview"
-                    className="w-full h-48 object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-200">
-                    <button
-                      type="button"
-                      onClick={handleRemoveImage}
-                      className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full transition-colors duration-200"
-                    >
-                      <Trash className="w-5 h-5" />
-                    </button>
-                  </div>
-                </div>
-
-                <div className="mt-3 flex items-center justify-between bg-gray-700 rounded-lg p-3">
-                  <div className="flex items-center space-x-3">
-                    <Image className="w-5 h-5 text-gray-400" />
-                    <div>
-                      <p className="text-sm text-white font-medium">{file?.name}</p>
-                      <p className="text-xs text-gray-400">
-                        {file ? (file.size / 1024 / 1024).toFixed(2) : 0} MB
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleRemoveImage}
-                    className="text-red-400 hover:text-red-300 p-1"
-                  >
-                    <Trash className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
 
           <div className="flex items-center">
