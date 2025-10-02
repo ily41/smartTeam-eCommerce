@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link, useParams, useNavigate } from 'react-router';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay } from 'swiper/modules'; 
@@ -9,6 +9,7 @@ import { Breadcrumb } from '../../products/Breadcrumb';
 import SearchUI from '../../components/UI/SearchUI';
 import { useGetMeQuery, useGetProductQuery, useGetProductSpecificationsQuery, useAddCartItemMutation } from '../../store/API';
 import { toast } from 'react-toastify';
+import { SearchContext } from '../../router/Context';
 
 // Skeleton Components
 const SkeletonBox = ({ className = "", width, height }) => (

@@ -52,12 +52,12 @@ const Home = () => {
     const [hoveredName, setHoveredName] = useState(null)
     const [activeCategorie,setActiveCategorie ] = useState(null)
     const { data: hotDeals, isLoading, error, refetch } = useGetHotDealsQuery();
-    const { data: recommended, isLoading: isRecommendedLoading } = useGetRecommendedQuery();
+    const { data: recommended, isLoading: isRecommendedLoading } = useGetRecommendedQuery({limit: 10});
     const [addCartItem, { isLoading: isAddingToCart, error: cartError }] = useAddCartItemMutation();
+    
     
 
     const { data: parentCategories, isLoading: isParentLoading, refetchCategories } = useGetParentCategoriesQuery();
-    console.log(parentCategories)
        const subCategories = hoveredCategorie 
        ? parentCategories?.find(cat => cat.id === hoveredCategorie)?.subCategories 
        : null;
@@ -110,7 +110,7 @@ const Home = () => {
             <SearchUI />
         </div>
 
-        <section onMouseLeave={() => setHoveredCategorie(null)} className="lg:flex lg:w-[85vw] mt-10 lg:max-h-[400px] lg:mx-auto lg:shadow-[0_4px_4px_rgba(0,0,0,0.25)] lg:rounded-lg lg:gap-5 lg:bg-white">
+        <section onMouseLeave={() => setHoveredCategorie(null)} className="lg:flex lg:w-[85vw]  lg:mx-auto lg:shadow-[0_4px_4px_rgba(0,0,0,0.25)] lg:rounded-lg lg:gap-5 lg:bg-white">
             
            <div className='hidden lg:mt-5 lg:m-4 lg:flex flex-col text-black mt-1 whitespace-nowrap'>
                 {isParentLoading ? (
@@ -356,133 +356,7 @@ const Home = () => {
             </div>
         </section>
 
-         <section className='hidden mt-12 bg-white lg:grid grid-cols-6 lg:w-[85vw] lg:mx-auto p-6 rounded-lg shadow-lg'>
-           <img className='w-full h-full object-cover col-span-2 rounded-lg' src="./Banners/left-side.svg" alt="" />
-           
-           <div className="col-span-4 grid grid-cols-2 gap-4 ml-4">
-             
-             <div className="bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-all duration-300 hover:shadow-md">
-               <div className="flex justify-between items-start mb-3">
-                 <div>
-                   <h3 className="font-semibold text-gray-800">Smart watches</h3>
-                   <p className="text-sm text-gray-500">From<br />USD 19</p>
-                 </div>
-                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
-                   <div className="w-12 h-12 bg-black rounded-lg relative">
-                     <div className="w-10 h-6 bg-white rounded-sm absolute top-1 left-1"></div>
-                     <div className="w-8 h-1 bg-gray-400 absolute bottom-2 left-2"></div>
-                   </div>
-                 </div>
-               </div>
-             </div>
-             
-             <div className="bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-all duration-300 hover:shadow-md">
-               <div className="flex justify-between items-start mb-3">
-                 <div>
-                   <h3 className="font-semibold text-gray-800">Cameras</h3>
-                   <p className="text-sm text-gray-500">From<br />USD 89</p>
-                 </div>
-                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
-                   <div className="w-12 h-8 bg-black rounded-md relative">
-                     <div className="w-4 h-4 bg-blue-600 rounded-full absolute top-1 right-1"></div>
-                     <div className="w-6 h-2 bg-gray-600 rounded absolute bottom-1 left-1"></div>
-                   </div>
-                 </div>
-               </div>
-             </div>
-             
-             <div className="bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-all duration-300 hover:shadow-md">
-               <div className="flex justify-between items-start mb-3">
-                 <div>
-                   <h3 className="font-semibold text-gray-800">Gaming set</h3>
-                   <p className="text-sm text-gray-500">From<br />USD 35</p>
-                 </div>
-                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
-                   <div className="w-12 h-10 bg-black rounded-full relative">
-                     <div className="w-8 h-6 bg-blue-500 rounded-full absolute top-1 left-2"></div>
-                     <div className="w-2 h-4 bg-gray-600 absolute bottom-1 left-1"></div>
-                     <div className="w-2 h-4 bg-gray-600 absolute bottom-1 right-1"></div>
-                   </div>
-                 </div>
-               </div>
-             </div>
-       
-             <div className="bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-all duration-300 hover:shadow-md">
-               <div className="flex justify-between items-start mb-3">
-                 <div>
-                   <h3 className="font-semibold text-gray-800">Laptops & PC</h3>
-                   <p className="text-sm text-gray-500">From<br />USD 340</p>
-                 </div>
-                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
-                   <div className="w-12 h-8 bg-gray-800 rounded relative">
-                     <div className="w-10 h-6 bg-orange-400 rounded-sm absolute top-1 left-1"></div>
-                     <div className="w-8 h-1 bg-gray-600 absolute bottom-1 left-2"></div>
-                   </div>
-                 </div>
-               </div>
-             </div>
-             
-             <div className="bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-all duration-300 hover:shadow-md">
-               <div className="flex justify-between items-start mb-3">
-                 <div>
-                   <h3 className="font-semibold text-gray-800">Headphones</h3>
-                   <p className="text-sm text-gray-500">From<br />USD 10</p>
-                 </div>
-                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
-                   <div className="relative">
-                     <div className="w-8 h-8 border-4 border-gray-300 rounded-full"></div>
-                     <div className="w-2 h-6 bg-gray-300 absolute -top-3 left-3"></div>
-                   </div>
-                 </div>
-               </div>
-             </div>
-             
-             <div className="bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-all duration-300 hover:shadow-md">
-               <div className="flex justify-between items-start mb-3">
-                 <div>
-                   <h3 className="font-semibold text-gray-800">Smartphones</h3>
-                   <p className="text-sm text-gray-500">From<br />USD 19</p>
-                 </div>
-                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
-                   <div className="w-8 h-12 bg-gradient-to-br from-teal-400 to-orange-400 rounded-lg relative">
-                     <div className="w-6 h-8 bg-black rounded-sm absolute top-2 left-1 opacity-20"></div>
-                   </div>
-                 </div>
-               </div>
-             </div>
-             
-             <div className="bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-all duration-300 hover:shadow-md">
-               <div className="flex justify-between items-start mb-3">
-                 <div>
-                   <h3 className="font-semibold text-gray-800">Smart watches</h3>
-                   <p className="text-sm text-gray-500">From<br />USD 90</p>
-                 </div>
-                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
-                   <div className="w-10 h-12 bg-black rounded-lg relative">
-                     <div className="w-2 h-8 bg-gray-600 absolute top-2 left-1"></div>
-                     <div className="w-2 h-8 bg-gray-600 absolute top-2 right-1"></div>
-                     <div className="w-6 h-6 bg-white rounded absolute top-3 left-2"></div>
-                   </div>
-                 </div>
-               </div>
-             </div>
-             
-             <div className="bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-all duration-300 hover:shadow-md">
-               <div className="flex justify-between items-start mb-3">
-                 <div>
-                   <h3 className="font-semibold text-gray-800">Electric kettle</h3>
-                   <p className="text-sm text-gray-500">From<br />USD 240</p>
-                 </div>
-                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
-                   <div className="w-8 h-10 bg-gradient-to-b from-red-500 to-red-600 rounded-lg relative">
-                     <div className="w-2 h-3 bg-black rounded absolute top-1 right-1"></div>
-                     <div className="w-6 h-6 bg-red-400 rounded-full absolute bottom-1 left-1"></div>
-                   </div>
-                 </div>
-               </div>
-             </div>
-           </div>
-         </section>
+         
         
 
        <section className='lg:flex lg:bg-white lg:mt-8 lg:rounded-lg lg:w-[85vw] mx-auto lg:border lg:border-gray-300 px-4 lg:pr-0'>
@@ -500,7 +374,7 @@ const Home = () => {
           </div>
 
           <div className='hidden lg:block'>
-            <span className='flex gap-2 text-[#E60C03] font-semibold mt-3'>Explore now <img src="./Icons/rightarrowHome.svg" alt="" /></span>
+            <Link to='/products/hot-deals'className='flex gap-2 text-[#E60C03] font-semibold mt-3'>Explore now <img src="./Icons/rightarrowHome.svg" alt="" /></Link>
           </div>
         </div>
                     
@@ -573,7 +447,7 @@ const Home = () => {
         <section className='mt-12 mx-4 lg:w-[85vw] lg:mx-auto'>
             <div className='flex justify-between text-xl font-semibold'>
                 <h1>Recommended items</h1>
-                <Link to='./products'><h1 className='text-[#E60C03] cursor-pointer text-lg'>More</h1></Link>
+                <Link to='/products/recommended'><h1 className='text-[#E60C03] cursor-pointer text-lg'>More</h1></Link>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 [@media(min-width:1300px)]:grid-cols-5 lg:grid-cols-4 gap-2 mt-5 whitespace-nowrap">
@@ -594,7 +468,7 @@ const Home = () => {
         <section className='mt-12 mx-4 lg:w-[85vw] lg:mx-auto'>
             <div className='flex justify-between text-xl font-semibold'>
                 <h1>Hot Deals</h1>
-                <h1 className='text-[#E60C03] cursor-pointer text-lg'>More</h1>
+                <Link to='/products/hot-deals' className='text-[#E60C03] cursor-pointer text-lg'>More</Link>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 [@media(min-width:1300px)]:grid-cols-5 lg:grid-cols-4 gap-2 mt-5 whitespace-nowrap">
@@ -612,7 +486,7 @@ const Home = () => {
             </div>
         </section>
 
-        <section className='my-12 mx-4 lg:w-[85vw] lg:mx-auto'>
+        <section className='py-12 mx-4  lg:w-[85vw] lg:mx-auto'>
             <div className='text-2xl mb-8 font-semibold'>
                 <h1>Location</h1>
             </div>

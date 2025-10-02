@@ -108,7 +108,7 @@ const About = () => {
 
         <div className='flex flex-col md:grid lg:flex lg:flex-row md:grid-cols-2 gap-4 max-w-[90vw] mx-auto mt-8'>
             <div className='flex flex-1 bg-white rounded-lg border-2 border-[#dee2e6] p-5 py-7 md:py-3 md:min-h-[140px]'>
-                <img className='mr-7 md:mr-3  md:w-[55px] md:h-[55px] md:object-contain shrink-0  md:self-center' src="/Icons/about1.svg" alt="" />
+                <img className='mr-7 ml-2 md:mr-3  md:w-[55px] md:h-[55px] md:object-contain shrink-0  md:self-center' src="/Icons/about1.svg" alt="" />
 
                 <div className='flex flex-col justify-center  items-center'>
                     <h1 className='text-md font-semibold self-start '>Who we are</h1>

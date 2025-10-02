@@ -56,7 +56,7 @@ const BannerSlider = () => {
               alt={`Banner ${index + 1}`} 
             />
             
-            <div className="absolute top-[13%] left-[8%] lg:left-[10%] lg:top-[13%] flex flex-col gap-4 max-w-[80%]">
+            <div className="absolute top-[13%] left-[8%] lg:left-[100px] lg:top-[13%] flex flex-col gap-4 max-w-[80%]">
               <div className='flex flex-col gap-5'>
                <h1 className="inter text-2xl lg:text-3xl lg:hidden font-medium">
                 {banner.title

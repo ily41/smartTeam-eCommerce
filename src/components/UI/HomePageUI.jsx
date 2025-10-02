@@ -110,8 +110,8 @@ const HomePageUI = ({deal, product, url, handleAddToCart, isAddingToCart}) => {
                       <h1 className="line-through truncate">{product.originalPrice} AZN</h1>
                       <h1 className="text-[#FF4B43] truncate">{product.currentPrice} AZN</h1>
                     </div>
-                    
-                    <p className='font-medium mb-3'>{product.name}</p>
+
+                    <p className='font-medium mb-3 whitespace-normal'>{product.name}</p>
                     <p className='text-gray-600 font-normal whitespace-normal [@media(min-width:450px)]:break-words line-clamp-3'>{product.shortDescription}</p>
                 </div>
                 <div className='absolute top-2 right-2 lg:top-3 lg:right-3 p-6 w-0 h-0 flex justify-center items-center rounded-[50%] bg-[#FF4B43] text-white inter'>

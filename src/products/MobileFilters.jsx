@@ -2,6 +2,48 @@ import React, { useEffect, useState, useRef } from 'react';
 import { SlidersHorizontal, Filter, X, ChevronUp, ChevronDown } from 'lucide-react';
 import { useFilterProductsMutation, useGetCategoriesQuery, useGetCategoryFiltersQuery, useGetFiltersQuery, useGetParentCategoriesQuery } from '../store/API';
 
+// Move these components outside to prevent recreation on each render
+const FilterSection = ({ title, isExpanded, onToggle, children }) => (
+  <div className="border-b border-gray-200">
+    <button 
+      onClick={onToggle}
+      type="button"
+      className="w-full px-4 py-4 flex justify-between items-center text-left"
+    >
+      <span className="text-lg font-medium text-gray-900">{title}</span>
+      {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+    </button>
+    {isExpanded && (
+      <div className="px-4 pb-4">
+        {children}
+      </div>
+    )}
+  </div>
+);
+
+const CheckboxItem = ({ label, checked, onChange }) => (
+  <label className="flex items-center py-2 cursor-pointer">
+    <div className="relative">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={onChange}
+        className="sr-only"
+      />
+      <div className={`w-5 h-5 border-2 rounded flex items-center justify-center ${
+        checked ? 'bg-red-500 border-red-500' : 'border-gray-300'
+      }`}>
+        {checked && (
+          <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+          </svg>
+        )}
+      </div>
+    </div>
+    <span className="ml-3 text-gray-700">{label}</span>
+  </label>
+);
+
 export function MobileFilterButtons({ onFilterResults, onLoadingChange, currentSort, onSortChange, currentPage, pageSize }) {
   const [isSort, setIsSort] = useState(false);
   const [isFilter, setIsFilter] = useState(false);
@@ -258,7 +300,7 @@ export function MobileFilterButtons({ onFilterResults, onLoadingChange, currentS
       maxPrice: maxPrice ? parseFloat(maxPrice) : null,
       sortBy: sortByValue || null,
       sortOrder: sortOrderValue || null,
-      page: currentPage || 0,
+      page: currentPage || 1,
       pageSize: pageSize || 20
     };
 
@@ -300,47 +342,6 @@ export function MobileFilterButtons({ onFilterResults, onLoadingChange, currentS
     applyFilters();
     setIsFilter(false);
   };
-
-  const FilterSection = ({ title, isExpanded, onToggle, children }) => (
-    <div className="border-b border-gray-200">
-      <button 
-        onClick={onToggle}
-        type="button"
-        className="w-full px-4 py-4 flex justify-between items-center text-left"
-      >
-        <span className="text-lg font-medium text-gray-900">{title}</span>
-        {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-      </button>
-      {isExpanded && (
-        <div className="px-4 pb-4">
-          {children}
-        </div>
-      )}
-    </div>
-  );
-
-  const CheckboxItem = ({ label, checked, onChange }) => (
-    <label className="flex items-center py-2 cursor-pointer">
-      <div className="relative">
-        <input
-          type="checkbox"
-          checked={checked}
-          onChange={onChange}
-          className="sr-only"
-        />
-        <div className={`w-5 h-5 border-2 rounded flex items-center justify-center ${
-          checked ? 'bg-red-500 border-red-500' : 'border-gray-300'
-        }`}>
-          {checked && (
-            <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-            </svg>
-          )}
-        </div>
-      </div>
-      <span className="ml-3 text-gray-700">{label}</span>
-    </label>
-  );
 
   return (
     <>

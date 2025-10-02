@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Menu, X, Package, Grid3X3, Users, BarChart3, Settings, LogOut, ChevronLeft, ChevronRight, Home, User, Filter, Tags} from 'lucide-react';
+import { Menu, X, Package, Grid3X3, Users, BarChart3, Settings, LogOut, ChevronLeft, ChevronRight, Home, User, Filter, Tags, File} from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { useLogoutMutation } from '../../store/API';
 import { PiFlagBanner } from 'react-icons/pi';
@@ -18,8 +18,8 @@ const SideBar = () => {
     { icon: Grid3X3, label: 'Categories', active: false, to:'category' },
     { icon: PiFlagBanner, label: 'Banners', active: false, to:'banners' },
     { icon: Filter, label: 'Filters', active: false, to:'filters' },
-    { icon: Settings, label: 'Settings', active: false },
     { icon: Tags, label: 'Assign Filter', active: false, to:'product-filters'  },
+    { icon: File, label: 'Assign Files', active: false, to:'file-management'  },
   ];
 
 
@@ -107,8 +107,7 @@ const SideBar = () => {
                 <Users size={20} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">Iman</p>
-                <p className="text-xs text-gray-400 truncate">h.iman200622@gmail.com</p>
+                <p className="text-sm font-medium text-white truncate">Bextiyar</p>
               </div>
             </div>
           )}

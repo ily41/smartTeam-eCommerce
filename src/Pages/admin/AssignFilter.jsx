@@ -11,44 +11,39 @@ import {
   Tags,
   Loader2,
   Check,
-  AlertCircle
+  AlertCircle,
+  Trash2
 } from 'lucide-react';
 import { 
   useGetFiltersQuery, 
   useAssignFilterMutation, 
   useAssignFiltersBulkMutation, 
-  useGetProductsQuery
+  useGetProductsQuery,
+  useRemoveAllFiltersFromProductMutation,
+  useRemoveCustomFilterFromProductMutation
 } from '../../store/API';
 import { toast } from 'react-toastify';
 
 const ProductFilterAssignment = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [assignmentMode, setAssignmentMode] = useState('single'); // 'single' or 'bulk'
+  const [assignmentMode, setAssignmentMode] = useState('single');
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [selectedFilter, setSelectedFilter] = useState('');
   const [selectedFilterOption, setSelectedFilterOption] = useState('');
   const [customValue, setCustomValue] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
-  const {data: products, isLoading: isProductLoading} = useGetProductsQuery()
-  console.log(products)
+  const {data: products, isLoading: isProductLoading, refetch} = useGetProductsQuery()
   const [expandedSections, setExpandedSections] = useState({
     products: true,
     filters: true
   });
 
-  // Mock product data - replace with your actual products API
-//   const [products] = useState([
-//     { id: '1', name: 'iPhone 15 Pro', sku: 'IPH15PRO', category: 'Electronics', image: '/api/placeholder/50/50' },
-//     { id: '2', name: 'Samsung Galaxy S24', sku: 'SGS24', category: 'Electronics', image: '/api/placeholder/50/50' },
-//     { id: '3', name: 'MacBook Air M2', sku: 'MBA-M2', category: 'Computers', image: '/api/placeholder/50/50' },
-//     { id: '4', name: 'iPad Pro 12.9', sku: 'IPADPRO129', category: 'Tablets', image: '/api/placeholder/50/50' },
-//     { id: '5', name: 'AirPods Pro 2', sku: 'APP2', category: 'Audio', image: '/api/placeholder/50/50' }
-//   ]);
-
   const { data: filters, isLoading: isFiltersLoading } = useGetFiltersQuery();
   const [assignFilter] = useAssignFilterMutation();
   const [assignFiltersBulk] = useAssignFiltersBulkMutation();
+  const [removeAllFilters] = useRemoveAllFiltersFromProductMutation();
+  const [removeCustomFilter] = useRemoveCustomFilterFromProductMutation();
 
   const filteredProducts = products?.filter(product =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -123,6 +118,7 @@ const ProductFilterAssignment = () => {
           ...assignmentData
         }).unwrap();
         toast.success('Filter assigned successfully!');
+        refetch()
       } else {
         await assignFiltersBulk({
           productIds: selectedProducts,
@@ -137,6 +133,32 @@ const ProductFilterAssignment = () => {
       toast.error(error?.data?.message || 'Failed to assign filter');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleRemoveAllFilters = async (productId, productName) => {
+
+    try {
+      await removeAllFilters({ productId }).unwrap();
+      toast.success('All filters removed successfully!');
+      refetch()
+
+    } catch (error) {
+      console.error('Remove all filters error:', error);
+      toast.error(error?.data?.message || 'Failed to remove filters');
+    }
+  };
+
+  const handleRemoveCustomFilter = async (productId, filterId, filterName) => {
+
+    try {
+      await removeCustomFilter({ productId, filterId }).unwrap();
+      toast.success('Filter removed successfully!');
+      refetch()
+
+    } catch (error) {
+      console.error('Remove filter error:', error);
+      toast.error(error?.data?.message || 'Failed to remove filter');
     }
   };
 
@@ -159,7 +181,7 @@ const ProductFilterAssignment = () => {
           </div>
           <button 
             onClick={openModal}
-            className="px-6 py-3 bg-white text-gray-900 font-semibold rounded-lg shadow-lg flex items-center gap-2 hover:bg-gray-100 transition-all duration-200"
+            className="px-6 py-3 bg-white cursor-pointer text-gray-900 font-semibold rounded-lg shadow-lg flex items-center gap-2 hover:bg-gray-100 transition-all duration-200"
           >
             <Tags className="w-5 h-5" />
             Assign Filters
@@ -174,7 +196,7 @@ const ProductFilterAssignment = () => {
                 <Package className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className="text-2xl font-bold text-white">{products?.length}</h3>
+                <h3 className="text-2xl font-bold text-white">{products?.length || 0}</h3>
                 <p className="text-gray-400">Total Products</p>
               </div>
             </div>
@@ -236,8 +258,6 @@ const ProductFilterAssignment = () => {
                   <thead>
                     <tr className="border-b border-gray-700">
                       <th className="text-left py-4 px-4 font-semibold text-gray-300">Product</th>
-                      <th className="text-left py-4 px-4 font-semibold text-gray-300">SKU</th>
-                      <th className="text-left py-4 px-4 font-semibold text-gray-300">Category</th>
                       <th className="text-left py-4 px-4 font-semibold text-gray-300">Assigned Filters</th>
                       <th className="text-center py-4 px-4 font-semibold text-gray-300">Actions</th>
                     </tr>
@@ -262,26 +282,28 @@ const ProductFilterAssignment = () => {
                           </div>
                         </td>
                         <td className="py-4 px-4">
-                          <span className="text-gray-300">{product.sku || 'N/A'}</span>
-                        </td>
-                        <td className="py-4 px-4">
-                          <span className="px-2 py-1 bg-gray-600 text-gray-300 rounded text-sm">
-                            {product.categoryName || 'Uncategorized'}
-                          </span>
-                        </td>
-                        <td className="py-4 px-4">
                           <div className="flex flex-wrap gap-1">
-                            {product.assignedFilters && product.assignedFilters.length > 0 ? (
-                              product.assignedFilters.map((assignment, index) => (
+                            {product.filters && product.filters.length > 0 ? (
+                              product.filters.map((assignment, index) => (
                                 <span 
                                   key={index}
-                                  className="px-2 py-1 bg-blue-600 text-white rounded-full text-xs flex items-center gap-1"
+                                  className="px-2 py-1 bg-blue-600 text-white rounded-full text-xs flex items-center gap-1 group"
                                   title={`${assignment.filterName}: ${assignment.value || assignment.optionName}`}
                                 >
                                   {assignment.filterName}
                                   {assignment.value && (
                                     <span className="text-blue-200">: {assignment.value}</span>
                                   )}
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleRemoveCustomFilter(product.id, assignment.filterId, assignment.filterName);
+                                    }}
+                                    className="ml-1 hover:bg-blue-700 cursor-pointer rounded-full p-0.5 transition-colors"
+                                    title="Remove this filter"
+                                  >
+                                    <X className="w-3 h-3 cursor-pointer" />
+                                  </button>
                                 </span>
                               ))
                             ) : (
@@ -289,18 +311,30 @@ const ProductFilterAssignment = () => {
                             )}
                           </div>
                         </td>
-                        <td className="py-4 px-4 text-center">
-                          <button
-                            onClick={() => {
-                              setSelectedProducts([product.id]);
-                              setAssignmentMode('single');
-                              openModal();
-                            }}
-                            className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-1 mx-auto"
-                          >
-                            <Tags className="w-3 h-3" />
-                            Assign
-                          </button>
+                        <td className="py-4 px-4">
+                          <div className="flex items-center justify-center gap-2">
+                            <button
+                              onClick={() => {
+                                setSelectedProducts([product.id]);
+                                setAssignmentMode('single');
+                                openModal();
+                              }}
+                              className="px-3 py-1 bg-blue-600 hover:bg-blue-700 cursor-pointer text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-1"
+                            >
+                              <Tags className="w-3 h-3" />
+                              Assign
+                            </button>
+                            {product.filters && product.filters.length > 0 && (
+                              <button
+                                onClick={() => handleRemoveAllFilters(product.id, product.name)}
+                                className="px-3 py-1 bg-red-600 whitespace-nowrap cursor-pointer hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-1"
+                                title="Remove all filters"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                                Remove All
+                              </button>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -329,7 +363,7 @@ const ProductFilterAssignment = () => {
                     onClick={closeModal}
                     className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
                   >
-                    <X className="w-5 h-5 text-gray-400" />
+                    <X className="w-5 h-5 text-gray-400 cursor-pointer" />
                   </button>
                 </div>
 
@@ -338,7 +372,7 @@ const ProductFilterAssignment = () => {
                   <div className="flex gap-2 p-1 bg-gray-700 rounded-lg w-fit">
                     <button
                       onClick={() => setAssignmentMode('single')}
-                      className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                      className={`px-4 py-2 rounded-md cursor-pointer font-medium transition-colors ${
                         assignmentMode === 'single' 
                           ? 'bg-blue-600 text-white' 
                           : 'text-gray-400 hover:text-white'
@@ -348,7 +382,7 @@ const ProductFilterAssignment = () => {
                     </button>
                     <button
                       onClick={() => setAssignmentMode('bulk')}
-                      className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                      className={`px-4 py-2 rounded-md cursor-pointer font-medium transition-colors ${
                         assignmentMode === 'bulk' 
                           ? 'bg-blue-600 text-white' 
                           : 'text-gray-400 hover:text-white'
@@ -396,20 +430,20 @@ const ProductFilterAssignment = () => {
                         {assignmentMode === 'bulk' && (
                           <div className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
                             <span className="text-sm text-gray-300">
-                              {selectedProducts.length} of {filteredProducts.length} selected
+                              {selectedProducts.length} of {filteredProducts?.length || 0} selected
                             </span>
                             <button
                               onClick={handleBulkSelectAll}
                               className="text-blue-400 hover:text-blue-300 text-sm font-medium"
                             >
-                              {selectedProducts.length === filteredProducts.length ? 'Deselect All' : 'Select All'}
+                              {selectedProducts.length === filteredProducts?.length ? 'Deselect All' : 'Select All'}
                             </button>
                           </div>
                         )}
 
                         {/* Product List */}
                         <div className="space-y-2 max-h-64 overflow-y-auto">
-                          {filteredProducts.map((product) => (
+                          {filteredProducts?.map((product) => (
                             <div
                               key={product.id}
                               onClick={() => handleProductSelection(product.id)}
@@ -419,7 +453,7 @@ const ProductFilterAssignment = () => {
                                   : 'bg-gray-700 border-gray-600 hover:bg-gray-600'
                               }`}
                             >
-                              <div className="flex-shrink-0">
+                              <div className="flex-shrink-0 w-4">
                                 {selectedProducts.includes(product.id) && (
                                   <Check className="w-4 h-4 text-white" />
                                 )}
@@ -428,13 +462,16 @@ const ProductFilterAssignment = () => {
                                 src={`http://localhost:5056/${product.primaryImageUrl}`} 
                                 alt={product.name}
                                 className="w-10 h-10 rounded-lg object-cover bg-gray-600"
+                                onError={(e) => {
+                                  e.target.src = '/api/placeholder/40/40';
+                                }}
                               />
                               <div className="flex-1 min-w-0">
                                 <p className="font-medium truncate">{product.name}</p>
-                                <p className="text-sm text-gray-400">{product.sku}</p>
+                                <p className="text-sm text-gray-400">{product.sku || 'N/A'}</p>
                               </div>
                               <span className="text-xs px-2 py-1 bg-gray-600 rounded text-gray-300">
-                                {product.category}
+                                {product.categoryName || 'N/A'}
                               </span>
                             </div>
                           ))}
@@ -544,14 +581,14 @@ const ProductFilterAssignment = () => {
                 <div className="flex justify-end gap-4 pt-6 mt-6 border-t border-gray-600">
                   <button
                     onClick={closeModal}
-                    className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 font-semibold transition-colors"
+                    className="px-6 py-3 bg-gray-600 text-white cursor-pointer rounded-lg hover:bg-gray-700 font-semibold transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleAssignment}
                     disabled={loading || !selectedFilter || selectedProducts.length === 0}
-                    className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center gap-2 font-semibold transition-colors"
+                    className="px-6 py-3 bg-blue-600 text-white cursor-pointer rounded-lg hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center gap-2 font-semibold transition-colors"
                   >
                     {loading && <Loader2 className="w-4 h-4 animate-spin" />}
                     <Save className="w-4 h-4" />

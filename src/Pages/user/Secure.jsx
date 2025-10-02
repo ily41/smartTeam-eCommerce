@@ -29,7 +29,7 @@ const Secure = () => {
                 <h1 className='text-xl font-semibold'>Our Services</h1>
                 <p className='text-[#505050]  max-w-[50vw] mx-auto mt-3'>Our services are designed to provide maximum safety and smooth operation. These systems, installed by our professional team, ensure the highest level of security for your property.</p>
             </div>
-            <div className='flex flex-col gap-5 max-w-[90vw] mx-auto md:grid md:grid-cols-2 lg:flex lg:flex-row'>
+            <div className='flex flex-col gap-5 max-w-[90vw] mx-auto md:grid md:grid-cols-2 [@media(min-width:1100px)]:flex lg:flex-row'>
                 <div className='relative bg-white border-1 border-[#dee2e6] p-7 pt-19 rounded-lg'>
                     <img className='absolute top-4 right-4 bg-[#ff4b43] p-3 rounded-full' src="./Icons/service-1-1.svg" alt="" />
                     <h1 className='font-semibold text-lg'>Fast and Secure Installation</h1>

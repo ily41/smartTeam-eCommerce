@@ -15,8 +15,8 @@ const Software = () => {
                </div>
                
    
-               <div className=' w-full lg:max-h-[30vh] mt-9 md:mt-0  mx-auto rounded-xl md:flex-3 lg:flex-5'>
-                   <img className='rounded-xl  object-cover md:h-full lg:max-h-[280px] w-full ' src="./Banners/cameraService.svg" alt="" />
+               <div className=' w-full lg:max-h-[30vh]  mt-9 md:mt-0  mx-auto rounded-xl md:flex-3 lg:flex-5'>
+                   <img className='rounded-xl  object-cover h-full lg:max-h-[280px] w-full ' src="./Banners/cameraService.svg" alt="" />
                </div>
    
                <div className='text-center my-7 md:my-0 flex flex-col gap-3 md:flex-8 md:text-start   [@media(min-width:1100px)]:p-7'>

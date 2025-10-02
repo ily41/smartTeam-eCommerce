@@ -25,12 +25,14 @@ import FilterUi from "../Pages/admin/FilterUi";
 import AddProductSpecifications from "../components/admin/Product/AddProductSpec";
 import ProductSpec from "../Pages/admin/ProductSpec"
 import AssignFilter from "../Pages/admin/AssignFilter"
+import FileManagementPanel from "../components/admin/FileUpload/FIleUI";
+import { SearchProvider } from "./Context";
 
 const Router = () => {
   return (
     <BrowserRouter>
-      <ScrollToTop />
-      <Routes>
+      <SearchProvider>
+        <Routes>
         {/* Login page */}
         <Route path="/login" element={<Login />} />
 
@@ -75,8 +77,10 @@ const Router = () => {
           <Route path="banners" element={<BannersUI />} />
           <Route path="filters" element={<FilterUi />} />
           <Route path="product-filters" element={<AssignFilter />} />
+          <Route path="file-management" element={<FileManagementPanel />} />
         </Route>
-      </Routes>
+        </Routes>
+      </SearchProvider>
     </BrowserRouter>
   );
 };

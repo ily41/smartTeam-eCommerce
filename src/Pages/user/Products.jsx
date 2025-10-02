@@ -37,15 +37,15 @@ const ProductCardSkeleton = ({ col }) => (
 );
 
 function Products() {
+  const { slug } = useParams();
+  const categoryName = slug?.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
-  const {slug} = useParams()
-  const categoryName = slug?.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024); 
   const [template, setTemplate] = useState(isMobile ? "cols" : "rows");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10); 
-  const {data: productDefault, isLoading: isLoadingProducts } = useGetProductsQuery();
-  const {data: categories} = useGetCategoriesQuery();
+  const { data: productDefault, isLoading: isLoadingProducts } = useGetProductsQuery();
+  const { data: categories } = useGetCategoriesQuery();
   const [products, setProducts] = useState([]);
   const [totalItems, setTotalItems] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -53,8 +53,9 @@ function Products() {
   const [filtersApplied, setFiltersApplied] = useState(false);
   const [activeFilters, setActiveFilters] = useState([]);
   
-  const [addCartItem, { isLoading: isAddingToCart }] = useAddCartItemMutation();
-  
+  const [addCartItem] = useAddCartItemMutation();
+  const [addingIds, setAddingIds] = useState(new Set()); // <-- per-product loading
+
   // Find category ID from slug
   const categoryId = React.useMemo(() => {
     if (!slug || !categories) return null;
@@ -72,7 +73,6 @@ function Products() {
     }
   }, [productDefault, filtersApplied]);
 
-  // Calculate total pages based on API totalItems
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   const handlePageChange = (page) => {
@@ -80,26 +80,20 @@ function Products() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Memoize the filter results handler to prevent re-creation on every render
   const handleFilterResults = useCallback((data, filters = []) => {
-    // Update active filters
     setActiveFilters(filters);
 
     if (data === null) {
-      // No filters applied - use default products
       setFiltersApplied(false);
       if (productDefault) {
         setProducts(productDefault);
         setTotalItems(productDefault.length);
       }
     } else if (data?.products) {
-      // Filters applied - use filtered results
       setFiltersApplied(true);
       setProducts(data.products);
       setTotalItems(data.totalCount || data.products?.length);
-     
     } else {
-      
       setFiltersApplied(true);
       setProducts([]);
       setTotalItems(0);
@@ -107,48 +101,41 @@ function Products() {
   }, [productDefault]);
 
   const handleRemoveFilter = (filterToRemove) => {
-    // This is a placeholder - you'll need to implement the actual logic
-    // to communicate back to FilterSidebar to remove the specific filter
     console.log('Remove filter:', filterToRemove);
-    // You may need to lift this state up or use a different approach
   };
 
   const handleSortChange = (e) => {
     const value = e.target.value;
     setSortBy(value);
-    // Reset to first page when sorting changes
     setCurrentPage(1);
   };
 
   const handleAddToCart = async (id) => {
-    if (!id) {
-      console.error('Product not available');
-      return;
-    }
+    if (!id) return;
+
+    setAddingIds(prev => new Set(prev).add(id));
 
     try {
-      const result = await addCartItem({
-        productId: id,
-        quantity: 1
-      }).unwrap();
-      
+      await addCartItem({ productId: id, quantity: 1 }).unwrap();
       toast.success('Product added to cart');
     } catch (err) {
-      console.error('Failed to add product to cart:', err);
-      
+      console.error(err);
       if (err?.status === 401 || err?.data?.status === 401) {
         toast.error("Please log in first");
       } else {
         toast.error("Failed to add product to cart");
       }
+    } finally {
+      setAddingIds(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(id);
+        return newSet;
+      });
     }
   };
-  
-  useEffect(() => {
-    function handleResize() {
-      setIsMobile(window.innerWidth < 1024);
-    }
 
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 1024);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -157,15 +144,12 @@ function Products() {
     setTemplate(isMobile ? "cols" : "rows"); 
   }, [isMobile]);
 
-  // Determine if we should show loading state
   const shouldShowLoading = isLoading || (isLoadingProducts && !filtersApplied);
-  
+
   return (
     <div className="min-h-screen bg-[#f7fafc] inter">
       <div className='lg:hidden px-4 py-4 border-y-1 border-[#dee2e6] bg-white'>
-        <div className='mb-4'>
-          <SearchUI />
-        </div>
+        <div className='mb-4'><SearchUI /></div>
         <Breadcrumb />
       </div>
       
@@ -176,9 +160,7 @@ function Products() {
       </div>
        
       <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-        <div className='hidden lg:block lg:pl-4'>
-          <Breadcrumb />
-        </div>
+        <div className='hidden lg:block lg:pl-4'><Breadcrumb /></div>
         
         <div className="lg:flex lg:gap-8 lg:mt-5">
           <div className="hidden lg:block lg:w-64 lg:flex-shrink-0">
@@ -216,9 +198,7 @@ function Products() {
                 <>
                   <span className="text-sm text-gray-600">
                     {totalItems.toLocaleString()} items
-                    {categoryName && (
-                      <> in <span className='font-semibold'>{categoryName}</span></>
-                    )}
+                    {categoryName && <> in <span className='font-semibold'>{categoryName}</span></>}
                   </span>
 
                   <div className="hidden lg:flex items-center space-x-4">
@@ -267,7 +247,7 @@ function Products() {
                   <ProductCardSkeleton key={index} col={template === "cols"} />
                 ))
               ) : products?.length > 0 ? (
-                products?.map((item, index) => {
+                products.map((item, index) => {
                   const cardInfo = {
                     url: item.primaryImageUrl,
                     name: item.name,
@@ -280,7 +260,7 @@ function Products() {
                       col={template === "cols"} 
                       info={cardInfo}
                       handleAddToCart={handleAddToCart}
-                      isAddingToCart={isAddingToCart}
+                      isAddingToCart={addingIds.has(item.id)} // <-- per-product loading
                     />
                   );
                 })

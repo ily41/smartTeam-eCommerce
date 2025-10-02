@@ -11,6 +11,7 @@ export const API = createApi({
         endpoint === 'addCategoryImage' ||
         endpoint === 'addDetailImages' ||
         endpoint === 'addBanner' ||
+        endpoint === 'uploadFile' ||
         body instanceof FormData;
 
       if (!isFormDataRequest) {
@@ -481,6 +482,37 @@ export const API = createApi({
       invalidatesTags: ['Filters'], 
     }),
 
+
+    removeFilterOption: builder.mutation({
+      query: ({ filterId, optionId }) => ({
+        url: `/api/v1/Admin/filters/${filterId}/options/${optionId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Filters'], 
+    }),
+
+    removeAllFiltersFromProduct: builder.mutation({
+      query: ({ productId }) => ({
+        url: `/api/v1/Admin/products/${productId}/filters`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Filters'], 
+    }),
+
+    removeCustomFilterFromProduct: builder.mutation({
+      query: ({ productId, filterId }) => ({
+        url: `/api/v1/Admin/products/${productId}/filters/${filterId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Filters'], 
+    }),
+
+
+
+
+
+
+
     assignFilter: builder.mutation({
       query: (filterData) => ({
         url: '/api/v1/Admin/products/filters/assign',
@@ -509,6 +541,9 @@ export const API = createApi({
       }),
       invalidatesTags: ['Filter', 'Product'],
     }),
+
+
+
 
     // *CART*
     addCartItem: builder.mutation({
@@ -633,6 +668,37 @@ export const API = createApi({
       invalidatesTags: ['Favorites'],
     }),
 
+     getFiles: builder.query({
+      query: () => '/api/v1/Admin/files',
+      providesTags: ['Files'],
+    }),
+
+    // GET file by ID
+    getFileById: builder.query({
+      query: (id) => `/api/v1/Admin/files/${id}`,
+      providesTags: (result, error, id) => [{ type: 'Files', id }],
+    }),
+
+    // DELETE file
+    removeFile: builder.mutation({
+      query: (id) => ({
+        url: `/api/v1/Admin/files/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Files'],
+    }),
+
+    // POST upload file
+    uploadFile: builder.mutation({
+      query: (formData) => ({
+        url: '/api/v1/Admin/files/upload',
+        method: 'POST',
+        body: formData,
+      }),
+      invalidatesTags: ['Files'],
+    }),
+  
+
   }),
 });
 
@@ -643,6 +709,9 @@ export const {
   useAssignFilterMutation,     
   useAssignFiltersBulkMutation,
   useGetCategoryFiltersQuery,
+  useRemoveFilterOptionMutation,
+  useRemoveAllFiltersFromProductMutation,
+  useRemoveCustomFilterFromProductMutation,
 
   useGetBannersQuery,
   useDeleteBannerMutation,
@@ -706,4 +775,9 @@ export const {
   useGetFavoritesCountQuery,
   useClearFavoritesMutation,
   
+
+  useGetFilesQuery,
+  useGetFileByIdQuery,
+  useRemoveFileMutation,
+  useUploadFileMutation,
 } = API;

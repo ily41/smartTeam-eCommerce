@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, Edit2, Trash2, ChevronDown, ChevronUp, Save, X, Eye, EyeOff, Loader2 } from 'lucide-react';
-import { useAddFilterMutation, useGetFiltersQuery, useRemoveFilterMutation } from '../../store/API';
+import { useAddFilterMutation, useGetFiltersQuery, useRemoveFilterMutation, useRemoveFilterOptionMutation } from '../../store/API';
 import { toast } from 'react-toastify';
 
 const FilterUi = () => {
@@ -14,6 +14,7 @@ const FilterUi = () => {
   console.log(filters)
   const [addFilter] = useAddFilterMutation();
   const [removeFilter, { isLoading: isRemoving }] = useRemoveFilterMutation();
+  const [removeFilterOption] = useRemoveFilterOptionMutation();
 
   const [options, setOptions] = useState([]);
 
@@ -123,6 +124,17 @@ const FilterUi = () => {
     }
   };
 
+  const deleteFilterOption = async (filterId, optionId) => {
+    try {
+      await removeFilterOption({ filterId, optionId }).unwrap();
+      toast.success("Option deleted successfully");
+      refetch();
+    } catch (error) {
+      console.error(error);
+      toast.error(error?.data?.message || "Deleting option failed");
+    }
+  };
+
   const toggleFilterStatus = (filterId) => {
     // implement toggle via API
   };
@@ -184,9 +196,18 @@ const FilterUi = () => {
                               <span className="font-medium text-white text-lg">{option.displayName ?? option.label}</span>
                               <span className="text-gray-400 ml-3">({option.value})</span>
                             </div>
-                            <span className={`px-3 py-1 text-sm font-semibold rounded-full ${option.isActive ? 'bg-green-600' : 'bg-red-600'} text-white`}>
-                              {option.isActive ? 'Active' : 'Inactive'}
-                            </span>
+                            <div className="flex items-center gap-2">
+                              <span className={`px-3 py-1 text-sm font-semibold rounded-full ${option.isActive ? 'bg-green-600' : 'bg-red-600'} text-white`}>
+                                {option.isActive ? 'Active' : 'Inactive'}
+                              </span>
+                              <button 
+                                onClick={() => deleteFilterOption(filter.id, option.id)} 
+                                className="p-2 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-lg transform hover:scale-110 transition-all duration-200" 
+                                title="Delete Option"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
                           </div>
                         ))}
                       </div>

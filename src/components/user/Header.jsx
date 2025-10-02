@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router'
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
+import { Link, useNavigate } from 'react-router'
 import Burger from './Burger'
 import { useGetMeQuery, useSearchProductsQuery } from "../../store/API";
 import { Search, X } from 'lucide-react';
+import { SearchContext } from '../../router/Context';
 
 // Skeleton for search results - Desktop
 const SearchProductSkeletonDesktop = () => (
@@ -29,30 +30,43 @@ const SearchProductSkeletonMobile = () => (
 );
 
 const Header = () => {
+  const navigate = useNavigate();
   const [burgerVi, setBurgerVi] = useState(false)
   const [open, setOpen] = useState(false)
-  const [searchOpen, setSearchOpen] = useState(false)
+  const { searchOpen, setSearchOpen } = useContext(SearchContext);
   const [searchQuery, setSearchQuery] = useState('')
   const dropdownRef = useRef(null);
   const searchDropdownRef = useRef(null);
   const mobileSearchDropdownRef = useRef(null);
-  
-  // Call search API with the query
-  const { data: searchResult, isLoading: isSearching } = useSearchProductsQuery({q: searchQuery}, {
-    skip: !searchQuery || searchQuery.length < 2
-  });
+
+  const [searchWidth, setSearchWidth] = useState(0);
+  const searchRef = useRef(null);
+
+  useEffect(() => {
+    if (searchRef.current) {
+      setSearchWidth(searchRef.current.offsetWidth);
+    }
+
+    const handleResize = () => {
+      if (searchRef.current) {
+        setSearchWidth(searchRef.current.offsetWidth);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Close dropdown when clicking outside
 
   useEffect(() => {
     function handleClickOutside(event) {
+      // Check if click is on a Link element or inside search results
+      
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setOpen(false);
       }
-      if (searchDropdownRef.current && !searchDropdownRef.current.contains(event.target)) {
-        setSearchOpen(false);
-      }
-      if (mobileSearchDropdownRef.current && !mobileSearchDropdownRef.current.contains(event.target)) {
-        setSearchOpen(false);
-      }
+      
     }
 
     if (open || searchOpen) {
@@ -62,7 +76,12 @@ const Header = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [open, searchOpen]);
+  }, [open, searchOpen, setSearchOpen]);
+
+  
+  const { data: searchResult, isLoading: isSearching } = useSearchProductsQuery({q: searchQuery}, {
+    skip: !searchQuery || searchQuery.length < 2
+  });
 
   const handleSearchChange = (e) => {
     const value = e.target.value;
@@ -76,13 +95,39 @@ const Header = () => {
 
   const handleClearSearch = () => {
     setSearchQuery('');
-    setSearchOpen(false);
   };
 
   const handleSearchFocus = () => {
     if (searchQuery.length > 0) {
       setSearchOpen(true);
     }
+  };
+
+  const handleProductClick = (e, productId) => {
+    console.log("works")
+    e.preventDefault();
+    e.stopPropagation();
+    
+    navigate(`/details/${productId}`);
+    setTimeout(() => setSearchOpen(false), 100);
+};
+
+  const handleViewAllClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const query = searchQuery;
+    // setSearchOpen(false);
+    setSearchQuery('');
+    
+    setTimeout(() => {
+      navigate(`/products?search=${query}`);
+    }, 0);
+  };
+
+  const closeMobileSearch = () => {
+    // setSearchOpen(false);
+    setSearchQuery('');
   };
 
   return (
@@ -110,7 +155,7 @@ const Header = () => {
           {/* Desktop Search */}
           <div className='hidden lg:flex-4 mr-20 lg:mr-0 lg:px-10 lg:block relative' ref={searchDropdownRef}>
             <div className="max-w-4xl self-center mx-auto">
-              <div className="flex rounded-lg overflow-hidden shadow-sm hover:shadow-md border-1 border-[#dee2e6] bg-white">
+              <div ref={searchRef} className="flex rounded-lg overflow-hidden shadow-sm hover:shadow-md border-1 border-[#dee2e6] bg-white">
                 <div className="flex items-center pl-3 bg-white">
                   <Search className="w-5 h-5 text-gray-400" />
                 </div>
@@ -134,7 +179,10 @@ const Header = () => {
 
               {/* Desktop Search Dropdown */}
               {searchOpen && (
-                <div className="absolute top-full mt-2 w-full bg-white border border-[#dee2e6] rounded-lg shadow-lg z-50 overflow-hidden">
+                <div 
+                  style={{ width: searchWidth }} 
+                  className="search-results-container absolute top-full mt-2 bg-white border border-[#dee2e6] rounded-lg shadow-lg z-50 overflow-hidden"
+                >
                   {isSearching ? (
                     <div className="p-4">
                       <h3 className="text-sm font-semibold text-gray-500 mb-3">PRODUCTS</h3>
@@ -145,19 +193,16 @@ const Header = () => {
                       </div>
                     </div>
                   ) : searchResult && searchResult.length > 0 ? (
-                    <div className="p-4 max-h-[500px] overflow-y-auto">
+                    <div className="p-4 overflow-y-auto w-fit">
                       <h3 className="text-sm font-semibold text-gray-500 mb-3">
                         PRODUCTS ({searchResult.length})
                       </h3>
                       <div className="grid grid-cols-4 gap-3">
                         {searchResult.slice(0, 4).map(product => (
-                          <Link
+                          <div
                             key={product.id}
-                            to={`/details/${product.id}`}
-                            onClick={() => {
-                              setSearchOpen(false);
-                              setSearchQuery('');
-                            }}
+                            onClick={(e) => handleProductClick(e, product.id)}
+                            onMouseDown={(e) => e.preventDefault()}
                             className="bg-white rounded-lg border border-[#dee2e6] p-3 hover:shadow-md cursor-pointer transition-all group"
                           >
                             <div className="relative w-full aspect-square bg-white rounded-lg flex items-center justify-center mb-3 overflow-hidden">
@@ -198,19 +243,16 @@ const Header = () => {
                                 )}
                               </div>
                             </div>
-                          </Link>
+                          </div>
                         ))}
                       </div>
                       {searchResult.length > 4 && (
-                        <Link
-                          to={`/products?search=${searchQuery}`}
-                          onClick={() => {
-                            setSearchOpen(false);
-                          }}
-                          className="block text-center mt-4 py-2 text-[#E60C03] hover:text-red-700 font-medium text-sm transition-colors"
+                        <button
+                          onClick={handleViewAllClick}
+                          className="block w-full text-center mt-4 py-2 text-[#E60C03] hover:text-red-700 font-medium text-sm transition-colors"
                         >
                           View all {searchResult.length} results →
-                        </Link>
+                        </button>
                       )}
                     </div>
                   ) : searchQuery.length >= 2 ? (
@@ -221,210 +263,170 @@ const Header = () => {
                         Try searching with different keywords
                       </p>
                     </div>
-                  ) : (
-                    <div className="p-4">
-                      <h3 className="text-sm font-semibold text-gray-500 mb-3">POPULAR SEARCHES</h3>
-                      <div className="flex flex-wrap gap-2">
-                        {['Laptops', 'Printers', 'Cameras', 'Keyboards', 'Monitors'].map((term, idx) => (
-                          <button
-                            key={idx}
-                            onClick={() => setSearchQuery(term)}
-                            className="px-4 py-2 bg-[#f7fafc] text-gray-700 text-sm rounded-lg border border-[#dee2e6] hover:border-[#E60C03] hover:text-[#E60C03] transition-colors"
-                          >
-                            {term}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                  ) : null}
                 </div>
               )}
             </div>
           </div>
 
-          {/* Mobile Search Icon */}
-          <div className='lg:hidden relative' ref={mobileSearchDropdownRef}>
-            <button 
-              onClick={() => setSearchOpen(!searchOpen)}
-              className='p-2 hover:bg-gray-100 rounded-lg transition-colors'
-            >
-              <Search className="w-5 h-5 text-gray-600" />
-            </button>
-
-            {/* Mobile Search Dropdown */}
-            {searchOpen && (
-              <div className="fixed inset-0 bg-white z-50 overflow-y-auto">
-                <div className="p-4">
-                  {/* Mobile Search Header */}
-                  <div className="flex items-center gap-3 mb-4">
-                    <button 
-                      onClick={() => {
-                        setSearchOpen(false);
-                        setSearchQuery('');
-                      }}
-                      className='p-2 hover:bg-gray-100 rounded-lg transition-colors'
-                    >
-                      <X className="w-6 h-6 text-gray-600" />
-                    </button>
-                    <div className="flex-1 flex rounded-lg overflow-hidden border border-[#dee2e6] bg-white">
-                      <div className="flex items-center pl-3">
-                        <Search className="w-5 h-5 text-gray-400" />
-                      </div>
-                      <input
-                        type="text"
-                        placeholder="Search products..."
-                        value={searchQuery}
-                        onChange={handleSearchChange}
-                        autoFocus
-                        className="flex-1 py-2 px-3 text-base border-none outline-none placeholder-gray-400"
-                      />
-                      {searchQuery && (
-                        <button 
-                          onClick={handleClearSearch}
-                          className="flex items-center pr-3 hover:opacity-70 transition-opacity"
-                        >
-                          <X className="w-5 h-5 text-gray-400" />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Mobile Search Results */}
-                  {isSearching ? (
-                    <div>
-                      <h3 className="text-sm font-semibold text-gray-500 mb-3">PRODUCTS</h3>
-                      <div className="grid grid-cols-2 gap-2">
-                        {[...Array(4)].map((_, idx) => (
-                          <SearchProductSkeletonMobile key={idx} />
-                        ))}
-                      </div>
-                    </div>
-                  ) : searchResult && searchResult.length > 0 ? (
-                    <div>
-                      <h3 className="text-sm font-semibold text-gray-500 mb-3">
-                        PRODUCTS ({searchResult.length})
-                      </h3>
-                      <div className="grid grid-cols-2 gap-2">
-                        {searchResult.slice(0, 6).map(product => (
-                          <Link
-                            key={product.id}
-                            to={`/details/${product.id}`}
-                            onClick={() => {
-                              setSearchOpen(false);
-                              setSearchQuery('');
-                            }}
-                            className="bg-white rounded-lg border border-[#dee2e6] p-2 hover:shadow-md cursor-pointer transition-all"
+          {/* Profile / Favorites / Cart */}
+          <div className='flex gap-0 lg:gap-5 lg:flex-1 pr-2'>
+            <div className='lg:hidden relative' ref={mobileSearchDropdownRef}>
+              <button 
+                // onClick={() => setSearchOpen(!searchOpen)}
+                className='p-2 hover:bg-gray-100 rounded-lg transition-colors'
+              >
+                <Search className="w-5 h-5 text-gray-600" />
+              </button>
+              
+              {/* Mobile Search Dropdown */}
+              {searchOpen && (
+                <div className="search-results-container fixed inset-0 bg-white z-50 overflow-y-auto">
+                  <div className="p-4">
+                    {/* Mobile Search Header */}
+                    <div className="flex items-center gap-3 mb-4">
+                      <button 
+                        onClick={closeMobileSearch}
+                        className='p-2 hover:bg-gray-100 rounded-lg transition-colors'
+                      >
+                        <X className="w-6 h-6 text-gray-600" />
+                      </button>
+                      <div className="flex-1 flex rounded-lg overflow-hidden border border-[#dee2e6] bg-white">
+                        <div className="flex items-center pl-3">
+                          <Search className="w-5 h-5 text-gray-400" />
+                        </div>
+                        <input
+                          type="text"
+                          placeholder="Search products..."
+                          value={searchQuery}
+                          onChange={handleSearchChange}
+                          autoFocus
+                          className="flex-1 py-2 px-3 text-base border-none outline-none placeholder-gray-400"
+                        />
+                        {searchQuery && (
+                          <button 
+                            onClick={handleClearSearch}
+                            className="flex items-center pr-3 hover:opacity-70 transition-opacity"
                           >
-                            <div className="relative w-full aspect-square bg-white rounded-lg flex items-center justify-center mb-2 overflow-hidden">
-                              <img 
-                                src={`http://localhost:5056${product.primaryImageUrl}`}
-                                alt={product.name}
-                                className="w-full h-full object-contain"
-                                onError={(e) => {
-                                  e.target.src = '/Icons/logo.svg';
-                                }}
-                              />
-                              {product.isHotDeal && (
-                                <div className="absolute top-1 right-1 bg-[#E60C03] text-white text-[10px] px-1.5 py-0.5 rounded">
-                                  Hot
-                                </div>
-                              )}
-                              {product.discountPercentage > 0 && (
-                                <div className="absolute top-1 left-1 bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-semibold">
-                                  -{product.discountPercentage}%
-                                </div>
-                              )}
-                            </div>
-                            <div>
-                              <h4 className="text-gray-800 font-medium text-xs mb-1 line-clamp-2 min-h-[32px]">
-                                {product.name}
-                              </h4>
-                              <p className="text-gray-400 text-[10px] mb-1 truncate">
-                                {product.categoryName?.replace(/-/g, ' ')}
-                              </p>
-                              <div className="flex items-center gap-1 flex-wrap">
-                                <span className="text-[#E60C03] font-bold text-sm">
-                                  ${product.currentPrice.toLocaleString()}
-                                </span>
+                            <X className="w-5 h-5 text-gray-400" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                      
+                    {/* Mobile Search Results */}
+                    {isSearching ? (
+                      <div>
+                        <h3 className="text-sm font-semibold text-gray-500 mb-3">PRODUCTS</h3>
+                        <div className="grid grid-cols-2 gap-2">
+                          {[...Array(4)].map((_, idx) => (
+                            <SearchProductSkeletonMobile key={idx} />
+                          ))}
+                        </div>
+                      </div>
+                    ) : searchResult && searchResult.length > 0 ? (
+                      <div>
+                        <h3 className="text-sm font-semibold text-gray-500 mb-3">
+                          PRODUCTS ({searchResult.length})
+                        </h3>
+                        <div className="grid grid-cols-2 gap-2">
+                          {searchResult.slice(0, 6).map(product => (
+                            <div
+                              key={product.id}
+                              onClick={(e) => handleProductClick(e, product.id)}
+                              onMouseDown={(e) => e.preventDefault()}
+                              className="bg-white rounded-lg border border-[#dee2e6] p-2 hover:shadow-md cursor-pointer transition-all"
+                            >
+                              <div className="relative w-full aspect-square bg-white rounded-lg flex items-center justify-center mb-2 overflow-hidden">
+                                <img 
+                                  src={`http://localhost:5056${product.primaryImageUrl}`}
+                                  alt={product.name}
+                                  className="max-w-[200px] object-contain"
+                                  onError={(e) => {
+                                    e.target.src = '/Icons/logo.svg';
+                                  }}
+                                />
+                                {product.isHotDeal && (
+                                  <div className="absolute top-1 right-1 bg-[#E60C03] text-white text-[10px] px-1.5 py-0.5 rounded">
+                                    Hot
+                                  </div>
+                                )}
                                 {product.discountPercentage > 0 && (
-                                  <span className="text-gray-400 text-[10px] line-through">
-                                    ${product.originalPrice.toLocaleString()}
-                                  </span>
+                                  <div className="absolute top-1 left-1 bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-semibold">
+                                    -{product.discountPercentage}%
+                                  </div>
                                 )}
                               </div>
+                              <div>
+                                <h4 className="text-gray-800 font-medium text-xs mb-1 line-clamp-2 min-h-[32px]">
+                                  {product.name}
+                                </h4>
+                                <p className="text-gray-400 text-[10px] mb-1 truncate">
+                                  {product.categoryName?.replace(/-/g, ' ')}
+                                </p>
+                                <div className="flex items-center gap-1 flex-wrap">
+                                  <span className="text-[#E60C03] font-bold text-sm">
+                                    ${product.currentPrice.toLocaleString()}
+                                  </span>
+                                  {product.discountPercentage > 0 && (
+                                    <span className="text-gray-400 text-[10px] line-through">
+                                      ${product.originalPrice.toLocaleString()}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
                             </div>
-                          </Link>
-                        ))}
-                      </div>
-                      {searchResult.length > 6 && (
-                        <Link
-                          to={`/products?search=${searchQuery}`}
-                          onClick={() => {
-                            setSearchOpen(false);
-                          }}
-                          className="block text-center mt-4 py-3 text-[#E60C03] hover:text-red-700 font-medium text-sm transition-colors bg-gray-50 rounded-lg"
-                        >
-                          View all {searchResult.length} results →
-                        </Link>
-                      )}
-                    </div>
-                  ) : searchQuery.length >= 2 ? (
-                    <div className="py-12 text-center">
-                      <Search className="w-12 h-12 mx-auto text-gray-300 mb-3" />
-                      <p className="text-gray-600 font-medium mb-1">No results found</p>
-                      <p className="text-gray-400 text-sm">
-                        Try searching with different keywords
-                      </p>
-                    </div>
-                  ) : (
-                    <div>
-                      <h3 className="text-sm font-semibold text-gray-500 mb-3">POPULAR SEARCHES</h3>
-                      <div className="flex flex-wrap gap-2">
-                        {['Laptops', 'Printers', 'Cameras', 'Keyboards', 'Monitors'].map((term, idx) => (
+                          ))}
+                        </div>
+                        {searchResult.length > 6 && (
                           <button
-                            key={idx}
-                            onClick={() => setSearchQuery(term)}
-                            className="px-4 py-2 bg-[#f7fafc] text-gray-700 text-sm rounded-lg border border-[#dee2e6] hover:border-[#E60C03] hover:text-[#E60C03] transition-colors"
+                            onClick={handleViewAllClick}
+                            className="block w-full text-center mt-4 py-3 text-[#E60C03] hover:text-red-700 font-medium text-sm transition-colors bg-gray-50 rounded-lg"
                           >
-                            {term}
+                            View all {searchResult.length} results →
                           </button>
-                        ))}
+                        )}
                       </div>
-                    </div>
-                  )}
+                    ) : searchQuery.length >= 2 ? (
+                      <div className="py-12 text-center">
+                        <Search className="w-12 h-12 mx-auto text-gray-300 mb-3" />
+                        <p className="text-gray-600 font-medium mb-1">No results found</p>
+                        <p className="text-gray-400 text-sm">
+                          Try searching with different keywords
+                        </p>
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
 
-          {/* Profile / Favorites / Cart */}
-          <div className='hidden lg:flex gap-0 lg:gap-5 lg:flex-1 pr-2'>
             <Link
               to={document.cookie ? "/profile" : "/login"}
-              className='flex flex-col gap-1 items-center cursor-pointer hover:opacity-80 transition-opacity duration-200'
+              className='flex flex-col gap-1 p-2 items-center cursor-pointer hover:opacity-80 transition-opacity duration-200'
             >
               <img src="/Icons/profile-gray.svg" alt="Profile" />
-              <p className='text-gray-500 text-md whitespace-nowrap'>
+              <p className='text-gray-500 hidden lg:block text-md whitespace-nowrap'>
                 {document.cookie ? "Profile" : "Login"}
               </p>
             </Link>
 
             <Link
               to={document.cookie ? "/favorites" : "/login"}
-              className='flex flex-col gap-1 items-center cursor-pointer hover:opacity-80 transition-opacity duration-200'
+              className='flex flex-col gap-1 p-2 items-center cursor-pointer hover:opacity-80 transition-opacity duration-200'
             >
               <img src="/Icons/favorites-gray.svg" alt="Favorites" />
-              <p className='text-gray-500 text-md whitespace-nowrap'>
+              <p className='text-gray-500 text-md hidden lg:block whitespace-nowrap'>
                 Favorites
               </p>
             </Link>
 
             <Link
               to={document.cookie ? "/cart" : "/login"}
-              className='flex flex-col gap-1 items-center cursor-pointer hover:opacity-80 transition-opacity duration-200'
+              className='flex flex-col gap-1 p-2 items-center cursor-pointer hover:opacity-80 transition-opacity duration-200'
             >
               <img src="/Icons/cart-gray.svg" alt="Cart" />
-              <p className='text-gray-500 text-md whitespace-nowrap'>
+              <p className='text-gray-500 text-md hidden lg:block whitespace-nowrap'>
                 My Cart
               </p>
             </Link>
@@ -436,18 +438,6 @@ const Header = () => {
       <div className="hidden md:block w-full bg-white border-y-1 border-gray-200 px-2 py-4">
         <div className="flex items-center justify-between max-w-[85vw] mx-auto">
           <div className="flex items-center space-x-8">
-            {/* All Category */}
-            <div className="flex items-center space-x-2 cursor-pointer hover:opacity-80 transition-opacity duration-200">
-              <div className="flex flex-col space-y-1">
-                <div className="w-4 h-0.5 bg-gray-600"></div>
-                <div className="w-4 h-0.5 bg-gray-600"></div>
-                <div className="w-4 h-0.5 bg-gray-600"></div>
-              </div>
-              <span className="text-gray-600 inter text-sm lg:text-base">
-                All category
-              </span>
-            </div>
-
             {/* Navigation Links */}
             <nav className="flex items-center space-x-6 lg:space-x-8">
               <Link to='/' className="text-gray-700 inter text-sm lg:text-base hover:text-gray-900 transition-colors duration-200">Home</Link>
