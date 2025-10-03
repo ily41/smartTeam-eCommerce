@@ -207,7 +207,7 @@ const Header = () => {
                           >
                             <div className="relative w-full aspect-square bg-white rounded-lg flex items-center justify-center mb-3 overflow-hidden">
                               <img 
-                                src={`http://localhost:5056${product.primaryImageUrl}`}
+                                src={`http://smartteamaz-001-site1.qtempurl.com${product.primaryImageUrl}`}
                                 alt={product.name}
                                 className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
                                 onError={(e) => {
@@ -339,7 +339,7 @@ const Header = () => {
                             >
                               <div className="relative w-full aspect-square bg-white rounded-lg flex items-center justify-center mb-2 overflow-hidden">
                                 <img 
-                                  src={`http://localhost:5056${product.primaryImageUrl}`}
+                                  src={`http://smartteamaz-001-site1.qtempurl.com${product.primaryImageUrl}`}
                                   alt={product.name}
                                   className="max-w-[200px] object-contain"
                                   onError={(e) => {

@@ -103,9 +103,9 @@ const HomePageUI = ({deal, product, url, handleAddToCart, isAddingToCart}) => {
 
     if(deal) {
         return (
-            <Link to={`/details/${product.id}`} className='bg-white p-1 border-1 border-gray-300 cursor-pointer rounded-lg relative transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-gray-400'>
-                <img className='w-full rounded-lg p-3' src={`http://localhost:5056${url}`} alt="" />
-                <div className='font-semibold p-2 inter'>
+            <Link to={`/details/${product.id}`} className='bg-white p-1 border-1 flex flex-col justify-between border-gray-300 cursor-pointer rounded-lg relative transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-gray-400 '>
+                <img className='w-full rounded-lg p-3' src={`http://smartteamaz-001-site1.qtempurl.com${url}`} alt="" />
+                <div className='font-semibold p-2 inter flex flex-col justify-between h-full'>
                     <div className="flex flex-nowrap gap-2 items-center overflow-hidden">
                       <h1 className="line-through truncate">{product.originalPrice} AZN</h1>
                       <h1 className="text-[#FF4B43] truncate">{product.currentPrice} AZN</h1>
@@ -137,8 +137,8 @@ const HomePageUI = ({deal, product, url, handleAddToCart, isAddingToCart}) => {
     }
     else {
         return (
-            <Link to={`/details/${product.id}`} className='bg-white p-1 border-1 cursor-pointer border-gray-300 rounded-lg transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-gray-400'>
-                <img className='w-full rounded-lg p-3' src={`http://localhost:5056${url}`} alt="" />
+            <Link to={`/details/${product.id}`} className='bg-white p-1 border-1 cursor-pointer border-gray-300 rounded-lg transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-gray-400 flex flex-col justify-between'>
+                <img className='w-full rounded-lg p-3' src={`http://smartteamaz-001-site1.qtempurl.com${url}`} alt="" />
                 <div className='font-semibold p-2 inter'>
                     <h1 className='text-lg'>{product.currentPrice} AZN</h1>
                     <p className='font-medium mb-3'>{product.name}</p>

@@ -22,7 +22,6 @@ import SubCategories from "../Pages/user/SubCategories";
 import ScrollToTop from "../components/user/ScrollToTop";
 import BannersUI from "../components/admin/Banner/BannerUi";
 import FilterUi from "../Pages/admin/FilterUi";
-import AddProductSpecifications from "../components/admin/Product/AddProductSpec";
 import ProductSpec from "../Pages/admin/ProductSpec"
 import AssignFilter from "../Pages/admin/AssignFilter"
 import FileManagementPanel from "../components/admin/FileUpload/FIleUI";
@@ -31,9 +30,12 @@ import { SearchProvider } from "./Context";
 const Router = () => {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <SearchProvider>
+       
         <Routes>
         {/* Login page */}
+        
         <Route path="/login" element={<Login />} />
 
         {/* User layout */}

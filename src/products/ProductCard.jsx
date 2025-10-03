@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Heart } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Heart, Check } from 'lucide-react';
 import { Link } from 'react-router';
 
 export function ProductCard({
@@ -7,17 +7,28 @@ export function ProductCard({
   info,
   handleAddToCart,
   isAddingToCart,
-  toggleFavorite, // RTK Query mutation hook
+  toggleFavorite,
   isFavorite = false
 }) {
-  const { url, name, price, id, seller, description } = info;
+  const { url, name, price, id, description } = info;
   const [localFavorite, setLocalFavorite] = useState(isFavorite);
+  const [isTogglingFavorite, setIsTogglingFavorite] = useState(false);
+  const [justAdded, setJustAdded] = useState(false);
+
+  // Reset justAdded after animation
+  useEffect(() => {
+    if (justAdded) {
+      const timer = setTimeout(() => setJustAdded(false), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [justAdded]);
 
   const handleCartClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
     if (handleAddToCart) {
       handleAddToCart(id);
+      setJustAdded(true);
     }
   };
 
@@ -25,72 +36,91 @@ export function ProductCard({
     e.preventDefault();
     e.stopPropagation();
     
+    if (isTogglingFavorite || !toggleFavorite) return;
+    
     // Optimistically update local state
+    const previousState = localFavorite;
     setLocalFavorite(!localFavorite);
+    setIsTogglingFavorite(true);
     
     try {
-      // Call the RTK Query mutation
-      await toggleFavorite({ productId: id }).unwrap();
+      await toggleFavorite(id);
     } catch (error) {
       // Revert on error
-      setLocalFavorite(localFavorite);
+      setLocalFavorite(previousState);
       console.error('Failed to toggle favorite:', error);
+    } finally {
+      setIsTogglingFavorite(false);
     }
   };
 
   if (col) {
     // Column layout (grid view)
     return (
-      <Link
-        to={`/details/${id}`}
-        className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden block"
-      >
-        <div className="aspect-square p-4 bg-gray-50">
-          <img
-            src={`http://localhost:5056${url}`}
-            alt={name || 'Product'}
-            className="w-full h-full object-contain"
-          />
-        </div>
-        <div className="p-4 relative">
-          <div className="mb-8">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden relative">
+        <Link to={`/details/${id}`} className="block">
+          <div className="aspect-square p-4 bg-gray-50">
+            <img
+              src={`http://smartteamaz-001-site1.qtempurl.com${url}`}
+              alt={name || 'Product'}
+              className="w-full h-full object-contain"
+            />
+          </div>
+        </Link>
+
+        <div className="p-4">
+          <button
+            onClick={handleFavoriteClick}
+            disabled={isTogglingFavorite}
+            className="absolute top-4 right-4 p-2 rounded-lg border border-gray-200 bg-white shadow-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed z-10"
+          >
+            <Heart
+              className={`w-5 h-5 transition-colors ${
+                localFavorite
+                  ? 'fill-red-500 text-red-500'
+                  : 'text-red-500'
+              }`}
+            />
+          </button>
+
+          <Link to={`/details/${id}`} className="block mb-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+              {name}
+            </h3>
             {description && (
               <p className="text-sm text-gray-600 mb-2 line-clamp-2">
                 {description}
               </p>
             )}
-            <p className="text-lg lg:text-xl font-semibold text-gray-900">
-              {price} AZN
+            <p className="text-xl font-semibold text-gray-900 mt-2">
+              {price} ₼
             </p>
-            <p className="text-sm lg:text-md text-gray-600">
-              {seller || 'Pos Komputer'}
-            </p>
-          </div>
+          </Link>
 
           <button
             onClick={handleCartClick}
-            disabled={isAddingToCart}
-            className="w-full text-sm lg:text-md bg-red-500 hover:bg-red-600 disabled:bg-red-400 disabled:cursor-not-allowed text-white py-2 px-4 rounded-md font-medium transition-colors duration-200"
+            disabled={isAddingToCart || justAdded}
+            className={`w-full text-sm lg:text-md py-3 px-4 rounded-md font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+              justAdded
+                ? 'bg-green-500 hover:bg-green-600 text-white'
+                : 'bg-red-500 hover:bg-red-600 disabled:bg-red-400 disabled:cursor-not-allowed text-white'
+            }`}
           >
-            {isAddingToCart ? 'Adding...' : 'Add to the cart'}
-          </button>
-
-          <button
-            onClick={handleFavoriteClick}
-            className="absolute top-4 right-4 p-3 rounded-lg border border-gray-300 bg-white shadow-sm hover:bg-gray-50 transition-colors"
-          >
-            <Heart
-              className={`w-4 h-4 lg:w-5 lg:h-5 transition-colors ${
-                localFavorite
-                  ? 'fill-red-500 text-red-500'
-                  : 'text-gray-400'
-              }`}
-            />
+            {justAdded ? (
+              <>
+                <Check className="w-4 h-4" />
+                Added to cart
+              </>
+            ) : isAddingToCart ? (
+              'Adding...'
+            ) : (
+              'Add to the cart'
+            )}
           </button>
         </div>
-      </Link>
+      </div>
     );
-  } else {
+  }else {
     // Row layout (list view)
     return (
       <Link
@@ -100,7 +130,7 @@ export function ProductCard({
         {/* Product Image */}
         <div className="flex-shrink-0">
           <img
-            src={`http://localhost:5056${url}`}
+            src={`http://smartteamaz-001-site1.qtempurl.com${url}`}
             alt={name || 'Product'}
             className="max-w-[150px] object-cover rounded-lg"
           />
@@ -121,7 +151,8 @@ export function ProductCard({
 
             <button
               onClick={handleFavoriteClick}
-              className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+              disabled={isTogglingFavorite}
+              className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Heart
                 className={`w-6 h-6 transition-colors ${
@@ -133,172 +164,28 @@ export function ProductCard({
             </button>
           </div>
 
-          <div className="grid grid-cols-2">
-            {/* Features */}
-            <div className="flex flex-wrap gap-2 mb-9">
-              {info.features?.length > 0 ? (
-                info.features.map((feature, index) => (
-                  <span
-                    key={index}
-                    className="px-3 py-1 rounded-md border text-gray-700 text-sm"
-                  >
-                    {feature}
-                  </span>
-                ))
-              ) : (
-                <>
-                  <span className="px-3 py-1 rounded-md border text-gray-700 text-sm">
-                    16GB RAM
-                  </span>
-                  <span className="px-3 py-1 rounded-md border text-gray-700 text-sm">
-                    Intel® Core™ i7
-                  </span>
-                  <span className="px-3 py-1 rounded-md border text-gray-700 text-sm">
-                    Gray
-                  </span>
-                  <span className="px-3 py-1 rounded-md border text-gray-700 text-sm">
-                    512GB SSD
-                  </span>
-                  <span className="px-3 py-1 rounded-md border text-gray-700 text-sm">
-                    15.6" Display
-                  </span>
-                </>
-              )}
-            </div>
-
-            {/* Add to Cart */}
             <button
               onClick={handleCartClick}
-              disabled={isAddingToCart}
-              className="w-[80%] h-fit self-end mx-auto text-sm lg:text-md bg-red-500 hover:bg-red-600 disabled:bg-red-400 disabled:cursor-not-allowed text-white py-3 px-4 rounded-md font-medium transition-colors duration-200"
+              disabled={isAddingToCart || justAdded}
+              className={` h-fit self-end w-[200px] text-sm lg:text-md py-3 px-4 rounded-md font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+                justAdded
+                  ? 'bg-green-500 hover:bg-green-600 text-white'
+                  : 'bg-red-500 hover:bg-red-600 disabled:bg-red-400 disabled:cursor-not-allowed text-white'
+              }`}
             >
-              {isAddingToCart ? 'Adding...' : 'Add to the cart'}
+              {justAdded ? (
+                <>
+                  <Check className="w-4 h-4" />
+                  Added to cart
+                </>
+              ) : isAddingToCart ? (
+                'Adding...'
+              ) : (
+                'Add to the cart'
+              )}
             </button>
           </div>
-        </div>
       </Link>
     );
   }
-}
-
-// Demo usage example showing how to use with RTK Query
-export default function ProductCardDemo() {
-  const [cartItems, setCartItems] = useState([]);
-  const [favorites, setFavorites] = useState(new Set(['1'])); // Simulate some favorites
-  const [addingToCart, setAddingToCart] = useState(new Set());
-
-  const sampleProducts = [
-    {
-      id: '1',
-      name: 'iPhone 12 Mini 128GB Blue',
-      price: 680,
-      seller: 'Pos Komputer',
-      url: '/api/placeholder/400/400',
-      description: 'Latest model with amazing features',
-      features: [
-        '128GB Storage',
-        'A14 Bionic',
-        'Blue',
-        '5G Capable',
-        'OLED Display'
-      ]
-    },
-    {
-      id: '2',
-      name: 'MacBook Pro 16" M3',
-      price: 2499,
-      seller: 'Tech Store',
-      url: '/api/placeholder/400/400',
-      description: 'Professional laptop for creative work',
-      features: [
-        '16GB RAM',
-        'M3 Chip',
-        'Space Gray',
-        '512GB SSD',
-        '16" Retina'
-      ]
-    }
-  ];
-
-  const handleAddToCart = async (productId) => {
-    setAddingToCart((prev) => new Set(prev).add(productId));
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    setCartItems((prev) => [...prev, productId]);
-    setAddingToCart((prev) => {
-      const newSet = new Set(prev);
-      newSet.delete(productId);
-      return newSet;
-    });
-  };
-
-  // Mock RTK Query mutation for demo
-  const mockToggleFavorite = ({ productId }) => ({
-    unwrap: async () => {
-      await new Promise((resolve) => setTimeout(resolve, 300));
-      setFavorites((prev) => {
-        const newFavorites = new Set(prev);
-        if (newFavorites.has(productId)) {
-          newFavorites.delete(productId);
-        } else {
-          newFavorites.add(productId);
-        }
-        return newFavorites;
-      });
-      return { success: true };
-    }
-  });
-
-  return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold mb-2">Product Card with RTK Query</h1>
-        <p className="text-gray-600 mb-8">
-          Integrated with favorites toggle mutation
-        </p>
-
-        <div className="mb-12">
-          <h2 className="text-xl font-semibold mb-4">
-            Grid View (Column Layout)
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sampleProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                col={true}
-                info={product}
-                handleAddToCart={handleAddToCart}
-                isAddingToCart={addingToCart.has(product.id)}
-                toggleFavorite={mockToggleFavorite}
-                isFavorite={favorites.has(product.id)}
-              />
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <h2 className="text-xl font-semibold mb-4">List View (Row Layout)</h2>
-          <div className="space-y-4">
-            {sampleProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                col={false}
-                info={product}
-                handleAddToCart={handleAddToCart}
-                isAddingToCart={addingToCart.has(product.id)}
-                toggleFavorite={mockToggleFavorite}
-                isFavorite={favorites.has(product.id)}
-              />
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-8 p-4 bg-white rounded-lg">
-          <h3 className="font-semibold mb-2">
-            Cart Items: {cartItems.length}
-          </h3>
-          <h3 className="font-semibold">Favorites: {favorites.size}</h3>
-        </div>
-      </div>
-    </div>
-  );
 }

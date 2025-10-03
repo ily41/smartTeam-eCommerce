@@ -19,7 +19,6 @@ const WishList = () => {
   const [loadingProductId, setLoadingProductId] = useState(null);
   const [showSuccess, setShowSuccess] = useState(null);
   const {data: recommendation, isRecLoading} = useGetRecommendedQuery({limit: 6})
-  console.log(recommendation)
   
 
   const { data: favoritesData, isLoading, error } = useGetFavoritesQuery({ page, pageSize });
@@ -180,7 +179,7 @@ const WishList = () => {
                   >
                     <img 
                       className='w-full rounded-lg p-3' 
-                      src={item.product.imageUrl ? `http://localhost:5056${item.product.imageUrl}` : "./deals/product.avif"} 
+                      src={item.product.imageUrl ? `http://smartteamaz-001-site1.qtempurl.com${item.product.imageUrl}` : "./deals/product.avif"} 
                       alt={item.product.name || 'Product'}
                     />
                     <div className='font-semibold p-2 inter'>

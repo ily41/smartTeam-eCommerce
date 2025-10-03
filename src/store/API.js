@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 export const API = createApi({
   reducerPath: 'API',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:5056',
+    baseUrl: 'http://smartteamaz-001-site1.qtempurl.com',
     prepareHeaders: (headers, { endpoint, body }) => {
       // Skip Content-Type for FormData requests - let FormData handle it
       const isFormDataRequest =
@@ -12,6 +12,7 @@ export const API = createApi({
         endpoint === 'addDetailImages' ||
         endpoint === 'addBanner' ||
         endpoint === 'uploadFile' ||
+        endpoint === 'addProductPdf' ||
         body instanceof FormData;
 
       if (!isFormDataRequest) {
@@ -697,12 +698,75 @@ export const API = createApi({
       }),
       invalidatesTags: ['Files'],
     }),
-  
 
-  }),
-});
+    // Pdf Products
+
+    getProductPdfs: builder.query({
+      query: () => ({
+        url: '/api/v1/Admin/product-pdfs',
+        method: 'GET',
+      }),
+      providesTags: ['ProductPdfs'],
+    }),
+
+    // GET single product PDF by ID
+    getProductPdfById: builder.query({
+      query: ({ id }) => ({
+        url: `/api/v1/Admin/product-pdfs/${id}`,
+        method: 'GET',
+      }),
+      providesTags: (result, error, { id }) => [
+        { type: 'ProductPdfs', id }
+      ],
+    }),
+
+    // POST - Add PDF to product
+    addProductPdf: builder.mutation({
+      query: ({ productId, formData }) => ({
+        url: `/api/v1/Admin/products/${productId}/pdf`,
+        method: 'POST',
+        body: formData,
+      }),
+      invalidatesTags: ['ProductPdfs', 'Products'],
+    }),
+
+    // DELETE product PDF
+    deleteProductPdf: builder.mutation({
+      query: ({ id }) => ({
+        url: `/api/v1/Admin/product-pdfs/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['ProductPdfs', 'Products'],
+    }),
+
+    getProductPdfByIdUser: builder.query({
+      query: ({ id }) => ({
+        url: `/api/v1/product-pdfs/download/product/${id}`,
+        method: 'GET',
+        responseHandler: async (response) => {
+          // Check if response is ok before creating blob
+          if (!response.ok) {
+            throw new Error('Failed to download PDF');
+          }
+          return await response.blob();
+        },
+      }),
+      // Optional: Add cache settings since PDFs don't change often
+      keepUnusedDataFor: 60, // Keep cached for 60 seconds
+    }),
+
+
+
+      }),
+    });
 
 export const {
+  useGetProductPdfByIdQuery,
+  useGetProductPdfsQuery,
+  useDeleteProductPdfMutation,
+  useAddProductPdfMutation,
+  useGetProductPdfByIdUserQuery,
+
   useAddFilterMutation,
   useGetFiltersQuery,
   useRemoveFilterMutation,

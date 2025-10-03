@@ -1,17 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { useFilterProductsMutation, useGetCategoriesQuery, useGetCategoryFiltersQuery, useGetFiltersQuery, useGetParentCategoriesQuery, useGetProductQuery } from '../store/API';
+import { useFilterProductsMutation, useGetCategoriesQuery, useGetCategoryFiltersQuery, useGetFiltersQuery, useGetParentCategoriesQuery } from '../store/API';
 
 export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, currentPage, pageSize, hideCategoryFilter = false, forcedCategoryId = null }) {
+  console.log("current", currentSort)
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
-
+  const [selectedFilters, setSelectedFilters] = useState({});
   const { data: categories, isLoading: isCategoriesLoading } = useGetCategoriesQuery();
   const { data: ParentCat, isLoading: isParentCatLoading } = useGetParentCategoriesQuery();
   const { data: customFilters, isLoading: isCustomLoading } = useGetFiltersQuery();
   
+  const [filterProducts, { isLoading: isFiltering }] = useFilterProductsMutation();
+  
+  const hasFiltersApplied = useRef(false);
+  const debounceTimer = useRef(null);
+
   // Use forcedCategoryId if provided, otherwise use selected category
   const activeCategoryId = forcedCategoryId || (selectedCategories.length > 0 ? selectedCategories[0] : null);
   
@@ -19,7 +25,11 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
     activeCategoryId, 
     { skip: !activeCategoryId }
   );
-  
+
+  // Determine which filters to show - category-specific or general
+  const filtersToShow = activeCategoryId && categoryFilters ? categoryFilters : customFilters;
+  const isFiltersLoading = activeCategoryId ? isCategoryFiltersLoading : isCustomLoading;
+
   const buildActiveFilters = () => {
     const activeFilters = [];
     
@@ -83,27 +93,12 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
   
     return activeFilters;
   };
-  
-  // Initialize selectedFilters state properly
-  const [selectedFilters, setSelectedFilters] = useState({});
-  
-  const [filterProducts, { isLoading: isFiltering }] = useFilterProductsMutation();
-  
-  // Track if filters have been applied to prevent loops
-  const hasFiltersApplied = useRef(false);
-  // Debounce timer for price inputs
-  const debounceTimer = useRef(null);
-
-  // Determine which filters to show - category-specific or general
-  const filtersToShow = activeCategoryId && categoryFilters ? categoryFilters : customFilters;
-  const isFiltersLoading = activeCategoryId ? isCategoryFiltersLoading : isCustomLoading;
 
   // Initialize selectedFilters when filters load or change
   useEffect(() => {
     if (filtersToShow) {
       const initialFilters = {};
       filtersToShow.forEach(filter => {
-        // Only initialize if not already exists to preserve selections
         if (!selectedFilters[filter.id]) {
           initialFilters[filter.id] = {
             filterId: filter.id,
@@ -115,7 +110,6 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
         }
       });
       
-      // Update only new filters, preserve existing selections
       setSelectedFilters(prev => ({
         ...prev,
         ...initialFilters
@@ -123,10 +117,8 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
     }
   }, [filtersToShow]);
 
-  // Reset filters when category changes
   useEffect(() => {
     if (activeCategoryId) {
-      // Reset all filters when category changes
       setSelectedFilters({});
     }
   }, [activeCategoryId]);
@@ -140,7 +132,7 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
       if (prev.includes(categoryId)) {
         return prev.filter(id => id !== categoryId);
       }
-      return [categoryId]; // Only allow single category selection
+      return [categoryId];
     });
   };
 
@@ -159,12 +151,10 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
       }
 
       if (isChecked) {
-        // Add option ID if not already present
         if (!updatedFilters[filterId].filterOptionIds.includes(optionId)) {
           updatedFilters[filterId].filterOptionIds.push(optionId);
         }
       } else {
-        // Remove option ID
         updatedFilters[filterId].filterOptionIds = updatedFilters[filterId].filterOptionIds.filter(
           id => id !== optionId
         );
@@ -174,7 +164,6 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
     });
   };
 
-  // Build filter criteria for API
   const buildFilterCriteria = () => {
     const criteria = [];
     
@@ -193,7 +182,6 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
     return criteria;
   };
 
-  // Check if any filters are active
   const hasActiveFilters = () => {
     const hasCategories = !hideCategoryFilter && selectedCategories.length > 0;
     const hasPrice = minPrice || maxPrice;
@@ -208,9 +196,7 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
     return hasCategories || hasPrice || hasCustomFilters || hasForcedCategory;
   };
 
-  // Apply filters
-  useEffect(() => {
-    // Clear existing timer
+    useEffect(() => {
     if (debounceTimer.current) {
       clearTimeout(debounceTimer.current);
     }
@@ -221,35 +207,19 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
       const hasActiveFiltersApplied = hasActiveFilters();
       
       if (!hasActiveFiltersApplied) {
-        // Reset to show all products when no filters are active
         hasFiltersApplied.current = false;
         if (onFilterResults) {
-          onFilterResults(null, []); // Pass null to indicate no filters, empty array for active filters
+          onFilterResults(null, []);
         }
         return;
       }
     
       hasFiltersApplied.current = true;
 
-      let sortByValue, sortOrderValue;
-      if (currentSort) {
-        const sortParts = currentSort.split('_');
-        if (sortParts[0] === 'price') {
-          sortByValue = 'price';
-          sortOrderValue = sortParts[1];
-        } else if (sortParts[0] === 'name') {
-          sortByValue = 'name';
-          sortOrderValue = sortParts[1];
-        } else if (currentSort === 'newest') {
-          sortByValue = 'createdDate';
-          sortOrderValue = 'desc';
-        }
-      }
 
-      // Build filter payload
+  
+
       const filterCriteria = buildFilterCriteria();
-
-      // Determine which category ID to use
       const categoryIdToUse = forcedCategoryId || (selectedCategories.length > 0 ? selectedCategories[0] : null);
 
       const filterPayload = {
@@ -257,43 +227,38 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
         filterCriteria: filterCriteria.length > 0 ? filterCriteria : [],
         minPrice: minPrice ? parseFloat(minPrice) : null,
         maxPrice: maxPrice ? parseFloat(maxPrice) : null,
-        sortBy: sortByValue || null,
-        sortOrder: sortOrderValue || null,
-        page: currentPage || 0,
+        sortBy: "price",
+        sortOrder: currentSort,
+        page: currentPage || 1,
         pageSize: pageSize || 20
       };
+      console.log(filterPayload)
     
-      console.log('Filter Payload:', filterPayload);
-    
-      // Notify parent that loading has started
       if (onLoadingChange) {
         onLoadingChange(true); 
       }
     
       try {
         const result = await filterProducts(filterPayload).unwrap();
+        
         const activeFilters = buildActiveFilters();
 
-        // Notify parent component with results and active filters
         if (onFilterResults) {
           onFilterResults(result, activeFilters);
         }
       } catch (error) {
         console.error('Failed to filter products:', error);
 
-        // Still notify parent to stop loading
         if (onFilterResults) {
           onFilterResults({ products: [], totalCount: 0 }, []);
         }
       } finally {
-        // Notify parent that loading has finished
         if (onLoadingChange) {
           onLoadingChange(false);
         }
       }
     }, delay);
   
-    // Cleanup
     return () => {
       if (debounceTimer.current) {
         clearTimeout(debounceTimer.current);
@@ -322,7 +287,6 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
         <>
           <hr className="mx-4 border-[#dee2e6]" />
           
-          {/* Category Filter */}
           <details open>
             <summary className="w-full flex items-center justify-between p-4 text-left cursor-pointer">
               <span className="font-medium text-gray-900">Category</span>
@@ -358,7 +322,6 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
         </>
       )}
 
-      {/* Custom Filters - Show category-specific or general filters */}
       {isFiltersLoading ? (
         <div className="p-4">
           <div className="animate-pulse space-y-4">
@@ -398,7 +361,6 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
         })
       )}
 
-      {/* Price Filter */}
       <details open>
         <summary className="w-full flex items-center justify-between p-4 text-left cursor-pointer">
           <span className="font-medium text-gray-900">Price Range</span>

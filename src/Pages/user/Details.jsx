@@ -7,7 +7,7 @@ import 'swiper/css/pagination';
 import { Heart, Download, Share2, Minus, Plus, ChevronLeft, ChevronRight, X, Check } from 'lucide-react';
 import { Breadcrumb } from '../../products/Breadcrumb';
 import SearchUI from '../../components/UI/SearchUI';
-import { useGetMeQuery, useGetProductQuery, useGetProductSpecificationsQuery, useAddCartItemMutation } from '../../store/API';
+import { useGetMeQuery, useGetProductQuery, useGetProductSpecificationsQuery, useAddCartItemMutation, useToggleFavoriteMutation, useGetFavoriteStatusQuery, useGetProductPdfByIdUserQuery } from '../../store/API';
 import { toast } from 'react-toastify';
 import { SearchContext } from '../../router/Context';
 
@@ -183,6 +183,38 @@ function Details() {
   const { id } = useParams();
   const [quantity, setQuantity] = useState(1);
   const [hovered, setHovered] = useState(null)
+  const [toggleFavorite] = useToggleFavoriteMutation();
+
+  const { data: pdfBlob, isLoading } = useGetProductPdfByIdUserQuery({ productId :  id });
+  console.log(pdfBlob)
+
+  const handleDownloadPdf = () => {
+    if (pdfBlob) {
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      const a = document.createElement('a');
+      a.href = pdfUrl;
+      a.download = "product.pdf";
+      a.click();
+      URL.revokeObjectURL(pdfUrl);
+    }
+  };
+  
+
+  const handleToggleFavorite = async (id) => {
+      if (!id) return;
+  
+      try {
+        await toggleFavorite({productId: id}).unwrap();
+      } catch (err) {
+        console.error(err);
+        if (err?.status === 401 || err?.data?.status === 401) {
+          toast.error("Please log in first");
+        } else {
+          toast.error("Failed to update favorites");
+        }
+      }
+    }
+  
 
   
   const [addCartItem, { isLoading: isAddingToCart, error: cartError }] = useAddCartItemMutation();
@@ -195,8 +227,8 @@ function Details() {
   } = useGetProductQuery(id, {
     skip: !id 
   });
-  console.log(product)
-
+  console.log(product?.id)
+  const { data: favoriteStatus } = useGetFavoriteStatusQuery({ productId: product?.id });
   const { data: productSpec, isLoading: isSpecLoading } = useGetProductSpecificationsQuery(product?.id);
 
   // Check for 401 errors and show toast
@@ -226,8 +258,6 @@ function Details() {
     }
 
     try {
-      console.log(product.id, quantity)
-      console.log(product)
       const result = await addCartItem({
         productId: product.id,
         quantity: quantity
@@ -316,50 +346,7 @@ function Details() {
     return features;
   };
 
-  const similarProducts = [
-    {
-      id: 1,
-      name: 'Gaming Laptop Pro',
-      description: 'High performance gaming',
-      price: '1400 AZN',
-      image: '/uploads/products/sample1.jpg'
-    },
-    {
-      id: 2,
-      name: 'Acer Nitro 5',
-      description: 'Budget gaming laptop',
-      price: '1200 AZN',
-      image: '/uploads/products/sample2.jpg'
-    },
-    {
-      id: 3,
-      name: 'ASUS ROG Strix',
-      description: 'Premium gaming experience',
-      price: '1800 AZN',
-      image: '/uploads/products/sample3.jpg'
-    },
-    {
-      id: 4,
-      name: 'MSI Gaming Laptop',
-      description: 'Powerful performance',
-      price: '1600 AZN',
-      image: '/uploads/products/sample4.jpg'
-    },
-    {
-      id: 5,
-      name: 'HP Omen',
-      description: 'Gaming excellence',
-      price: '1350 AZN',
-      image: '/uploads/products/sample5.jpg'
-    },
-    {
-      id: 6,
-      name: 'Dell G15',
-      description: 'Reliable gaming',
-      price: '1250 AZN',
-      image: '/uploads/products/sample6.jpg'
-    }
-  ];
+
 
   const [activeSlide, setActiveSlide] = useState(0);
   const [swiperRef, setSwiperRef] = useState(null);
@@ -463,7 +450,7 @@ function Details() {
                     return (
                       <SwiperSlide className='relative h-64 py-5 pt-8 rounded-lg'>
                         <img 
-                          src={`http://localhost:5056${item.imageUrl}` || './deals/product.avif'}
+                          src={`http://smartteamaz-001-site1.qtempurl.com${item.imageUrl}` || './deals/product.avif'}
                           alt={product.name}
                           className="h-48 object-contain mx-auto rounded-lg" 
                         />
@@ -473,14 +460,14 @@ function Details() {
                  
                   <SwiperSlide className='relative h-64 py-5 pt-8 rounded-lg'>
                     <img 
-                      src={`http://localhost:5056${product.imageUrl}` || './deals/product.avif'}
+                      src={`http://smartteamaz-001-site1.qtempurl.com${product.imageUrl}` || './deals/product.avif'}
                       alt={product.name}
                       className="h-48 object-contain mx-auto rounded-lg" 
                     />
                   </SwiperSlide>
                   <SwiperSlide className='relative h-64 py-5 pt-8 rounded-lg'>
                     <img 
-                      src={`http://localhost:5056${product.imageUrl}` || './deals/product.avif'}
+                      src={`http://smartteamaz-001-site1.qtempurl.com${product.imageUrl}` || './deals/product.avif'}
                       alt={product.name}
                       className="h-48 object-contain mx-auto rounded-lg" 
                     />
@@ -489,12 +476,18 @@ function Details() {
               </div>
 
               <div className="absolute top-10 right-6 flex flex-col gap-3">
-                <button className="p-2 bg-gray-100 rounded-lg">
-                  <Heart className="w-5 h-5 text-gray-600" />
+                <button onClick={() => handleToggleFavorite(product.id)} className="p-2 bg-gray-100 cursor-pointer rounded-lg"> 
+                  <Heart className={`w-5 h-5 text-gray-600 ${favoriteStatus?.isFavorite && 'fill-current'}`} />
                 </button>
-                <button className="p-2 bg-gray-100 rounded-lg">
-                  <Download className="w-5 h-5 text-gray-600" />
-                </button>
+
+               <button 
+                onClick={handleDownloadPdf} 
+                disabled={isLoading || !pdfBlob}
+                className="p-2 bg-gray-100 cursor-pointer rounded-lg disabled:opacity-50"
+              >
+                <Download className="w-5 h-5 text-gray-600" />
+              </button>
+
                 <button className="p-2 bg-gray-100 rounded-lg">
                   <Share2 className="w-5 h-5 text-gray-600" />
                 </button>
@@ -511,7 +504,7 @@ function Details() {
                     onClick={() => swiperRef?.slideTo(index)}
                   >
                     <img 
-                      src={`http://localhost:5056${item.imageUrl}` || './deals/product.avif'}
+                      src={`http://smartteamaz-001-site1.qtempurl.com${item.imageUrl}` || './deals/product.avif'}
                       alt={`${product.name} ${index + 1}`}
                       className="w-full h-full object-cover"
                     />
@@ -533,7 +526,7 @@ function Details() {
           </div>
 
           {/* Add to Cart Button */}
-          <div className="p-4 mb-6 space-y-3 border-y-1 border-[#DEE2E6] bg-white w-full h-full">
+          <div className="p-4 mb-6 space-y-3 border-y-1 border-[#DEE2E6] bg-white w-full h-full self-end">
             <button 
               onClick={handleAddToCart}
               disabled={!isInStock || isAddingToCart}
@@ -546,9 +539,6 @@ function Details() {
               }`}
             >
               {isAddingToCart ? 'Adding...' : !isInStock ? 'Out of Stock' : 'Add To Cart'}
-            </button>
-            <button className="w-full bg-green-500 text-white py-3 rounded-lg font-medium">
-              Get Information via WhatsApp
             </button>
             {cartError && cartError.status !== 401 && (
               <p className="text-red-500 text-sm mt-2">
@@ -592,7 +582,7 @@ function Details() {
               <div className="bg-white rounded-lg p-4 w-full flex h-full justify-center flex-col items-center py-9 sm:border-1 sm:border-[#DEE2E6]">
                 <div className='w-fit'>
                   <img 
-                    src={hovered ? `http://localhost:5056${hovered}` : `http://localhost:5056${product.imageUrl}`  || "./deals/productImageExample.svg"}
+                    src={hovered ? `http://smartteamaz-001-site1.qtempurl.com${hovered}` : `http://smartteamaz-001-site1.qtempurl.com${product.imageUrl}`  || "./deals/productImageExample.svg"}
                     alt={product.name}
                     className="h-80 object-cover rounded-lg transition-opacity duration-300 ease-in-out"
                     key={hovered || product.imageUrl} // Force re-render for fade effect
@@ -603,7 +593,6 @@ function Details() {
                 {/* Thumbnails */}
                 <div className="flex space-x-2 mt-4">
                   {product?.images.map((item, index) => {
-    console.log(item)
     return (
     <div 
       key={item} 
@@ -612,7 +601,7 @@ function Details() {
       className={`w-16 h-16 rounded-lg border-2 border-gray-200 overflow-hidden cursor-pointer transition-all duration-200 ease-in-out hover:scale-110 hover:shadow-lg ${hovered === item.imageUrl ? 'ring-2 ring-red-500 ring-offset-2' : ''}`}
     >
       <img 
-        src={`http://localhost:5056${item.imageUrl}` || "./deals/productImageExample.svg"}
+        src={`http://smartteamaz-001-site1.qtempurl.com${item.imageUrl}` || "./deals/productImageExample.svg"}
         alt={`${product.name} ${index + 1}`}
         className="w-full h-full object-cover transition-transform duration-200 hover:scale-105"
       />
@@ -637,8 +626,8 @@ function Details() {
             </div>
 
             {/* Right Column - Product Info */}
-            <div className="space-y-6 h-full">
-              <div className="bg-white rounded-lg p-10 h-full sm:border-1 sm:border-[#DEE2E6]">
+            <div className="space-y-6 h-full ">
+              <div className="bg-white rounded-lg flex flex-col justify-between p-10 h-full sm:border-1 sm:border-[#DEE2E6]">
                 {/* Header */}
                 <div className="flex items-center text-lg font-medium mb-3 inter">
                   {isInStock ? (
@@ -674,14 +663,19 @@ function Details() {
                   </div>
                   
                   <div className="flex space-x-2">
-                    <button className="p-2 bg-gray-100 rounded-lg">
+                    <button 
+                      onClick={handleDownloadPdf} 
+                      disabled={isLoading || !pdfBlob}
+                      className="p-2 bg-gray-100 cursor-pointer rounded-lg disabled:opacity-50"
+                    >
                       <Download className="w-5 h-5 text-gray-600" />
                     </button>
                     <button className="p-2 bg-gray-100 rounded-lg">
                       <Share2 className="w-5 h-5 text-gray-600" />
                     </button>
-                    <button className="p-2 bg-gray-100 rounded-lg">
-                      <Heart className="w-5 h-5 text-gray-600" />
+                    <button onClick={() => handleToggleFavorite(product.id)} className="p-2 bg-gray-100 cursor-pointer rounded-lg">
+                      <Heart className={`w-5 h-5 text-gray-600 ${favoriteStatus?.isFavorite && 'fill-current'}`} />
+
                     </button>
                   </div>
                 </div>
@@ -706,11 +700,11 @@ function Details() {
                 )}
 
                 {/* Add to Cart Button */}
-                <div className='flex flex-col '>
+                <div className='flex flex-col  '>
                   <button 
                     onClick={handleAddToCart}
                     disabled={!isInStock || isAddingToCart}
-                    className={`w-full flex justify-center items-center py-3 mt-6 rounded-lg font-medium ${
+                    className={`w-full flex justify-center items-center   py-3 mt-6 rounded-lg font-medium ${
                       !isInStock 
                         ? 'bg-gray-400 cursor-not-allowed text-white' 
                         : isAddingToCart
@@ -721,9 +715,7 @@ function Details() {
                     {isAddingToCart ? 'Adding...' : !isInStock ? 'Out of Stock' : 'Add To Cart'}
                   </button>
 
-                  <button className="w-full bg-green-500 text-white py-3 mt-6 rounded-lg font-medium">
-                    Get Information via WhatsApp
-                  </button>
+                 
                   
                   {cartError && cartError.status !== 401 && (
                     <p className="text-red-500 text-sm mt-2">

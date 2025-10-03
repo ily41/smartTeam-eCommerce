@@ -13,6 +13,7 @@ import {
 const BannersUI = () => {
   const { data: categories, isCatsLoading } = useGetParentCategoriesQuery();
   const { data: bannersD, isBannersLoading, error, refetch } = useGetBannersQuery();
+  console.log(bannersD)
   const [deleteBanner] = useDeleteBannerMutation();
   const [addBanner, { isLoading: isBannerLoading }] = useAddBannerMutation();
   const [updateBanner, { isLoading: isUpdateLoading }] = useUpdateBannerMutation();
@@ -632,6 +633,7 @@ const BannersUI = () => {
           <>
             <div className="space-y-6">
               {bannersD?.map((banner) => {
+                console.log(banner.imageUrl)
                 return (
                   <div
                     key={banner.id}
@@ -641,7 +643,7 @@ const BannersUI = () => {
                       <div className="md:w-1/3 relative min-h-[180px] h-64 md:h-auto bg-gray-700">
                         <img
                           className="w-full h-full object-cover"
-                          src={`http://localhost:5056${banner.imageUrl}`}
+                          src={`http://smartteamaz-001-site1.qtempurl.com/${banner.imageUrl}`}
                           alt={banner.title}
                           onError={(e) => {
                             e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200' viewBox='0 0 400 200'%3E%3Crect width='400' height='200' fill='%23374151'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%239CA3AF' font-size='16'%3ENo Image%3C/text%3E%3C/svg%3E";

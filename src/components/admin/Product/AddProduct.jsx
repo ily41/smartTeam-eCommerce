@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { X, Upload, Trash2, Plus } from "lucide-react";
-import { useAddDetailImagesMutation, useAddProductMutation, useGetCategoriesQuery, useGetUserRolesQuery } from "../../../store/API";
+import { X, Upload, Trash2, Plus, FileText } from "lucide-react";
+import { useAddDetailImagesMutation, useAddProductMutation, useGetCategoriesQuery, useGetUserRolesQuery, useAddProductPdfMutation, useGetProductPdfsQuery } from "../../../store/API";
 import { toast } from "react-toastify";
 import { WiRefresh } from "react-icons/wi";
 
@@ -8,8 +8,11 @@ const ProductFormUI = ({setOpen}) => {
 
   const { data: userRoles, error, isRolesLoading, refetch } = useGetUserRolesQuery();
   const { data: categories, isLoading, errorC } = useGetCategoriesQuery();
+  const { data: pdfs} = useGetProductPdfsQuery();
+  console.log(pdfs)
   const [addProduct, { isLoading: isProductLoading }] = useAddProductMutation(); 
   const [addDetailImages, { isLoading: isDetailLoading }] = useAddDetailImagesMutation(); 
+  const [addProductPdf, { isLoading: isPdfLoading }] = useAddProductPdfMutation();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -47,10 +50,15 @@ const ProductFormUI = ({setOpen}) => {
     ]
   });
 
+
+
   const [file, setFile] = useState(null);
-  const [files, setFiles] = useState([]); // Changed to array
+  const [files, setFiles] = useState([]); 
+  const [pdfFile, setPdfFile] = useState(null);
+  const [pdfDescription, setPdfDescription] = useState("");
+  const [pdfCustomName, setPdfCustomName] = useState("");
   const [imageUrl, setImageUrl] = useState(null);
-  const [imageUrls, setImageUrls] = useState([]); // Changed to array
+  const [imageUrls, setImageUrls] = useState([]); 
 
   // Single file preview
   useEffect(() => {
@@ -89,15 +97,34 @@ const ProductFormUI = ({setOpen}) => {
   };
 
   const handleMultipleFileUpload = (e) => {
-    const selectedFiles = Array.from(e.target.files); // Convert FileList to Array
+    const selectedFiles = Array.from(e.target.files);
     if (!selectedFiles || selectedFiles.length === 0) return;
 
-    setFiles(prev => [...prev, ...selectedFiles]); // Append to existing files
+    setFiles(prev => [...prev, ...selectedFiles]);
     e.target.value = ""; 
+  };
+
+  const handlePdfUpload = (e) => {
+    const selectedFile = e.target.files[0];
+    if (!selectedFile) return;
+
+    if (selectedFile.type !== 'application/pdf') {
+      toast.error("Please upload only PDF files");
+      return;
+    }
+
+    setPdfFile(selectedFile);
+    e.target.value = "";
   };
 
   const removeDetailImage = (indexToRemove) => {
     setFiles(prev => prev.filter((_, index) => index !== indexToRemove));
+  };
+
+  const removePdfFile = () => {
+    setPdfFile(null);
+    setPdfDescription("");
+    setPdfCustomName("");
   };
 
   const close = () => {
@@ -138,52 +165,74 @@ const ProductFormUI = ({setOpen}) => {
     });
     setFile(null);
     setFiles([]);
+    setPdfFile(null);
+    setPdfDescription("");
+    setPdfCustomName("");
     setOpen(false);
   }
 
   const handleProductFormData = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!file) {
-    toast.error("Please upload an image first");
-    return;
-  }
-
-  try {
-    // Create FormData for product
-    const formDataToSend = new FormData();
-    
-    const productDataString = JSON.stringify(formData);
-    formDataToSend.append("productData", productDataString); 
-    formDataToSend.append("imageFile", file, file.name);
-    
-    // Add the product first
-    const result = await addProduct(formDataToSend).unwrap();
-    console.log(result)
-
-    // If there are detail images, upload them
-    if (files.length > 0) {
-      const detailImagesFormData = new FormData();
-
-      // Append each file to FormData with the same key name
-      files.forEach(file => {
-        detailImagesFormData.append("imageFiles", file, file.name);
-      });
-
-      
-      const resultDetail = await addDetailImages({
-        id: result.id, // Use the actual product ID from the result
-        images: detailImagesFormData // Pass FormData instead of files array
-      }).unwrap();
-    
+    if (!file) {
+      toast.error("Please upload an image first");
+      return;
     }
 
-    toast.success("Product added successfully");
-    close();
-  } catch (error) {
-    toast.error(error?.data?.message || error?.message || "Something went wrong");
-  }
-};
+    try {
+      // Create FormData for product
+      const formDataToSend = new FormData();
+      
+      const productDataString = JSON.stringify(formData);
+      formDataToSend.append("productData", productDataString); 
+      formDataToSend.append("imageFile", file, file.name);
+      
+      // Add the product first
+      const result = await addProduct(formDataToSend).unwrap();
+      console.log(result)
+
+      // If there are detail images, upload them
+      if (files.length > 0) {
+        const detailImagesFormData = new FormData();
+
+        files.forEach(file => {
+          detailImagesFormData.append("imageFiles", file, file.name);
+        });
+
+        const resultDetail = await addDetailImages({
+          id: result.id,
+          images: detailImagesFormData
+        }).unwrap();
+      }
+
+      // If there is a PDF file, upload it
+      if (pdfFile) {
+        const pdfFormData = new FormData();
+        pdfFormData.append("ProductId", result.id);
+        pdfFormData.append("PdfFile", pdfFile, pdfFile.name);
+        
+        if (pdfCustomName) {
+          pdfFormData.append("CustomFileName", pdfCustomName);
+        }
+        
+        if (pdfDescription) {
+          pdfFormData.append("Description", pdfDescription);
+        }
+        
+        pdfFormData.append("IsActive", "true");
+
+        await addProductPdf({
+          productId: result.id,
+          formData: pdfFormData
+        }).unwrap();
+      }
+
+      toast.success("Product added successfully");
+      close();
+    } catch (error) {
+      toast.error(error?.data?.message || error?.message || "Something went wrong");
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -471,23 +520,99 @@ const ProductFormUI = ({setOpen}) => {
           }
         </div>
 
+        {/* PDF Upload Section */}
+        <div>
+          <label className="block text-sm font-medium mb-2">Product Specification (PDF)</label>
+          <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center">
+            <input
+              type="file"
+              accept="application/pdf"
+              onChange={handlePdfUpload}
+              className="hidden"
+              id="pdf-upload"
+            />
+            <label
+              htmlFor="pdf-upload"
+              className="cursor-pointer flex flex-col items-center gap-2"
+            >
+              <FileText className="w-8 h-8 text-gray-400" />
+              <span className="text-gray-400">
+                Click to upload PDF specification
+              </span>
+              <span className="text-sm text-gray-500">
+                PDF up to 10MB
+              </span>
+            </label>
+          </div>
+
+          {/* PDF Preview and Details */}
+          {pdfFile && 
+            <div className="mt-4 space-y-4">
+              <div className="flex items-center gap-3 p-4 bg-[#2c2c2c] rounded-md">
+                <FileText className="w-8 h-8 text-indigo-500" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium">{pdfFile.name}</p>
+                  <p className="text-xs text-gray-400">
+                    {(pdfFile.size / 1024 / 1024).toFixed(2)} MB
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={removePdfFile}
+                  className="bg-red-600 hover:bg-red-700 text-white rounded-full p-2"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* PDF Custom Name */}
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Custom File Name (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={pdfCustomName}
+                  onChange={(e) => setPdfCustomName(e.target.value)}
+                  className="w-full px-3 py-2 bg-[#2c2c2c] border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="Enter custom name for the PDF"
+                />
+              </div>
+
+              {/* PDF Description */}
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  PDF Description (Optional)
+                </label>
+                <textarea
+                  value={pdfDescription}
+                  onChange={(e) => setPdfDescription(e.target.value)}
+                  rows="2"
+                  className="w-full px-3 py-2 bg-[#2c2c2c] border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="Enter description for the PDF"
+                />
+              </div>
+            </div>
+          }
+        </div>
+
         {/* Submit Button */}
         <div className="flex justify-end gap-4 pt-4">
           <button
             type="button"
             onClick={() => close()}
             className="px-6 py-2 bg-gray-600 hover:bg-gray-700 rounded-md font-semibold"
-            disabled={isProductLoading || isDetailLoading}
+            disabled={isProductLoading || isDetailLoading || isPdfLoading}
           >
             Cancel
           </button>
           <button
             type="button"
             onClick={handleProductFormData}
-            disabled={isProductLoading || isDetailLoading}
+            disabled={isProductLoading || isDetailLoading || isPdfLoading}
             className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isProductLoading || isDetailLoading ? "Adding..." : "Add Product"}
+            {isProductLoading || isDetailLoading || isPdfLoading ? "Adding..." : "Add Product"}
           </button>
         </div>
       </div>

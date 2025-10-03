@@ -268,7 +268,7 @@ const ProductFilterAssignment = () => {
                         <td className="py-4 px-4">
                           <div className="flex items-center gap-3">
                             <img 
-                              src={`http://localhost:5056/${product.primaryImageUrl}`} 
+                              src={`http://smartteamaz-001-site1.qtempurl.com/${product.primaryImageUrl}`} 
                               alt={product.name}
                               className="w-12 h-12 rounded-lg object-cover bg-gray-600"
                               onError={(e) => {
@@ -459,7 +459,7 @@ const ProductFilterAssignment = () => {
                                 )}
                               </div>
                               <img 
-                                src={`http://localhost:5056/${product.primaryImageUrl}`} 
+                                src={`http://smartteamaz-001-site1.qtempurl.com/${product.primaryImageUrl}`} 
                                 alt={product.name}
                                 className="w-10 h-10 rounded-lg object-cover bg-gray-600"
                                 onError={(e) => {

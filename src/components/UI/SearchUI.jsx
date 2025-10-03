@@ -89,7 +89,7 @@ const SearchUI = () => {
   };
 
   return (
-    <div className="pb-0 lg:hidden bg-[#f7fafc] border-t-1 border-t-[#DEE2E6]" ref={searchDropdownRef}>
+    <div className="pb-0 lg:hidden  border-t-[#DEE2E6]" ref={searchDropdownRef}>
       <div className="p-3">
         <div className="relative">
           <Search 
@@ -148,7 +148,7 @@ const SearchUI = () => {
                     >
                       <div className="relative w-full aspect-square max-w-[200px] bg-white rounded-lg flex items-center justify-center mb-2 overflow-hidden">
                         <img 
-                          src={`http://localhost:5056${product.primaryImageUrl}`}
+                          src={`http://smartteamaz-001-site1.qtempurl.com${product.primaryImageUrl}`}
                           alt={product.name}
                           className="max-w-[200px] object-contain"
                           onError={(e) => {

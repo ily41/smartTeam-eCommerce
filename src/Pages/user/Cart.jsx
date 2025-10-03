@@ -341,7 +341,7 @@ const createOrder = async () => {
                           <div className="flex items-start rounded-lg">
                             <div className="w-30 h-30 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center mr-4 overflow-hidden">
                               <img
-                                src={`http://localhost:5056${item.productImageUrl}`}
+                                src={`http://smartteamaz-001-site1.qtempurl.com${item.productImageUrl}`}
                                 alt={item.productName}
                                 className="w-full h-full object-cover"
                               />
@@ -394,7 +394,7 @@ const createOrder = async () => {
                           <div className='flex-1 flex'>
                             <div className="w-30 h-30 rounded-lg flex items-center justify-center mr-4 overflow-hidden">
                               <img
-                                src={`http://localhost:5056${item.productImageUrl}`}
+                                src={`http://smartteamaz-001-site1.qtempurl.com${item.productImageUrl}`}
                                 alt={item.productName}
                                 className="w-full h-full object-cover"
                               />

@@ -7,7 +7,15 @@ import { MobileFilterButtons } from '../../products/MobileFilters';
 import { ActiveFilters } from '../../products/ActiveFilters';
 import { ProductCard } from '../../products/ProductCard';
 import { Pagination } from '../../products/Pagination';
-import { useAddCartItemMutation, useGetProductsQuery, useGetCategoriesQuery } from '../../store/API';
+import { 
+  useAddCartItemMutation, 
+  useGetProductsQuery, 
+  useGetCategoriesQuery, 
+  useToggleFavoriteMutation,
+  useGetFavoritesQuery,
+  useGetHotDealsQuery,
+  useGetRecommendedQuery
+} from '../../store/API';
 import { toast } from 'react-toastify';
 import { useParams } from 'react-router';
 
@@ -38,40 +46,71 @@ const ProductCardSkeleton = ({ col }) => (
 
 function Products() {
   const { slug } = useParams();
-  const categoryName = slug?.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  
+  // Determine if this is a special slug
+  const isHotDeals = slug === 'hot-deals';
+  const isRecommended = slug === 'recommended';
+  const isSpecialSlug = isHotDeals || isRecommended;
+  
+  const categoryName = isHotDeals 
+    ? 'Hot Deals' 
+    : isRecommended 
+    ? 'Recommended' 
+    : slug?.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024); 
   const [template, setTemplate] = useState(isMobile ? "cols" : "rows");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10); 
-  const { data: productDefault, isLoading: isLoadingProducts } = useGetProductsQuery();
+  
+  // Conditional queries based on slug
+  const { data: productDefault, isLoading: isLoadingProducts } = useGetProductsQuery(undefined, {
+    skip: isSpecialSlug
+  });
+  const { data: hotDeals, isLoading: isHotDealsLoading } = useGetHotDealsQuery(undefined, {
+    skip: !isHotDeals
+  });
+  const { data: recommended, isLoading: isRecommendedLoading } = useGetRecommendedQuery(
+    { limit: 10 }, 
+    { skip: !isRecommended }
+  );
+  
   const { data: categories } = useGetCategoriesQuery();
+  const { data: favorites } = useGetFavoritesQuery();
+  
   const [products, setProducts] = useState([]);
   const [totalItems, setTotalItems] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [sortBy, setSortBy] = useState('');
+  const [sortBy, setSortBy] = useState('asc'); // Default to 'asc' instead of empty string
   const [filtersApplied, setFiltersApplied] = useState(false);
   const [activeFilters, setActiveFilters] = useState([]);
   
   const [addCartItem] = useAddCartItemMutation();
-  const [addingIds, setAddingIds] = useState(new Set()); // <-- per-product loading
+  const [toggleFavorite] = useToggleFavoriteMutation();
+  const [addingIds, setAddingIds] = useState(new Set());
 
-  // Find category ID from slug
+  // Find category ID from slug (only for regular category pages)
   const categoryId = React.useMemo(() => {
-    if (!slug || !categories) return null;
+    if (!slug || !categories || isSpecialSlug) return null;
     const category = categories.find(cat => 
       cat.name.toLowerCase().replace(/\s+/g, '-') === slug.toLowerCase()
     );
     return category?.id || null;
-  }, [slug, categories]);
+  }, [slug, categories, isSpecialSlug]);
 
-  // Set default products when they load and no filters are applied
+  // Set products based on slug type
   useEffect(() => {
-    if (productDefault && !filtersApplied) {
+    if (isHotDeals && hotDeals && !filtersApplied) {
+      setProducts(hotDeals);
+      setTotalItems(hotDeals.length);
+    } else if (isRecommended && recommended?.recentlyAdded && !filtersApplied) {
+      setProducts(recommended.recentlyAdded);
+      setTotalItems(recommended.recentlyAdded.length);
+    } else if (!isSpecialSlug && productDefault && !filtersApplied) {
       setProducts(productDefault);
       setTotalItems(productDefault.length);
     }
-  }, [productDefault, filtersApplied]);
+  }, [productDefault, hotDeals, recommended, filtersApplied, isHotDeals, isRecommended, isSpecialSlug]);
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
@@ -85,7 +124,14 @@ function Products() {
 
     if (data === null) {
       setFiltersApplied(false);
-      if (productDefault) {
+      // Reset to appropriate default data
+      if (isHotDeals && hotDeals) {
+        setProducts(hotDeals);
+        setTotalItems(hotDeals.length);
+      } else if (isRecommended && recommended?.recentlyAdded) {
+        setProducts(recommended.recentlyAdded);
+        setTotalItems(recommended.recentlyAdded.length);
+      } else if (productDefault) {
         setProducts(productDefault);
         setTotalItems(productDefault.length);
       }
@@ -98,7 +144,7 @@ function Products() {
       setProducts([]);
       setTotalItems(0);
     }
-  }, [productDefault]);
+  }, [productDefault, hotDeals, recommended, isHotDeals, isRecommended]);
 
   const handleRemoveFilter = (filterToRemove) => {
     console.log('Remove filter:', filterToRemove);
@@ -107,6 +153,7 @@ function Products() {
   const handleSortChange = (e) => {
     const value = e.target.value;
     setSortBy(value);
+    // Reset to page 1 when sort changes
     setCurrentPage(1);
   };
 
@@ -117,7 +164,6 @@ function Products() {
 
     try {
       await addCartItem({ productId: id, quantity: 1 }).unwrap();
-      toast.success('Product added to cart');
     } catch (err) {
       console.error(err);
       if (err?.status === 401 || err?.data?.status === 401) {
@@ -134,6 +180,27 @@ function Products() {
     }
   };
 
+  const handleToggleFavorite = async (id) => {
+    if (!id) return;
+
+    try {
+      await toggleFavorite({productId: id}).unwrap();
+      toast.success("added from here")
+    } catch (err) {
+      console.error(err);
+      if (err?.status === 401 || err?.data?.status === 401) {
+        toast.error("Please log in first");
+      } else {
+        toast.error("Failed to update favorites");
+      }
+    }
+  };
+
+  const isProductFavorited = (productId) => {
+    if (!favorites) return false;
+    return favorites.includes(productId);
+  };
+
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 1024);
     window.addEventListener("resize", handleResize);
@@ -144,7 +211,11 @@ function Products() {
     setTemplate(isMobile ? "cols" : "rows"); 
   }, [isMobile]);
 
-  const shouldShowLoading = isLoading || (isLoadingProducts && !filtersApplied);
+  // Determine loading state based on slug type
+  const shouldShowLoading = isLoading || 
+    (isHotDeals && isHotDealsLoading && !filtersApplied) ||
+    (isRecommended && isRecommendedLoading && !filtersApplied) ||
+    (!isSpecialSlug && isLoadingProducts && !filtersApplied);
 
   return (
     <div className="min-h-screen bg-[#f7fafc] inter">
@@ -168,7 +239,7 @@ function Products() {
               onFilterResults={handleFilterResults}
               onLoadingChange={setIsLoading}
               currentSort={sortBy}
-              currentPage={currentPage - 1}
+              currentPage={currentPage}
               pageSize={itemsPerPage}
               hideCategoryFilter={!!slug}
               forcedCategoryId={categoryId}
@@ -181,7 +252,7 @@ function Products() {
               onLoadingChange={setIsLoading}
               currentSort={sortBy}
               onSortChange={handleSortChange}
-              currentPage={currentPage - 1}
+              currentPage={currentPage}
               pageSize={itemsPerPage}
               forcedCategoryId={categoryId}
             />
@@ -207,12 +278,8 @@ function Products() {
                       value={sortBy}
                       onChange={handleSortChange}
                     >
-                      <option value="">Sort by</option>
-                      <option value="price_asc">Price: Low to High</option>
-                      <option value="price_desc">Price: High to Low</option>
-                      <option value="newest">Newest First</option>
-                      <option value="name_asc">Name: A to Z</option>
-                      <option value="name_desc">Name: Z to A</option>
+                      <option value="asc">Price: Low to High</option>
+                      <option value="desc">Price: High to Low</option>
                     </select>
                     <div className="flex border border-gray-300 rounded-md overflow-hidden">
                       <button 
@@ -252,7 +319,8 @@ function Products() {
                     url: item.primaryImageUrl,
                     name: item.name,
                     price: item.currentPrice,
-                    id: item.id
+                    id: item.id,
+                    description: item.shortDescription
                   };
                   return (
                     <ProductCard 
@@ -260,7 +328,9 @@ function Products() {
                       col={template === "cols"} 
                       info={cardInfo}
                       handleAddToCart={handleAddToCart}
-                      isAddingToCart={addingIds.has(item.id)} // <-- per-product loading
+                      isAddingToCart={addingIds.has(item.id)}
+                      toggleFavorite={handleToggleFavorite}
+                      isFavorite={isProductFavorited(item.id)}
                     />
                   );
                 })

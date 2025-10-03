@@ -12,14 +12,18 @@ import {
   XCircle,
   Calendar,
   User,
-  DollarSign
+  DollarSign,
+  FileText,
+  Download
 } from 'lucide-react';
 import { 
   useGetProductQuery, 
   useGetProductSpecificationsQuery,
   useAddProductSpecificationsMutation,
   useUpdateProductSpecificationsMutation,
-  useDeleteProductSpecificationsMutation
+  useDeleteProductSpecificationsMutation,
+  useGetProductPdfsQuery,
+  useDeleteProductPdfMutation
 } from '../../store/API';
 import { toast } from 'react-toastify';
 
@@ -37,6 +41,13 @@ const ProductDetailPage = () => {
   const [addSpecs, { isLoading: adding }] = useAddProductSpecificationsMutation();
   const [updateSpecs, { isLoading: updating }] = useUpdateProductSpecificationsMutation();
   const [deleteSpecs] = useDeleteProductSpecificationsMutation();
+
+  // PDF hooks
+  const { data: pdfs, isLoading: pdfsLoading, refetch: refetchPdfs } = useGetProductPdfsQuery();
+  const [deleteProductPdf, { isLoading: deletingPdf }] = useDeleteProductPdfMutation();
+
+  // Filter PDFs for this product
+  const productPdfs = pdfs?.filter(pdf => pdf.productId === id) || [];
 
   React.useEffect(() => {
     if (specifications?.specificationGroups) {
@@ -98,7 +109,7 @@ const ProductDetailPage = () => {
               items:
                 group.items.length > 1
                   ? group.items.filter((_, i) => i !== itemIndex)
-                  : group.items, // əgər 1 item qalıbsa silmirik
+                  : group.items,
             }
           : group
       )
@@ -150,7 +161,6 @@ const ProductDetailPage = () => {
   };
 
   const handleDeleteSpecs = async () => {
-    if (window.confirm('Are you sure you want to delete all specifications?')) {
       try {
         await deleteSpecs({ id }).unwrap();
         toast.success('Specifications deleted successfully');
@@ -159,7 +169,17 @@ const ProductDetailPage = () => {
       } catch (error) {
         toast.error('Failed to delete specifications');
       }
-    }
+  };
+
+  // Handle PDF deletion
+  const handleDeletePdf = async (pdfId) => {
+      try {
+        await deleteProductPdf({ id: pdfId }).unwrap();
+        toast.success('PDF deleted successfully');
+        refetchPdfs();
+      } catch (error) {
+        toast.error(error?.data?.message || 'Failed to delete PDF');
+      }
   };
 
   if (productLoading) {
@@ -203,7 +223,7 @@ const ProductDetailPage = () => {
           {/* Product Image */}
           <div className="bg-gray-800 rounded-xl overflow-hidden">
             <img
-              src={`http://localhost:5056${product.imageUrl}`}
+              src={`http://http://smartteamaz-001-site1.qtempurl.com/${product.imageUrl}`}
               alt={product.name}
               className="w-full object-cover h-full "
               onError={(e) => {
@@ -329,7 +349,7 @@ const ProductDetailPage = () => {
                   <div key={image.id} className="relative group">
                     <div className="aspect-square bg-gray-700 rounded-lg overflow-hidden">
                       <img
-                        src={`http://localhost:5056${image.imageUrl}`}
+                        src={`http://smartteamaz-001-site1.qtempurl.com/${image.imageUrl}`}
                         alt={image.altText || `Product image ${index + 1}`}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                         onError={(e) => {
@@ -348,6 +368,75 @@ const ProductDetailPage = () => {
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+        </div>
+
+        {/* PDF Documents Section */}
+        <div className="bg-gray-800 rounded-xl p-6 mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold flex items-center gap-2">
+              <FileText className="w-6 h-6" />
+              Product Documents
+            </h2>
+          </div>
+
+          {pdfsLoading ? (
+            <div className="text-center py-8">
+              <div className="text-gray-400">Loading documents...</div>
+            </div>
+          ) : productPdfs.length > 0 ? (
+            <div className="space-y-4">
+              {productPdfs.map((pdf) => (
+                <div key={pdf.id} className="bg-gray-700 rounded-lg p-4 flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="bg-blue-600 rounded-lg p-3">
+                      <FileText className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-white font-medium">
+                        {pdf.customFileName || pdf.filename}
+                      </h3>
+                      {pdf.description && (
+                        <p className="text-gray-400 text-sm mt-1">{pdf.description}</p>
+                      )}
+                      <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
+                        <span>{(pdf.fileSize / 1024 / 1024).toFixed(2)} MB</span>
+                        <span>Downloads: {pdf.downloadCount}</span>
+                        {pdf.isActive ? (
+                          <span className="text-green-400">Active</span>
+                        ) : (
+                          <span className="text-red-400">Inactive</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <a
+                      href={`http://smartteamaz-001-site1.qtempurl.com/${pdf.filePath}`}
+                      download
+                      className="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                      title="Download PDF"
+                    >
+                      <Download className="w-4 h-4" />
+                    </a>
+                    <button
+                      onClick={() => handleDeletePdf(pdf.id)}
+                      disabled={deletingPdf}
+                      className="p-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors disabled:opacity-50"
+                      title="Delete PDF"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <FileText className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-400 mb-2">No documents uploaded</h3>
+              <p className="text-gray-500">Product documents will appear here once uploaded</p>
             </div>
           )}
         </div>

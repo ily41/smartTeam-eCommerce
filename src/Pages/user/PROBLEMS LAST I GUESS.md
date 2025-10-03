@@ -12,17 +12,8 @@ HEADER:
 
 
 PRODUCTS:
-    SMALL PROBLEMS:
-        favorites add
-        little feature cards
-        when reached from more links 6 items in text
-        search UI delete
-        mobile cart datas
-        
-
-    MILD PROBLEMS:
-        sort for desk and mobile
-        hot deals and recommended items gets in urls
+       MILD PROBLEMS:
+        sort for desk and mobile 
 
 DETAILS:
     download pdf (BACKEND NEEDED)
@@ -51,6 +42,14 @@ CONTACT US:
 
 FOOTER:
     social media accounts
+
+favorites:
+    general checkup
+
+
+cart:
+    quantity hover
+    and other hovers
 
 
 
