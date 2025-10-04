@@ -1,52 +1,68 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import {
+  createApi,
+  fetchBaseQuery
+} from '@reduxjs/toolkit/query/react';
 
-export const API = createApi({
-  reducerPath: 'API',
-  baseQuery: fetchBaseQuery({
-    baseUrl: 'http://smartteamaz-001-site1.qtempurl.com',
-    prepareHeaders: (headers, { endpoint, body }) => {
-      // Skip Content-Type for FormData requests - let FormData handle it
-      const isFormDataRequest =
-        endpoint === 'addProduct' ||
-        endpoint === 'addCategoryImage' ||
-        endpoint === 'addDetailImages' ||
-        endpoint === 'addBanner' ||
-        endpoint === 'uploadFile' ||
-        endpoint === 'addProductPdf' ||
-        body instanceof FormData;
+  export const API = createApi({
+    reducerPath: 'API',
+    baseQuery: fetchBaseQuery({
+      baseUrl: 'https://smartteamaz-001-site1.qtempurl.com',
+      prepareHeaders: (headers, {
+        endpoint,
+        body
+      }) => {
+        const isFormDataRequest =
+          endpoint === 'addProduct' ||
+          endpoint === 'addCategoryImage' ||
+          endpoint === 'addDetailImages' ||
+          endpoint === 'addBanner' ||
+          endpoint === 'uploadFile' ||
+          endpoint === 'addProductPdf' ||
+          body instanceof FormData;
 
-      if (!isFormDataRequest) {
-        headers.set('Content-Type', 'application/json');
-      }
+        if (!isFormDataRequest) {
+          headers.set('Content-Type', 'application/json');
+        }
 
-      const token = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('token='))
-        ?.split('=')[1];
+        const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1]
 
-      if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
-      }
 
-      return headers;
-    },
-  }),
+        if (token) {
+          headers.set('Authorization', `Bearer ${token}`);
+        }
+
+        return headers;
+      },
+    }),
 
   tagTypes: ['Categories', 'Users', 'Products', 'Banners', 'Filters', 'Cart', 'Auth'],
 
   endpoints: builder => ({
     // *AUTHENTICATION*
     login: builder.mutation({
-      query: ({ email, password }) => ({
+      query: ({
+        email,
+        password
+      }) => ({
         url: '/api/v1/Auth/login',
         method: 'POST',
-        body: { email, password },
+        body: {
+          email,
+          password
+        },
       }),
       invalidatesTags: ['Auth'],
     }),
 
     signup: builder.mutation({
-      query: ({ firstName, lastName, email, phoneNumber, password, confirmPassword }) => ({
+      query: ({
+        firstName,
+        lastName,
+        email,
+        phoneNumber,
+        password,
+        confirmPassword
+      }) => ({
         url: '/api/v1/Auth/register',
         method: 'POST',
         body: {
@@ -70,7 +86,7 @@ export const API = createApi({
       }),
       providesTags: ['Categories'],
     }),
-    
+
     getSubCategories: builder.query({
       query: (id) => ({
         url: `/api/v1/Categories/${id}/subcategories`,
@@ -88,7 +104,13 @@ export const API = createApi({
     }),
 
     addCategory: builder.mutation({
-      query: ({ name, imageUrl, description, sortOrder, parentCategoryId }) => ({
+      query: ({
+        name,
+        imageUrl,
+        description,
+        sortOrder,
+        parentCategoryId
+      }) => ({
         url: '/api/v1/Categories',
         method: 'POST',
         body: {
@@ -103,7 +125,14 @@ export const API = createApi({
     }),
 
     editCategory: builder.mutation({
-      query: ({ name, imageUrl, description, sortOrder, id, isActive }) => ({
+      query: ({
+        name,
+        imageUrl,
+        description,
+        sortOrder,
+        id,
+        isActive
+      }) => ({
         url: `/api/v1/Categories/${id}`,
         method: 'PUT',
         body: {
@@ -118,7 +147,9 @@ export const API = createApi({
     }),
 
     deleteCategory: builder.mutation({
-      query: ({ id }) => ({
+      query: ({
+        id
+      }) => ({
         url: `/api/v1/Categories/${id}`,
         method: 'DELETE',
       }),
@@ -172,7 +203,11 @@ export const API = createApi({
     }),
 
     changePassword: builder.mutation({
-      query: ({ newPass, currentPass, confirmNewPassword }) => ({
+      query: ({
+        newPass,
+        currentPass,
+        confirmNewPassword
+      }) => ({
         url: '/api/v1/Auth/change-password',
         method: 'POST',
         body: {
@@ -193,16 +228,31 @@ export const API = createApi({
     }),
 
     editUser: builder.mutation({
-      query: ({ firstName, lastName, phoneNumber, role, isActive, id }) => ({
+      query: ({
+        firstName,
+        lastName,
+        phoneNumber,
+        role,
+        isActive,
+        id
+      }) => ({
         url: `/api/v1/Admin/users/${id}`,
         method: 'PUT',
-        body: { firstName, lastName, phoneNumber, role, isActive },
+        body: {
+          firstName,
+          lastName,
+          phoneNumber,
+          role,
+          isActive
+        },
       }),
       invalidatesTags: ['Users'],
     }),
 
     deleteUser: builder.mutation({
-      query: ({ id }) => ({
+      query: ({
+        id
+      }) => ({
         url: `/api/v1/Admin/users/${id}`,
         method: 'DELETE',
       }),
@@ -210,16 +260,23 @@ export const API = createApi({
     }),
 
     editUserRole: builder.mutation({
-      query: ({ role, id }) => ({
+      query: ({
+        role,
+        id
+      }) => ({
         url: `/api/v1/Admin/users/${id}/role`,
         method: 'PUT',
-        body: { role },
+        body: {
+          role
+        },
       }),
       invalidatesTags: ['Users'],
     }),
 
     activateUser: builder.mutation({
-      query: ({ id }) => ({
+      query: ({
+        id
+      }) => ({
         url: `/api/v1/Admin/users/${id}/activate`,
         method: 'POST',
       }),
@@ -227,7 +284,9 @@ export const API = createApi({
     }),
 
     deActivateUser: builder.mutation({
-      query: ({ id }) => ({
+      query: ({
+        id
+      }) => ({
         url: `/api/v1/Admin/users/${id}/deactivate`,
         method: 'POST',
       }),
@@ -256,7 +315,10 @@ export const API = createApi({
         url: `/api/v1/Products/${id}`,
         method: 'GET',
       }),
-      providesTags: (result, error, id) => [{ type: 'Products', id }],
+      providesTags: (result, error, id) => [{
+        type: 'Products',
+        id
+      }],
     }),
 
     getHotDeals: builder.query({
@@ -267,8 +329,12 @@ export const API = createApi({
       providesTags: ['Products'],
     }),
 
-   getRecommended: builder.query({
-      query: ({ categoryId, productId, limit }) => ({
+    getRecommended: builder.query({
+      query: ({
+        categoryId,
+        productId,
+        limit
+      }) => ({
         url: '/api/v1/Products/recommendations',
         method: 'GET',
         params: {
@@ -279,7 +345,7 @@ export const API = createApi({
       }),
       providesTags: ['Products'],
     }),
-    
+
     getProductsSummary: builder.query({
       query: () => ({
         url: '/api/v1/Admin/products/stock/summary',
@@ -302,7 +368,10 @@ export const API = createApi({
     }),
 
     addDetailImages: builder.mutation({
-      query: ({ id, images }) => ({
+      query: ({
+        id,
+        images
+      }) => ({
         url: `/api/v1/Products/${id}/upload-images`,
         method: 'POST',
         body: images,
@@ -311,11 +380,18 @@ export const API = createApi({
           return headers;
         },
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'Products', id }, 'Products'],
+      invalidatesTags: (result, error, {
+        id
+      }) => [{
+        type: 'Products',
+        id
+      }, 'Products'],
     }),
 
     deleteProduct: builder.mutation({
-      query: ({ id }) => ({
+      query: ({
+        id
+      }) => ({
         url: `/api/v1/Products/${id}`,
         method: 'DELETE',
       }),
@@ -345,7 +421,7 @@ export const API = createApi({
           categoryId,
         },
       }),
-      invalidatesTags:['Products'],
+      invalidatesTags: ['Products'],
     }),
 
     filterProducts: builder.mutation({
@@ -361,7 +437,9 @@ export const API = createApi({
     }),
 
     searchProducts: builder.query({
-      query: ({q}) => ({
+      query: ({
+        q
+      }) => ({
         url: '/api/v1/Products/search',
         method: 'GET',
         params: {
@@ -378,11 +456,18 @@ export const API = createApi({
         url: `/api/v1/Products/${id}/specifications`,
         method: 'GET',
       }),
-      providesTags: (result, error, id) => [{ type: 'Products', id }],
+      providesTags: (result, error, id) => [{
+        type: 'Products',
+        id
+      }],
     }),
 
     addProductSpecifications: builder.mutation({
-      query: ({ id, productId, specificationGroups }) => ({
+      query: ({
+        id,
+        productId,
+        specificationGroups
+      }) => ({
         url: `/api/v1/Products/${id}/specifications`,
         method: 'POST',
         body: {
@@ -390,26 +475,46 @@ export const API = createApi({
           specificationGroups,
         },
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'Products', id }],
+      invalidatesTags: (result, error, {
+        id
+      }) => [{
+        type: 'Products',
+        id
+      }],
     }),
 
     updateProductSpecifications: builder.mutation({
-      query: ({ id, specificationGroups }) => ({
+      query: ({
+        id,
+        specificationGroups
+      }) => ({
         url: `/api/v1/Products/${id}/specifications`,
         method: 'PUT',
         body: {
           specificationGroups,
         },
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'Products', id }],
+      invalidatesTags: (result, error, {
+        id
+      }) => [{
+        type: 'Products',
+        id
+      }],
     }),
 
     deleteProductSpecifications: builder.mutation({
-      query: ({ id }) => ({
+      query: ({
+        id
+      }) => ({
         url: `/api/v1/Products/${id}/specifications`,
         method: 'DELETE',
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'Products', id }],
+      invalidatesTags: (result, error, {
+        id
+      }) => [{
+        type: 'Products',
+        id
+      }],
     }),
 
     // *BANNERS*
@@ -422,7 +527,9 @@ export const API = createApi({
     }),
 
     deleteBanner: builder.mutation({
-      query: ({ id }) => ({
+      query: ({
+        id
+      }) => ({
         url: `/api/v1/Admin/banners/${id}`,
         method: 'DELETE',
       }),
@@ -443,14 +550,17 @@ export const API = createApi({
     }),
 
     updateBanner: builder.mutation({
-  query: ({ id, ...data }) => ({
-    url: `/api/v1/Admin/banners/${id}`,
-    method: 'PUT',
-    body: data,
-    // Remove prepareHeaders - let it use default JSON content-type
-  }),
-  invalidatesTags: ['Banners'],
-}),
+      query: ({
+        id,
+        ...data
+      }) => ({
+        url: `/api/v1/Admin/banners/${id}`,
+        method: 'PUT',
+        body: data,
+        // Remove prepareHeaders - let it use default JSON content-type
+      }),
+      invalidatesTags: ['Banners'],
+    }),
     // *FILTERS*
     getFilters: builder.query({
       query: () => ({
@@ -461,7 +571,12 @@ export const API = createApi({
     }),
 
     addFilter: builder.mutation({
-      query: ({ name, isActive, sortOrder, options }) => ({
+      query: ({
+        name,
+        isActive,
+        sortOrder,
+        options
+      }) => ({
         url: '/api/v1/Admin/filters',
         method: 'POST',
         body: {
@@ -476,36 +591,46 @@ export const API = createApi({
     }),
 
     removeFilter: builder.mutation({
-      query: ({ id }) => ({
+      query: ({
+        id
+      }) => ({
         url: `/api/v1/Admin/filters/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Filters'], 
+      invalidatesTags: ['Filters'],
     }),
 
 
     removeFilterOption: builder.mutation({
-      query: ({ filterId, optionId }) => ({
+      query: ({
+        filterId,
+        optionId
+      }) => ({
         url: `/api/v1/Admin/filters/${filterId}/options/${optionId}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Filters'], 
+      invalidatesTags: ['Filters'],
     }),
 
     removeAllFiltersFromProduct: builder.mutation({
-      query: ({ productId }) => ({
+      query: ({
+        productId
+      }) => ({
         url: `/api/v1/Admin/products/${productId}/filters`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Filters'], 
+      invalidatesTags: ['Filters'],
     }),
 
     removeCustomFilterFromProduct: builder.mutation({
-      query: ({ productId, filterId }) => ({
+      query: ({
+        productId,
+        filterId
+      }) => ({
         url: `/api/v1/Admin/products/${productId}/filters/${filterId}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Filters'], 
+      invalidatesTags: ['Filters'],
     }),
 
 
@@ -528,9 +653,10 @@ export const API = createApi({
         url: `/api/v1/Products/category/${categoryId}/filters`,
         method: 'GET',
       }),
-      providesTags: (result, error, categoryId) => [
-        { type: 'CategoryFilters', id: categoryId }
-      ],
+      providesTags: (result, error, categoryId) => [{
+        type: 'CategoryFilters',
+        id: categoryId
+      }],
     }),
 
     // Bulk filter assignment mutation
@@ -548,10 +674,16 @@ export const API = createApi({
 
     // *CART*
     addCartItem: builder.mutation({
-      query: ({ productId, quantity }) => ({
+      query: ({
+        productId,
+        quantity
+      }) => ({
         url: '/api/v1/cart/items',
         method: 'POST',
-        body: { productId, quantity },
+        body: {
+          productId,
+          quantity
+        },
       }),
       invalidatesTags: ['Cart'],
     }),
@@ -565,20 +697,27 @@ export const API = createApi({
     }),
 
     updateCartItemQuantity: builder.mutation({
-      query: ({ cartItemId, quantity }) => ({
+      query: ({
+        cartItemId,
+        quantity
+      }) => ({
         url: `/api/v1/Cart/items/${cartItemId}`,
         method: 'PUT',
-        body: { quantity },
+        body: {
+          quantity
+        },
       }),
       invalidatesTags: ['Cart'],
     }),
 
     removeCartItem: builder.mutation({
-      query: ({ id }) => ({
+      query: ({
+        id
+      }) => ({
         url: `/api/v1/Cart/items/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Cart'], 
+      invalidatesTags: ['Cart'],
     }),
 
     removeCart: builder.mutation({
@@ -586,7 +725,7 @@ export const API = createApi({
         url: `/api/v1/Cart/`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Cart'], 
+      invalidatesTags: ['Cart'],
     }),
 
     // Whatsapp
@@ -601,48 +740,67 @@ export const API = createApi({
 
     // Favorites
     addFavorite: builder.mutation({
-      query: ({ productId }) => ({
+      query: ({
+        productId
+      }) => ({
         url: '/api/v1/Favorites',
         method: 'POST',
-        body: { productId },
+        body: {
+          productId
+        },
       }),
       invalidatesTags: ['Favorites', 'Product'],
-        }),
+    }),
 
     removeFavorite: builder.mutation({
-      query: ({ productId }) => ({
+      query: ({
+        productId
+      }) => ({
         url: `/api/v1/Favorites/${productId}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['Favorites', 'Product'],
-        }),
+    }),
 
     getFavorites: builder.query({
-      query: ({ page = 1, pageSize = 20 }) => ({
+      query: ({
+        page = 1,
+        pageSize = 20
+      }) => ({
         url: '/api/v1/Favorites',
         method: 'GET',
-        params: { page, pageSize },
+        params: {
+          page,
+          pageSize
+        },
       }),
       providesTags: ['Favorites'],
-        }),
+    }),
 
     getFavoriteStatus: builder.query({
-      query: ({ productId }) => ({
+      query: ({
+        productId
+      }) => ({
         url: `/api/v1/Favorites/status/${productId}`,
         method: 'GET',
       }),
-      providesTags: (result, error, { productId }) => [
-        { type: 'Favorites', id: productId }
-      ],
-        }),
+      providesTags: (result, error, {
+        productId
+      }) => [{
+        type: 'Favorites',
+        id: productId
+      }],
+    }),
 
     toggleFavorite: builder.mutation({
-      query: ({ productId }) => ({
+      query: ({
+        productId
+      }) => ({
         url: `/api/v1/Favorites/toggle/${productId}`,
         method: 'POST',
       }),
       invalidatesTags: ['Favorites', 'Product'],
-        }),
+    }),
 
     bulkCheckFavoriteStatus: builder.mutation({
       query: (productIds) => ({
@@ -651,7 +809,7 @@ export const API = createApi({
         body: productIds,
       }),
       // Note: This returns status data, so you might want to update cache instead of invalidating
-        }),
+    }),
 
     getFavoritesCount: builder.query({
       query: () => ({
@@ -659,7 +817,7 @@ export const API = createApi({
         method: 'GET',
       }),
       providesTags: ['Favorites'],
-        }),
+    }),
 
     clearFavorites: builder.mutation({
       query: () => ({
@@ -669,7 +827,12 @@ export const API = createApi({
       invalidatesTags: ['Favorites'],
     }),
 
-     getFiles: builder.query({
+    getFilesUser: builder.query({
+      query: () => '/api/v1/files',
+      providesTags: ['FilesUser'],
+    }),
+
+    getFiles: builder.query({
       query: () => '/api/v1/Admin/files',
       providesTags: ['Files'],
     }),
@@ -677,7 +840,10 @@ export const API = createApi({
     // GET file by ID
     getFileById: builder.query({
       query: (id) => `/api/v1/Admin/files/${id}`,
-      providesTags: (result, error, id) => [{ type: 'Files', id }],
+      providesTags: (result, error, id) => [{
+        type: 'Files',
+        id
+      }],
     }),
 
     // DELETE file
@@ -711,18 +877,26 @@ export const API = createApi({
 
     // GET single product PDF by ID
     getProductPdfById: builder.query({
-      query: ({ id }) => ({
+      query: ({
+        id
+      }) => ({
         url: `/api/v1/Admin/product-pdfs/${id}`,
         method: 'GET',
       }),
-      providesTags: (result, error, { id }) => [
-        { type: 'ProductPdfs', id }
-      ],
+      providesTags: (result, error, {
+        id
+      }) => [{
+        type: 'ProductPdfs',
+        id
+      }],
     }),
 
     // POST - Add PDF to product
     addProductPdf: builder.mutation({
-      query: ({ productId, formData }) => ({
+      query: ({
+        productId,
+        formData
+      }) => ({
         url: `/api/v1/Admin/products/${productId}/pdf`,
         method: 'POST',
         body: formData,
@@ -732,7 +906,9 @@ export const API = createApi({
 
     // DELETE product PDF
     deleteProductPdf: builder.mutation({
-      query: ({ id }) => ({
+      query: ({
+        id
+      }) => ({
         url: `/api/v1/Admin/product-pdfs/${id}`,
         method: 'DELETE',
       }),
@@ -740,25 +916,93 @@ export const API = createApi({
     }),
 
     getProductPdfByIdUser: builder.query({
-      query: ({ id }) => ({
-        url: `/api/v1/product-pdfs/download/product/${id}`,
+      query: ({
+        productId
+      }) => ({ // ✅ Correct - matches what you pass
+        url: `/api/v1/product-pdfs/download/product/${productId}`,
         method: 'GET',
         responseHandler: async (response) => {
-          // Check if response is ok before creating blob
           if (!response.ok) {
             throw new Error('Failed to download PDF');
           }
           return await response.blob();
         },
       }),
-      // Optional: Add cache settings since PDFs don't change often
-      keepUnusedDataFor: 60, // Keep cached for 60 seconds
+      keepUnusedDataFor: 60,
     }),
 
+   // In your API slice file
 
+// Add this endpoint to your existing API endpoints
 
-      }),
-    });
+// Add this endpoint to your existing API endpoints
+
+downloadFile: builder.mutation({
+  queryFn: async (id, _api, _extraOptions, baseQuery) => {
+    try {
+      // Get token from cookies (same as your existing setup)
+      const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+      
+      // Make the request
+      const response = await fetch(
+        `https://smartteamaz-001-site1.qtempurl.com/api/v1/Files/download/${id}`,
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': token ? `Bearer ${token}` : '',
+          },
+        }
+      );
+
+      // Check if response is ok
+      if (!response.ok) {
+        const errorText = await response.text();
+        return {
+          error: {
+            status: response.status,
+            data: { message: errorText || 'Download failed' },
+          },
+        };
+      }
+
+      // Get the blob data
+      const blob = await response.blob();
+      
+      // Get filename from content-disposition header
+      const contentDisposition = response.headers.get('content-disposition');
+      let filename = 'download.pdf';
+      
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename\*?=['"]?(?:UTF-8'')?([^;\r\n"']*)['"]?/);
+        if (filenameMatch && filenameMatch[1]) {
+          filename = decodeURIComponent(filenameMatch[1]);
+        }
+      }
+      
+      // Create blob URL immediately (not stored in Redux)
+      const url = window.URL.createObjectURL(blob);
+      
+      // Return only serializable data
+      return { data: { url, filename } };
+    } catch (error) {
+      return {
+        error: {
+          status: 'FETCH_ERROR',
+          data: { message: error.message },
+        },
+      };
+    }
+  },
+}),
+
+// Don't forget to export the hook:
+// export const { ..., useDownloadFileMutation } = API;
+
+// Don't forget to export the hook:
+// export const { ..., useDownloadFileMutation } = API;
+
+  }),
+});
 
 export const {
   useGetProductPdfByIdQuery,
@@ -770,7 +1014,7 @@ export const {
   useAddFilterMutation,
   useGetFiltersQuery,
   useRemoveFilterMutation,
-  useAssignFilterMutation,     
+  useAssignFilterMutation,
   useAssignFiltersBulkMutation,
   useGetCategoryFiltersQuery,
   useRemoveFilterOptionMutation,
@@ -795,7 +1039,7 @@ export const {
   useGetCategoryQuery,
 
   useGetProductsQuery,
-  useGetHotDealsQuery, 
+  useGetHotDealsQuery,
   useGetRecommendedQuery,
 
   useGetUserStaticsQuery,
@@ -822,7 +1066,7 @@ export const {
   useLogoutMutation,
   useEditUserRoleMutation,
   useChangePasswordMutation,
-  
+
   useAddCartItemMutation,
   useGetCartItemsQuery,
   useUpdateCartItemQuantityMutation,
@@ -838,10 +1082,12 @@ export const {
   useBulkCheckFavoriteStatusMutation,
   useGetFavoritesCountQuery,
   useClearFavoritesMutation,
-  
+
 
   useGetFilesQuery,
+  useGetFilesUserQuery,
   useGetFileByIdQuery,
   useRemoveFileMutation,
   useUploadFileMutation,
+  useDownloadFileMutation
 } = API;

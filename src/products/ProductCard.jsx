@@ -61,7 +61,7 @@ export function ProductCard({
         <Link to={`/details/${id}`} className="block">
           <div className="aspect-square p-4 bg-gray-50">
             <img
-              src={`http://smartteamaz-001-site1.qtempurl.com${url}`}
+              src={`https://smartteamaz-001-site1.qtempurl.com${url}`}
               alt={name || 'Product'}
               className="w-full h-full object-contain"
             />
@@ -75,7 +75,7 @@ export function ProductCard({
             className="absolute top-4 right-4 p-2 rounded-lg border border-gray-200 bg-white shadow-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed z-10"
           >
             <Heart
-              className={`w-5 h-5 transition-colors ${
+              className={`w-5 h-5 transition-colors cursor-pointer ${
                 localFavorite
                   ? 'fill-red-500 text-red-500'
                   : 'text-red-500'
@@ -125,12 +125,12 @@ export function ProductCard({
     return (
       <Link
         to={`/details/${id}`}
-        className="border rounded-xl p-4 bg-white flex items-center gap-6 block"
+        className="border border-[#dbdbdb] rounded-xl p-4 bg-white flex items-center gap-6"
       >
         {/* Product Image */}
         <div className="flex-shrink-0">
           <img
-            src={`http://smartteamaz-001-site1.qtempurl.com${url}`}
+            src={`https://smartteamaz-001-site1.qtempurl.com${url}`}
             alt={name || 'Product'}
             className="max-w-[150px] object-cover rounded-lg"
           />
@@ -155,7 +155,7 @@ export function ProductCard({
               className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Heart
-                className={`w-6 h-6 transition-colors ${
+                className={`w-6 h-6 transition-colors cursor-pointer ${
                   localFavorite
                     ? 'fill-red-500 text-red-500'
                     : 'text-red-500'

@@ -161,10 +161,7 @@ const Login = () => {
       <div className="min-h-screen bg-gray-100 p-6">
         {/* Mobile Logo */}
         <div className="text-center mb-8 mt-4">
-          <div className="text-2xl font-bold">
-            <span className="text-blue-600">SMART</span>
-            <span className="text-red-600">TEAM</span>
-          </div>
+          <img className='mx-auto w-50 ' src="./Icons/logo.svg" alt="" />
         </div>
 
         {/* Mobile Sign In Form */}
@@ -185,15 +182,11 @@ const Login = () => {
               </div>
               <div className="relative">
                 <input type="password" minLength={8}  name='password' onChange={handleChange}  id="mobileSignupPassword" placeholder="Create Password" className="w-full px-4 py-3 border border-gray-300 rounded-lg pr-12" />
-                <button type="button" className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" onClick={() => togglePassword('mobileSignupPassword')}>👁</button>
+                <button type="button" className="absolute right-3 top-1/2 cursor-pointer transform -translate-y-1/2 text-gray-400" onClick={() => togglePassword('mobileSignupPassword')}>👁</button>
               </div>
               <div className="relative">
                 <input type="password" minLength={8}  name='confirmPassword' onChange={handleChange}  id="mobileAgain" placeholder="Create Password" className="w-full px-4 py-3 border border-gray-300 rounded-lg pr-12" />
-                <button type="button" className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" onClick={() => togglePassword('mobileAgain')}>👁</button>
-              </div>
-              <div className="flex items-center text-sm">
-                <input type="checkbox" className="w-4 h-4 text-red-600 border-gray-300 rounded mr-2" />
-                <span className="text-gray-600">I agree to the terms and privacy policy</span>
+                <button type="button" className="absolute right-3 top-1/2 transform cursor-pointer -translate-y-1/2 text-gray-400" onClick={() => togglePassword('mobileAgain')}>👁</button>
               </div>
               <button type="submit" className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold">Create an account</button>
             </form>
@@ -202,14 +195,6 @@ const Login = () => {
               Already a member? <button type="button" className="text-blue-600" onClick={() => setCurrentView('login')}>Login</button>
             </div>
 
-            <div className="mt-4 flex space-x-3">
-              <button className="flex-1 flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg">
-                <GoogleIcon />
-              </button>
-              <button className="flex-1 flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg">
-                <FacebookIcon />
-              </button>
-            </div>
           </div>
         )}
 
@@ -223,7 +208,7 @@ const Login = () => {
               <input type="email" required name='email' onChange={handleChange}  placeholder="Email Address"  className="w-full px-4 py-3 border border-gray-300 rounded-lg" />
               <div className="relative">
                 <input type="password" required minLength={8} name='password' id="mobileLoginPassword" onChange={handleChange} placeholder="Password" className="w-full px-4 py-3 border border-gray-300 rounded-lg pr-12" />
-                <button type="button" className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" onClick={() => togglePassword('mobileLoginPassword')}>👁</button>
+                <button type="button" className="absolute right-3 top-1/2 transform cursor-pointer -translate-y-1/2 text-gray-400" onClick={() => togglePassword('mobileLoginPassword')}>👁</button>
               </div>
               <div className="text-right">
                 <button type="button" className="text-red-600 text-sm" onClick={() => setCurrentView('forgotPassword')}>Forgot password?</button>
@@ -235,14 +220,7 @@ const Login = () => {
               Don't have an account? <button type="button" className="text-red-600" onClick={() => setCurrentView('signup')}>Sign up</button>
             </div>
 
-            <div className="mt-4 flex space-x-3">
-              <button className="flex-1 flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg">
-                <GoogleIcon />
-              </button>
-              <button className="flex-1 flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg">
-                <FacebookIcon />
-              </button>
-            </div>
+        
           </div>
         )}
 
@@ -299,11 +277,11 @@ const Login = () => {
             <form className="space-y-4">
               <div className="relative">
                 <input type="password" id="mobileNewPassword" placeholder="New password" className="w-full px-4 py-3 border border-gray-300 rounded-lg pr-12" />
-                <button type="button" className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" onClick={() => togglePassword('mobileNewPassword')}>👁</button>
+                <button type="button" className="absolute right-3 top-1/2 transform cursor-pointer -translate-y-1/2 text-gray-400" onClick={() => togglePassword('mobileNewPassword')}>👁</button>
               </div>
               <div className="relative">
                 <input type="password" id="mobileConfirmPassword" placeholder="Confirm new password" className="w-full px-4 py-3 border border-gray-300 rounded-lg pr-12" />
-                <button type="button" className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" onClick={() => togglePassword('mobileConfirmPassword')}>👁</button>
+                <button type="button" className="absolute right-3 top-1/2 transform cursor-pointer -translate-y-1/2 text-gray-400" onClick={() => togglePassword('mobileConfirmPassword')}>👁</button>
               </div>
               <button type="button" className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold" onClick={() => setCurrentView('passwordChanged')}>Verify</button>
             </form>
@@ -351,10 +329,7 @@ const Login = () => {
         <div className="w-full max-w-md">
           {/* Logo */}
           <div className="text-center mb-8">
-            <div className="text-2xl font-bold">
-              <span className="text-blue-600">SMART</span>
-              <span className="text-red-600">TEAM</span>
-            </div>
+            <img className='mx-auto w-50 ' src="./Icons/logo.svg" alt="" />
           </div>
 
           {/* Login Form */}
@@ -370,7 +345,7 @@ const Login = () => {
                 
                 <div className="relative">
                   <input type="password" required minLength={8} name='password' onChange={handleChange} id="loginPassword" placeholder="Password" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none pr-12" />
-                  <button type="button" className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" onClick={() => togglePassword('loginPassword')}>👁</button>
+                  <button type="button" className="absolute right-3 top-1/2 cursor-pointer transform -translate-y-1/2 text-gray-400" onClick={() => togglePassword('loginPassword')}>👁</button>
                 </div>
 
 
@@ -378,21 +353,10 @@ const Login = () => {
                 <button type="submit" className="w-full bg-red-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-red-700 transition duration-200">{isLoginLoading ? <Loader2 className="animate-spin mx-auto text-white" size={28} /> : 'Log in'}</button>
               </form>
 
-              <div className="mt-6 text-center text-sm text-gray-500">
-                or continue with
-              </div>
 
-              <div className="mt-4 flex space-x-3">
-                <button className="flex-1 flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50">
-                  <GoogleIcon />
-                </button>
-                <button className="flex-1 flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50">
-                  <FacebookIcon />
-                </button>
-              </div>
 
               <div className="mt-6 text-center text-sm text-gray-600">
-                Don't have an account? <button type="button" className="text-red-600 hover:underline" onClick={() => setCurrentView('signup')}>Sign up</button>
+                Don't have an account? <button type="button" className="text-red-600 hover:underline cursor-pointer" onClick={() => setCurrentView('signup')}>Sign up</button>
               </div>
             </div>
           )}
@@ -425,37 +389,21 @@ const Login = () => {
                 
                 <div className="relative">
                   <input type="password" required minLength={8}  id="signupPassword" name='password' onChange={handleChange}  placeholder="Create Password" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none pr-12" />
-                  <button type="button" className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" onClick={() => togglePassword('signupPassword')}>👁</button>
+                  <button type="button" className="absolute right-3 top-1/2 transform cursor-pointer -translate-y-1/2 text-gray-400" onClick={() => togglePassword('signupPassword')}>👁</button>
                 </div>
 
                 <div className="relative"> 
                   <input type="password" required minLength={8}  id="confirmpass"  name='confirmPassword' onChange={handleChange}  placeholder="Create Password" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none pr-12" />
-                  <button type="button" className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" onClick={() => togglePassword('confirmpass')}>👁</button>
+                  <button type="button" className="absolute right-3 top-1/2 transform cursor-pointer -translate-y-1/2 text-gray-400" onClick={() => togglePassword('confirmpass')}>👁</button>
                 </div>
 
-                <div className="flex items-center">
-                  <input type="checkbox" id="agreeTerms" className="w-4 h-4 text-red-600 border-gray-300 rounded" />
-                  <label htmlFor="agreeTerms" className="ml-2 text-sm text-gray-600">I agree to the <a href="#" className="text-blue-600 hover:underline">terms and privacy policy</a></label>
-                </div>
 
                 <button type="submit" className="w-full bg-red-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-red-700 transition duration-200">Create an account</button>
               </form>
 
-              <div className="mt-6 text-center text-sm text-gray-500">
-                or continue with
-              </div>
-
-              <div className="mt-4 flex space-x-3">
-                <button className="flex-1 flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50">
-                  <GoogleIcon />
-                </button>
-                <button className="flex-1 flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50">
-                  <FacebookIcon />
-                </button>
-              </div>
 
               <div className="mt-6 text-center text-sm text-gray-600">
-                Already a member? <button type="button" className="text-blue-600 hover:underline" onClick={() => setCurrentView('login')}>Login</button>
+                Already a member? <button type="button" className="text-blue-600 hover:underline cursor-pointer" onClick={() => setCurrentView('login')}>Login</button>
               </div>
             </div>
           )}

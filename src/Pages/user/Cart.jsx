@@ -118,7 +118,7 @@ const Cart = () => {
 const createOrder = async () => {
   try {
     const orderPayload = {
-      phoneNumber: "0704050424", 
+      phoneNumber: "0506740649", 
       customerName: me?.fullName || "",
       customerPhone: me?.phoneNumber?.replace(/\D/g, '') || "0000000",
       items: cartItemsD?.items?.map(item => ({
@@ -148,10 +148,10 @@ const createOrder = async () => {
 
     toast.success("Order created successfully!");
   } catch (error) {
-    console.error("Failed to create order:", error);
+    console.error( error?.data);
     // Log the full error object to see what's wrong
     console.error("Error details:", JSON.stringify(error, null, 2));
-    toast.error(`Failed to create order: ${error?.data?.message || error?.message || 'Please try again.'}`);
+    toast.error(error?.data);
   }
 };
 
@@ -341,7 +341,7 @@ const createOrder = async () => {
                           <div className="flex items-start rounded-lg">
                             <div className="w-30 h-30 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center mr-4 overflow-hidden">
                               <img
-                                src={`http://smartteamaz-001-site1.qtempurl.com${item.productImageUrl}`}
+                                src={`https://smartteamaz-001-site1.qtempurl.com${item.productImageUrl}`}
                                 alt={item.productName}
                                 className="w-full h-full object-cover"
                               />
@@ -365,7 +365,7 @@ const createOrder = async () => {
                           <div className="flex items-center justify-between">
                             <div className="flex items-center border border-gray-300 rounded-lg">
                               <button 
-                                className="p-2 hover:bg-gray-100 transition-colors disabled:opacity-50"
+                                className="p-2 hover:bg-gray-100  transition-colors disabled:opacity-50"
                                 onClick={() => handleDecrement(item)}
                                 disabled={effectiveQuantity <= 1 || isItemUpdating}
                               >
@@ -394,7 +394,7 @@ const createOrder = async () => {
                           <div className='flex-1 flex'>
                             <div className="w-30 h-30 rounded-lg flex items-center justify-center mr-4 overflow-hidden">
                               <img
-                                src={`http://smartteamaz-001-site1.qtempurl.com${item.productImageUrl}`}
+                                src={`https://smartteamaz-001-site1.qtempurl.com${item.productImageUrl}`}
                                 alt={item.productName}
                                 className="w-full h-full object-cover"
                               />
@@ -408,7 +408,7 @@ const createOrder = async () => {
                               </div>
 
                               <button 
-                                className='px-3 p-1 mt-7 shadow-md bg-white text-red-500 rounded-lg border-1 border-[#dee2e6] disabled:opacity-50'
+                                className='px-3 p-1 mt-7 shadow-md bg-white hover:bg-gray-100 cursor-pointer text-red-500 rounded-lg border-1 border-[#dee2e6] disabled:opacity-50'
                                 onClick={() => handleRemoveItem(item.id)}
                                 disabled={isItemUpdating}
                               >
@@ -425,7 +425,7 @@ const createOrder = async () => {
                             
                             <div className="flex items-center border border-gray-300 rounded-lg">
                               <button 
-                                className="p-2 hover:bg-gray-100 transition-colors disabled:opacity-50"
+                                className="p-2  hover:bg-gray-100  h-full cursor-pointer transition-colors disabled:opacity-50"
                                 onClick={() => handleDecrement(item)}
                                 disabled={effectiveQuantity <= 1 || isItemUpdating}
                               >
@@ -435,7 +435,7 @@ const createOrder = async () => {
                                 {effectiveQuantity}
                               </span>
                               <button 
-                                className="p-2 hover:bg-gray-100 transition-colors disabled:opacity-50"
+                                className="p-2 h-full hover:bg-gray-100 cursor-pointer transition-colors disabled:opacity-50"
                                 onClick={() => handleIncrement(item)}
                                 disabled={isItemUpdating}
                               >
@@ -461,7 +461,7 @@ const createOrder = async () => {
                         <ArrowLeft size={20} />
                         <p>Back to Shop</p>
                       </Link>
-                      <button onClick={() => handleRemoveCart()} className='px-3 bg-white text-red-500 rounded-lg border-1 border-[#bfc2c6]'>
+                      <button onClick={() => handleRemoveCart()} className='px-3 bg-white hover:bg-gray-100 cursor-pointer text-red-500 rounded-lg border-1 border-[#bfc2c6]'>
                         {isCartremoveLoading ? "Removing All ..." : "Remove all"}
                       </button>
                     </div>
@@ -485,7 +485,7 @@ const createOrder = async () => {
                   </div>
                 </div>
 
-                <button onClick={() => createOrder()} className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-4 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2">
+                <button onClick={() => createOrder()} className="w-full cursor-pointer bg-red-500 hover:bg-red-600 text-white font-semibold py-4 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2">
                   <ShoppingCart size={20} />
                   <span>Buy Now</span>
                 </button>

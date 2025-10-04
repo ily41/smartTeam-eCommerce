@@ -33,10 +33,12 @@ const WishList = () => {
   const totalCount = favoritesData?.totalCount || 0;
 
   const handleRemoveFavorite = async (e, productId) => {
+    console.log(productId)
     e.preventDefault();
     e.stopPropagation();
     
     try {
+      console.log(productId)
       await removeFavorite({ productId }).unwrap();
       toast.success('Removed from favorites');
     } catch (err) {
@@ -171,7 +173,10 @@ const WishList = () => {
               </div>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 [@media(min-width:1300px)]:grid-cols-5 lg:grid-cols-4 gap-2 whitespace-nowrap">
-                {favorites?.map((item) => (
+                {favorites?.map((item) => {
+                  console.log(item)
+                  
+                  return (
                   <Link 
                     key={item.id} 
                     to={`/details/${item.product.productId}`}
@@ -179,7 +184,7 @@ const WishList = () => {
                   >
                     <img 
                       className='w-full rounded-lg p-3' 
-                      src={item.product.imageUrl ? `http://smartteamaz-001-site1.qtempurl.com${item.product.imageUrl}` : "./deals/product.avif"} 
+                      src={item.product.imageUrl ? `https://smartteamaz-001-site1.qtempurl.com${item.product.imageUrl}` : "./deals/product.avif"} 
                       alt={item.product.name || 'Product'}
                     />
                     <div className='font-semibold p-2 inter'>
@@ -192,10 +197,10 @@ const WishList = () => {
                       )}
                     </div>
                     <div className='flex gap-3 p-2'>
-                      {renderButton(item.product.productId)}
+                      {renderButton(item.product.id)}
 
                       <button 
-                        onClick={(e) => handleRemoveFavorite(e, item.product.productId)}
+                        onClick={(e) => handleRemoveFavorite(e, item.product.id)}
                         disabled={isRemovingFavorite}
                         className="p-3 rounded-lg border-[#DEE2E7] bg-white shadow-sm hover:bg-gray-50 transition-colors disabled:opacity-50"
                       >
@@ -205,7 +210,7 @@ const WishList = () => {
                       </button>
                     </div>
                   </Link>
-                ))}
+                )})}
               </div>
             )}
 

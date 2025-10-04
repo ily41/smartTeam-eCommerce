@@ -397,7 +397,7 @@ const Home = () => {
                     <div className='w-full flex justify-center'>
                       <img 
                         className='w-full max-w-[140px] h-auto object-contain px-2' 
-                        src={`http://smartteamaz-001-site1.qtempurl.com${item.primaryImageUrl}`} 
+                        src={`https://smartteamaz-001-site1.qtempurl.com${item.primaryImageUrl}`} 
                         alt="Product" 
                       />
                     </div>
@@ -428,7 +428,7 @@ const Home = () => {
                     <div className='w-full flex justify-center'>
                       <img 
                         className='w-full max-w-[160px] h-auto object-contain px-2' 
-                        src={`http://smartteamaz-001-site1.qtempurl.com${item.primaryImageUrl}`} 
+                        src={`https://smartteamaz-001-site1.qtempurl.com${item.primaryImageUrl}`} 
                         alt="Product" 
                       />
                     </div>

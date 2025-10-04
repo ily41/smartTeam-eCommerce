@@ -20,9 +20,13 @@ const SearchUI = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const { searchOpen, setSearchOpen } = useContext(SearchContext);
+  console.log(searchOpen)
   const searchDropdownRef = useRef(null);
+  const closeMobileSearch = () => {
+    setSearchOpen(false);
+    setSearchQuery('');
+  };
 
-  // Call search API with the query
   const { data: searchResult, isLoading: isSearching } = useSearchProductsQuery(
     { q: searchQuery }, 
     {
@@ -30,11 +34,9 @@ const SearchUI = () => {
     }
   );
 
-  // Handle click outside to close dropdown
   useEffect(() => {
     function handleClickOutside(event) {
       if (searchDropdownRef.current && !searchDropdownRef.current.contains(event.target)) {
-        ;
       }
     }
 
@@ -65,6 +67,7 @@ const SearchUI = () => {
   const handleSearchFocus = () => {
     if (searchQuery.length >= 2) {
       setSearchOpen(true);
+      console.log(searchOpen)
     }
   };
 
@@ -75,11 +78,14 @@ const SearchUI = () => {
     }
   };
 
-  const handleProductClick = (productId) => {
-    ;
-    setSearchQuery('');
+   const handleProductClick = (e, productId) => {
+    console.log("works")
+    e.preventDefault();
+    e.stopPropagation();
+    
     navigate(`/details/${productId}`);
-  };
+    setSearchOpen(false)
+};
 
   const handleViewAllClick = () => {
     const query = searchQuery;
@@ -128,7 +134,7 @@ const SearchUI = () => {
             {isSearching ? (
               <div>
                 <h3 className="text-sm font-semibold text-gray-500 mb-3">PRODUCTS</h3>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   {[...Array(4)].map((_, idx) => (
                     <SearchProductSkeletonMobile key={idx} />
                   ))}
@@ -139,16 +145,16 @@ const SearchUI = () => {
                 <h3 className="text-sm font-semibold text-gray-500 mb-3">
                   PRODUCTS ({searchResult.length})
                 </h3>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   {searchResult.slice(0, 6).map(product => (
                     <div
                       key={product.id}
-                      onClick={() => handleProductClick(product.id)}
+                      onClick={(e) => handleProductClick(e,product.id)}
                       className="bg-white rounded-lg border border-[#dee2e6] p-2 hover:shadow-md cursor-pointer transition-all"
                     >
                       <div className="relative w-full aspect-square max-w-[200px] bg-white rounded-lg flex items-center justify-center mb-2 overflow-hidden">
                         <img 
-                          src={`http://smartteamaz-001-site1.qtempurl.com${product.primaryImageUrl}`}
+                          src={`https://smartteamaz-001-site1.qtempurl.com${product.primaryImageUrl}`}
                           alt={product.name}
                           className="max-w-[200px] object-contain"
                           onError={(e) => {
@@ -208,6 +214,127 @@ const SearchUI = () => {
           </div>
         </div>
       )}
+
+      {/* Mobile Search Dropdown */}
+              {searchOpen && (
+                <div className="search-results-container fixed inset-0 bg-white z-50 overflow-y-auto">
+                  <div className="p-4">
+                    {/* Mobile Search Header */}
+                    <div className="flex items-center gap-3 mb-4">
+                      <button 
+                        onClick={closeMobileSearch}
+                        className='p-2 hover:bg-gray-100 rounded-lg transition-colors'
+                      >
+                        <X className="w-6 h-6 text-gray-600" />
+                      </button>
+                      <div className="flex-1 flex rounded-lg overflow-hidden border border-[#dee2e6] bg-white">
+                        <div className="flex items-center pl-3">
+                          <Search className="w-5 h-5 text-gray-400" />
+                        </div>
+                        <input
+                          type="text"
+                          placeholder="Search products..."
+                          value={searchQuery}
+                          onChange={handleSearchChange}
+                          autoFocus
+                          className="flex-1 py-2 px-3 text-base border-none outline-none placeholder-gray-400"
+                        />
+                        {searchQuery && (
+                          <button 
+                            onClick={handleClearSearch}
+                            className="flex items-center pr-3 hover:opacity-70 transition-opacity"
+                          >
+                            <X className="w-5 h-5 text-gray-400" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                      
+                    {/* Mobile Search Results */}
+                    {isSearching ? (
+                      <div>
+                        <h3 className="text-sm font-semibold text-gray-500 mb-3">PRODUCTS</h3>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                          {[...Array(4)].map((_, idx) => (
+                            <SearchProductSkeletonMobile key={idx} />
+                          ))}
+                        </div>
+                      </div>
+                    ) : searchResult && searchResult.length > 0 ? (
+                      <div>
+                        <h3 className="text-sm font-semibold text-gray-500 mb-3">
+                          PRODUCTS ({searchResult.length})
+                        </h3>
+                        <div className="grid grid-cols-2 md:grid-cols-3   gap-2">
+                          {searchResult.slice(0, 6).map(product => (
+                            <div
+                              key={product.id}
+                              onClick={(e) => handleProductClick(e, product.id)}
+                              onMouseDown={(e) => e.preventDefault()}
+                              className="bg-white rounded-lg border border-[#dee2e6] p-2 hover:shadow-md cursor-pointer transition-all"
+                            >
+                              <div className="relative w-full aspect-square bg-white rounded-lg flex items-center justify-center mb-2 overflow-hidden">
+                                <img 
+                                  src={`https://smartteamaz-001-site1.qtempurl.com${product.primaryImageUrl}`}
+                                  alt={product.name}
+                                  className="max-w-[200px] object-contain"
+                                  onError={(e) => {
+                                    e.target.src = '/Icons/logo.svg';
+                                  }}
+                                />
+                                {product.isHotDeal && (
+                                  <div className="absolute top-1 right-1 bg-[#E60C03] text-white text-[10px] px-1.5 py-0.5 rounded">
+                                    Hot
+                                  </div>
+                                )}
+                                {product.discountPercentage > 0 && (
+                                  <div className="absolute top-1 left-1 bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-semibold">
+                                    -{product.discountPercentage}%
+                                  </div>
+                                )}
+                              </div>
+                              <div>
+                                <h4 className="text-gray-800 font-medium text-xs mb-1 line-clamp-2 min-h-[32px]">
+                                  {product.name}
+                                </h4>
+                                <p className="text-gray-400 text-[10px] mb-1 truncate">
+                                  {product.categoryName?.replace(/-/g, ' ')}
+                                </p>
+                                <div className="flex items-center gap-1 flex-wrap">
+                                  <span className="text-[#E60C03] font-bold text-sm">
+                                    ${product.currentPrice.toLocaleString()}
+                                  </span>
+                                  {product.discountPercentage > 0 && (
+                                    <span className="text-gray-400 text-[10px] line-through">
+                                      ${product.originalPrice.toLocaleString()}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        {searchResult.length > 6 && (
+                          <button
+                            onClick={handleViewAllClick}
+                            className="block w-full text-center mt-4 py-3 text-[#E60C03] hover:text-red-700 font-medium text-sm transition-colors bg-gray-50 rounded-lg"
+                          >
+                            View all {searchResult.length} results →
+                          </button>
+                        )}
+                      </div>
+                    ) : searchQuery.length >= 2 ? (
+                      <div className="py-12 text-center">
+                        <Search className="w-12 h-12 mx-auto text-gray-300 mb-3" />
+                        <p className="text-gray-600 font-medium mb-1">No results found</p>
+                        <p className="text-gray-400 text-sm">
+                          Try searching with different keywords
+                        </p>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+              )}
     </div>
   );
 }

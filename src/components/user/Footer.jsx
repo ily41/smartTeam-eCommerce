@@ -32,11 +32,16 @@ const Footer = () => {
                     <p className='text-lg text-gray-600'>services for computers, office equipment, and  </p>
                     <p className='text-lg mb-5 text-gray-600'>low-current systems.</p>
                     <div className='flex gap-3'>
-                        <img className='w-10'  src="./Icons/facebook.svg" alt="" />
-                        <img className='w-10' src="./Icons/twitter.svg" alt="" />
-                        <img className='w-10' src="./Icons/linkedin.svg" alt="" />
-                        <img className='w-10' src="./Icons/instagram.svg" alt="" />
-                        <img className='w-10' src="./Icons/youtube.svg" alt="" />
+                        <a href="https://www.tiktok.com/@smartteam.az" target="_blank" rel="noopener noreferrer">
+                           <svg width="40" height="40" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                              <circle cx="100" cy="100" r="100" fill="#BDC3C7"/>
+                              <path d="M138.7 64.6c-6.5-3.6-11.2-9.8-12.8-17h-0.1V42h-17.6v77.3c0 8.3-6.7 15-15 15s-15-6.7-15-15 6.7-15 15-15c1.7 0 3.3 0.3 4.9 0.9V87.5c-1.6-0.2-3.2-0.4-4.9-0.4-17.6 0-31.9 14.3-31.9 31.9s14.3 31.9 31.9 31.9 31.9-14.3 31.9-31.9V89.3c5.5 3.2 11.9 5.1 18.7 5.1V77.2c-2.1 0-4.1-0.3-6-0.7-2.1-0.5-4.2-1.3-6.1-2.4z" fill="#FFFFFF"/>
+                            </svg>
+
+                        </a>
+                        <a href="https://www.instagram.com/smart_team.az" target="_blank" rel="noopener noreferrer">
+                            <img className='w-10' src="./Icons/instagram.svg" alt="" />
+                        </a>
                     </div>
                 </div>
                 

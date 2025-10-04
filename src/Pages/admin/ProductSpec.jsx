@@ -223,7 +223,7 @@ const ProductDetailPage = () => {
           {/* Product Image */}
           <div className="bg-gray-800 rounded-xl overflow-hidden">
             <img
-              src={`http://http://smartteamaz-001-site1.qtempurl.com/${product.imageUrl}`}
+              src={`http://https://smartteamaz-001-site1.qtempurl.com/${product.imageUrl}`}
               alt={product.name}
               className="w-full object-cover h-full "
               onError={(e) => {
@@ -349,7 +349,7 @@ const ProductDetailPage = () => {
                   <div key={image.id} className="relative group">
                     <div className="aspect-square bg-gray-700 rounded-lg overflow-hidden">
                       <img
-                        src={`http://smartteamaz-001-site1.qtempurl.com/${image.imageUrl}`}
+                        src={`https://smartteamaz-001-site1.qtempurl.com/${image.imageUrl}`}
                         alt={image.altText || `Product image ${index + 1}`}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                         onError={(e) => {
@@ -413,7 +413,7 @@ const ProductDetailPage = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <a
-                      href={`http://smartteamaz-001-site1.qtempurl.com/${pdf.filePath}`}
+                      href={`https://smartteamaz-001-site1.qtempurl.com/${pdf.filePath}`}
                       download
                       className="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
                       title="Download PDF"

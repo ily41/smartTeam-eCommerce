@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 
 const Users = () => {
     const { data: users, error, isLoading, refetch } = useGetUsersQuery();
+    console.log(users)
     const { data: userRoles, isRolesLoading  } = useGetUserRolesQuery();
     console.log(userRoles)
     const { data: userStatistics, error: Serror, isLoading: SisLoading, refetch: refetchStatistics } = useGetUserStaticsQuery();

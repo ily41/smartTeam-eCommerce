@@ -1,10 +1,9 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { Grid, List } from 'lucide-react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { Grid, List, ChevronDown, Check } from 'lucide-react';
 import { Breadcrumb } from '../../products/Breadcrumb';
 import SearchUI from '../../components/UI/SearchUI';
 import { FilterSidebar } from '../../products/FilterSidebar';
 import { MobileFilterButtons } from '../../products/MobileFilters';
-import { ActiveFilters } from '../../products/ActiveFilters';
 import { ProductCard } from '../../products/ProductCard';
 import { Pagination } from '../../products/Pagination';
 import { 
@@ -44,6 +43,63 @@ const ProductCardSkeleton = ({ col }) => (
   </div>
 );
 
+// Custom Dropdown Component
+const CustomDropdown = ({ value, onChange, options }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  const selectedOption = options.find(opt => opt.value === value) || options[0];
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleSelect = (optionValue) => {
+    onChange({ target: { value: optionValue } });
+    setIsOpen(false);
+  };
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full lg:w-auto min-w-[180px] flex items-center justify-between gap-3 px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
+      >
+        <span>{selectedOption.label}</span>
+        <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+
+      {isOpen && (
+        <div className="absolute right-0 mt-2 w-full lg:w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden">
+          {options.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => handleSelect(option.value)}
+              className={`w-full flex items-center justify-between px-4 py-3 text-sm text-left transition-colors ${
+                value === option.value
+                  ? 'bg-gray-50 text-gray-900 font-medium'
+                  : 'text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              <span>{option.label}</span>
+              {value === option.value && <Check className="w-4 h-4 text-gray-900" />}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 function Products() {
   const { slug } = useParams();
   
@@ -81,13 +137,22 @@ function Products() {
   const [products, setProducts] = useState([]);
   const [totalItems, setTotalItems] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [sortBy, setSortBy] = useState('asc'); // Default to 'asc' instead of empty string
+  const [sortBy, setSortBy] = useState(null);
   const [filtersApplied, setFiltersApplied] = useState(false);
   const [activeFilters, setActiveFilters] = useState([]);
   
   const [addCartItem] = useAddCartItemMutation();
   const [toggleFavorite] = useToggleFavoriteMutation();
   const [addingIds, setAddingIds] = useState(new Set());
+
+  // Sort options for dropdown
+  const sortOptions = [
+    { value: null, label: 'Sort by' },
+    { value: 'price_asc', label: 'Price: Low to High' },
+    { value: 'price_desc', label: 'Price: High to Low' },
+    { value: 'name_asc' , label: 'Name: A to Z' },
+    { value: 'name_desc', label: 'Name: Z to A',  }
+  ];
 
   // Find category ID from slug (only for regular category pages)
   const categoryId = React.useMemo(() => {
@@ -185,7 +250,6 @@ function Products() {
 
     try {
       await toggleFavorite({productId: id}).unwrap();
-      toast.success("added from here")
     } catch (err) {
       console.error(err);
       if (err?.status === 401 || err?.data?.status === 401) {
@@ -273,14 +337,11 @@ function Products() {
                   </span>
 
                   <div className="hidden lg:flex items-center space-x-4">
-                    <select 
-                      className="border border-gray-300 rounded-md px-3 py-2 text-sm"
+                    <CustomDropdown
                       value={sortBy}
                       onChange={handleSortChange}
-                    >
-                      <option value="asc">Price: Low to High</option>
-                      <option value="desc">Price: High to Low</option>
-                    </select>
+                      options={sortOptions}
+                    />
                     <div className="flex border border-gray-300 rounded-md overflow-hidden">
                       <button 
                         onClick={() => setTemplate("cols")} 
@@ -299,13 +360,6 @@ function Products() {
                   </div>
                 </>
               )}
-            </div>
-
-            <div className="hidden lg:block">
-              <ActiveFilters 
-                filters={activeFilters}
-                onRemoveFilter={handleRemoveFilter}
-              />
             </div>
 
             <div className={`mt-4 ${template === "cols" ? 'grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6' : 'flex flex-col gap-4'}`}>

@@ -3,7 +3,6 @@ import { ChevronDown } from 'lucide-react';
 import { useFilterProductsMutation, useGetCategoriesQuery, useGetCategoryFiltersQuery, useGetFiltersQuery, useGetParentCategoriesQuery } from '../store/API';
 
 export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, currentPage, pageSize, hideCategoryFilter = false, forcedCategoryId = null }) {
-  console.log("current", currentSort)
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [minPrice, setMinPrice] = useState('');
@@ -14,7 +13,7 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
   const { data: customFilters, isLoading: isCustomLoading } = useGetFiltersQuery();
   
   const [filterProducts, { isLoading: isFiltering }] = useFilterProductsMutation();
-  
+  1
   const hasFiltersApplied = useRef(false);
   const debounceTimer = useRef(null);
 
@@ -192,8 +191,10 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
       filter.maxValue > 0
     );
     const hasForcedCategory = !!forcedCategoryId;
+    const hasSort = currentSort
+
     
-    return hasCategories || hasPrice || hasCustomFilters || hasForcedCategory;
+    return hasCategories || hasPrice || hasCustomFilters || hasForcedCategory || hasSort;
   };
 
     useEffect(() => {
@@ -221,18 +222,18 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
 
       const filterCriteria = buildFilterCriteria();
       const categoryIdToUse = forcedCategoryId || (selectedCategories.length > 0 ? selectedCategories[0] : null);
+    
 
       const filterPayload = {
         categoryId: categoryIdToUse,
         filterCriteria: filterCriteria.length > 0 ? filterCriteria : [],
         minPrice: minPrice ? parseFloat(minPrice) : null,
         maxPrice: maxPrice ? parseFloat(maxPrice) : null,
-        sortBy: "price",
-        sortOrder: currentSort,
+        sortBy: currentSort?.split("_")[0],
+        sortOrder: currentSort?.split("_")[1],
         page: currentPage || 1,
         pageSize: pageSize || 20
       };
-      console.log(filterPayload)
     
       if (onLoadingChange) {
         onLoadingChange(true); 
@@ -240,6 +241,7 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
     
       try {
         const result = await filterProducts(filterPayload).unwrap();
+        console.log(result)
         
         const activeFilters = buildActiveFilters();
 

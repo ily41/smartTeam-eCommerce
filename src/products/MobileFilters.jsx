@@ -467,7 +467,7 @@ export function MobileFilterButtons({ onFilterResults, onLoadingChange, currentS
           <div className="flex-1 min-w-0">
             <button
               onClick={() => setIsSort(!isSort)}
-              className={`${isSort && 'rounded-b-none border-b-0'} flex items-center justify-center gap-2 py-2 px-4 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition-all duration-500 w-full`}
+              className={`${isSort && 'rounded-b-none border-b-0'} flex items-center  justify-center gap-2 py-2 px-4 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition-all duration-500 w-full`}
             >
               <SlidersHorizontal className="w-4 h-4 flex-shrink-0" />
               <span className='whitespace-nowrap'>Sorting</span>
@@ -477,12 +477,12 @@ export function MobileFilterButtons({ onFilterResults, onLoadingChange, currentS
               <div className="border border-gray-300 border-t-0 rounded-b-lg bg-white shadow-lg">
                 <div className="py-2 rounded-b-lg">
                   {[
-                    { label: 'Newest First', value: 'newest' },
-                    { label: 'Price: Low to High', value: 'price_asc' },
-                    { label: 'Price: High to Low', value: 'price_desc' },
-                    { label: 'Name: A to Z', value: 'name_asc' },
-                    { label: 'Name: Z to A', value: 'name_desc' }
-                  ].map((option) => (
+                      { value: null, label: 'Sort by' },
+                      { value: 'price_asc', label: 'Price: Low to High' },
+                      { value: 'price_desc', label: 'Price: High to Low' },
+                      { value: 'name_asc' , label: 'Name: A to Z' },
+                      { value: 'name_desc', label: 'Name: Z to A',  }
+                    ].map((option) => (
                     <button
                       key={option.value}
                       className={`w-full text-start px-4 py-2 hover:bg-gray-50 transition-colors duration-200 ${currentSort === option.value ? 'bg-gray-100 font-medium' : ''}`}

@@ -52,7 +52,7 @@ const BannerSlider = () => {
           <div key={banner.id} className="w-full flex-shrink-0   relative">
             <img 
               className="w-full object-cover rounded-lg lg:h-[400px] h-[35vh] lg:p-2" 
-              src={`http://smartteamaz-001-site1.qtempurl.com${banner.imageUrl}`}
+              src={`https://smartteamaz-001-site1.qtempurl.com${banner.imageUrl}`}
               alt={`Banner ${index + 1}`} 
             />
             
