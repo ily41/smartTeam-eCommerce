@@ -52,7 +52,7 @@ const Footer = () => {
                         <div className='text-[#8B96A5] flex flex-col gap-1 mt-3'>
                             <Link to='/'>Home</Link>
                             <Link to='/about'>About Us</Link>
-                            <Link to='/download'>Download Linkrogram</Link>
+                            <Link to='/download'>Download Program</Link>
                             <Link to='/contact'>Contact</Link>
                         </div>
                     </div>
@@ -69,7 +69,7 @@ const Footer = () => {
                     <div className='text-[#8B96A5] flex flex-col gap-1 mt-3'>
                         <Link to='/'>Home</Link>
                         <Link to='/about'>About Us</Link>
-                        <Link to='/download'>Download Linkrogram</Link>
+                        <Link to='/download'>Download Program</Link>
                         <Link to='/contact'>Contact</Link>
                     </div>
                 </div>

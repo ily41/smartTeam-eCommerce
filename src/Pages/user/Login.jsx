@@ -97,7 +97,6 @@ const Login = () => {
       const token = jwtDecode(result.token);
       console.log(token)
 
-      toast.success("Login successful!")
       
 
       if (token.role != "Admin") {
@@ -132,7 +131,6 @@ const Login = () => {
       confirmPassword: formData.confirmPassword.trim()
     }).unwrap();
 
-    toast.success("Registration successful!");
     setCurrentView("login");
     console.log("Navigated to login");
 
@@ -195,6 +193,10 @@ const Login = () => {
               Already a member? <button type="button" className="text-blue-600" onClick={() => setCurrentView('login')}>Login</button>
             </div>
 
+            <div className="mt-4 text-center">
+              <button type="button" className="text-gray-500 text-sm hover:text-gray-700 underline" onClick={() => navigate('/')}>Continue without logging in</button>
+            </div>
+
           </div>
         )}
 
@@ -218,6 +220,10 @@ const Login = () => {
 
             <div className="mt-4 text-center text-sm text-gray-600">
               Don't have an account? <button type="button" className="text-red-600" onClick={() => setCurrentView('signup')}>Sign up</button>
+            </div>
+
+            <div className="mt-4 text-center">
+              <button type="button" className="text-gray-500 text-sm hover:text-gray-700 underline" onClick={() => navigate('/')}>Continue without logging in</button>
             </div>
 
         
@@ -358,6 +364,10 @@ const Login = () => {
               <div className="mt-6 text-center text-sm text-gray-600">
                 Don't have an account? <button type="button" className="text-red-600 hover:underline cursor-pointer" onClick={() => setCurrentView('signup')}>Sign up</button>
               </div>
+
+              <div className="mt-4 text-center">
+                <button type="button" className="text-gray-500 text-sm hover:text-gray-700 underline" onClick={() => navigate('/')}>Continue without logging in</button>
+              </div>
             </div>
           )}
 
@@ -405,6 +415,10 @@ const Login = () => {
               <div className="mt-6 text-center text-sm text-gray-600">
                 Already a member? <button type="button" className="text-blue-600 hover:underline cursor-pointer" onClick={() => setCurrentView('login')}>Login</button>
               </div>
+
+              <div className="mt-4 text-center">
+                <button type="button" className="text-gray-500 text-sm hover:text-gray-700 underline" onClick={() => navigate('/')}>Continue without logging in</button>
+              </div>
             </div>
           )}
         </div>
@@ -413,4 +427,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Login;   

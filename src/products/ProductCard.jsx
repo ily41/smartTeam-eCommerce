@@ -10,10 +10,13 @@ export function ProductCard({
   toggleFavorite,
   isFavorite = false
 }) {
-  const { url, name, price, id, description } = info;
+  const { url, name, priceOriginal, price, id, description, discountPercentage, isHotDeal } = info;
   const [localFavorite, setLocalFavorite] = useState(isFavorite);
   const [isTogglingFavorite, setIsTogglingFavorite] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
+
+  // Show discount UI if there's actually a price difference
+  const hasDiscount = priceOriginal && price && priceOriginal > price;
 
   // Reset justAdded after animation
   useEffect(() => {
@@ -59,12 +62,27 @@ export function ProductCard({
     return (
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden relative">
         <Link to={`/details/${id}`} className="block">
-          <div className="aspect-square p-4 bg-gray-50">
+          <div className="aspect-square p-4 relative">
             <img
               src={`https://smartteamaz-001-site1.qtempurl.com${url}`}
               alt={name || 'Product'}
               className="w-full h-full object-contain"
+              onError={(e) => {
+                e.target.src = '/Icons/logo.svg';
+              }}
             />
+            
+            {/* Badges */}
+            {isHotDeal && (
+              <div className="absolute top-2 right-2 bg-[#E60C03] text-white text-xs px-2 py-1 rounded font-semibold">
+                Hot Deal
+              </div>
+            )}
+            {hasDiscount && discountPercentage > 0 && (
+              <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-semibold">
+                -{discountPercentage}%
+              </div>
+            )}
           </div>
         </Link>
 
@@ -84,7 +102,7 @@ export function ProductCard({
           </button>
 
           <Link to={`/details/${id}`} className="block mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[56px]">
               {name}
             </h3>
             {description && (
@@ -92,9 +110,24 @@ export function ProductCard({
                 {description}
               </p>
             )}
-            <p className="text-xl font-semibold text-gray-900 mt-2">
-              {price} ₼
-            </p>
+            
+            {/* Price Display - Always show both prices */}
+            <div className="flex items-center gap-2 mt-2 flex-wrap">
+              <p className="text-xl font-bold text-[#E60C03]">
+                {price} ₼
+              </p>
+              {hasDiscount && (
+                <p className="text-sm text-gray-400 line-through">
+                  {priceOriginal} ₼
+                </p>
+              )}
+            </div>
+            
+            {hasDiscount && (
+              <p className="text-xs text-green-600 font-medium mt-1">
+                Save {(priceOriginal - price).toFixed(2)} ₼
+              </p>
+            )}
           </Link>
 
           <button
@@ -103,7 +136,7 @@ export function ProductCard({
             className={`w-full text-sm lg:text-md py-3 px-4 rounded-md font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
               justAdded
                 ? 'bg-green-500 hover:bg-green-600 text-white'
-                : 'bg-red-500 hover:bg-red-600 disabled:bg-red-400 disabled:cursor-not-allowed text-white'
+                : 'bg-[#E60C03] hover:bg-red-600 disabled:bg-red-400 disabled:cursor-not-allowed text-white'
             }`}
           >
             {justAdded ? (
@@ -120,33 +153,66 @@ export function ProductCard({
         </div>
       </div>
     );
-  }else {
+  } else {
     // Row layout (list view)
     return (
       <Link
         to={`/details/${id}`}
-        className="border border-[#dbdbdb] rounded-xl p-4 bg-white flex items-center gap-6"
+        className="border border-[#dbdbdb] rounded-xl p-4 bg-white flex items-center gap-6 relative"
       >
         {/* Product Image */}
-        <div className="flex-shrink-0">
+        <div className="flex-shrink-0 h-full w-full max-w-[150px] relative">
           <img
             src={`https://smartteamaz-001-site1.qtempurl.com${url}`}
-            alt={name || 'Product'}
-            className="max-w-[150px] object-cover rounded-lg"
+            alt={name || "Product"}
+            className="max-w-[150px] object-cover aspect-square w-full h-full rounded-lg"
+            onError={(e) => {
+              e.currentTarget.src = "/Icons/logo.svg";
+              e.currentTarget.className =
+                "object-contain aspect-square w-full h-full rounded-lg";
+            }}
           />
+          
+          {/* Badges on image */}
+          {hasDiscount && discountPercentage > 0 && (
+            <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-semibold">
+              -{discountPercentage}%
+            </div>
+          )}
+          {isHotDeal && (
+            <div className="absolute top-2 right-2 bg-[#E60C03] text-white text-xs px-2 py-1 rounded font-semibold">
+              Hot Deal
+            </div>
+          )}
         </div>
 
         {/* Product Info */}
         <div className="flex flex-col flex-1 space-y-4">
           <div className="flex justify-between items-start">
-            <div>
+            <div className="flex-1">
               <h2 className="text-2xl font-semibold">{name}</h2>
               {description && (
                 <p className="text-sm text-gray-600 mt-1 line-clamp-2">
                   {description}
                 </p>
               )}
-              <p className="text-gray-500 mt-2">{price} ₼</p>
+              
+              {/* Price Display - Always show both prices */}
+              <div className="flex items-center gap-3 mt-3 flex-wrap">
+                <p className="text-2xl font-bold text-[#E60C03]">
+                  {price} ₼
+                </p>
+                {hasDiscount && (
+                  <>
+                    <p className="text-lg text-gray-400 line-through">
+                      {priceOriginal} ₼
+                    </p>
+                    <span className="text-sm text-green-600 font-medium bg-green-50 px-2 py-1 rounded">
+                      Save {(priceOriginal - price).toFixed(2)} ₼
+                    </span>
+                  </>
+                )}
+              </div>
             </div>
 
             <button
@@ -164,27 +230,27 @@ export function ProductCard({
             </button>
           </div>
 
-            <button
-              onClick={handleCartClick}
-              disabled={isAddingToCart || justAdded}
-              className={` h-fit self-end w-[200px] text-sm lg:text-md py-3 px-4 rounded-md font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
-                justAdded
-                  ? 'bg-green-500 hover:bg-green-600 text-white'
-                  : 'bg-red-500 hover:bg-red-600 disabled:bg-red-400 disabled:cursor-not-allowed text-white'
-              }`}
-            >
-              {justAdded ? (
-                <>
-                  <Check className="w-4 h-4" />
-                  Added to cart
-                </>
-              ) : isAddingToCart ? (
-                'Adding...'
-              ) : (
-                'Add to the cart'
-              )}
-            </button>
-          </div>
+          <button
+            onClick={handleCartClick}
+            disabled={isAddingToCart || justAdded}
+            className={`h-fit self-end w-[200px] text-sm lg:text-md py-3 px-4 rounded-md font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+              justAdded
+                ? 'bg-green-500 hover:bg-green-600 text-white'
+                : 'bg-[#E60C03] hover:bg-red-600 disabled:bg-red-400 disabled:cursor-not-allowed text-white'
+            }`}
+          >
+            {justAdded ? (
+              <>
+                <Check className="w-4 h-4" />
+                Added to cart
+              </>
+            ) : isAddingToCart ? (
+              'Adding...'
+            ) : (
+              'Add to the cart'
+            )}
+          </button>
+        </div>
       </Link>
     );
   }

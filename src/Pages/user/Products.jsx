@@ -305,7 +305,6 @@ function Products() {
               currentSort={sortBy}
               currentPage={currentPage}
               pageSize={itemsPerPage}
-              hideCategoryFilter={!!slug}
               forcedCategoryId={categoryId}
             />
           </div>
@@ -372,7 +371,8 @@ function Products() {
                   const cardInfo = {
                     url: item.primaryImageUrl,
                     name: item.name,
-                    price: item.currentPrice,
+                    priceOriginal: item?.originalPrice,
+                    price: item?.currentPrice,
                     id: item.id,
                     description: item.shortDescription
                   };

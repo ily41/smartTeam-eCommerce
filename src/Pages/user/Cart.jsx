@@ -146,7 +146,6 @@ const createOrder = async () => {
       window.open(response.whatsAppUrl, "_blank"); // opens WhatsApp Web or app
     }
 
-    toast.success("Order created successfully!");
   } catch (error) {
     console.error( error?.data);
     // Log the full error object to see what's wrong
@@ -340,10 +339,13 @@ const createOrder = async () => {
                         <div className="space-y-4 lg:hidden">
                           <div className="flex items-start rounded-lg">
                             <div className="w-30 h-30 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center mr-4 overflow-hidden">
-                              <img
-                                src={`https://smartteamaz-001-site1.qtempurl.com${item.productImageUrl}`}
-                                alt={item.productName}
-                                className="w-full h-full object-cover"
+                              <img 
+                                className='w-full rounded-lg p-3 aspect-square' 
+                                src={`https://smartteamaz-001-site1.qtempurl.com${item?.productImageUrl}`} 
+                                alt={item?.product?.name || 'Product'}
+                                onError={(e) => {
+                                  e.target.src =  "/Icons/logo.svg"
+                                }}
                               />
                             </div>
 
@@ -393,10 +395,13 @@ const createOrder = async () => {
                         <div className='hidden lg:flex gap-4'>
                           <div className='flex-1 flex'>
                             <div className="w-30 h-30 rounded-lg flex items-center justify-center mr-4 overflow-hidden">
-                              <img
-                                src={`https://smartteamaz-001-site1.qtempurl.com${item.productImageUrl}`}
-                                alt={item.productName}
-                                className="w-full h-full object-cover"
+                              <img 
+                                className="w-full rounded-lg p-3 aspect-square"
+                                src={`https://smartteamaz-001-site1.qtempurl.com${item?.productImageUrl}`} 
+                                alt={item?.product?.name || "Product"}
+                                onError={(e) => {
+                                  e.currentTarget.src = "/Icons/logo.svg";  
+                                }}
                               />
                             </div>
 

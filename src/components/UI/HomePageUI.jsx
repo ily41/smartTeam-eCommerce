@@ -20,14 +20,9 @@ const HomePageUI = ({deal, product, url, handleAddToCart, isAddingToCart}) => {
         }
     }, [favoriteStatus]);
 
+    // Handle success state after adding to cart
     useEffect(() => {
-        if (isAddingToCart && loadingProductId === product.id) {
-            setShowSuccess(false);
-        }
-    }, [isAddingToCart, loadingProductId, product.id]);
-
-    useEffect(() => {
-        if (!isAddingToCart && loadingProductId === product.id && !showSuccess) {
+        if (!isAddingToCart && loadingProductId === product.id) {
             setShowSuccess(true);
             const timer = setTimeout(() => {
                 setShowSuccess(false);
@@ -35,13 +30,14 @@ const HomePageUI = ({deal, product, url, handleAddToCart, isAddingToCart}) => {
             }, 2000);
             return () => clearTimeout(timer);
         }
-    }, [isAddingToCart, loadingProductId, product.id, showSuccess]);
+    }, [isAddingToCart, loadingProductId, product.id]);
 
     const onAddToCart = async (e, productId) => {
         e.preventDefault();
         e.stopPropagation();
         
         setLoadingProductId(productId);
+        setShowSuccess(false);
         await handleAddToCart(productId);
     };
 
@@ -55,7 +51,6 @@ const HomePageUI = ({deal, product, url, handleAddToCart, isAddingToCart}) => {
         
         try {
             await toggleFavorite({ productId: product.id }).unwrap();
-            toast.success(newFavoriteState ? 'Added to favorites' : 'Removed from favorites');
         } catch (err) {
             // Revert on error
             setLocalFavorite(!newFavoriteState);
@@ -104,7 +99,9 @@ const HomePageUI = ({deal, product, url, handleAddToCart, isAddingToCart}) => {
     if(deal) {
         return (
             <Link to={`/details/${product.id}`} className='bg-white p-1 border-1 flex flex-col justify-between border-gray-300 cursor-pointer rounded-lg relative transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-gray-400 '>
-                <img className='w-full rounded-lg p-3' src={`https://smartteamaz-001-site1.qtempurl.com${url}`} alt="" />
+                <img className='w-full rounded-lg p-3 aspect-square' src={`https://smartteamaz-001-site1.qtempurl.com${url}`} alt=""  onError={(e) => {
+                  e.target.src = '/Icons/logo.svg';
+                }}/>
                 <div className='font-semibold p-2 inter flex flex-col justify-between h-full'>
                     <div className="flex flex-nowrap gap-2 items-center overflow-hidden">
                       <h1 className="line-through truncate">{product.originalPrice} AZN</h1>
@@ -138,7 +135,9 @@ const HomePageUI = ({deal, product, url, handleAddToCart, isAddingToCart}) => {
     else {
         return (
             <Link to={`/details/${product.id}`} className='bg-white p-1 border-1 cursor-pointer border-gray-300 rounded-lg transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-gray-400 flex flex-col justify-between'>
-                <img className='w-full rounded-lg p-3' src={`https://smartteamaz-001-site1.qtempurl.com${url}`} alt="" />
+                <img className='w-full rounded-lg p-3 aspect-square' src={`https://smartteamaz-001-site1.qtempurl.com${url}`} alt=""  onError={(e) => {
+                  e.target.src = '/Icons/logo.svg';
+                }}/>
                 <div className='font-semibold p-2 inter'>
                     <h1 className='text-lg'>{product.currentPrice} AZN</h1>
                     <p className='font-medium whitespace-normal mb-3'>{product.name}</p>

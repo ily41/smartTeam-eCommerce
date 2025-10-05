@@ -35,7 +35,7 @@ const ProductCardSkeleton = () => (
       <div className="h-3 bg-gray-300 rounded w-1/2"></div>
     </div>
   </div>
-);
+); 
 
 const HotDealCardSkeleton = () => (
   <div className="relative py-5 border border-gray-300 bg-white w-full flex flex-col items-center gap-2 animate-pulse">
@@ -304,8 +304,8 @@ const Home = () => {
                 <h1>Categories</h1>
             </div>
 
-            <div className='grid grid-cols-3 mt-10 gap-5 text-sm'>
-                <div className='justify-center md:justify-start flex col-span-3 items-center bg-white lg:hidden rounded-lg border border-[#DEE2E6] p-4'>
+            <div className='grid grid-cols-3 mt-10 gap-2 text-sm'>
+                <Link to='sebeke-avadanliqlari' className='justify-center md:justify-start flex col-span-3 items-center bg-white lg:hidden rounded-lg border border-[#DEE2E6] p-4'>
                   <div className='flex flex-row gap-4'>
                     <div className='w-full h-full flex-shrink-0 my-auto object-cover max-w-[140px] md:max-w-[160px]'>
                       <img className='w-full object-contain max-h-[160px]' src="./deals/network.svg" alt="" />
@@ -315,44 +315,44 @@ const Home = () => {
                       <p className='text-sm md:text-base text-[#AFB0B1]'>Reliable routers, switches, and cabling systems for fast, stable, and secure connectivity. Scalable solutions to keep your business connected and future-ready.</p>
                     </div>
                   </div>
-                </div>
+                </Link>
 
-              <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
+              <Link to='komputerler' className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
                   <img className='min-h-[120px]' src="./deals/homeComputer.svg" alt="" />
                 </div>
                 <p className='text-center'>Computers</p>
-              </div>
-              <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
+              </Link>
+              <Link to='noutbuklar' className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
                   <img className='min-h-[120px]' src="./deals/homeLaptop.svg" alt="" />
                 </div>
                 <p className='text-center'>Laptops</p>
-              </div>
-              <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
+              </Link>
+              <Link to='ofis-avadanliqlari' className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
                   <img className='min-h-[120px]' src="./deals/homePrinter.svg" alt="" />
                 </div>
                 <p className='text-center'>Office Equipment</p>
-              </div>
-              <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
+              </Link>
+              <Link to='ticaret-avadanliqlari' className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
                   <img className='min-h-[120px]' src="./deals/homeBarcode.svg" alt="" />
                 </div>
                 <p className='text-center'>Commercial Equipment</p>
-              </div>
-              <div className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
+              </Link>
+              <Link to='musahide-sistemleri' className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
                   <img className='min-h-[120px]' src="./deals/homeSurveillance.svg" alt="" />
                 </div>
                 <p className='text-center'>Surveillance system</p>
-              </div>
-              <div className='bg-white self-center justify-center items-center flex flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
+              </Link>
+              <Link to='komputer-avadanliqlari' className='bg-white self-center justify-center items-center flex flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
                   <img className='min-h-[120px]' src="./deals/homeKeyboard.svg" alt="" />
                 </div>
                 <p className='text-center'>Computer Equipment</p>
-              </div>
+              </Link>
             </div>
         </section>
 

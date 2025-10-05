@@ -40,7 +40,6 @@ const WishList = () => {
     try {
       console.log(productId)
       await removeFavorite({ productId }).unwrap();
-      toast.success('Removed from favorites');
     } catch (err) {
       toast.error('Failed to remove from favorites');
       console.error('Remove favorite error:', err);
@@ -77,7 +76,6 @@ const WishList = () => {
     if (window.confirm('Are you sure you want to clear all favorites?')) {
       try {
         await clearFavorites().unwrap();
-        toast.success('All favorites cleared');
       } catch (err) {
         toast.error('Failed to clear favorites');
         console.error('Clear favorites error:', err);
@@ -179,13 +177,16 @@ const WishList = () => {
                   return (
                   <Link 
                     key={item.id} 
-                    to={`/details/${item.product.productId}`}
+                    to={`/details/${item.product.id}`}
                     className='bg-white p-1 border-1 cursor-pointer border-gray-300 rounded-lg transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-gray-400 relative'
                   >
                     <img 
-                      className='w-full rounded-lg p-3' 
-                      src={item.product.imageUrl ? `https://smartteamaz-001-site1.qtempurl.com${item.product.imageUrl}` : "./deals/product.avif"} 
+                      className='w-full rounded-lg p-3 aspect-square' 
+                      src={`https://smartteamaz-001-site1.qtempurl.com${item.product.primaryImageUrl}`} 
                       alt={item.product.name || 'Product'}
+                      onError={(e) => {
+                        e.target.src =  "/Icons/logo.svg"
+                      }}
                     />
                     <div className='font-semibold p-2 inter'>
                       <h1 className='text-lg'>{item.product.currentPrice} AZN</h1>

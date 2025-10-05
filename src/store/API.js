@@ -3,37 +3,37 @@ import {
   fetchBaseQuery
 } from '@reduxjs/toolkit/query/react';
 
-  export const API = createApi({
-    reducerPath: 'API',
-    baseQuery: fetchBaseQuery({
-      baseUrl: 'https://smartteamaz-001-site1.qtempurl.com',
-      prepareHeaders: (headers, {
-        endpoint,
-        body
-      }) => {
-        const isFormDataRequest =
-          endpoint === 'addProduct' ||
-          endpoint === 'addCategoryImage' ||
-          endpoint === 'addDetailImages' ||
-          endpoint === 'addBanner' ||
-          endpoint === 'uploadFile' ||
-          endpoint === 'addProductPdf' ||
-          body instanceof FormData;
+export const API = createApi({
+  reducerPath: 'API',
+  baseQuery: fetchBaseQuery({
+    baseUrl: 'https://smartteamaz-001-site1.qtempurl.com',
+    prepareHeaders: (headers, {
+      endpoint,
+      body
+    }) => {
+      const isFormDataRequest =
+        endpoint === 'addProduct' ||
+        endpoint === 'addCategoryImage' ||
+        endpoint === 'addDetailImages' ||
+        endpoint === 'addBanner' ||
+        endpoint === 'uploadFile' ||
+        endpoint === 'addProductPdf' ||
+        body instanceof FormData;
 
-        if (!isFormDataRequest) {
-          headers.set('Content-Type', 'application/json');
-        }
+      if (!isFormDataRequest) {
+        headers.set('Content-Type', 'application/json');
+      }
 
-        const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1]
+      const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1]
 
 
-        if (token) {
-          headers.set('Authorization', `Bearer ${token}`);
-        }
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+      }
 
-        return headers;
-      },
-    }),
+      return headers;
+    },
+  }),
 
   tagTypes: ['Categories', 'Users', 'Products', 'Banners', 'Filters', 'Cart', 'Auth'],
 
@@ -931,75 +931,83 @@ import {
       keepUnusedDataFor: 60,
     }),
 
-   // In your API slice file
+    // In your API slice file
 
-// Add this endpoint to your existing API endpoints
+    // Add this endpoint to your existing API endpoints
 
-// Add this endpoint to your existing API endpoints
+    // Add this endpoint to your existing API endpoints
 
-downloadFile: builder.mutation({
-  queryFn: async (id, _api, _extraOptions, baseQuery) => {
-    try {
-      // Get token from cookies (same as your existing setup)
-      const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
-      
-      // Make the request
-      const response = await fetch(
-        `https://smartteamaz-001-site1.qtempurl.com/api/v1/Files/download/${id}`,
-        {
-          method: 'GET',
-          headers: {
-            'Authorization': token ? `Bearer ${token}` : '',
-          },
+    downloadFile: builder.mutation({
+      queryFn: async (id, _api, _extraOptions, baseQuery) => {
+        try {
+          // Get token from cookies (same as your existing setup)
+          const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+
+          // Make the request
+          const response = await fetch(
+            `https://smartteamaz-001-site1.qtempurl.com/api/v1/Files/download/${id}`, {
+              method: 'GET',
+              headers: {
+                'Authorization': token ? `Bearer ${token}` : '',
+              },
+            }
+          );
+
+          // Check if response is ok
+          if (!response.ok) {
+            const errorText = await response.text();
+            return {
+              error: {
+                status: response.status,
+                data: {
+                  message: errorText || 'Download failed'
+                },
+              },
+            };
+          }
+
+          // Get the blob data
+          const blob = await response.blob();
+
+          // Get filename from content-disposition header
+          const contentDisposition = response.headers.get('content-disposition');
+          let filename = 'download.pdf';
+
+          if (contentDisposition) {
+            const filenameMatch = contentDisposition.match(/filename\*?=['"]?(?:UTF-8'')?([^;\r\n"']*)['"]?/);
+            if (filenameMatch && filenameMatch[1]) {
+              filename = decodeURIComponent(filenameMatch[1]);
+            }
+          }
+
+          // Create blob URL immediately (not stored in Redux)
+          const url = window.URL.createObjectURL(blob);
+
+          // Return only serializable data
+          return {
+            data: {
+              url,
+              filename
+            }
+          };
+        } catch (error) {
+          return {
+            error: {
+              status: 'FETCH_ERROR',
+              data: {
+                message: error.message
+              },
+            },
+          };
         }
-      );
+      },
+    }),
 
-      // Check if response is ok
-      if (!response.ok) {
-        const errorText = await response.text();
-        return {
-          error: {
-            status: response.status,
-            data: { message: errorText || 'Download failed' },
-          },
-        };
-      }
+    // Don't forget to export the hook:
+    // export const { ..., useDownloadFileMutation } = API;
 
-      // Get the blob data
-      const blob = await response.blob();
-      
-      // Get filename from content-disposition header
-      const contentDisposition = response.headers.get('content-disposition');
-      let filename = 'download.pdf';
-      
-      if (contentDisposition) {
-        const filenameMatch = contentDisposition.match(/filename\*?=['"]?(?:UTF-8'')?([^;\r\n"']*)['"]?/);
-        if (filenameMatch && filenameMatch[1]) {
-          filename = decodeURIComponent(filenameMatch[1]);
-        }
-      }
-      
-      // Create blob URL immediately (not stored in Redux)
-      const url = window.URL.createObjectURL(blob);
-      
-      // Return only serializable data
-      return { data: { url, filename } };
-    } catch (error) {
-      return {
-        error: {
-          status: 'FETCH_ERROR',
-          data: { message: error.message },
-        },
-      };
-    }
-  },
-}),
-
-// Don't forget to export the hook:
-// export const { ..., useDownloadFileMutation } = API;
-
-// Don't forget to export the hook:
-// export const { ..., useDownloadFileMutation } = API;
+    // Don't forget to export the hook:
+    // export const { ..., useDownloadFileMutation } = API;
 
   }),
 });

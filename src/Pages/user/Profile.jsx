@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import SearchUI from '../../components/UI/SearchUI'
 import { Breadcrumb } from '../../products/Breadcrumb'
-import { useChangePasswordMutation, useGetMeQuery } from '../../store/API'
+import { useChangePasswordMutation, useGetMeQuery, useLogoutMutation } from '../../store/API'
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router';
+import { LogIn } from 'lucide-react';
 
 const Profile = () => {
+  const navigate = useNavigate();
   const { data: me, isLoading: isUserLoading, error: userError } = useGetMeQuery();
   const [changePass, { isLoading: isPasswordLoading, error: passwordError }] = useChangePasswordMutation(); 
+  const [logout, { isLoading: isLogoutLoading }] = useLogoutMutation();
   console.log(me)
   
   const [data, setData] = useState({
@@ -33,6 +37,9 @@ const Profile = () => {
   // Password visibility states
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
+
+  // Logout confirmation modal state
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   // Track initial state for comparison
   const [initialData, setInitialData] = useState({});
@@ -142,7 +149,6 @@ const Profile = () => {
       };
 
       const result = await changePass(passwordData).unwrap();
-      toast.success('Password changed successfully')
       
       
       setInitialPassword('');
@@ -159,6 +165,20 @@ const Profile = () => {
     } catch (error) {
       console.error('Failed to change password:', error);
     }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout().unwrap();
+      document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
+      toast.success('Logged out successfully!');
+      navigate('/login'); 
+    } catch (error) {
+      console.error('Failed to logout:', error);
+      toast.error('Failed to logout. Please try again.');
+    }
+
   };
 
   // Loading state for initial user data
@@ -304,6 +324,44 @@ const Profile = () => {
         }
       `}</style>
 
+      {/* Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center z-50 animate-fade-in">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 animate-scale-in">
+            <div className="flex items-center mb-4">
+              <svg className="w-6 h-6 text-[#FD1206] mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              <h3 className="text-xl font-semibold">Confirm Logout</h3>
+            </div>
+            <p className="text-gray-600 mb-6">Are you sure you want to logout from your account?</p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowLogoutModal(false)}
+                disabled={isLogoutLoading}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleLogout}
+                disabled={isLogoutLoading}
+                className="flex-1 px-4 py-2 bg-[#FD1206] text-white rounded-lg hover:bg-[#e01105] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              >
+                {isLogoutLoading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Logging out...
+                  </>
+                ) : (
+                  'Logout'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="lg:hidden px-4 pl-7 py-4 border-y bg-white lg:border-transparent border-[#dee2e6]">
         <div className="mb-4 lg:hidden">
           <SearchUI />
@@ -315,10 +373,31 @@ const Profile = () => {
         <div className='hidden lg:block'>
           <Breadcrumb />
         </div>
-        <div className='flex items-center gap-3 mt-4'>
-          <h1 className=''>Settings</h1>
-          <div className='px-4 py-2 rounded-xl bg-[#FFBBB8]'>
-            <h3 className='text-base  font-semibold text-black'>{getRoleName(me?.role)}</h3>
+        <div className='flex items-center justify-between mt-4'>
+          <div className='flex items-center gap-3'>
+            <h1 className=''>Settings</h1>
+            <div className='px-4 py-2 rounded-xl bg-[#FFBBB8]'>
+              <h3 className='text-base font-semibold text-black'>{getRoleName(me?.role)}</h3>
+            </div>
+          </div>
+          <div className='flex gap-3'>
+            <button
+              onClick={() => navigate('/login')}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-600 border border-green-600 rounded-lg hover:bg-green-700 hover:border-green-700 transition-all duration-300 button-hover"
+            >
+              <LogIn className='w-5 h-5'></LogIn>
+              <span className="hidden sm:inline">Login</span>
+            </button>
+
+            <button
+              onClick={() => setShowLogoutModal(true)}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-[#FD1206] border border-[#FD1206] rounded-lg hover:bg-[#FD1206] hover:text-white transition-all duration-300 button-hover"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              <span className="hidden sm:inline">Logout</span>
+            </button>
           </div>
         </div>
       </div>

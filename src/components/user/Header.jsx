@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import Burger from './Burger'
-import { useGetMeQuery, useSearchProductsQuery } from "../../store/API";
+import { useGetMeQuery, useSearchProductsQuery, useUpdateCartItemQuantityMutation } from "../../store/API";
 import { Search, X } from 'lucide-react';
 import { SearchContext } from '../../router/Context';
 
@@ -38,6 +38,10 @@ const Header = () => {
   const dropdownRef = useRef(null);
   const searchDropdownRef = useRef(null);
   const mobileSearchDropdownRef = useRef(null);
+  const hasToken = document.cookie.split('; ').some((row) => row.startsWith('token='));
+  const [cartCount, setCartCount] = useState(1)
+  const [favoritesCount,setFavoritesCount] = useState(1)
+
 
   const [searchWidth, setSearchWidth] = useState(0);
   const searchRef = useRef(null);
@@ -87,6 +91,7 @@ const Header = () => {
     skip: !searchQuery || searchQuery.length < 2
   });
 
+
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearchQuery(value);
@@ -121,7 +126,7 @@ const Header = () => {
     e.stopPropagation();
     
     const query = searchQuery;
-    // setSearchOpen(false);
+    setSearchOpen(false);
     setSearchQuery('');
     
     setTimeout(() => {
@@ -137,14 +142,6 @@ const Header = () => {
       <nav className='border-b-1 border-[#dee2e6]'>
         <div className='flex justify-between lg:justify-around lg:items-center p-6 items-center'>
           <Link to='/' className='flex lg:flex-1 cursor-pointer lg:justify-center gap-2'>
-            {/* Burger Icon */}
-            <img
-              onClick={() => setBurgerVi(true)}
-              className='md:hidden cursor-pointer'
-              src="/Icons/burger.svg"
-              alt="Menu"
-            />
-
             {/* Logo */}
             <img
               className='min-w-[100px] max-w-[230px] w-[18vh] lg:w-[20vh]'
@@ -209,7 +206,7 @@ const Header = () => {
                               <img 
                                 src={`https://smartteamaz-001-site1.qtempurl.com${product.primaryImageUrl}`}
                                 alt={product.name}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
                                 onError={(e) => {
                                   e.target.src = '/Icons/logo.svg';
                                 }}
@@ -249,7 +246,7 @@ const Header = () => {
                       {searchResult.length > 4 && (
                         <button
                           onClick={handleViewAllClick}
-                          className="block w-full text-center mt-3 sm:mt-4 py-2 text-[#E60C03] hover:text-red-700 font-medium text-xs sm:text-sm transition-colors"
+                          className="block w-full cursor-pointer text-center mt-3 sm:mt-4 py-2 text-[#E60C03] hover:text-red-700 font-medium text-xs sm:text-sm transition-colors"
                         >
                           View all {searchResult.length} results →
                         </button>
@@ -273,7 +270,6 @@ const Header = () => {
           <div className='flex gap-0 lg:gap-5 lg:flex-1 pr-2'>
             <div className='lg:hidden relative' ref={mobileSearchDropdownRef}>
               <button 
-                // onClick={() => setSearchOpen(!searchOpen)}
                 className='p-2 hover:bg-gray-100 rounded-lg transition-colors'
               >
               </button>
@@ -282,34 +278,60 @@ const Header = () => {
             </div>
 
             <Link
-              to={document.cookie ? "/profile" : "/login"}
-              className='flex flex-col gap-1 p-2 items-center cursor-pointer hover:opacity-80 transition-opacity duration-200'
+              to={hasToken ? "/profile" : "/login"}
+              className='flex flex-col  p-2 items-center cursor-pointer hover:opacity-80 transition-opacity duration-200'
             >
-              <img src="/Icons/profile-gray.svg" alt="Profile" />
+              <img className='w-7' src="/Icons/profile.svg" alt="Profile" />
               <p className='text-gray-500 hidden lg:block text-md whitespace-nowrap'>
-                {document.cookie ? "Profile" : "Login"}
+                {hasToken ? "Profile" : "Login"}
               </p>
             </Link>
 
             <Link
-              to={document.cookie ? "/favorites" : "/login"}
-              className='flex flex-col gap-1 p-2 items-center cursor-pointer hover:opacity-80 transition-opacity duration-200'
+              to={hasToken ? "/favorites" : "/login"}
+              className='flex flex-col p-2 items-center cursor-pointer hover:opacity-80 transition-opacity duration-200 relative'
             >
-              <img src="/Icons/favorites-gray.svg" alt="Favorites" />
+              <div className="relative">
+                <img className='w-7' src="/Icons/favorites.svg" alt="Favorites" />
+                {favoritesCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-[#E60C03] text-white text-[10px] 
+                                   rounded-full min-w-[18px] h-[18px] flex items-center justify-center 
+                                   font-semibold px-1">
+                    {favoritesCount > 99 ? '99+' : favoritesCount}
+                  </span>
+                )}
+              </div>
               <p className='text-gray-500 text-md hidden lg:block whitespace-nowrap'>
                 Favorites
               </p>
             </Link>
 
             <Link
-              to={document.cookie ? "/cart" : "/login"}
-              className='flex flex-col gap-1 p-2 items-center cursor-pointer hover:opacity-80 transition-opacity duration-200'
+              to={hasToken ? "/cart" : "/login"}
+              className='flex flex-col p-2 items-center cursor-pointer hover:opacity-80 transition-opacity duration-200 relative'
             >
-              <img src="/Icons/cart-gray.svg" alt="Cart" />
+              <div className="relative">
+                <img className='w-7' src="/Icons/cart.svg" alt="Cart" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-[#E60C03] text-white text-[10px] 
+                                   rounded-full min-w-[18px] h-[18px] flex items-center justify-center 
+                                   font-semibold px-1">
+                    {cartCount > 99 ? '99+' : cartCount}
+                  </span>
+                )}
+              </div>
               <p className='text-gray-500 text-md hidden lg:block whitespace-nowrap'>
                 My Cart
               </p>
             </Link>
+
+            <img
+              onClick={() => setBurgerVi(true)}
+              className='md:hidden p-2 cursor-pointer'
+              src="/Icons/burger.svg"
+              alt="Menu"
+            />
+
           </div>
         </div>
       </nav>

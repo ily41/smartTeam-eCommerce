@@ -4,7 +4,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay } from 'swiper/modules'; 
 import 'swiper/css';
 import 'swiper/css/pagination';
-import { Heart, Download, Share2, Minus, Plus, X, Check, Copy, MessageCircle, Facebook, Twitter, Send, LogIn, UserPlus } from 'lucide-react';
+import { Heart, Download, Share2, Minus, Plus, X, Check, Copy, MessageCircle, Facebook, Twitter, Send, LogIn, UserPlus, Loader2 } from 'lucide-react';
 import { Breadcrumb } from '../../products/Breadcrumb';
 import SearchUI from '../../components/UI/SearchUI';
 import { 
@@ -71,7 +71,11 @@ const UnauthorizedModal = ({ isOpen, onClose, action }) => {
   );
 };
 
-// Skeleton Components
+
+
+
+
+
 const SkeletonBox = ({ className = "", width, height }) => (
   <div 
     className={`bg-gray-200 animate-pulse rounded-lg ${className}`}
@@ -227,9 +231,23 @@ function Details() {
   const { data: product, isLoading: loading, error, isError } = useGetProductQuery(id, { skip: !id });
   const { data: productSpec, isLoading: isSpecLoading } = useGetProductSpecificationsQuery(product?.id, { skip: !product?.id });
   const { data: favoriteStatus } = useGetFavoriteStatusQuery({ productId: product?.id }, { skip: !product?.id });
+  const [showSuccess, setShowSuccess] = useState(false);
+
+
   
   const [toggleFavorite] = useToggleFavoriteMutation();
   const [addCartItem, { isLoading: isAddingToCart, error: cartError }] = useAddCartItemMutation();
+
+  const isInStock = product?.stockQuantity > 0;
+  
+  useEffect(() => {
+    if (!isAddingToCart && showSuccess) {
+      const timer = setTimeout(() => {
+        setShowSuccess(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [isAddingToCart, showSuccess]);
 
   // Handle toggle favorite
   const handleToggleFavorite = async (productId) => {
@@ -256,7 +274,6 @@ function Details() {
     }
 
     try {
-      toast.info("Preparing download...");
       
       const token = document.cookie
         .split('; ')
@@ -298,7 +315,8 @@ function Details() {
       
     } catch (error) {
       console.error('Download error:', error);
-      toast.error(error.message || "Failed to download PDF");
+      toast.error("No file exists for this product.");
+
     }
   };
 
@@ -322,9 +340,12 @@ function Details() {
         productId: id,
         quantity: quantity
       }).unwrap();
+
+      // Set success state after successful add
+      setShowSuccess(true);
     } catch (err) {
       console.error('Failed to add product to cart:', err);
-      
+
       if (err?.status === 401 || err?.data?.status === 401) {
         setUnauthorizedAction('add items to cart');
         setShowUnauthorizedModal(true);
@@ -483,8 +504,9 @@ function Details() {
 
   const specifications = getSpecifications(product, productSpec);
   const features = getFeatures(product, productSpec);
-  const isInStock = product.stockQuantity > 0;
   const hasDiscount = product.discountPercentage > 0;
+
+  
 
   return (
     <>
@@ -543,18 +565,24 @@ function Details() {
                   {product?.images.map((item, index) => (
                     <SwiperSlide key={index} className='relative h-64 py-5 pt-8 rounded-lg'>
                       <img 
-                        src={`https://smartteamaz-001-site1.qtempurl.com${item.imageUrl}`}
-                        alt={product.name}
-                        className="h-48 object-contain mx-auto rounded-lg" 
+                        className='w-full rounded-lg p-3 aspect-square' 
+                        src={`https://smartteamaz-001-site1.qtempurl.com${item?.imageUrl}`} 
+                        alt={item?.name || 'Product'}
+                        onError={(e) => {
+                          e.target.src =  "/Icons/logo.svg"
+                        }}
                       />
                     </SwiperSlide>
                   ))}
                   <SwiperSlide className='relative h-64 py-5 pt-8 rounded-lg'>
-                    <img 
-                      src={`https://smartteamaz-001-site1.qtempurl.com${product.imageUrl}`}
-                      alt={product.name}
-                      className="h-48 object-contain mx-auto rounded-lg" 
-                    />
+                     <img 
+                        className='w-full rounded-lg p-3 aspect-square' 
+                        src={`https://smartteamaz-001-site1.qtempurl.com${product?.imageUrl}`} 
+                        alt={product?.name || 'Product'}
+                        onError={(e) => {
+                          e.target.src =  "/Icons/logo.svg"
+                        }}
+                      />
                   </SwiperSlide>
                 </Swiper>
               </div>
@@ -647,10 +675,14 @@ function Details() {
                     onClick={() => swiperRef?.slideTo(index)}
                   >
                     <img 
-                      src={`https://smartteamaz-001-site1.qtempurl.com${item.imageUrl}`}
+                      src={`https://smartteamaz-001-site1.qtempurl.com${item?.imageUrl}`}
                       alt={`${product.name} ${index + 1}`}
-                      className="w-full h-full object-cover"
+                      className="w-full aspect-square h-full object-contain"
+                      onError={(e) => {
+                          e.target.src =  "/Icons/logo.svg"
+                        }}
                     />
+
                   </button>
                 ))}
               </div>
@@ -660,17 +692,33 @@ function Details() {
 
           <div className="p-4 mb-6 space-y-3 border-y-1 border-[#DEE2E6] bg-white w-full h-full self-end">
             <button 
-              onClick={handleAddToCart}
-              disabled={!isInStock || isAddingToCart}
-              className={`w-full py-3 mt-6 rounded-lg font-medium ${
-                !isInStock 
-                  ? 'bg-gray-400 cursor-not-allowed text-white' 
-                  : isAddingToCart
-                  ? 'bg-red-400 cursor-not-allowed text-white'
-                  : 'bg-red-500 hover:bg-red-600 text-white'
-              }`}
+                onClick={handleAddToCart}
+                disabled={!isInStock || isAddingToCart || showSuccess}
+                className={`w-full flex justify-center items-center py-3 mt-6 rounded-lg font-medium transition-colors duration-200 ${
+                    !isInStock 
+                        ? 'bg-gray-400 cursor-not-allowed text-white' 
+                        : isAddingToCart
+                        ? 'bg-red-400 cursor-not-allowed text-white'
+                        : showSuccess
+                        ? 'bg-green-500 cursor-default text-white'
+                        : 'bg-red-500 hover:bg-red-600 cursor-pointer text-white'
+                }`}
             >
-              {isAddingToCart ? 'Adding...' : !isInStock ? 'Out of Stock' : 'Add To Cart'}
+                {!isInStock ? (
+                    'Out of Stock'
+                ) : isAddingToCart ? (
+                    <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Adding...
+                    </>
+                ) : showSuccess ? (
+                    <>
+                        <Check className="w-4 h-4 mr-2" />
+                        Added to cart
+                    </>
+                ) : (
+                    'Add To Cart'
+                )}
             </button>
           </div>
 
@@ -708,9 +756,12 @@ function Details() {
                   <img 
                     src={hovered ? `https://smartteamaz-001-site1.qtempurl.com${hovered}` : `https://smartteamaz-001-site1.qtempurl.com${product.imageUrl}`}
                     alt={product.name}
-                    className="h-80 object-cover rounded-lg transition-opacity duration-300 ease-in-out"
+                    className="h-80 object-contain rounded-lg transition-opacity duration-300 ease-in-out"
                     key={hovered || product.imageUrl}
                     style={{ animation: 'fadeIn 0.3s ease-in-out' }}
+                    onError={(e) => {
+                      e.target.src = "/Icons/logo.svg"
+                    }}
                   />
                 </div>
 
@@ -725,7 +776,10 @@ function Details() {
                       <img 
                         src={`https://smartteamaz-001-site1.qtempurl.com${item.imageUrl}`}
                         alt={`${product.name} ${index + 1}`}
-                        className="w-full h-full object-cover transition-transform duration-200 hover:scale-105"
+                        className="w-full h-full object-contain transition-transform duration-200 hover:scale-105"
+                        onError={(e) => {
+                          e.target.src = "/Icons/logo.svg"
+                        }}
                       />
                     </div>
                   ))}
@@ -873,17 +927,33 @@ function Details() {
 
                 <div className='flex flex-col'>
                   <button 
-                    onClick={handleAddToCart}
-                    disabled={!isInStock || isAddingToCart}
-                    className={`w-full flex justify-center items-center cursor-pointer py-3 mt-6 rounded-lg font-medium ${
-                      !isInStock 
-                        ? 'bg-gray-400 cursor-not-allowed text-white' 
-                        : isAddingToCart
-                        ? 'bg-red-400 cursor-not-allowed text-white'
-                        : 'bg-red-500 hover:bg-red-600 text-white'
-                    }`}
+                      onClick={handleAddToCart}
+                      disabled={!isInStock || isAddingToCart || showSuccess}
+                      className={`w-full flex justify-center items-center py-3 mt-6 rounded-lg font-medium transition-colors duration-200 ${
+                          !isInStock 
+                              ? 'bg-gray-400 cursor-not-allowed text-white' 
+                              : isAddingToCart
+                              ? 'bg-red-400 cursor-not-allowed text-white'
+                              : showSuccess
+                              ? 'bg-green-500 cursor-default text-white'
+                              : 'bg-red-500 hover:bg-red-600 cursor-pointer text-white'
+                      }`}
                   >
-                    {isAddingToCart ? 'Adding...' : !isInStock ? 'Out of Stock' : 'Add To Cart'}
+                      {!isInStock ? (
+                          'Out of Stock'
+                      ) : isAddingToCart ? (
+                          <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              Adding...
+                          </>
+                      ) : showSuccess ? (
+                          <>
+                              <Check className="w-4 h-4 mr-2" />
+                              Added to cart
+                          </>
+                      ) : (
+                          'Add To Cart'
+                      )}
                   </button>
                 </div>
               </div>
