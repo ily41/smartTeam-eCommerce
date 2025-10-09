@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay } from 'swiper/modules'; 
 import 'swiper/css';
 import 'swiper/css/pagination';
-import { Heart, Download, Share2, Minus, Plus, X, Check, Copy, MessageCircle, Facebook, Twitter, Send, LogIn, UserPlus, Loader2 } from 'lucide-react';
+import { Heart, Download, Share2, Minus, Plus, X, Check, Copy, MessageCircle,   Send, LogIn, UserPlus, Loader2 } from 'lucide-react';
 import { Breadcrumb } from '../../products/Breadcrumb';
 import SearchUI from '../../components/UI/SearchUI';
 import { 
@@ -13,8 +13,11 @@ import {
   useAddCartItemMutation, 
   useToggleFavoriteMutation, 
   useGetFavoriteStatusQuery,
+  useGetRecommendedQuery,
 } from '../../store/API';
 import { toast } from 'react-toastify';
+import SimilarProducts from '../../components/UI/SimilarRecommendedProducts';
+
 
 // Unauthorized Modal Component
 const UnauthorizedModal = ({ isOpen, onClose, action }) => {
@@ -215,6 +218,71 @@ const DesktopDetailsSkeleton = () => (
     </div>
   </div>
 );
+const ImageMagnifier = ({ src, alt, magnifierHeight = 150, magnifierWidth = 150, zoomLevel = 2.5 }) => {
+  const [showMagnifier, setShowMagnifier] = useState(false);
+  const [magnifierPosition, setMagnifierPosition] = useState({ x: 0, y: 0 });
+  const [imgSize, setImgSize] = useState({ width: 0, height: 0 });
+  const imgRef = useRef(null);
+
+  const handleMouseEnter = (e) => {
+    const elem = e.currentTarget;
+    const { width, height } = elem.getBoundingClientRect();
+    setImgSize({ width, height });
+    setShowMagnifier(true);
+  };
+
+  const handleMouseMove = (e) => {
+    const elem = e.currentTarget;
+    const { top, left } = elem.getBoundingClientRect();
+    const x = e.pageX - left - window.pageXOffset;
+    const y = e.pageY - top - window.pageYOffset;
+    setMagnifierPosition({ x, y });
+  };
+
+  const handleMouseLeave = () => {
+    setShowMagnifier(false);
+  };
+
+  return (
+    <div className="relative inline-block">
+      <img
+        ref={imgRef}
+        src={src}
+        alt={alt}
+        className="h-80 object-contain rounded-lg cursor-crosshair"
+        onMouseEnter={handleMouseEnter}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        onError={(e) => {
+          e.target.src = "/Icons/logo.svg";
+        }}
+      />
+
+      {showMagnifier && (
+        <div
+          style={{
+            position: 'absolute',
+            pointerEvents: 'none',
+            height: `${magnifierHeight}px`,
+            width: `${magnifierWidth}px`,
+            top: `${magnifierPosition.y - magnifierHeight / 2}px`,
+            left: `${magnifierPosition.x - magnifierWidth / 2}px`,
+            opacity: '1',
+            border: '2px solid #e5e7eb',
+            backgroundColor: 'white',
+            backgroundImage: `url('${src}')`,
+            backgroundRepeat: 'no-repeat',
+            borderRadius: '50%',
+            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+            backgroundSize: `${imgSize.width * zoomLevel}px ${imgSize.height * zoomLevel}px`,
+            backgroundPositionX: `${-magnifierPosition.x * zoomLevel + magnifierWidth / 2}px`,
+            backgroundPositionY: `${-magnifierPosition.y * zoomLevel + magnifierHeight / 2}px`,
+          }}
+        />
+      )}
+    </div>
+  );
+};
 
 function Details() {
   const { id } = useParams();
@@ -226,9 +294,11 @@ function Details() {
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [showUnauthorizedModal, setShowUnauthorizedModal] = useState(false);
   const [unauthorizedAction, setUnauthorizedAction] = useState('');
+  const {data: recommendation, isRecLoading} = useGetRecommendedQuery({limit: 6})
 
   // RTK Query hooks
   const { data: product, isLoading: loading, error, isError } = useGetProductQuery(id, { skip: !id });
+  console.log(product)
   const { data: productSpec, isLoading: isSpecLoading } = useGetProductSpecificationsQuery(product?.id, { skip: !product?.id });
   const { data: favoriteStatus } = useGetFavoriteStatusQuery({ productId: product?.id }, { skip: !product?.id });
   const [showSuccess, setShowSuccess] = useState(false);
@@ -391,15 +461,7 @@ function Details() {
       const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(productTitle + ' - ' + productUrl)}`;
       window.open(whatsappUrl, '_blank');
       setShowShareMenu(false);
-    } else if (platform === 'facebook') {
-      const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(productUrl)}`;
-      window.open(facebookUrl, '_blank', 'width=600,height=400');
-      setShowShareMenu(false);
-    } else if (platform === 'twitter') {
-      const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(productTitle)}&url=${encodeURIComponent(productUrl)}`;
-      window.open(twitterUrl, '_blank', 'width=600,height=400');
-      setShowShareMenu(false);
-    } else if (platform === 'telegram') {
+    }   else if (platform === 'telegram') {
       const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(productUrl)}&text=${encodeURIComponent(productTitle)}`;
       window.open(telegramUrl, '_blank');
       setShowShareMenu(false);
@@ -518,7 +580,8 @@ function Details() {
       
       <div className='p-6 py-4 border-y-1 border-[#DEE2E6] sm:hidden flex flex-col gap-5'>
         <SearchUI />
-        <Breadcrumb />
+        <Breadcrumb productData={product}/>
+        
       </div>
       <div className="min-h-[70vh] bg-gray-50 pt-8 sm:pt-0">
         {/* Mobile Layout */}
@@ -633,20 +696,6 @@ function Details() {
                           <Send className="w-4 h-4 text-blue-500" />
                           <span>Telegram</span>
                         </button>
-                        <button
-                          onClick={() => handleShare('facebook')}
-                          className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-3 text-sm"
-                        >
-                          <Facebook className="w-4 h-4 text-blue-600" />
-                          <span>Facebook</span>
-                        </button>
-                        <button
-                          onClick={() => handleShare('twitter')}
-                          className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-3 text-sm"
-                        >
-                          <Twitter className="w-4 h-4 text-sky-500" />
-                          <span>Twitter</span>
-                        </button>
                         {navigator.share && (
                           <>
                             <hr className="my-2 border-gray-200" />
@@ -742,26 +791,28 @@ function Details() {
               </div>
             </div>
           </div>
+
+          <SimilarProducts
+             products={recommendation?.recentlyAdded} 
+             isLoading={isRecLoading} 
+           />
         </div>
 
         {/* Desktop Layout */}
         <div className="hidden md:block max-w-7xl mx-auto px-4 pb-8">
           <div className='py-4 pb-8'>
-            <Breadcrumb />
+            <Breadcrumb productData={product}/>
           </div>
           <div className="grid grid-cols-2 gap-8">
             <div className="space-y-4 w-full">
               <div className="bg-white rounded-lg p-4 w-full flex h-full justify-center flex-col items-center py-9 sm:border-1 sm:border-[#DEE2E6]">
                 <div className='w-fit'>
-                  <img 
+                  <ImageMagnifier
                     src={hovered ? `https://smartteamaz-001-site1.qtempurl.com${hovered}` : `https://smartteamaz-001-site1.qtempurl.com${product.imageUrl}`}
                     alt={product.name}
-                    className="h-80 object-contain rounded-lg transition-opacity duration-300 ease-in-out"
-                    key={hovered || product.imageUrl}
-                    style={{ animation: 'fadeIn 0.3s ease-in-out' }}
-                    onError={(e) => {
-                      e.target.src = "/Icons/logo.svg"
-                    }}
+                    magnifierHeight={180}
+                    magnifierWidth={180}
+                    zoomLevel={2.5}
                   />
                 </div>
 
@@ -784,13 +835,6 @@ function Details() {
                     </div>
                   ))}
                 </div>
-                
-                <style jsx>{`
-                  @keyframes fadeIn {
-                    from { opacity: 0; }
-                    to { opacity: 1; }
-                  }
-                `}</style>
               </div>
             </div>
 
@@ -812,7 +856,7 @@ function Details() {
                 
                 <div className="flex items-start justify-between mb-6">
                   <div>
-                    <h1 className="text-2xl font-semibold text-gray-900 mb-2">{product.name}</h1>
+                    <h1 className="text-2xl font-semibold text-gray-900 mb-2">{product.name}</h1>  
                     <p className="text-gray-600 mb-4 line-clamp-5">{product.description}</p>
                     
                     <div className="flex items-center gap-3">
@@ -870,20 +914,6 @@ function Details() {
                             >
                               <Send className="w-4 h-4 text-blue-500" />
                               <span>Telegram</span>
-                            </button>
-                            <button
-                              onClick={() => handleShare('facebook')}
-                              className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-3 text-sm"
-                            >
-                              <Facebook className="w-4 h-4 text-blue-600" />
-                              <span>Facebook</span>
-                            </button>
-                            <button
-                              onClick={() => handleShare('twitter')}
-                              className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-3 text-sm"
-                            >
-                              <Twitter className="w-4 h-4 text-sky-500" />
-                              <span>Twitter</span>
                             </button>
                             {navigator.share && (
                               <>
@@ -974,10 +1004,14 @@ function Details() {
               ))}
             </div>
           </div>
+          <SimilarProducts
+             products={recommendation?.recentlyAdded} 
+             isLoading={isRecLoading} 
+           />
         </div>
       </div>
     </>
-  );
+  )
 }
 
 export default Details;

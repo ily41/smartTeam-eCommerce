@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useFilterProductsMutation, useGetCategoriesQuery, useGetCategoryFiltersQuery, useGetFiltersQuery, useGetParentCategoriesQuery } from '../store/API';
 
-export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, currentPage, pageSize, forcedCategoryId = null }) {
+export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, currentPage, pageSize, forcedCategoryId = null, showCategory = false }) {
+  console.log('showCategory prop:', showCategory);
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [minPrice, setMinPrice] = useState('');
@@ -13,7 +14,7 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
   const { data: customFilters, isLoading: isCustomLoading } = useGetFiltersQuery();
   
   const [filterProducts, { isLoading: isFiltering }] = useFilterProductsMutation();
-  1
+  
   const hasFiltersApplied = useRef(false);
   const debounceTimer = useRef(null);
 
@@ -32,8 +33,8 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
   const buildActiveFilters = () => {
     const activeFilters = [];
     
-    // Add category filters only if not hidden
-    if ( selectedCategories.length > 0 && categories) {
+    // Add category filters only if shown
+    if (showCategory && selectedCategories.length > 0 && categories) {
       selectedCategories.forEach(categoryId => {
         const category = categories.find(cat => cat.id === categoryId);
         if (category) {
@@ -182,7 +183,7 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
   };
 
   const hasActiveFilters = () => {
-    const hasCategories =  selectedCategories.length > 0;
+    const hasCategories = showCategory && selectedCategories.length > 0;
     const hasPrice = minPrice || maxPrice;
     const hasCustomFilters = Object.values(selectedFilters).some(filter => 
       filter.filterOptionIds?.length > 0 || 
@@ -191,13 +192,12 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
       filter.maxValue > 0
     );
     const hasForcedCategory = !!forcedCategoryId;
-    const hasSort = currentSort
+    const hasSort = currentSort;
 
-    
     return hasCategories || hasPrice || hasCustomFilters || hasForcedCategory || hasSort;
   };
 
-    useEffect(() => {
+  useEffect(() => {
     if (debounceTimer.current) {
       clearTimeout(debounceTimer.current);
     }
@@ -217,12 +217,8 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
     
       hasFiltersApplied.current = true;
 
-
-  
-
       const filterCriteria = buildFilterCriteria();
       const categoryIdToUse = forcedCategoryId || (selectedCategories.length > 0 ? selectedCategories[0] : null);
-    
 
       const filterPayload = {
         categoryId: categoryIdToUse,
@@ -266,7 +262,7 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
         clearTimeout(debounceTimer.current);
       }
     };
-  }, [selectedCategories, selectedFilters, minPrice, maxPrice, currentSort, currentPage, pageSize,  forcedCategoryId]);
+  }, [selectedCategories, selectedFilters, minPrice, maxPrice, currentSort, currentPage, pageSize, forcedCategoryId]);
 
   if (isCategoriesLoading) {
     return (
@@ -285,6 +281,8 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
 
   return (
     <div className="rounded-lg bg-white border border-gray-200">
+      {showCategory && (
+        <>
           <hr className="mx-4 border-[#dee2e6]" />
           
           <details open>
@@ -319,6 +317,9 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
           </details>
 
           <hr className="mx-4 border-[#dee2e6]" />
+        </>
+      )}
+
 
       {isFiltersLoading ? (
         <div className="p-4">

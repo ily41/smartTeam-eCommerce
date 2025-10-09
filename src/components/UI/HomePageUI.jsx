@@ -120,7 +120,7 @@ const HomePageUI = ({deal, product, url, handleAddToCart, isAddingToCart}) => {
                     <button 
                         onClick={handleFavoriteClick}
                         disabled={isTogglingFavorite}
-                        className="p-3 rounded-lg border-[#DEE2E7] bg-white shadow-sm hover:bg-gray-50 transition-colors disabled:opacity-50"
+                        className="p-3 rounded-lg cursor-pointer border-[#DEE2E7] bg-white shadow-sm hover:bg-gray-50 transition-colors disabled:opacity-50"
                     >
                       <Heart 
                         className={`w-4 h-4 lg:w-5 lg:h-5 transition-colors ${

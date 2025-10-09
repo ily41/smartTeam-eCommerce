@@ -18,7 +18,7 @@ import {
 import { toast } from 'react-toastify';
 import { useParams } from 'react-router';
 
-// Skeleton Components
+
 const ProductCardSkeleton = ({ col }) => (
   <div className={`bg-white rounded-lg border border-gray-200 overflow-hidden ${col ? '' : 'flex'}`}>
     {col ? (
@@ -43,7 +43,7 @@ const ProductCardSkeleton = ({ col }) => (
   </div>
 );
 
-// Custom Dropdown Component
+
 const CustomDropdown = ({ value, onChange, options }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -102,11 +102,13 @@ const CustomDropdown = ({ value, onChange, options }) => {
 
 function Products() {
   const { slug } = useParams();
+  console.log(slug)
   
   // Determine if this is a special slug
   const isHotDeals = slug === 'hot-deals';
   const isRecommended = slug === 'recommended';
   const isSpecialSlug = isHotDeals || isRecommended;
+  console.log('isSpecialSlug in Products:', isSpecialSlug); // in Products component
   
   const categoryName = isHotDeals 
     ? 'Hot Deals' 
@@ -119,10 +121,10 @@ function Products() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10); 
   
-  // Conditional queries based on slug
-  const { data: productDefault, isLoading: isLoadingProducts } = useGetProductsQuery(undefined, {
+  const { data: productDefault, isLoading: isLoadingProducts } = useGetProductsQuery(slug, {
     skip: isSpecialSlug
   });
+
   const { data: hotDeals, isLoading: isHotDealsLoading } = useGetHotDealsQuery(undefined, {
     skip: !isHotDeals
   });
@@ -218,7 +220,6 @@ function Products() {
   const handleSortChange = (e) => {
     const value = e.target.value;
     setSortBy(value);
-    // Reset to page 1 when sort changes
     setCurrentPage(1);
   };
 
@@ -306,6 +307,7 @@ function Products() {
               currentPage={currentPage}
               pageSize={itemsPerPage}
               forcedCategoryId={categoryId}
+              showCategory={isSpecialSlug}
             />
           </div>
 

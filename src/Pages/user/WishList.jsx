@@ -22,7 +22,6 @@ const WishList = () => {
   
 
   const { data: favoritesData, isLoading, error } = useGetFavoritesQuery({ page, pageSize });
-  console.log(favoritesData)
   
 
   const [removeFavorite, { isLoading: isRemovingFavorite }] = useRemoveFavoriteMutation();
@@ -33,12 +32,10 @@ const WishList = () => {
   const totalCount = favoritesData?.totalCount || 0;
 
   const handleRemoveFavorite = async (e, productId) => {
-    console.log(productId)
     e.preventDefault();
     e.stopPropagation();
     
     try {
-      console.log(productId)
       await removeFavorite({ productId }).unwrap();
     } catch (err) {
       toast.error('Failed to remove from favorites');
@@ -172,7 +169,6 @@ const WishList = () => {
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 [@media(min-width:1300px)]:grid-cols-5 lg:grid-cols-4 gap-2 whitespace-nowrap">
                 {favorites?.map((item) => {
-                  console.log(item)
                   
                   return (
                   <Link 

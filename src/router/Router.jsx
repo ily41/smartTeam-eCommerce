@@ -26,7 +26,7 @@ import ProductSpec from "../Pages/admin/ProductSpec"
 import AssignFilter from "../Pages/admin/AssignFilter"
 import FileManagementPanel from "../components/admin/FileUpload/FIleUI";
 import { SearchProvider } from "./Context";
-
+import WP from '../components/UI/WP'
 const Router = () => {
   return (
     <BrowserRouter>
@@ -46,6 +46,7 @@ const Router = () => {
               <Header />
               <Outlet />
               <Footer />
+              <WP />
             </>
           }
         >

@@ -1,4 +1,4 @@
-import React, { act, useEffect, useState } from 'react'
+import React, { act, useEffect, useRef, useState } from 'react'
 import MyMap from '../UI/googleMaps'
 import SearchUI from '../UI/SearchUI'
 import HomePageUI from '../UI/HomePageUI'
@@ -54,6 +54,85 @@ const Home = () => {
     const { data: hotDeals, isLoading, error, refetch } = useGetHotDealsQuery();
     const { data: recommended, isLoading: isRecommendedLoading } = useGetRecommendedQuery({limit: 10});
     const [addCartItem, { isLoading: isAddingToCart, error: cartError }] = useAddCartItemMutation();
+
+    const scrollRef = useRef(null);
+    const [isDragging, setIsDragging] = useState(false);
+    const [startX, setStartX] = useState(0);
+    const [scrollLeft, setScrollLeft] = useState(0);
+    const [isPaused, setIsPaused] = useState(false);
+
+    const brands = [
+      { src: './slider/slider1.svg', alt: 'LG' },
+      { src: './slider/slider2.svg', alt: 'Dell' },
+      { src: './slider/slider3.svg', alt: '' },
+      { src: './slider/slider4.svg', alt: 'Oppo' },
+      { src: './slider/slider5.svg', alt: 'Asus' },
+      { src: './slider/slider6.svg', alt: 'Samsung' },
+      { src: './slider/slider7.svg', alt: 'HP' },
+      { src: './slider/slider8.svg', alt: 'Lenovo' },
+      { src: './slider/slider9.svg', alt: 'Apple' },
+      { src: './slider/slider10.svg', alt: 'Acer' },
+      { src: './slider/slider11.svg', alt: 'Sony' },
+      { src: './slider/slider12.svg', alt: 'Microsoft' }
+    ];
+
+    // Touch start handler
+    const handleTouchStart = (e) => {
+      setIsDragging(true);
+      setIsPaused(true);
+      setStartX(e.touches[0].pageX - scrollRef.current.offsetLeft);
+      setScrollLeft(scrollRef.current.scrollLeft);
+    };
+
+    // Touch move handler
+    const handleTouchMove = (e) => {
+      if (!isDragging) return;
+      e.preventDefault();
+      const x = e.touches[0].pageX - scrollRef.current.offsetLeft;
+      const walk = (x - startX) * 2;
+      scrollRef.current.scrollLeft = scrollLeft - walk;
+    };
+
+    // Touch end handler
+    const handleTouchEnd = () => {
+      setIsDragging(false);
+      setTimeout(() => setIsPaused(false), 500);
+    };
+
+    // Mouse handlers for desktop
+    const handleMouseDown = (e) => {
+      setIsDragging(true);
+      setIsPaused(true);
+      setStartX(e.pageX - scrollRef.current.offsetLeft);
+      setScrollLeft(scrollRef.current.scrollLeft);
+      scrollRef.current.style.cursor = 'grabbing';
+    };
+
+    const handleMouseMove = (e) => {
+      if (!isDragging) return;
+      e.preventDefault();
+      const x = e.pageX - scrollRef.current.offsetLeft;
+      const walk = (x - startX) * 2;
+      scrollRef.current.scrollLeft = scrollLeft - walk;
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+      setTimeout(() => setIsPaused(false), 500);
+      if (scrollRef.current) {
+        scrollRef.current.style.cursor = 'grab';
+      }
+    };
+
+    const handleMouseLeave = () => {
+      if (isDragging) {
+        setIsDragging(false);
+        setTimeout(() => setIsPaused(false), 500);
+        if (scrollRef.current) {
+          scrollRef.current.style.cursor = 'grab';
+        }
+      }
+    };
     
     
 
@@ -236,67 +315,88 @@ const Home = () => {
         </section>
 
 
-        <section>
-          <section className='mt-12 mx-4 lg:w-[85vw] lg:mx-auto'>
-          <div className='text-xl font-semibold mb-6'>
+        <section className="mt-12 mx-4 lg:w-[85vw] lg:mx-auto">
+          <div className="text-xl font-semibold mb-6">
             <h1>Featured Brands</h1>
           </div>
-          
-          <div className='relative overflow-hidden bg-white rounded-lg border border-gray-200 p-6'>
-            <div className='flex animate-scroll gap-8 items-center'>
+
+          <div className="relative overflow-hidden bg-white rounded-lg border border-gray-200 p-6">
+            <div 
+              ref={scrollRef}
+              className={`flex gap-8 items-center overflow-x-auto scrollbar-hide select-none ${!isPaused ? 'animate-scroll' : ''}`}
+              style={{ cursor: 'grab' }}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseLeave}
+            >
               {/* First set of logos */}
-              <div className='flex gap-8 items-center min-w-max'>
-                <img src='./slider/slider1.svg' alt='LG' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider2.svg' alt='Dell' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider3.svg' alt='' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider4.svg' alt='Oppo' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider5.svg' alt='Asus' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider6.svg' alt='Samsung' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider7.svg' alt='HP' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider8.svg' alt='Lenovo' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider9.svg' alt='Apple' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider10.svg' alt='Acer' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider11.svg' alt='Sony' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider12.svg' alt='Microsoft' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
+              <div className="flex gap-8 items-center min-w-max">
+                {brands.map((brand, idx) => (
+                  <img 
+                    key={`first-${idx}`}
+                    src={brand.src} 
+                    alt={brand.alt} 
+                    className="h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all pointer-events-none"
+                    draggable="false"
+                  />
+                ))}
               </div>
               
               {/* Duplicate set for seamless loop */}
-              <div className='flex gap-8 items-center min-w-max'>
-                <img src='./slider/slider1.svg' alt='LG' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider2.svg' alt='Dell' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider3.svg' alt='' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider4.svg' alt='Oppo' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider5.svg' alt='Asus' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider6.svg' alt='Samsung' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider7.svg' alt='HP' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider8.svg' alt='Lenovo' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider9.svg' alt='Apple' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider10.svg' alt='Acer' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider11.svg' alt='Sony' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider12.svg' alt='Microsoft' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
+              <div className="flex gap-8 items-center min-w-max">
+                {brands.map((brand, idx) => (
+                  <img 
+                    key={`second-${idx}`}
+                    src={brand.src} 
+                    alt={brand.alt} 
+                    className="h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all pointer-events-none"
+                    draggable="false"
+                  />
+                ))}
+              </div>
+              
+              {/* Third set for extra smooth scrolling */}
+              <div className="flex gap-8 items-center min-w-max">
+                {brands.map((brand, idx) => (
+                  <img 
+                    key={`third-${idx}`}
+                    src={brand.src} 
+                    alt={brand.alt} 
+                    className="h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all pointer-events-none"
+                    draggable="false"
+                  />
+                ))}
               </div>
             </div>
           </div>
-          
+              
           <style jsx>{`
             @keyframes scroll {
               0% {
                 transform: translateX(0);
               }
               100% {
-                transform: translateX(-50%);
+                transform: translateX(-33.333%);
               }
             }
-            
+
             .animate-scroll {
-              animation: scroll 30s linear infinite;
+              animation: scroll 45s linear infinite;
             }
-            
-            .animate-scroll:hover {
-              animation-play-state: paused;
+
+            .scrollbar-hide::-webkit-scrollbar {
+              display: none;
+            }
+
+            .scrollbar-hide {
+              -ms-overflow-style: none;
+              scrollbar-width: none;
             }
           `}</style>
-        </section>
         </section>
 
         <section className='mt-12 mx-4 inter lg:hidden'>

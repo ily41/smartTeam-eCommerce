@@ -1,9 +1,19 @@
 import { ArrowRight } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router';
 
 const About = () => {
-    const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const software = useRef(null);
+  const secure = useRef(null);
+
+  // Make left one match right one's height
+  useEffect(() => {
+    if (software.current && secure.current) {
+      const softwareHeight = software.current.offsetHeight;
+      secure.current.style.height = `${softwareHeight}px`;
+    }
+  }, []);
   return (
     <section className='bg-[#F7FAFC] pt-5 inter'>
         <div className='flex flex-col p-12 md:p-7 md:pb-13 bg-white border-1 md:gap-10  md:max-w-[90vw] md:mx-auto md:rounded-lg border-[#dee2e6] md:flex-row'>
@@ -25,12 +35,9 @@ const About = () => {
                 <span
                   className={`text-[#505050] md:line-clamp-none md:text-sm lg:text-lg max-w-[550px] ${expanded ? "" : "line-clamp-4 "}`}
                 >
-                  Our company specializes in the sales and installation of computers,
-                  office equipment, and low-current systems. We provide complete
-                  solutions including network setup, fire alarm systems, security
-                  cameras, intercom systems, and more. With years of experience and a
-                  professional team, we ensure high-quality services that are reliable,
-                  secure, and tailored to your needs.
+
+                Smartteam is a professional company engaged in the import of commercial equipment, computers, and electronic products.
+                Throughout our operations, we have strengthened our position in the market by providing our customers with reliable, high-quality, and innovative products. By constantly keeping up with technological advancements, we aim to add value to our partners and customers.
                 </span>
             
                 <button
@@ -137,47 +144,65 @@ const About = () => {
 
             </div>
         </div>
-        <div className='pb-10 pt-18 max-w-[90vw] mx-auto   text-2xl font-semibold'>
+        <div className="pb-10 pt-18 max-w-[90vw] mx-auto text-2xl font-semibold">
           <h1>Our extra services</h1>
         </div>
-        <div className='max-w-[90vw] mx-auto pb-25 flex flex-col md:flex-row md:gap-4'>
-          <Link to='/secure' className="flex-1 h-fit cursor-pointer bg-white rounded-lg border-2 border-gray-200 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-gray-400">
-              <img
-                className="w-full rounded-t-md h-[190px] lg:h-[220px]  object-cover"
-                src="./deals/cameraService.svg"
-                alt=""
-              />
-              <div className="relative bg-white p-5 pb-4 ">
-                  <h1 className='font-semibold text-xl'>Security Systems</h1>
-                  <p className='text-[#505050] text-sm mt-3 font-medium'>We reliably protect your workplaces and living spaces with security systems developed... </p>
+            
+        <div className="max-w-[90vw] mx-auto pb-25 flex flex-col md:flex-row md:gap-4">
+          <Link
+          ref={secure}
+          to="/secure"
+          className="flex-1 h-fit cursor-pointer bg-white rounded-lg border-2 border-gray-200 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-gray-400"
+        >
+          <img
+            className="w-full rounded-t-md h-[190px] lg:h-[220px] object-cover"
+            src="./deals/cameraService.svg"
+            alt=""
+          />
+          <div className="relative bg-white p-5 pb-4 ">
+            <h1 className="font-semibold text-xl">Security Systems</h1>
+            <p className="text-[#505050] text-sm mt-3 font-medium">
+              We reliably protect your workplaces and living spaces with
+              security systems developed...
+            </p>
+          </div>
+          <div className="bg-white p-7 pt-0 flex justify-end rounded-b-lg">
+            <button className="flex self-end cursor-pointer items-center gap-4 border-1 border-[#dee2e6] rounded-full p-3 py-2">
+              Learn More
+              <div className="p-1 bg-[#FF4B43] rounded-full ">
+                <ArrowRight size={18} color="white" />
               </div>
-              <div className='bg-white p-7 pt-0 flex justify-end rounded-b-lg'>
-                  <button className='flex self-end items-center gap-4 border-1 border-[#dee2e6] rounded-full p-3 py-2'>
-                  Learn More 
-                  <div className='p-1 bg-[#FF4B43] rounded-full '><ArrowRight size={18} color='white'/></div>
+            </button>
+          </div>
+          </Link>
+            
+          <Link
+            ref={software}
+            to="/software"
+            className="flex-1 bg-white rounded-lg border-2 mt-4 md:mt-0 border-gray-200 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-gray-400"
+          >
+            <img
+              className="w-full rounded-t-md h-[190px] lg:h-[220px] object-cover"
+              src="./Banners/aboutExtra.svg"
+              alt=""
+            />
+            <div className="relative bg-white p-5 pb-4 ">
+              <h1 className="font-semibold text-xl">
+                Hemsoft Software Installation
+              </h1>
+              <p className="text-[#505050] text-sm mt-3 font-medium">
+                The Hemsoft software, provided by Smartteam, is a modern POS and
+                management system...
+              </p>
+            </div>
+            <div className="bg-white p-7 pt-0 flex justify-end rounded-b-lg">
+              <button className="flex cursor-pointer self-end items-center gap-4 border-1 border-[#dee2e6] rounded-full p-3 py-2">
+                Learn More
+                <div className="p-1 bg-[#FF4B43] rounded-full ">
+                  <ArrowRight size={18} color="white" />
+                </div>
               </button>
-              </div>
-              
-          </Link>  
-          <Link to='/software' className="flex-1 bg-white  rounded-lg border-2 mt-4 md:mt-0 border-gray-200 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-gray-400">
-              <img
-                className="w-full rounded-t-md h-[190px] lg:h-[220px] object-cover"
-                src="./Banners/aboutExtra.svg"
-                alt=""
-              />
-              <div className="relative bg-white p-5 pb-4 ">
-                  <h1 className='font-semibold text-xl'>Hemsoft Software Installation</h1>
-                  <p className='text-[#505050] text-sm mt-3 font-medium'>The Hemsoft software, provided by Smartteam, is a modern POS and management system... </p>
-
-              </div>
-              <div className='bg-white p-7 pt-0 flex justify-end rounded-b-lg'>
-                  <button className='flex self-end items-center gap-4 border-1 border-[#dee2e6] rounded-full p-3 py-2'>
-                  Learn More 
-                  <div className='p-1 bg-[#FF4B43] rounded-full '><ArrowRight size={18} color='white'/></div>
-              </button>
-              </div>
-              
-
+            </div>
           </Link>
         </div>
 

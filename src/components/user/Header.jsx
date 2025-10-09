@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import Burger from './Burger'
-import { useGetMeQuery, useSearchProductsQuery, useUpdateCartItemQuantityMutation } from "../../store/API";
+import { useGetCartCountQuery, useGetFavoritesCountQuery, useGetMeQuery, useSearchProductsQuery, useUpdateCartItemQuantityMutation } from "../../store/API";
 import { Search, X } from 'lucide-react';
 import { SearchContext } from '../../router/Context';
 
@@ -39,8 +39,8 @@ const Header = () => {
   const searchDropdownRef = useRef(null);
   const mobileSearchDropdownRef = useRef(null);
   const hasToken = document.cookie.split('; ').some((row) => row.startsWith('token='));
-  const [cartCount, setCartCount] = useState(1)
-  const [favoritesCount,setFavoritesCount] = useState(1)
+  const { data: cartCount } = useGetCartCountQuery();
+  const { data: favoritesCount } = useGetFavoritesCountQuery();
 
 
   const [searchWidth, setSearchWidth] = useState(0);
@@ -153,8 +153,8 @@ const Header = () => {
           {/* Desktop Search */}
           <div className='hidden lg:flex-4 mr-20 lg:mr-0 lg:px-10 lg:block relative' ref={searchDropdownRef}>
             <div className="max-w-4xl self-center mx-auto">
-              <div ref={searchRef} className="flex rounded-lg overflow-hidden shadow-sm hover:shadow-md border-1 border-[#dee2e6] bg-white">
-             
+              <div ref={searchRef} className="flex pl-2 rounded-lg items-center overflow-hidden shadow-sm hover:shadow-md border-1 border-[#dee2e6] bg-white">
+                <Search  className='p-[3px]'/>
                 <input
                   type="text"
                   placeholder="Search products..."

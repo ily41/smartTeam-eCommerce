@@ -478,15 +478,15 @@ const createOrder = async () => {
                 <div className="border-t lg:border-none border-gray-200 pt-4 space-y-3">
                   <div className="flex justify-between text-gray-600 text-lg">
                     <span>Subtotal:</span>
-                    <span>{calculateTotals.subtotal.toFixed(2)} AZN</span>
+                    <span>{cartItemsD?.totalAmount} AZN</span>
                   </div>
                   <div className="flex justify-between text-red-500 text-lg">
                     <span>Discount:</span>
-                    <span>- {calculateTotals.discount?.toFixed(2) || '0.00'} AZN</span>
+                    <span>- {cartItemsD?.totalDiscount} AZN</span>
                   </div>
                   <div className="flex justify-between text-lg mb-7 font-bold text-gray-900 pt-2 border-t border-gray-200">
                     <span>Total:</span>
-                    <span>{calculateTotals.total.toFixed(2)} AZN</span>
+                    <span>{cartItemsD.totalAmount - cartItemsD?.totalDiscount} AZN</span>
                   </div>
                 </div>
 

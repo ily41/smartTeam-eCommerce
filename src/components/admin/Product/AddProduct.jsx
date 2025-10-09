@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { X, Upload, Trash2, Plus, FileText } from "lucide-react";
-import { useAddDetailImagesMutation, useAddProductMutation, useGetCategoriesQuery, useGetUserRolesQuery, useAddProductPdfMutation, useGetProductPdfsQuery } from "../../../store/API";
+import { useAddDetailImagesMutation, useAddProductMutation, useGetCategoriesQuery, useGetUserRolesQuery, useAddProductPdfMutation, useGetProductPdfsQuery, useGetBrandsQuery, useGetBrandQuery, useGetProductsBrandQuery } from "../../../store/API";
 import { toast } from "react-toastify";
 import { WiRefresh } from "react-icons/wi";
 
@@ -8,8 +8,15 @@ const ProductFormUI = ({setOpen}) => {
 
   const { data: userRoles, error, isRolesLoading, refetch } = useGetUserRolesQuery();
   const { data: categories, isLoading, errorC } = useGetCategoriesQuery();
+  const { data: brands, isLoading: isBrandsLoading } = useGetBrandsQuery();
+  console.log(brands)
+  const { data: brand, isLoading: isBrandLoading } = useGetBrandQuery("1cd62de1-35cd-4d90-b767-dc1a443bdb3f");
+  const { data: brandPr, isLoading: is } = useGetProductsBrandQuery({brandSlug: "hp"});
+  console.log(brand)
+
+  console.log("//////", brandPr)
+
   const { data: pdfs} = useGetProductPdfsQuery();
-  console.log(pdfs)
   const [addProduct, { isLoading: isProductLoading }] = useAddProductMutation(); 
   const [addDetailImages, { isLoading: isDetailLoading }] = useAddDetailImagesMutation(); 
   const [addProductPdf, { isLoading: isPdfLoading }] = useAddProductPdfMutation();
@@ -22,6 +29,7 @@ const ProductFormUI = ({setOpen}) => {
     isHotDeal: false,
     stockQuantity: 0,
     categoryId: "",
+    brandId: "",
     prices: [
       {
         userRole: 1,
@@ -52,6 +60,8 @@ const ProductFormUI = ({setOpen}) => {
 
 
 
+
+
   const [file, setFile] = useState(null);
   const [files, setFiles] = useState([]); 
   const [pdfFile, setPdfFile] = useState(null);
@@ -60,7 +70,6 @@ const ProductFormUI = ({setOpen}) => {
   const [imageUrl, setImageUrl] = useState(null);
   const [imageUrls, setImageUrls] = useState([]); 
 
-  // Single file preview
   useEffect(() => {
     if (file) {
       const url = URL.createObjectURL(file);
@@ -136,6 +145,7 @@ const ProductFormUI = ({setOpen}) => {
       isHotDeal: false,
       stockQuantity: 0,
       categoryId: "",
+      brandId: "",
       prices: [
         {
           userRole: 1,
@@ -180,16 +190,14 @@ const ProductFormUI = ({setOpen}) => {
     }
 
     try {
-      // Create FormData for product
       const formDataToSend = new FormData();
-      
+      console.log(formData)
       const productDataString = JSON.stringify(formData);
       formDataToSend.append("productData", productDataString); 
       formDataToSend.append("imageFile", file, file.name);
       
       // Add the product first
       const result = await addProduct(formDataToSend).unwrap();
-      console.log(result)
 
       // If there are detail images, upload them
       if (files.length > 0) {
@@ -201,7 +209,7 @@ const ProductFormUI = ({setOpen}) => {
 
         const resultDetail = await addDetailImages({
           id: result.id,
-          images: detailImagesFormData
+          images: detailImagesFormData  
         }).unwrap();
       }
 
@@ -331,6 +339,25 @@ const ProductFormUI = ({setOpen}) => {
               {categories?.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Brand */}
+          <div>
+            <label className="block text-sm font-medium mb-2">Brand *</label>
+            <select
+              name="brandId"
+              value={formData.brandId}
+              onChange={handleInputChange}
+              required
+              className="w-full px-3 py-2 bg-[#2c2c2c] border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              <option value="">Select Brand</option>
+              {brands?.map((brand) => (
+                <option key={brand.id} value={brand.id}>
+                  {brand.name}
                 </option>
               ))}
             </select>

@@ -106,7 +106,7 @@ const FilterUi = () => {
       closeModal();
     } catch (err) {
       console.error('submit error', err);
-      toast.error("Adding filter failed");
+      toast.error(err?.data);
     }
     setLoading(false);
   };

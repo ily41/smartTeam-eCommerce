@@ -321,6 +321,27 @@ export const API = createApi({
       }],
     }),
 
+    getProductsBrand: builder.query({
+      query: ({brandSlug}) => ({
+        url: `/api/v1/Products/brand/${brandSlug}`,
+        method: 'GET',
+      }),
+    }),
+
+    getBrands: builder.query({
+      query: () => ({
+        url: '/api/v1/Admin/brands',
+        method: 'GET',
+      }),
+    }),
+
+    getBrand: builder.query({
+      query: ({id}) => ({
+        url: `/api/v1/Admin/brands${id}`,
+        method: 'GET',
+      }),
+    }),
+
     getHotDeals: builder.query({
       query: () => ({
         url: '/api/v1/Products/hot-deals',
@@ -696,6 +717,14 @@ export const API = createApi({
       providesTags: ['Cart'],
     }),
 
+    getCartCount: builder.query({
+      query: () => ({
+        url: '/api/v1/Cart/count',
+        method: 'GET',
+      }),
+      providesTags: ['Cart'],
+    }),
+
     updateCartItemQuantity: builder.mutation({
       query: ({
         cartItemId,
@@ -773,6 +802,14 @@ export const API = createApi({
           page,
           pageSize
         },
+      }),
+      providesTags: ['Favorites'],
+    }),
+
+    getFavoritesCount: builder.query({
+      query: () => ({
+        url: '/api/v1/Favorites/count',
+        method: 'GET',
       }),
       providesTags: ['Favorites'],
     }),
@@ -1070,6 +1107,9 @@ export const {
   useFilterProductsMutation,
   useAddDetailImagesMutation,
   useSearchProductsQuery,
+  useGetBrandsQuery,
+  useGetBrandQuery,
+  useGetProductsBrandQuery,
 
   useLogoutMutation,
   useEditUserRoleMutation,
@@ -1081,6 +1121,7 @@ export const {
   useRemoveCartItemMutation,
   useRemoveCartMutation,
   useCreateWhatsappOrderMutation,
+  useGetCartCountQuery,
 
   useAddFavoriteMutation,
   useRemoveFavoriteMutation,

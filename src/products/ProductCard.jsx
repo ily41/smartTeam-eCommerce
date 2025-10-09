@@ -15,10 +15,8 @@ export function ProductCard({
   const [isTogglingFavorite, setIsTogglingFavorite] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
 
-  // Show discount UI if there's actually a price difference
   const hasDiscount = priceOriginal && price && priceOriginal > price;
 
-  // Reset justAdded after animation
   useEffect(() => {
     if (justAdded) {
       const timer = setTimeout(() => setJustAdded(false), 2000);

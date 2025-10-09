@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router';
+import icons from '../../../public/Icons/icons.jpg';
+
 
 const Footer = () => {
 
@@ -40,8 +42,11 @@ const Footer = () => {
 
                         </a>
                         <a href="https://www.instagram.com/smart_team.az" target="_blank" rel="noopener noreferrer">
-                            <img className='w-10' src="./Icons/instagram.svg" alt="" />
+                            <div className="icon facebook" style={{ backgroundImage: `url(${icons})` }}></div>
                         </a>
+
+
+
                     </div>
                 </div>
                 
@@ -86,7 +91,7 @@ const Footer = () => {
 
                     <div className='flex gap-2'>
                         <img className='w-[23px]' src="./Icons/footer-phone.svg" alt="" />
-                        <p className='font-semibold text-md text-[#1C1C1C]'>+994 55 874 06 49</p>
+                        <p className='font-semibold text-md text-[#1C1C1C]'>+994 55 674 06 49</p>
                     </div>
                     <div className='flex gap-2'>
                         <img className='w-[25px]' src="./Icons/footer-location.svg" alt="" />
