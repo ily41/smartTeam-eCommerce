@@ -134,7 +134,7 @@ function Products() {
   const { data: productDefault, isLoading: isLoadingProducts } = useGetProductsQuery(slug, {
     skip: isSpecialSlug
   });
-
+  console.log(productDefault)
   const { data: hotDeals, isLoading: isHotDealsLoading } = useGetHotDealsQuery(undefined,
     { limit: 10 }, 
     { skip: !isHotDeals });

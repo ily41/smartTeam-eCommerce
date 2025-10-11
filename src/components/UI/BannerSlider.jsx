@@ -7,6 +7,7 @@ const BannerSlider = () => {
 
 
   const { data: bannersD, isBannersLoading,  } = useGetBannersQuery();
+  console.log(bannersD)
   
 
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -56,7 +57,7 @@ const BannerSlider = () => {
               alt={`Banner ${index + 1}`} 
             />
             
-            <div className="absolute top-[13%] left-[8%] lg:left-[100px] lg:top-[13%] flex flex-col gap-4 max-w-[80%]">
+            <div className="absolute top-[13%] left-[8%] lg:left-[100px] lg:top-[13%] flex flex-col gap-9 max-w-[80%]">
               <div className='flex flex-col gap-5'>
                <h1 className="inter text-2xl lg:text-3xl lg:hidden font-medium">
                 {banner.title
@@ -93,7 +94,7 @@ const BannerSlider = () => {
 
               <Link 
                 to={`${banner.linkUrl}`}
-                className="px-12 py-4 lg:py-3 rounded-lg text-lg inter lg:text-lg bg-gradient-to-b from-[#FD1206] to-[#DD1205] transition text-white font-medium w-fit hover:shadow-lg transform hover:scale-105"
+                className="px-7 py-3 lg:py-3 rounded-lg text-lg inter lg:text-lg bg-gradient-to-b from-[#FD1206] to-[#DD1205] transition text-white font-medium w-fit hover:shadow-lg transform hover:scale-105"
               >
                 {banner.buttonText}
               </Link>

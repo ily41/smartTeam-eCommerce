@@ -58,7 +58,7 @@ export function ProductCard({
   if (col) {
     // Column layout (grid view)
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden relative">
+      <div className="bg-white rounded-xl shadow-sm border flex flex-col justify-between border-gray-200 overflow-hidden relative">
         <Link to={`/details/${id}`} className="block">
           <div className="aspect-square p-4 relative">
             <img
@@ -84,7 +84,7 @@ export function ProductCard({
           </div>
         </Link>
 
-        <div className="p-4">
+        <div className="p-4 ">
           <button
             onClick={handleFavoriteClick}
             disabled={isTogglingFavorite}

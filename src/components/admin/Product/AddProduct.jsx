@@ -234,7 +234,7 @@ const ProductFormUI = ({setOpen}) => {
       toast.success("Product added successfully");
       close();
     } catch (error) {
-      toast.error(error?.data?.message || error?.message || "Something went wrong");
+      toast.error(error?.data || error?.message || "Something went wrong");
     }
   };
 

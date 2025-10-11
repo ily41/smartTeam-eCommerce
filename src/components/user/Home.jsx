@@ -8,6 +8,7 @@ import {  useAddCartItemMutation, useGetBannersQuery, useGetHotDealsQuery, useGe
 import { Loader2 } from 'lucide-react'
 import { toast } from 'react-toastify'
 import InfiniteBrandSlider from '../UI/BrandSlider'
+import { useTranslation } from 'react-i18next'
 
 // Skeleton Components
 const CategorySkeleton = () => (
@@ -55,7 +56,7 @@ const Home = () => {
     const { data: hotDeals, isLoading, error, refetch } = useGetHotDealsQuery({});
     const { data: recommended, isLoading: isRecommendedLoading } = useGetRecommendedQuery({limit: 10});
     const [addCartItem, { isLoading: isAddingToCart, error: cartError }] = useAddCartItemMutation();
-
+    const { t } = useTranslation();
     const scrollRef = useRef(null);
     const [isDragging, setIsDragging] = useState(false);
     const [startX, setStartX] = useState(0);
@@ -488,7 +489,7 @@ const Home = () => {
 
         <section className='mt-12 mx-4 lg:w-[85vw] lg:mx-auto'>
             <div className='flex justify-between text-xl font-semibold'>
-                <h1>Recommended items</h1>
+                <h1>{t('recommendedItems')}</h1>
                 <Link to='/products/recommended'><h1 className='text-[#E60C03] cursor-pointer text-lg'>More</h1></Link>
             </div>
 

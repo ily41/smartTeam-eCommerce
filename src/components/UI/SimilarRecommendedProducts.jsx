@@ -109,7 +109,10 @@ const ProductCard = ({ product, isAddingToCart, loadingProductId, showSuccess, o
         <img 
           src={`https://smartteamaz-001-site1.qtempurl.com${product.primaryImageUrl}`} 
           alt={product.name}
-          className="h-48 object-contain mx-10 rounded-lg" 
+          className="h-48 object-contain max-w-[300px] mx-10 rounded-lg" 
+          onError = { (e) => {
+            e.target.src="/Icons/logo.svg"
+          }}
         />
       </div>
       
@@ -208,7 +211,10 @@ const MobileProductCard = ({ product, isAddingToCart, loadingProductId, showSucc
         <img 
           src={`https://smartteamaz-001-site1.qtempurl.com${product.primaryImageUrl}`} 
           alt={product.name} 
-          className="w-full h-full object-contain" 
+          className="w-full h-full max-w-[300px] object-contain" 
+          onError = { (e) => {
+            e.target.src="/Icons/logo.svg"
+          }}
         />
       </div>
       <div className="flex-1 flex flex-col space-y-1.5">

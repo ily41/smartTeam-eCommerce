@@ -1,11 +1,12 @@
 import React, { useRef, useState, useEffect } from 'react';
 
-const InfiniteBrandSlider = ({brandsImg}) => {
+const InfiniteBrandSlider = ({ brandsImg }) => {
   const scrollRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const animationRef = useRef(null);
 
   // Detect if mobile
   useEffect(() => {
@@ -16,6 +17,44 @@ const InfiniteBrandSlider = ({brandsImg}) => {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  // Infinite scroll logic
+  useEffect(() => {
+    const container = scrollRef.current;
+    if (!container) return;
+
+    const scrollSpeed = 0.4; // pixels per frame
+
+    const animate = () => {
+      if (!isDragging) {
+        const currentScroll = container.scrollLeft;
+        const newScroll = currentScroll + scrollSpeed;
+        
+        // Get the width of one set of brands
+        const firstChild = container.querySelector('.brand-set');
+        if (firstChild) {
+          const setWidth = firstChild.offsetWidth;
+          
+          // Reset when first set is completely off screen
+          if (newScroll >= setWidth) {
+            container.scrollLeft = 0;
+          } else {
+            container.scrollLeft = newScroll;
+          }
+        }
+      }
+      
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
+    animationRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [isDragging]);
 
   // Touch handlers (mobile only)
   const handleTouchStart = (e) => {
@@ -41,7 +80,7 @@ const InfiniteBrandSlider = ({brandsImg}) => {
   const handleBrandClick = (e, slug) => {
     if (isDragging) {
       e.preventDefault();
-    } else {
+    } else if (slug) {
       console.log('Navigate to:', slug);
     }
   };
@@ -60,7 +99,8 @@ const InfiniteBrandSlider = ({brandsImg}) => {
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
-          <div className="flex gap-8 py-1 items-center animate-scroll">{brandsImg.map((brand, idx) =>
+          <div className="flex gap-8 py-1 items-center brand-set">
+            {brandsImg.map((brand, idx) =>
               brand.slug ? (
                 <a
                   key={`set1-${idx}`}
@@ -88,7 +128,8 @@ const InfiniteBrandSlider = ({brandsImg}) => {
             )}
           </div>
           
-          <div className="flex gap-8 items-center animate-scroll">{brandsImg.map((brand, idx) =>
+          <div className="flex gap-8 items-center">
+            {brandsImg.map((brand, idx) =>
               brand.slug ? (
                 <a
                   key={`set2-${idx}`}
@@ -119,19 +160,6 @@ const InfiniteBrandSlider = ({brandsImg}) => {
       </div>
           
       <style jsx>{`
-        @keyframes scroll {
-          from {
-            transform: translateX(0);
-          }
-          to {
-            transform: translateX(-50%);
-          }
-        }
-      
-        .animate-scroll {
-          animation: scroll 40s linear infinite;
-        }
-      
         .scrollbar-hide::-webkit-scrollbar {
           display: none;
         }

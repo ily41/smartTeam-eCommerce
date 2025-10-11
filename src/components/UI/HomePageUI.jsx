@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 const HomePageUI = ({deal, product, url, handleAddToCart, isAddingToCart}) => {
     const [isLoading, setIsLoading] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
+    const [hoverFav, setHoverFav] = useState(false)
     
     // Get favorite status for this product
     const { data: favoriteStatus } = useGetFavoriteStatusQuery({ productId: product.id });
@@ -133,31 +134,44 @@ const HomePageUI = ({deal, product, url, handleAddToCart, isAddingToCart}) => {
     }
     else {
         return (
-            <Link to={`/details/${product.id}`} className='bg-white p-1 border-1 cursor-pointer border-gray-300 rounded-lg transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-gray-400 flex flex-col justify-between'>
-                <img className='w-full rounded-lg p-3 aspect-square' src={`https://smartteamaz-001-site1.qtempurl.com${url}`} alt=""  onError={(e) => {
+            <Link
+              to={`/details/${product.id}`}
+              className=" bg-white p-1  border-1 cursor-pointer border-gray-300 rounded-lg relative transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-gray-400 flex flex-col justify-between"
+            >
+              <img
+                className="w-full rounded-lg p-3 aspect-square"
+                src={`https://smartteamaz-001-site1.qtempurl.com${url}`}
+                alt=""
+                onError={(e) => {
                   e.target.src = '/Icons/logo.svg';
-                }}/>
-                <div className='font-semibold p-2 inter'>
-                    <h1 className='text-lg'>{product.currentPrice} AZN</h1>
-                    <p className='font-medium whitespace-normal mb-3'>{product.name}</p>
-                    <p className='text-gray-600 font-normal whitespace-normal [@media(min-width:450px)]:break-words line-clamp-3'>{product.shortDescription}</p>
-                </div>
-                <div className='flex gap-3 p-2'>
-                    {renderButton()}
-
-                    <button 
-                        onClick={handleFavoriteClick}
-                        disabled={isTogglingFavorite}
-                        className="p-3 rounded-lg border-[#DEE2E7] bg-white shadow-sm hover:bg-gray-50 transition-colors disabled:opacity-50"
-                    >
-                      <Heart 
-                        className={`w-4 h-4 lg:w-5 lg:h-5 transition-colors ${
-                            localFavorite ? 'fill-red-500 text-red-500' : 'text-gray-400'
-                        }`}
-                      />
-                    </button>
-                </div>
+                }}
+              />
+              <div className="font-semibold p-2 inter">
+                <h1 className="text-lg">{product.currentPrice} AZN</h1>
+                <p className="font-medium whitespace-normal mb-3">{product.name}</p>
+                <p className="text-gray-600 font-normal whitespace-normal [@media(min-width:450px)]:break-words line-clamp-3">
+                  {product.shortDescription}
+                </p>
+              </div>
+              <div className="flex group gap-3 p-2 ">
+                {renderButton()}
+            
+                <button
+                  onClick={handleFavoriteClick}
+                  disabled={isTogglingFavorite}
+                  className="p-3 rounded-lg absolute right-3 top-3 border-[#DEE2E7] cursor-pointer shadow-sm transition-colors disabled:opacity-50"
+                >
+                  <Heart
+                    className={`
+                      w-4 h-4 lg:w-5 lg:h-5 transition-colors
+                      ${localFavorite ? 'fill-red-500 text-red-500' : 'text-gray-400'}
+                      group-hover:fill-red-500 group-hover:text-red-500
+                    `}
+                  />
+                </button>
+              </div>
             </Link>
+
         )
     }
 }

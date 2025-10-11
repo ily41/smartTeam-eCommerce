@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router";
 import { ChevronRight } from "lucide-react";
 
 export function Breadcrumb({ productData = null }) {
+  console.log(productData)
   const location = useLocation();
   const pathnames = location.pathname.split("/").filter((x) => x);
 
