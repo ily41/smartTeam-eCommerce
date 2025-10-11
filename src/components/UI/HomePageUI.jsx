@@ -5,7 +5,7 @@ import { useToggleFavoriteMutation, useGetFavoriteStatusQuery } from '../../stor
 import { toast } from 'react-toastify';
 
 const HomePageUI = ({deal, product, url, handleAddToCart, isAddingToCart}) => {
-    const [loadingProductId, setLoadingProductId] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     
     // Get favorite status for this product
@@ -20,25 +20,26 @@ const HomePageUI = ({deal, product, url, handleAddToCart, isAddingToCart}) => {
         }
     }, [favoriteStatus]);
 
-    // Handle success state after adding to cart
-    useEffect(() => {
-        if (!isAddingToCart && loadingProductId === product.id) {
-            setShowSuccess(true);
-            const timer = setTimeout(() => {
-                setShowSuccess(false);
-                setLoadingProductId(null);
-            }, 2000);
-            return () => clearTimeout(timer);
-        }
-    }, [isAddingToCart, loadingProductId, product.id]);
-
     const onAddToCart = async (e, productId) => {
         e.preventDefault();
         e.stopPropagation();
         
-        setLoadingProductId(productId);
+        setIsLoading(true);
         setShowSuccess(false);
-        await handleAddToCart(productId);
+        
+        try {
+            await handleAddToCart(productId);
+            setIsLoading(false);
+            setShowSuccess(true);
+            
+            // Hide success message after 2 seconds
+            setTimeout(() => {
+                setShowSuccess(false);
+            }, 2000);
+        } catch (error) {
+            setIsLoading(false);
+            console.error('Add to cart error:', error);
+        }
     };
 
     const handleFavoriteClick = async (e) => {
@@ -59,10 +60,8 @@ const HomePageUI = ({deal, product, url, handleAddToCart, isAddingToCart}) => {
         }
     };
 
-    const renderButton = (productId) => {
-        const isThisProductLoading = isAddingToCart && loadingProductId === productId;
-        
-        if (isThisProductLoading) {
+    const renderButton = () => {
+        if (isLoading) {
             return (
                 <button
                     disabled
@@ -74,7 +73,7 @@ const HomePageUI = ({deal, product, url, handleAddToCart, isAddingToCart}) => {
             );
         }
         
-        if (showSuccess && loadingProductId === productId) {
+        if (showSuccess) {
             return (
                 <button
                     disabled
@@ -88,7 +87,7 @@ const HomePageUI = ({deal, product, url, handleAddToCart, isAddingToCart}) => {
 
         return (
             <button
-                onClick={(e) => onAddToCart(e, productId)}
+                onClick={(e) => onAddToCart(e, product.id)}
                 className="w-full cursor-pointer flex justify-center items-center text-sm lg:text-md bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-md font-medium transition-colors duration-200"
             >
                 Add to cart
@@ -115,7 +114,7 @@ const HomePageUI = ({deal, product, url, handleAddToCart, isAddingToCart}) => {
                     <p className='text-xs text-center font-semibold lg:text-sm'>{product.discountPercentage}%</p>
                 </div>
                 <div className='flex gap-3 p-2'>
-                    {renderButton(product.id)}
+                    {renderButton()}
 
                     <button 
                         onClick={handleFavoriteClick}
@@ -144,7 +143,7 @@ const HomePageUI = ({deal, product, url, handleAddToCart, isAddingToCart}) => {
                     <p className='text-gray-600 font-normal whitespace-normal [@media(min-width:450px)]:break-words line-clamp-3'>{product.shortDescription}</p>
                 </div>
                 <div className='flex gap-3 p-2'>
-                    {renderButton(product.id)}
+                    {renderButton()}
 
                     <button 
                         onClick={handleFavoriteClick}

@@ -3,13 +3,14 @@ import { toast } from 'react-toastify';
 import Modal from '../../components/UI/Modal';
 import AddCategoryUIStatic from '../../components/admin/Category/addCategory';
 import { Loader2, ChevronDown, ChevronRight } from 'lucide-react';
-import { useAddCategoryMutation, useDeleteCategoryMutation, useGetCategoriesQuery } from '../../store/API';
+import { useAddCategoryMutation, useDeleteCategoryMutation, useGetCategoriesQuery, useGetParentCategoriesQuery } from '../../store/API';
 import EditCategoryUI from '../../components/admin/Category/EditCategory';
 
 const Category = () => {
   const [modalType, setModalType] = useState(null); 
   const [edit, setEdit] = useState(null);
   const { data: categories, isLoading, error, refetch } = useGetCategoriesQuery();
+  const { data: ParCat, isParCatLoading} = useGetParentCategoriesQuery();
   const [expanded, setExpanded] = useState({}); // Track expanded categories
 
   const [deleteCategory] = useDeleteCategoryMutation();
@@ -131,7 +132,7 @@ const Category = () => {
 
       {/* Modals */}
       <Modal open={modalType === "add"} setOpen={handleCloseModal}>
-        <AddCategoryUIStatic setOpen={handleCloseModal} categories={categories} />
+        <AddCategoryUIStatic setOpen={handleCloseModal} categories={ParCat} />
       </Modal>
 
       <Modal open={modalType === "edit"} setOpen={handleCloseModal}>

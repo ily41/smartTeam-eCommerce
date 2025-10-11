@@ -9,12 +9,9 @@ const ProductFormUI = ({setOpen}) => {
   const { data: userRoles, error, isRolesLoading, refetch } = useGetUserRolesQuery();
   const { data: categories, isLoading, errorC } = useGetCategoriesQuery();
   const { data: brands, isLoading: isBrandsLoading } = useGetBrandsQuery();
-  console.log(brands)
   const { data: brand, isLoading: isBrandLoading } = useGetBrandQuery("1cd62de1-35cd-4d90-b767-dc1a443bdb3f");
   const { data: brandPr, isLoading: is } = useGetProductsBrandQuery({brandSlug: "hp"});
-  console.log(brand)
 
-  console.log("//////", brandPr)
 
   const { data: pdfs} = useGetProductPdfsQuery();
   const [addProduct, { isLoading: isProductLoading }] = useAddProductMutation(); 
@@ -191,7 +188,6 @@ const ProductFormUI = ({setOpen}) => {
 
     try {
       const formDataToSend = new FormData();
-      console.log(formData)
       const productDataString = JSON.stringify(formData);
       formDataToSend.append("productData", productDataString); 
       formDataToSend.append("imageFile", file, file.name);

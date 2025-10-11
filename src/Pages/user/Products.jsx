@@ -13,7 +13,8 @@ import {
   useToggleFavoriteMutation,
   useGetFavoritesQuery,
   useGetHotDealsQuery,
-  useGetRecommendedQuery
+  useGetRecommendedQuery,
+  useGetProductsBrandQuery
 } from '../../store/API';
 import { toast } from 'react-toastify';
 import { useParams } from 'react-router';
@@ -102,18 +103,27 @@ const CustomDropdown = ({ value, onChange, options }) => {
 
 function Products() {
   const { slug } = useParams();
-  console.log(slug)
+  const location = window.location.pathname;
+  
+  // Extract brand slug if this is a brand route
+  const pathParts = location.split('/');
+  const isBrandRoute = pathParts.includes('brand');
+  const brandSlug = isBrandRoute ? pathParts[pathParts.indexOf('brand') + 1] : null;
+  
+  console.log('slug:', slug, 'brandSlug:', brandSlug, 'isBrandRoute:', isBrandRoute);
   
   // Determine if this is a special slug
   const isHotDeals = slug === 'hot-deals';
   const isRecommended = slug === 'recommended';
-  const isSpecialSlug = isHotDeals || isRecommended;
-  console.log('isSpecialSlug in Products:', isSpecialSlug); // in Products component
+  const isBrand = isBrandRoute && brandSlug;
+  const isSpecialSlug = isHotDeals || isRecommended || isBrand;
   
   const categoryName = isHotDeals 
     ? 'Hot Deals' 
     : isRecommended 
     ? 'Recommended' 
+    : isBrand
+    ? brandSlug.charAt(0).toUpperCase() + brandSlug.slice(1)
     : slug?.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024); 
@@ -125,12 +135,18 @@ function Products() {
     skip: isSpecialSlug
   });
 
-  const { data: hotDeals, isLoading: isHotDealsLoading } = useGetHotDealsQuery(undefined, {
-    skip: !isHotDeals
-  });
+  const { data: hotDeals, isLoading: isHotDealsLoading } = useGetHotDealsQuery(undefined,
+    { limit: 10 }, 
+    { skip: !isHotDeals });
+  
   const { data: recommended, isLoading: isRecommendedLoading } = useGetRecommendedQuery(
     { limit: 10 }, 
     { skip: !isRecommended }
+  );
+  
+  const { data: brandProducts, isLoading: isBrandLoading } = useGetProductsBrandQuery(
+    { brandSlug }, 
+    { skip: !isBrand }
   );
   
   const { data: categories } = useGetCategoriesQuery();
@@ -173,11 +189,14 @@ function Products() {
     } else if (isRecommended && recommended?.recentlyAdded && !filtersApplied) {
       setProducts(recommended.recentlyAdded);
       setTotalItems(recommended.recentlyAdded.length);
+    } else if (isBrand && brandProducts && !filtersApplied) {
+      setProducts(brandProducts);
+      setTotalItems(brandProducts.length);
     } else if (!isSpecialSlug && productDefault && !filtersApplied) {
       setProducts(productDefault);
       setTotalItems(productDefault.length);
     }
-  }, [productDefault, hotDeals, recommended, filtersApplied, isHotDeals, isRecommended, isSpecialSlug]);
+  }, [productDefault, hotDeals, recommended, brandProducts, filtersApplied, isHotDeals, isRecommended, isBrand, isSpecialSlug]);
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
@@ -198,6 +217,9 @@ function Products() {
       } else if (isRecommended && recommended?.recentlyAdded) {
         setProducts(recommended.recentlyAdded);
         setTotalItems(recommended.recentlyAdded.length);
+      } else if (isBrand && brandProducts) {
+        setProducts(brandProducts);
+        setTotalItems(brandProducts.length);
       } else if (productDefault) {
         setProducts(productDefault);
         setTotalItems(productDefault.length);
@@ -211,7 +233,7 @@ function Products() {
       setProducts([]);
       setTotalItems(0);
     }
-  }, [productDefault, hotDeals, recommended, isHotDeals, isRecommended]);
+  }, [productDefault, hotDeals, recommended, brandProducts, isHotDeals, isRecommended, isBrand]);
 
   const handleRemoveFilter = (filterToRemove) => {
     console.log('Remove filter:', filterToRemove);
@@ -280,6 +302,7 @@ function Products() {
   const shouldShowLoading = isLoading || 
     (isHotDeals && isHotDealsLoading && !filtersApplied) ||
     (isRecommended && isRecommendedLoading && !filtersApplied) ||
+    (isBrand && isBrandLoading && !filtersApplied) ||
     (!isSpecialSlug && isLoadingProducts && !filtersApplied);
 
   return (

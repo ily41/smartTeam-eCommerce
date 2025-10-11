@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
 import { Plus, Edit2, Trash2, ChevronDown, ChevronUp, Save, X, Eye, EyeOff, Loader2 } from 'lucide-react';
-import { useAddFilterMutation, useGetFiltersQuery, useRemoveFilterMutation, useRemoveFilterOptionMutation } from '../../store/API';
+import { 
+  useAddFilterMutation, 
+  useGetFiltersQuery, 
+  useRemoveFilterMutation, 
+  useRemoveFilterOptionMutation,
+  useUpdateFilterMutation,
+  useUpdateFilterOptionMutation 
+} from '../../store/API';
 import { toast } from 'react-toastify';
 
 const FilterUi = () => {
@@ -11,12 +18,14 @@ const FilterUi = () => {
   const [expandedFilters, setExpandedFilters] = useState({});
 
   const { data: filters, isLoading: isFilterDataLoading, refetch } = useGetFiltersQuery();
-  console.log(filters)
   const [addFilter] = useAddFilterMutation();
+  const [updateFilter] = useUpdateFilterMutation();
+  const [updateFilterOption] = useUpdateFilterOptionMutation();
   const [removeFilter, { isLoading: isRemoving }] = useRemoveFilterMutation();
   const [removeFilterOption] = useRemoveFilterOptionMutation();
 
   const [options, setOptions] = useState([]);
+  const [originalOptions, setOriginalOptions] = useState([]); // Track original options for comparison
 
   const [formData, setFormData] = useState({
     name: '',
@@ -46,16 +55,19 @@ const FilterUi = () => {
       setFormData({
         name: filter.name ?? '',
         type: filter.type ?? 0,
-        value: filter.value ?? "",
+        value: filter.slug ?? "",
         isActive: filter.isActive ?? true,
         sortOrder: filter.sortOrder ?? 0,
         options: Array.isArray(filter.options) ? [...filter.options] : []
       });
-      setOptions(Array.isArray(filter.options) ? [...filter.options] : []);
+      const opts = Array.isArray(filter.options) ? [...filter.options] : [];
+      setOptions(opts);
+      setOriginalOptions(JSON.parse(JSON.stringify(opts))); // Deep clone for comparison
       setSelectedFilter(filter);
     } else {
-      setFormData({ name: '', value:"", type: 'checkbox', isActive: true, displayOrder: 0, options: [] });
+      setFormData({ name: '', value:"", type: 0, isActive: true, sortOrder: 0, options: [] });
       setOptions([]);
+      setOriginalOptions([]);
       setSelectedFilter(null);
     }
 
@@ -67,6 +79,7 @@ const FilterUi = () => {
     setSelectedFilter(null);
     setNewOption({ value: '', displayName: '', color: 'red', iconUrl: '', isActive: true, sortOrder: 0 });
     setOptions([]);
+    setOriginalOptions([]);
   };
 
   const handleInputChange = (e) => {
@@ -93,31 +106,77 @@ const FilterUi = () => {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      await addFilter({
-        name: formData.name,
-        type: formData.type,
-        isActive: formData.isActive,
-        sortOrder: formData.sortOrder ?? 0,
-        options: options,
-        slug: formData.value || "new-filter"
-      }).unwrap();
-      toast.success("Filter added successfully!");
+      if (modalMode === 'add') {
+        // Add new filter
+        await addFilter({
+          name: formData.name,
+          type: formData.type,
+          isActive: formData.isActive,
+          sortOrder: formData.sortOrder ?? 0,
+          options: options,
+          slug: formData.value || "new-filter"
+        }).unwrap();
+        toast.success("Filter added successfully!");
+      } else if (modalMode === 'edit') {
+        // Update filter basic info
+        await updateFilter({
+          id: selectedFilter.id,
+          name: formData.name,
+          type: formData.type,
+          isActive: formData.isActive,
+          sortOrder: formData.sortOrder ?? 0,
+        }).unwrap();
+
+        // Handle options: update existing options that have been modified
+        const originalIds = originalOptions.map(opt => opt.id);
+        const currentIds = options.map(opt => opt.id);
+
+        // Update existing options that have been modified
+        for (const option of options) {
+          if (originalIds.includes(option.id)) {
+            // Check if option was modified
+            const original = originalOptions.find(o => o.id === option.id);
+            const isModified = JSON.stringify(original) !== JSON.stringify(option);
+            
+            if (isModified) {
+              await updateFilterOption({
+                filterId: selectedFilter.id,
+                optionId: option.id,
+                value: option.value,
+                displayName: option.displayName,
+                color: option.color || 'red',
+                iconUrl: option.iconUrl || '',
+                isActive: option.isActive,
+                sortOrder: option.sortOrder ?? 0
+              }).unwrap();
+            }
+          }
+        }
+
+        // Delete removed options
+        for (const originalOption of originalOptions) {
+          if (!currentIds.includes(originalOption.id)) {
+            await deleteFilterOption(selectedFilter.id, originalOption.id);
+          }
+        }
+
+        toast.success("Filter updated successfully!");
+      }
+      
       refetch();
       closeModal();
     } catch (err) {
       console.error('submit error', err);
-      toast.error(err?.data);
+      toast.error(err?.data?.message || err?.data || "Operation failed");
     }
     setLoading(false);
   };
 
   const deleteFilter = async (filterId) => {
-    console.log(filterId)
-
     try {
       await removeFilter({id: filterId}).unwrap();
       toast.success("Filter deleted successfully");
-      closeModal(); 
+      refetch();
     } catch (error) {
       console.error(error);
       toast.error(error?.data?.message || "Deleting Filter Failed");
@@ -239,20 +298,14 @@ const FilterUi = () => {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">Slug</label>
-                      <input type="text" name="value" value={formData.value} onChange={handleInputChange} disabled={modalMode === 'view'} className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-600" />
+                      <input type="text" name="value" value={formData.value} onChange={handleInputChange} disabled={modalMode === 'view' || modalMode === 'edit'} className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-600" />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Display Order</label>
-                      <input type="number" name="displayOrder" value={formData.displayOrder} onChange={handleInputChange} disabled={modalMode === 'view'} className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:border-transparent disabled:bg-gray-600" min="0" />
-                    </div>
-                    <div className="flex items-center justify-center">
-                      <label className="flex items-center mt-6">
-                        <input type="checkbox" name="isActive" checked={formData.isActive} onChange={handleInputChange} disabled={modalMode === 'view'} className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded  focus:ring-2" />
-                        <span className="ml-2 text-sm font-medium text-gray-300">Active</span>
-                      </label>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Sort Order</label>
+                      <input type="number" name="sortOrder" value={formData.sortOrder === 0 ? "" : formData.sortOrder} onChange={handleInputChange} disabled={modalMode === 'view'} className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:border-transparent disabled:bg-gray-600" min="0" />
                     </div>
                   </div>
 

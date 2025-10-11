@@ -221,13 +221,17 @@ const ProductDetailPage = () => {
         {/* Product Management Header */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Product Image */}
-          <div className="bg-gray-800 rounded-xl overflow-hidden">
+          <div className="bg-white rounded-xl overflow-hidden">
             <img
-              src={`http://https://smartteamaz-001-site1.qtempurl.com/${product.imageUrl}`}
+              src={`https://smartteamaz-001-site1.qtempurl.com/${product.imageUrl}`}
               alt={product.name}
-              className="w-full object-cover h-full "
+              className="w-full object-contain h-full max-h-[500px]"
               onError={(e) => {
-                e.target.src = "/placeholder-image.jpg";
+                e.target.src = "/Icons/logo.svg";
+                const parentDiv = e.target.closest("div");
+                if (parentDiv) {
+                  parentDiv.className = "bg-white rounded-xl overflow-hidden";
+                }
               }}
             />
           </div>
@@ -266,21 +270,21 @@ const ProductDetailPage = () => {
                 <DollarSign className="w-5 h-5" />
                 Pricing
               </h3>
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 
-                <div>
+                <div className='flex flex-col justify-between'>
                   <p className="text-gray-400 text-sm">Original Price</p>
                   <p className="text-2xl font-bold text-green-400">${product.prices[0].discountedPrice}</p>
                 </div>
-                <div>
+                <div className='flex flex-col justify-between'>
                   <p className="text-gray-400 text-sm">Retail Price</p>
                   <p className="text-2xl font-bold text-green-400">${product.prices[1].discountedPrice}</p>
                 </div>
-                <div>
+                <div className='flex flex-col justify-between'>
                   <p className="text-gray-400 text-sm">WholeSale Price</p>
                   <p className="text-2xl font-bold text-green-400">${product.prices[2].discountedPrice}</p>
                 </div>
-                <div>
+                <div className='flex flex-col justify-between'>
                   <p className="text-gray-400 text-sm">Vip Price</p>
                   <p className="text-2xl font-bold text-green-400">${product.prices[3].discountedPrice}</p>
                 </div>
@@ -387,7 +391,9 @@ const ProductDetailPage = () => {
             </div>
           ) : productPdfs.length > 0 ? (
             <div className="space-y-4">
-              {productPdfs.map((pdf) => (
+              {productPdfs.map((pdf) => {
+                console.log(pdf)
+                return (
                 <div key={pdf.id} className="bg-gray-700 rounded-lg p-4 flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="bg-blue-600 rounded-lg p-3">
@@ -395,7 +401,7 @@ const ProductDetailPage = () => {
                     </div>
                     <div>
                       <h3 className="text-white font-medium">
-                        {pdf.customFileName || pdf.filename}
+                        {pdf.originalFileName || pdf.filename}
                       </h3>
                       {pdf.description && (
                         <p className="text-gray-400 text-sm mt-1">{pdf.description}</p>
@@ -430,7 +436,7 @@ const ProductDetailPage = () => {
                     </button>
                   </div>
                 </div>
-              ))}
+              )})}
             </div>
           ) : (
             <div className="text-center py-12">

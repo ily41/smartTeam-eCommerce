@@ -7,6 +7,7 @@ import BannerSlider from '../UI/BannerSlider'
 import {  useAddCartItemMutation, useGetBannersQuery, useGetHotDealsQuery, useGetParentCategoriesQuery, useGetRecommendedQuery, useGetSubCategoriesQuery } from '../../store/API'
 import { Loader2 } from 'lucide-react'
 import { toast } from 'react-toastify'
+import InfiniteBrandSlider from '../UI/BrandSlider'
 
 // Skeleton Components
 const CategorySkeleton = () => (
@@ -51,7 +52,7 @@ const Home = () => {
     const [hoveredCategorie, setHoveredCategorie] = useState(null)
     const [hoveredName, setHoveredName] = useState(null)
     const [activeCategorie,setActiveCategorie ] = useState(null)
-    const { data: hotDeals, isLoading, error, refetch } = useGetHotDealsQuery();
+    const { data: hotDeals, isLoading, error, refetch } = useGetHotDealsQuery({});
     const { data: recommended, isLoading: isRecommendedLoading } = useGetRecommendedQuery({limit: 10});
     const [addCartItem, { isLoading: isAddingToCart, error: cartError }] = useAddCartItemMutation();
 
@@ -181,6 +182,28 @@ const Home = () => {
         return iconMap[slug] || './Icons/banner-commercial.svg';
     };
 
+    const brandsImg = [
+      { src: './slider/slider1.svg', alt: 'Hem', slug: 'hem' },
+      { src: './slider/slider2.svg', alt: 'Hp', slug: 'hp' },
+      { src: './slider/slider3.svg', alt: 'Dell', slug: 'dell' },
+      { src: './slider/slider4.svg', alt: 'Lg', slug: 'lg' },
+      { src: './slider/slider5.svg', alt: 'Xprinter', slug: 'xprinter' },
+      { src: './slider/slider6.svg', alt: 'Lenovo', slug: 'lenovo' },
+      { src: './slider/slider7.svg', alt: 'Western Digital', slug: 'westernDigital' },
+      { src: './slider/slider8.svg', alt: 'Acer', slug: 'acer' },
+      { src: './slider/slider9.svg', alt: 'Hikvision', slug: 'hikvision' },
+      { src: './slider/slider10.svg', alt: 'Unv', slug: 'unv' },
+      { src: './slider/slider11.svg', alt: 'Canon', slug: 'canon' },
+      { src: './slider/slider12.svg', alt: 'Seagate', slug: 'seagate' }
+    ];
+
+    // Add handler to prevent dragging from interfering with clicks
+    const handleBrandClick = (e, slug) => {
+      if (isDragging || !slug) {
+        e.preventDefault();
+      }
+    };
+
   return (
     <>
       <main className='bg-[#f7fafc] lg:pt-5'>
@@ -189,7 +212,7 @@ const Home = () => {
             <SearchUI />
         </div>
 
-        <section onMouseLeave={() => setHoveredCategorie(null)} className="lg:flex lg:w-[85vw]  lg:mx-auto lg:shadow-[0_4px_4px_rgba(0,0,0,0.25)] lg:rounded-lg lg:gap-5 lg:bg-white">
+        <section onMouseLeave={() => setHoveredCategorie(null)} className="lg:flex lg:w-[85vw] transition-all  lg:mx-auto lg:shadow-[0_4px_4px_rgba(0,0,0,0.25)] lg:rounded-lg lg:gap-5 lg:bg-white">
             
            <div className='hidden lg:mt-5 lg:m-4 lg:flex flex-col text-black mt-1 whitespace-nowrap'>
                 {isParentLoading ? (
@@ -315,89 +338,8 @@ const Home = () => {
         </section>
 
 
-        <section className="mt-12 mx-4 lg:w-[85vw] lg:mx-auto">
-          <div className="text-xl font-semibold mb-6">
-            <h1>Featured Brands</h1>
-          </div>
+        <InfiniteBrandSlider brandsImg={brandsImg}/>
 
-          <div className="relative overflow-hidden bg-white rounded-lg border border-gray-200 p-6">
-            <div 
-              ref={scrollRef}
-              className={`flex gap-8 items-center overflow-x-auto scrollbar-hide select-none ${!isPaused ? 'animate-scroll' : ''}`}
-              style={{ cursor: 'grab' }}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
-              onMouseLeave={handleMouseLeave}
-            >
-              {/* First set of logos */}
-              <div className="flex gap-8 items-center min-w-max">
-                {brands.map((brand, idx) => (
-                  <img 
-                    key={`first-${idx}`}
-                    src={brand.src} 
-                    alt={brand.alt} 
-                    className="h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all pointer-events-none"
-                    draggable="false"
-                  />
-                ))}
-              </div>
-              
-              {/* Duplicate set for seamless loop */}
-              <div className="flex gap-8 items-center min-w-max">
-                {brands.map((brand, idx) => (
-                  <img 
-                    key={`second-${idx}`}
-                    src={brand.src} 
-                    alt={brand.alt} 
-                    className="h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all pointer-events-none"
-                    draggable="false"
-                  />
-                ))}
-              </div>
-              
-              {/* Third set for extra smooth scrolling */}
-              <div className="flex gap-8 items-center min-w-max">
-                {brands.map((brand, idx) => (
-                  <img 
-                    key={`third-${idx}`}
-                    src={brand.src} 
-                    alt={brand.alt} 
-                    className="h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all pointer-events-none"
-                    draggable="false"
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-              
-          <style jsx>{`
-            @keyframes scroll {
-              0% {
-                transform: translateX(0);
-              }
-              100% {
-                transform: translateX(-33.333%);
-              }
-            }
-
-            .animate-scroll {
-              animation: scroll 45s linear infinite;
-            }
-
-            .scrollbar-hide::-webkit-scrollbar {
-              display: none;
-            }
-
-            .scrollbar-hide {
-              -ms-overflow-style: none;
-              scrollbar-width: none;
-            }
-          `}</style>
-        </section>
 
         <section className='mt-12 mx-4 inter lg:hidden'>
             <div className='flex justify-between text-xl font-semibold'>

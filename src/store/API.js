@@ -18,6 +18,7 @@ export const API = createApi({
         endpoint === 'addBanner' ||
         endpoint === 'uploadFile' ||
         endpoint === 'addProductPdf' ||
+        endpoint === 'editProductWithImage' ||
         body instanceof FormData;
 
       if (!isFormDataRequest) {
@@ -457,6 +458,26 @@ export const API = createApi({
       }),
     }),
 
+    editProductWithImage: builder.mutation({
+  query: ({ id, productData, formData }) => ({
+    url: `/api/v1/Products/${id}/with-image?productData=${productData}`,
+    method: 'PUT',
+    body: formData,
+    prepareHeaders: (headers) => {
+      headers.delete('Content-Type');
+      return headers;
+    },
+  }),
+  invalidatesTags: ['Products'],
+}),
+
+
+
+
+
+
+
+
     searchProducts: builder.query({
       query: ({
         q
@@ -633,6 +654,8 @@ export const API = createApi({
       invalidatesTags: ['Filters'],
     }),
 
+
+
     removeAllFiltersFromProduct: builder.mutation({
       query: ({
         productId
@@ -650,6 +673,24 @@ export const API = createApi({
       }) => ({
         url: `/api/v1/Admin/products/${productId}/filters/${filterId}`,
         method: 'DELETE',
+      }),
+      invalidatesTags: ['Filters'],
+    }),
+
+    updateFilter: builder.mutation({
+      query: ({ id, ...data }) => ({
+        url: `/api/v1/Admin/filters/${id}`,
+        method: 'PUT',
+        body: data,
+      }),
+      invalidatesTags: ['Filters'],
+    }),
+    
+    updateFilterOption: builder.mutation({
+      query: ({ filterId, optionId, ...data }) => ({
+        url: `/api/v1/Admin/filters/${filterId}/options/${optionId}`,
+        method: 'PUT',
+        body: data,
       }),
       invalidatesTags: ['Filters'],
     }),
@@ -1040,6 +1081,24 @@ export const API = createApi({
       },
     }),
 
+    updateFilter: builder.mutation({
+      query: ({ id, ...data }) => ({
+        url: `/api/v1/Admin/filters/${id}`,
+        method: 'PUT',
+        body: data,
+      }),
+      invalidatesTags: ['Filters'],
+    }),
+
+    updateFilterOption: builder.mutation({
+      query: ({ filterId, optionId, ...data }) => ({
+        url: `/api/v1/Admin/filters/${filterId}/options/${optionId}`,
+        method: 'PUT',
+        body: data,
+      }),
+      invalidatesTags: ['Filters'],
+    }),
+
     // Don't forget to export the hook:
     // export const { ..., useDownloadFileMutation } = API;
 
@@ -1065,6 +1124,8 @@ export const {
   useRemoveFilterOptionMutation,
   useRemoveAllFiltersFromProductMutation,
   useRemoveCustomFilterFromProductMutation,
+  useUpdateFilterMutation,
+  useUpdateFilterOptionMutation,
 
   useGetBannersQuery,
   useDeleteBannerMutation,
@@ -1110,6 +1171,8 @@ export const {
   useGetBrandsQuery,
   useGetBrandQuery,
   useGetProductsBrandQuery,
+  useEditProductWithImageMutation,
+  
 
   useLogoutMutation,
   useEditUserRoleMutation,

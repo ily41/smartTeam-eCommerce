@@ -49,14 +49,18 @@ const SubCategoriesSkeleton = () => {
 };
 
 // Main Components
-const CategoryCard = ({ title, imageSrc = null, slug }) => (
+const CategoryCard = ({ title, imageSrc = null, slug }) => {
+    console.log(imageSrc)
+  return(
   <Link to={`/products/${slug}`} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200 cursor-pointer group">
     <div className="flex flex-col items-center text-center h-full">
       <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 bg-gray-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-gray-50 transition-colors">
         {imageSrc ? (
-          <img src={imageSrc} alt={title} className="w-full h-full object-contain rounded-lg" />
+          <img src={`https://smartteamaz-001-site1.qtempurl.com/${imageSrc}`} alt={title} className="w-full h-full object-contain rounded-lg" />
         ) : (
-          <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-gray-200 rounded-md"></div>
+          <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-gray-200 rounded-md">
+            <img src={`https://smartteamaz-001-site1.qtempurl.com/${imageSrc}`  } alt="" />
+          </div>
         )}
       </div>
       <h3 className="text-sm sm:text-base md:text-lg font-medium text-gray-800 group-hover:text-blue-600 transition-colors">
@@ -64,7 +68,7 @@ const CategoryCard = ({ title, imageSrc = null, slug }) => (
       </h3>
     </div>
   </Link>
-);
+)};
 
 const formatName = (value) =>
   value.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
@@ -101,11 +105,12 @@ const SubCategories = () => {
         {/* Categories Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
           {subs?.subCategories?.map((category, index) => {
+            console.log(category)
             return (
               <CategoryCard 
                 key={index} 
                 title={category.name} 
-                imageSrc={category.imageSrc}
+                imageSrc={category.imageUrl}
                 slug={category.slug}
               />
             );

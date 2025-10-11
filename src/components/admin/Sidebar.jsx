@@ -67,8 +67,8 @@ const SideBar = () => {
         <div className="flex items-center justify-between p-4 border-b border-gray-700">
           {!isCollapsed && (
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-blue-900 rounded-lg flex items-center justify-center">
-                <img src="./Icons/logo.svg" alt="" />
+              <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                <img className=' w-6 h-6 ' src="/Icons/logo2.png" alt="" />
               </div>
               <h1 className="text-xl font-bold">Admin Panel</h1>
             </div>

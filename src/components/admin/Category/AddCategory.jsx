@@ -12,12 +12,6 @@ const AddCategoryUIStatic = ({setOpen, categories}) => {
 
   
   
-  
-  // const [formData, setFormData] = useState({
-  //     name: "",
-  //     imgUrl: "",
-
-  //   });
 
   const [formData, setFormData] = useState({
       name: "",
@@ -82,37 +76,50 @@ const AddCategoryUIStatic = ({setOpen, categories}) => {
   //         console.log(error)
   //         toast.error("Adding category failed");
   //     }
-  //   }
+  //   }  
 
-  const handleCategory = async (e) => {
-    e.preventDefault();
+ const handleCategory = async (e) => {
+  e.preventDefault();
 
-    if (!file) {
-      toast.error("Please upload an image first");
-      return;
-    }
-    console.log(file)
+  if (!file) {
+    toast.error("Please upload an image first");
+    return;
+  }
 
-    try {
-      const formDataToSend = new FormData();
+  try {
+    // Build the category data object
+    const categoryData = {
+      name: formData.name,
+      description: "description",
+      sortOrder: 1,
+      ...(parent ? { parentCategoryId: parent } : {}), // ✅ add parent if it exists
+    };
 
-      const productDataString = JSON.stringify(formData);
-      formDataToSend.append("categoryData", productDataString); 
-      formDataToSend.append("imageFile", file, file.name);
+    // Create FormData and append fields
+    const formDataToSend = new FormData();
+    formDataToSend.append("categoryData", JSON.stringify(categoryData));
+    formDataToSend.append("imageFile", file, file.name);
 
-    
+    // Send request
+    const result = await addCategoryImage(formDataToSend).unwrap();
 
-      const result = await addCategoryImage(formDataToSend).unwrap();
-      toast.success("Category added successfully");
-      close()
+    // Success message
+    toast.success("Category added successfully");
 
+    // Reset form
+    setFormData({
+      name: "",
+      imgUrl: ""
+    });
+    setFile(null);
+    setOpen();
 
+  } catch (error) {
+    toast.error(error?.data || "Something went wrong");
+    console.log("Full error:", error);
+  }
+};
 
-    } catch (error) {
-      toast.error(error?.data || "something went wrong");
-      console.log('Full error:', error);
-    }
-  };
 
     const handleChange = (e) => {
       const { name, value } = e.target;

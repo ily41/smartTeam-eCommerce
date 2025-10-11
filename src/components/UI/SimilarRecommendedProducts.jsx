@@ -257,12 +257,13 @@ const SimilarProducts = ({ products, isLoading }) => {
   }, [isAddingToCart, loadingProductId, showSuccess]);
 
   const onAddToCart = async (e, productId) => {
+    console.log(productId)
     e.preventDefault();
     e.stopPropagation();
     
     setLoadingProductId(productId);
     try {
-      await addCartItem(productId).unwrap();
+      await addCartItem({productId,quantity: 1}).unwrap();
     } catch (err) {
       toast.error('Failed to add product to cart');
       console.error('Add to cart error:', err);

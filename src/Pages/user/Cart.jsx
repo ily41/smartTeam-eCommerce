@@ -6,11 +6,7 @@ import { Link, useParams } from 'react-router';
 import { useGetCartItemsQuery, useUpdateCartItemQuantityMutation, useRemoveCartItemMutation, useRemoveCartMutation, useGetMeQuery, useCreateWhatsappOrderMutation } from '../../store/API';
 import { toast } from 'react-toastify';
 
-
-
-
-
-// Debounce utility function (if you don't have lodash)
+// Debounce utility function
 const debounce = (func, delay) => {
   let timeoutId;
   return (...args) => {
@@ -19,7 +15,7 @@ const debounce = (func, delay) => {
   };
 };
 
-// Skeleton Components (keeping your existing ones)
+// Skeleton Components
 const CartItemSkeletonMobile = () => (
   <div className="space-y-4 lg:hidden animate-pulse">
     <div className="flex items-start rounded-lg">
@@ -105,77 +101,63 @@ const EmptyCartSkeleton = () => (
 
 const Cart = () => {
   const { data: cartItemsD, isLoading, isError } = useGetCartItemsQuery();
-  console.log(cartItemsD)
+  const { data: me } = useGetMeQuery();
+  const [updateCartItemQuantity] = useUpdateCartItemQuantityMutation();
+  const [removeCartItem] = useRemoveCartItemMutation();
+  const [removeCart] = useRemoveCartMutation();
+  const [createWPOrder, { isLoading: isOrderLoading }] = useCreateWhatsappOrderMutation();
 
-  const {data: me} = useGetMeQuery()
-  const [updateCartItemQuantity, { isLoading: isUpdating }] = useUpdateCartItemQuantityMutation();
-  const [removeCartItem, {isLoading: isRemoveLoading}] = useRemoveCartItemMutation();
-  const [removeCart, {isLoading: isCartremoveLoading}] = useRemoveCartMutation();
-  const [createWPOrder, {isLoading: isOrderLoading}] = useCreateWhatsappOrderMutation();
-
-
-  
-const createOrder = async () => {
-  try {
-    const orderPayload = {
-      phoneNumber: "0506740649", 
-      customerName: me?.fullName || "",
-      customerPhone: me?.phoneNumber?.replace(/\D/g, '') || "0000000",
-      items: cartItemsD?.items?.map(item => ({
-        id: item.id,
-        cartId: item.cartId,
-        productId: item.productId,
-        productName: item.productName,
-        productSku: item.productSku,
-        productDescription: item.productDescription,
-        productImageUrl: item.productImageUrl || "",
-        quantity: Number(item.quantity),
-        unitPrice: Number(item.unitPrice),
-        totalPrice: Number(item.totalPrice),
-        createdAt: new Date(item.createdAt).toISOString(),
-      })) ?? [],
-      totalAmount: Number(cartItemsD?.totalAmount) || 0,
-      currency: "AZN",
-    };
-
-
-
-    const response = await createWPOrder(orderPayload).unwrap();
-
-     if (response.whatsAppUrl) {
-      window.open(response.whatsAppUrl, "_blank"); // opens WhatsApp Web or app
-    }
-
-  } catch (error) {
-    console.error( error?.data);
-    // Log the full error object to see what's wrong
-    console.error("Error details:", JSON.stringify(error, null, 2));
-    toast.error(error?.data);
-  }
-};
-
-  
-
-
-  
+  // Track which items are being removed
+  const [removingItems, setRemovingItems] = useState(new Set());
+  const [isRemovingCart, setIsRemovingCart] = useState(false);
 
   // Local state for optimistic updates
   const [localQuantities, setLocalQuantities] = useState({});
   const [updatingItems, setUpdatingItems] = useState(new Set());
 
-  // Debounced update function - FIXED VERSION
+  const createOrder = async () => {
+    try {
+      const orderPayload = {
+        phoneNumber: "0506740649",
+        customerName: me?.fullName || "",
+        customerPhone: me?.phoneNumber?.replace(/\D/g, '') || "0000000",
+        items: cartItemsD?.items?.map(item => ({
+          id: item.id,
+          cartId: item.cartId,
+          productId: item.productId,
+          productName: item.productName,
+          productSku: item.productSku,
+          productDescription: item.productDescription,
+          productImageUrl: item.productImageUrl || "",
+          quantity: Number(item.quantity),
+          unitPrice: Number(item.unitPrice),
+          totalPrice: Number(item.totalPrice),
+          createdAt: new Date(item.createdAt).toISOString(),
+        })) ?? [],
+        totalAmount: Number(cartItemsD?.totalAmount) || 0,
+        currency: "AZN",
+      };
+
+      const response = await createWPOrder(orderPayload).unwrap();
+
+      if (response.whatsAppUrl) {
+        window.open(response.whatsAppUrl, "_blank");
+      }
+    } catch (error) {
+      console.error(error?.data);
+      console.error("Error details:", JSON.stringify(error, null, 2));
+      toast.error(error?.data);
+    }
+  };
+
+  // Debounced update function
   const debouncedUpdate = useMemo(
     () => debounce(async (cartItemId, quantity) => {
       try {
         setUpdatingItems(prev => new Set(prev).add(cartItemId));
         await updateCartItemQuantity({ cartItemId, quantity }).unwrap();
-        
-        // Don't remove from local state immediately - let it persist until server data updates
-        // The query will refetch automatically and the new server data will eventually override local state
-        
       } catch (error) {
         console.error('Failed to update cart item:', error);
-        // On error, revert to server state
         setLocalQuantities(prev => {
           const newState = { ...prev };
           delete newState[cartItemId];
@@ -188,46 +170,43 @@ const createOrder = async () => {
           return newSet;
         });
       }
-    }, 500), // 500ms delay
+    }, 500),
     [updateCartItemQuantity]
   );
 
-  // Clean up local quantities when server data updates - ADDED THIS
+  // Clean up local quantities when server data updates
   React.useEffect(() => {
     if (cartItemsD?.items) {
-      // Remove local quantities that match server state to prevent memory leaks
       setLocalQuantities(prev => {
         const newState = { ...prev };
         let hasChanges = false;
-        
+
         cartItemsD.items.forEach(item => {
           if (newState[item.id] === item.quantity) {
             delete newState[item.id];
             hasChanges = true;
           }
         });
-        
+
         return hasChanges ? newState : prev;
       });
     }
   }, [cartItemsD]);
 
-  // Get effective quantity (local or server)
+  // Get effective quantity
   const getEffectiveQuantity = useCallback((item) => {
     return localQuantities[item.id] !== undefined ? localQuantities[item.id] : item.quantity;
   }, [localQuantities]);
 
   // Handle quantity change
   const handleQuantityChange = useCallback((item, newQuantity) => {
-    if (newQuantity < 1) return; // Prevent negative quantities
-    
-    // Update local state immediately for responsive UI
+    if (newQuantity < 1) return;
+
     setLocalQuantities(prev => ({
       ...prev,
       [item.id]: newQuantity
     }));
-    
-    // Debounced API call
+
     debouncedUpdate(item.id, newQuantity);
   }, [debouncedUpdate]);
 
@@ -245,38 +224,48 @@ const createOrder = async () => {
     }
   }, [getEffectiveQuantity, handleQuantityChange]);
 
-  // Handle remove item
+  // Handle remove item - FIXED
   const handleRemoveItem = async (id) => {
     try {
-      await removeCartItem({id }).unwrap();
-
-      
-
+      setRemovingItems(prev => new Set(prev).add(id));
+      await removeCartItem({ id }).unwrap();
     } catch (error) {
       console.error('Failed to remove cart item:', error);
+      toast.error('Failed to remove item');
+    } finally {
+      setRemovingItems(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(id);
+        return newSet;
+      });
     }
   };
 
+  // Handle remove cart - FIXED
   const handleRemoveCart = async () => {
     try {
+      setIsRemovingCart(true);
       await removeCart().unwrap();
     } catch (error) {
-      console.error('Failed to remove cart item:', error);
+      console.error('Failed to remove cart:', error);
+      toast.error('Failed to clear cart');
+    } finally {
+      setIsRemovingCart(false);
     }
-  }
+  };
 
   // Calculate totals with local quantities
   const calculateTotals = useMemo(() => {
     if (!cartItemsD?.items) return { subtotal: 0, total: 0 };
-    
+
     const subtotal = cartItemsD.items.reduce((sum, item) => {
       const quantity = getEffectiveQuantity(item);
       return sum + (item.unitPrice * quantity);
     }, 0);
-    
-    const discount = 15; // You might want to get this from API
+
+    const discount = 15;
     const total = subtotal - discount;
-    
+
     return { subtotal, discount, total };
   }, [cartItemsD?.items, getEffectiveQuantity]);
 
@@ -294,7 +283,7 @@ const createOrder = async () => {
   return (
     <section className="inter bg-[#f7fafc] whitepsace-nowrap">
       {/* Mobile Search + Breadcrumb */}
-      <div className="lg:hidden px-4 pl-7 py-4 border-y bg-white lg:border-transparent border-[#dee2e6] ">
+      <div className="lg:hidden px-4 pl-7 py-4 border-y bg-white lg:border-transparent border-[#dee2e6]">
         <div className="mb-4 lg:hidden">
           <SearchUI />
         </div>
@@ -305,7 +294,7 @@ const createOrder = async () => {
         <div className='p-4 pl-7 pb-0 hidden lg:block'>
           <Breadcrumb />
         </div>
-        
+
         <div className="p-4 pl-7 text-xl font-semibold bg-white lg:bg-transparent border-b lg:border-0 border-[#dee2e6] mb-3">
           {isLoading ? (
             <div className="h-7 bg-gray-300 rounded w-40 animate-pulse"></div>
@@ -332,19 +321,20 @@ const createOrder = async () => {
                   cartItemsD?.items?.map((item, index) => {
                     const effectiveQuantity = getEffectiveQuantity(item);
                     const isItemUpdating = updatingItems.has(item.id);
-                    
+                    const isItemRemoving = removingItems.has(item.id);
+
                     return (
                       <div key={item.id}>
                         {/* Mobile View */}
                         <div className="space-y-4 lg:hidden">
                           <div className="flex items-start rounded-lg">
                             <div className="w-30 h-30 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center mr-4 overflow-hidden">
-                              <img 
-                                className='w-full rounded-lg p-3 aspect-square' 
-                                src={`https://smartteamaz-001-site1.qtempurl.com${item?.productImageUrl}`} 
+                              <img
+                                className='w-full rounded-lg p-3 aspect-square'
+                                src={`https://smartteamaz-001-site1.qtempurl.com${item?.productImageUrl}`}
                                 alt={item?.product?.name || 'Product'}
                                 onError={(e) => {
-                                  e.target.src =  "/Icons/logo.svg"
+                                  e.target.src = "/Icons/logo.svg"
                                 }}
                               />
                             </div>
@@ -357,8 +347,8 @@ const createOrder = async () => {
 
                             <button
                               onClick={() => handleRemoveItem(item.id)}
-                              className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                              disabled={isItemUpdating}
+                              className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+                              disabled={isItemRemoving || isItemUpdating}
                             >
                               <Trash2 size={24} />
                             </button>
@@ -366,20 +356,20 @@ const createOrder = async () => {
 
                           <div className="flex items-center justify-between">
                             <div className="flex items-center border border-gray-300 rounded-lg">
-                              <button 
-                                className="p-2 hover:bg-gray-100  transition-colors disabled:opacity-50"
+                              <button
+                                className="p-2 hover:bg-gray-100 transition-colors disabled:opacity-50"
                                 onClick={() => handleDecrement(item)}
-                                disabled={effectiveQuantity <= 1 || isItemUpdating}
+                                disabled={effectiveQuantity <= 1 || isItemUpdating || isItemRemoving}
                               >
                                 <Minus size={16} />
                               </button>
                               <span className={`px-4 py-2 border-x border-[#dee2e6] text-center ${isItemUpdating ? 'opacity-50' : ''}`}>
                                 {effectiveQuantity}
                               </span>
-                              <button 
+                              <button
                                 className="p-2 hover:bg-gray-100 transition-colors disabled:opacity-50"
                                 onClick={() => handleIncrement(item)}
-                                disabled={isItemUpdating}
+                                disabled={isItemUpdating || isItemRemoving}
                               >
                                 <Plus size={16} />
                               </button>
@@ -395,12 +385,12 @@ const createOrder = async () => {
                         <div className='hidden lg:flex gap-4'>
                           <div className='flex-1 flex'>
                             <div className="w-30 h-30 rounded-lg flex items-center justify-center mr-4 overflow-hidden">
-                              <img 
+                              <img
                                 className="w-full rounded-lg p-3 aspect-square"
-                                src={`https://smartteamaz-001-site1.qtempurl.com${item?.productImageUrl}`} 
+                                src={`https://smartteamaz-001-site1.qtempurl.com${item?.productImageUrl}`}
                                 alt={item?.product?.name || "Product"}
                                 onError={(e) => {
-                                  e.currentTarget.src = "/Icons/logo.svg";  
+                                  e.currentTarget.src = "/Icons/logo.svg";
                                 }}
                               />
                             </div>
@@ -412,13 +402,12 @@ const createOrder = async () => {
                                 </h3>
                               </div>
 
-                              <button 
-                                className='px-3 p-1 mt-7 shadow-md bg-white hover:bg-gray-100 cursor-pointer text-red-500 rounded-lg border-1 border-[#dee2e6] disabled:opacity-50'
+                              <button
+                                className='px-3 p-1 mt-7 shadow-md bg-white hover:bg-gray-100 cursor-pointer text-red-500 rounded-lg border-1 border-[#dee2e6] disabled:opacity-50 disabled:cursor-not-allowed'
                                 onClick={() => handleRemoveItem(item.id)}
-                                disabled={isItemUpdating}
+                                disabled={isItemRemoving || isItemUpdating}
                               >
-                                {isRemoveLoading ? 'Removing' : 'Remove'}
-                                
+                                {isItemRemoving ? 'Removing...' : 'Remove'}
                               </button>
                             </div>
                           </div>
@@ -427,22 +416,22 @@ const createOrder = async () => {
                             <div className="text-lg font-semibold text-gray-900">
                               {(item.unitPrice * effectiveQuantity).toFixed(2)} AZN
                             </div>
-                            
+
                             <div className="flex items-center border border-gray-300 rounded-lg">
-                              <button 
-                                className="p-2  hover:bg-gray-100  h-full cursor-pointer transition-colors disabled:opacity-50"
+                              <button
+                                className="p-2 hover:bg-gray-100 h-full cursor-pointer transition-colors disabled:opacity-50"
                                 onClick={() => handleDecrement(item)}
-                                disabled={effectiveQuantity <= 1 || isItemUpdating}
+                                disabled={effectiveQuantity <= 1 || isItemUpdating || isItemRemoving}
                               >
                                 <Minus size={16} />
                               </button>
                               <span className={`px-4 py-2 border-x border-[#dee2e6] text-center ${isItemUpdating ? 'opacity-50' : ''}`}>
                                 {effectiveQuantity}
                               </span>
-                              <button 
+                              <button
                                 className="p-2 h-full hover:bg-gray-100 cursor-pointer transition-colors disabled:opacity-50"
                                 onClick={() => handleIncrement(item)}
-                                disabled={isItemUpdating}
+                                disabled={isItemUpdating || isItemRemoving}
                               >
                                 <Plus size={16} />
                               </button>
@@ -466,8 +455,12 @@ const createOrder = async () => {
                         <ArrowLeft size={20} />
                         <p>Back to Shop</p>
                       </Link>
-                      <button onClick={() => handleRemoveCart()} className='px-3 bg-white hover:bg-gray-100 cursor-pointer text-red-500 rounded-lg border-1 border-[#bfc2c6]'>
-                        {isCartremoveLoading ? "Removing All ..." : "Remove all"}
+                      <button
+                        onClick={() => handleRemoveCart()}
+                        className='px-3 bg-white hover:bg-gray-100 cursor-pointer text-red-500 rounded-lg border-1 border-[#bfc2c6] disabled:opacity-50 disabled:cursor-not-allowed'
+                        disabled={isRemovingCart}
+                      >
+                        {isRemovingCart ? "Removing All..." : "Remove all"}
                       </button>
                     </div>
                   </>
@@ -490,9 +483,13 @@ const createOrder = async () => {
                   </div>
                 </div>
 
-                <button onClick={() => createOrder()} className="w-full cursor-pointer bg-red-500 hover:bg-red-600 text-white font-semibold py-4 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2">
+                <button
+                  onClick={() => createOrder()}
+                  className="w-full cursor-pointer bg-red-500 hover:bg-red-600 text-white font-semibold py-4 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isOrderLoading}
+                >
                   <ShoppingCart size={20} />
-                  <span>Buy Now</span>
+                  <span>{isOrderLoading ? 'Processing...' : 'Buy Now'}</span>
                 </button>
               </div>
             </>
@@ -504,3 +501,4 @@ const createOrder = async () => {
 };
 
 export default Cart;
+

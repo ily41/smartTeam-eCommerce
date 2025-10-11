@@ -52,6 +52,7 @@ const Router = () => {
         >
           <Route index element={<Home />} />
           <Route path="products/:slug?" element={<Products />} />
+          <Route path="products/brand/:slug?" element={<Products />} />
           <Route path="/details/:id" element={<Details />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/favorites" element={<WishList />} />

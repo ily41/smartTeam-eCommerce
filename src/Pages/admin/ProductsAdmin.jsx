@@ -68,7 +68,7 @@ const ProductsUI = () => {
       </Modal>
       
       <Modal open={modalType === "edit"} setOpen={handleCloseModal}>
-        <EditProduct setOpen={handleCloseModal}  edit ={cat}/>
+        <EditProduct setOpen={handleCloseModal}  idPr = {cat}/>
       </Modal>
 
 
@@ -187,7 +187,7 @@ const ProductsUI = () => {
                         onClick={(e) => {
                           e.stopPropagation();
                           setModalType("edit")
-                          setCat(product)
+                          setCat(product.id)
                         }}
                         className="bg-blue-600 hover:bg-blue-700 p-2 rounded-lg shadow-lg transform hover:scale-110 transition-all duration-200"
                         title="Edit Product"
