@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useEditProductWithImageMutation, useGetCategoriesQuery, useGetBrandsQuery, useGetProductQuery } from '../../../store/API';
+import { useEditProductWithImageMutation, useGetCategoriesQuery, useGetBrandsQuery, useGetProductQuery, useGetUserRolesQuery } from '../../../store/API';
 import { toast } from 'react-toastify';
 
 const EditProduct = ({setOpen, idPr}) => {
@@ -9,6 +9,10 @@ const EditProduct = ({setOpen, idPr}) => {
     const { data: brands, isLoading: isBrandsLoading } = useGetBrandsQuery();
     const [imageFile, setImageFile] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
+    const { data: userRoles,  isRolesLoading, refetch } = useGetUserRolesQuery();
+    console.log(userRoles)
+    
+
     
     const [formData, setFormData] = useState({
       id: '',
@@ -333,12 +337,14 @@ const EditProduct = ({setOpen, idPr}) => {
             </div>
             <div className="border border-gray-600 rounded-md">
               {formData.prices.length > 0 ? (
-                formData.prices.map((item, index) => (
+                formData.prices.map((item, index) => {
+                  console.log(item)
+                  return(
                   <div key={index} className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-[#2c2c2c] border-b border-gray-600 last:border-b-0">
                       {/* User Role */}
                       <div className="flex items-center">
-                        <label className="block text-md font-medium">Role {item.userRole}</label>
+                        <label className="block text-md font-medium">{userRoles[item.userRole].name}</label>
                       </div>
 
                       {/* Price */}
@@ -381,7 +387,7 @@ const EditProduct = ({setOpen, idPr}) => {
                       </div>
                     </div>
                   </div>
-                ))
+                )})
               ) : (
                 <div className="p-4 text-center text-gray-400">Loading prices...</div>
               )}

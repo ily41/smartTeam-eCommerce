@@ -3,9 +3,7 @@ import { Breadcrumb } from '../../products/Breadcrumb'
 const Secure = () => {
 
    const contactWp = () => {
-      const phoneNumber = "994703569121"
-      const message = "Hello, I want to know more about your service."; // optional predefined message
-      const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+      const url = `https://hemsoft.az`;
     
       window.open(url, "_blank");
     };
@@ -28,7 +26,7 @@ const Secure = () => {
             <div className='text-center my-7 md:my-0 flex flex-col gap-3 md:flex-8 md:text-start   [@media(min-width:1100px)]:p-7'>
                 <h1 className='font-semibold text-xl lg:text-2xl'>Smart POS & Management with <br className='md:hidden'></br>Hemsoft</h1>
                 <p className='max-w-[83vw] mx-auto text-[#505050] md:text-sm md:mb-4  lg:text-lg'>The Hemsoft software, provided by Smartteam, is a modern POS and management system specially designed for your business. Take your business to the next level with Hemsoft.</p>
-                <button onClick={() => {contactWp()}} className=' py-4 my-4 cursor-pointer bg-gradient-to-b from-[#FF1206] to-[#D91205] rounded-lg mx-3 text-white md:w-fit md:py-3 md:text-sm md:px-7 md:mx-0'>Contact via Whatssap</button>
+                <button onClick={() => {contactWp()}} className=' py-4 my-4 cursor-pointer bg-gradient-to-b from-[#FF1206] to-[#D91205] rounded-lg mx-3 text-white md:w-fit md:py-3 md:text-sm md:px-7 md:mx-0'>Checkout hemsoft.az</button>
             </div>
         </div>
 

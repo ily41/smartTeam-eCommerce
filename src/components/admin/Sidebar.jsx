@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Menu, X, Package, Grid3X3, Users, BarChart3, Settings, LogOut, ChevronLeft, ChevronRight, Home, User, Filter, Tags, File} from 'lucide-react';
+import { Menu, X, Package, Grid3X3, Users, BarChart3, Settings, LogOut, ChevronLeft, ChevronRight, Home, User, Filter, Tags, File, Navigation} from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { useLogoutMutation } from '../../store/API';
 import { PiFlagBanner } from 'react-icons/pi';
@@ -22,7 +22,9 @@ const SideBar = () => {
     { icon: File, label: 'Assign Files', active: false, to:'file-management'  },
   ];
 
-
+  const navHome = () => {
+    navigate('/')
+  }
   const toggleSidebar = () => setIsOpen(!isOpen);
   const toggleCollapse = () => setIsCollapsed(!isCollapsed);
   const navigate = useNavigate()
@@ -118,6 +120,14 @@ const SideBar = () => {
           `}>
             <LogOut size={20} className="flex-shrink-0" />
             {!isCollapsed && <span className="font-medium">Sign Out</span>}
+          </button>
+
+          <button onClick={navHome} className={`
+            w-full flex items-center space-x-3 px-3 py-3 text-gray-300 hover:bg-red-600 hover:text-white rounded-lg transition-colors duration-200
+            ${isCollapsed ? 'justify-center' : ''}
+          `}>
+            <Navigation size={20} className="flex-shrink-0" />
+            {!isCollapsed && <span className="font-medium">Home</span>}
           </button>
         </div>
       </aside>

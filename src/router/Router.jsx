@@ -27,6 +27,7 @@ import AssignFilter from "../Pages/admin/AssignFilter"
 import FileManagementPanel from "../components/admin/FileUpload/FIleUI";
 import { SearchProvider } from "./Context";
 import WP from '../components/UI/WP'
+import Register from "../Pages/user/Register";
 const Router = () => {
   return (
     <BrowserRouter>
@@ -37,6 +38,7 @@ const Router = () => {
         {/* Login page */}
         
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
         {/* User layout */}
         <Route
@@ -59,8 +61,8 @@ const Router = () => {
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />
           <Route path="download" element={<Download />} />
-          <Route path="secure" element={<Secure />} />
-          <Route path="software" element={<Software />} />
+          <Route path="secure" element={<Software />} />
+          <Route path="software" element={<Secure />} />
           <Route path="profile" element={<Profile />} />
           <Route path="/:slug" element={<SubCategories />} />
         </Route>

@@ -1,6 +1,20 @@
 import React, { useRef, useState, useEffect } from 'react';
 
-const InfiniteBrandSlider = ({ brandsImg }) => {
+const InfiniteBrandSlider = () => {
+  const brandsImg = [
+      { src: './slider/slider1.svg', alt: 'Hem', slug: 'hem' },
+      { src: './slider/slider2.svg', alt: 'Hp', slug: 'hp' },
+      { src: './slider/slider3.svg', alt: 'Dell', slug: 'dell' },
+      { src: './slider/slider4.svg', alt: 'Lg', slug: 'lg' },
+      { src: './slider/slider5.svg', alt: 'Xprinter', slug: 'xprinter' },
+      { src: './slider/slider6.svg', alt: 'Lenovo', slug: 'lenovo' },
+      { src: './slider/slider7.svg', alt: 'Western Digital', slug: 'westernDigital' },
+      { src: './slider/slider8.svg', alt: 'Acer', slug: 'acer' },
+      { src: './slider/slider9.svg', alt: 'Hikvision', slug: 'hikvision' },
+      { src: './slider/slider10.svg', alt: 'Unv', slug: 'unv' },
+      { src: './slider/slider11.svg', alt: 'Canon', slug: 'canon' },
+      { src: './slider/slider12.svg', alt: 'Seagate', slug: 'seagate' }
+    ];
   const scrollRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -86,12 +100,12 @@ const InfiniteBrandSlider = ({ brandsImg }) => {
   };
 
   return (
-    <section className="mt-12 mx-4 lg:w-[85vw] lg:mx-auto">
-      <div className="text-xl font-semibold mb-6">
+    <>
+      <div className="text-xl hidden md:block font-semibold mb-6">
         <h1>Featured Brands</h1>
       </div>
 
-      <div className="relative overflow-hidden bg-white rounded-lg border border-gray-200 p-6">
+      <div className="relative overflow-hidden bg-white rounded-lg border border-gray-200 py-3 md:p-6">
         <div
           ref={scrollRef}
           className="flex gap-8 items-center overflow-x-auto scrollbar-hide select-none"
@@ -168,7 +182,7 @@ const InfiniteBrandSlider = ({ brandsImg }) => {
           scrollbar-width: none;
         }
       `}</style>
-    </section>
+    </>
   );
 };
 

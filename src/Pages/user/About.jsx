@@ -1,6 +1,7 @@
 import { ArrowRight } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router';
+import InfiniteBrandSlider from '../../components/UI/BrandSlider';
 
 const About = () => {
   const [expanded, setExpanded] = useState(false);
@@ -52,64 +53,8 @@ const About = () => {
             
         </div>
 
-        <section className='mt-12 mx-4 max-w-[90vw] lg:mx-auto'>
-          <div className='text-xl font-semibold mb-6'>
-            <h1>Featured Brands</h1>
-          </div>
-          <div className='relative overflow-hidden bg-white rounded-lg border border-gray-200 p-6'>
-            <div className='flex animate-scroll gap-8 items-center'>
-              {/* First set of logos */}
-              <div className='flex gap-8 items-center min-w-max'>
-                <img src='./slider/slider1.svg' alt='LG' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider2.svg' alt='Dell' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider3.svg' alt='' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider4.svg' alt='Oppo' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider5.svg' alt='Asus' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider6.svg' alt='Samsung' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider7.svg' alt='HP' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider8.svg' alt='Lenovo' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider9.svg' alt='Apple' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider10.svg' alt='Acer' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider11.svg' alt='Sony' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider12.svg' alt='Microsoft' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-              </div>
-              
-              {/* Duplicate set for seamless loop */}
-              <div className='flex gap-8 items-center min-w-max'>
-                <img src='./slider/slider1.svg' alt='LG' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider2.svg' alt='Dell' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider3.svg' alt='' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider4.svg' alt='Oppo' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider5.svg' alt='Asus' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider6.svg' alt='Samsung' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider7.svg' alt='HP' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider8.svg' alt='Lenovo' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider9.svg' alt='Apple' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider10.svg' alt='Acer' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider11.svg' alt='Sony' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-                <img src='./slider/slider12.svg' alt='Microsoft' className='h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all' />
-              </div>
-            </div>
-          </div>
-          <style jsx>{`
-            @keyframes scroll {
-              0% {
-                transform: translateX(0);
-              }
-              100% {
-                transform: translateX(-50%);
-              }
-            }
-            
-            .animate-scroll {
-              animation: scroll 30s linear infinite;
-            }
-            
-            .animate-scroll:hover {
-              animation-play-state: paused;
-            }
-            `}
-          </style>
+         <section className="md:mt-12 md:mx-4  max-w-[90vw] lg:mx-auto">
+          <InfiniteBrandSlider />
         </section>
 
 

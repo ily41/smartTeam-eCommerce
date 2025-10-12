@@ -72,21 +72,6 @@ const EditCategoryUI = ({item, setOpen, categories}) => {
         />
       </div>
 
-      {/* Image URL */}
-      <div className="flex flex-col">
-        <label className="text-white text-sm mb-1" htmlFor="image">
-          Image URL <span className="text-red-500">*</span>
-        </label>
-        <input
-          onChange={handleChange}
-          name="imgUrl"
-          id="image"
-          type="url"
-          required
-          value={formData.imgUrl} 
-          className="w-full px-4 py-3 rounded-lg bg-[#2a2a2a] text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-white placeholder:text-gray-400"
-        />
-      </div>
 
       {/* Parent Category Select */}
       {/* <div className="flex flex-col">

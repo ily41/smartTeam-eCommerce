@@ -3,8 +3,12 @@ import React from 'react'
 import { Breadcrumb } from '../../products/Breadcrumb'
 
 const Software = () => {
+    
+
     const contactWp = () => {
-      const url = `https://hemsoft.az`;
+      const phoneNumber = "994703569121"
+      const message = "Hello, I want to know more about your service."; // optional predefined message
+      const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     
       window.open(url, "_blank");
     };

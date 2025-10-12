@@ -4,6 +4,8 @@ import Burger from './Burger'
 import { useGetCartCountQuery, useGetFavoritesCountQuery, useGetMeQuery, useSearchProductsQuery, useUpdateCartItemQuantityMutation } from "../../store/API";
 import { Search, X } from 'lucide-react';
 import { SearchContext } from '../../router/Context';
+import { FaRegFile, FaRegUser, FaRegUserCircle, FaUserCircle } from 'react-icons/fa';
+import { PiCarProfile } from 'react-icons/pi';
 
 // Skeleton for search results - Desktop
 const SearchProductSkeletonDesktop = () => (
@@ -40,6 +42,8 @@ const Header = () => {
   const mobileSearchDropdownRef = useRef(null);
   const hasToken = document.cookie.split('; ').some((row) => row.startsWith('token='));
   const { data: cartCount } = useGetCartCountQuery();
+  const { data: me, isLoading: isMeLoading } = useGetMeQuery()
+  console.log(me)
   const { data: favoritesCount } = useGetFavoritesCountQuery();
 
 
@@ -137,20 +141,21 @@ const Header = () => {
   
 
   return (
-    <header>
+    <header className='pt-[59px] lg:pt-[84px]'>
       <Burger burgerV={burgerVi} setBurgerV={setBurgerVi}/>
-      <nav className='border-b-1 border-[#dee2e6]'>
-        <div className='flex justify-between lg:justify-around lg:items-center p-6 items-center'>
+      <nav className=''>
+        <div className='flex justify-between lg:justify-around  fixed top-0 z-50 bg-white w-full lg:items-center p-3 px-6 items-center'>
           <Link to='/' className='flex lg:flex-1 cursor-pointer lg:justify-center gap-2'>
             {/* Logo */}
             <img
-              className='min-w-[100px] max-w-[230px] w-[18vh] lg:w-[20vh]'
+              className='min-h-[35px] min-w-[70px]  lg:w-[20vh]'
               src="/Icons/logo.svg"
               alt="Logo"
             />
           </Link>
 
           {/* Desktop Search */}
+
           <div className='hidden lg:flex-4 mr-20 lg:mr-0 lg:px-10 lg:block relative' ref={searchDropdownRef}>
             <div className="max-w-4xl self-center mx-auto">
               <div ref={searchRef} className="flex pl-2 rounded-lg items-center overflow-hidden shadow-sm hover:shadow-md border-1 border-[#dee2e6] bg-white">
@@ -267,7 +272,8 @@ const Header = () => {
           </div>
 
           {/* Profile / Favorites / Cart */}
-          <div className='flex gap-0 lg:gap-5 lg:flex-1 pr-2'>
+
+          <div className='flex gap-3 lg:gap-5 lg:flex-1 '>
             <div className='lg:hidden relative' ref={mobileSearchDropdownRef}>
               <button 
                 className='p-2 hover:bg-gray-100 rounded-lg transition-colors'
@@ -278,18 +284,8 @@ const Header = () => {
             </div>
 
             <Link
-              to={hasToken ? "/profile" : "/login"}
-              className='flex flex-col  p-2 items-center cursor-pointer hover:opacity-80 transition-opacity duration-200'
-            >
-              <img className='w-7' src="/Icons/profile.svg" alt="Profile" />
-              <p className='text-gray-500 hidden lg:block text-md whitespace-nowrap'>
-                {hasToken ? "Profile" : "Login"}
-              </p>
-            </Link>
-
-            <Link
               to={hasToken ? "/favorites" : "/login"}
-              className='flex flex-col p-2 items-center cursor-pointer hover:opacity-80 transition-opacity duration-200 relative'
+              className='flex flex-col  items-center cursor-pointer hover:opacity-80 transition-opacity duration-200 relative'
             >
               <div className="relative">
                 <img className='w-7' src="/Icons/favorites.svg" alt="Favorites" />
@@ -308,7 +304,7 @@ const Header = () => {
 
             <Link
               to={hasToken ? "/cart" : "/login"}
-              className='flex flex-col p-2 items-center cursor-pointer hover:opacity-80 transition-opacity duration-200 relative'
+              className='flex flex-col items-center cursor-pointer hover:opacity-80 transition-opacity duration-200 relative'
             >
               <div className="relative">
                 <img className='w-7' src="/Icons/cart.svg" alt="Cart" />
@@ -324,20 +320,48 @@ const Header = () => {
                 My Cart
               </p>
             </Link>
+            
+            <Link
+              to={hasToken ? "/profile" : "/login"}
+              className='flex flex-col items-center cursor-pointer hover:opacity-80 transition-opacity duration-200'
+            >
+              {isMeLoading ? (
+                <div className='flex flex-col items-center gap-1'>
+                  <div className='w-7 h-7 rounded-full bg-gray-200 animate-pulse'></div>
+                  <div className='w-16 h-3 bg-gray-200 rounded hidden lg:block animate-pulse'></div>
+                </div>
+              ) : hasToken ? (
+                <div className='flex flex-col items-center gap-1'>
+                  <FaUserCircle color='#64748b' size={28} />
+                  <p className='text-gray-600 text-sm font-medium hidden lg:block whitespace-nowrap max-w-[100px] truncate'>
+                    {me.fullName}
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <img className='w-7' src="/Icons/profile.svg" alt="Profile" />
+                  <p className='text-gray-500 hidden lg:block text-md whitespace-nowrap'>
+                    Login
+                  </p>
+                </>
+              )}
+            </Link>
 
             <img
               onClick={() => setBurgerVi(true)}
-              className='md:hidden p-2 cursor-pointer'
+              className='md:hidden  cursor-pointer'
               src="/Icons/burger.svg"
               alt="Menu"
             />
 
           </div>
+
+
         </div>
       </nav>
 
       {/* Bottom Menu */}
-      <div className="hidden md:block w-full bg-white border-y-1 border-gray-200 px-2 py-4">
+      <div className="hidden md:block w-full bg-white  border-gray-200 px-2 py-4">
         <div className="flex items-center justify-between max-w-[85vw] mx-auto">
           <div className="flex items-center space-x-8">
             {/* Navigation Links */}

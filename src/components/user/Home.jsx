@@ -62,6 +62,8 @@ const Home = () => {
     const [startX, setStartX] = useState(0);
     const [scrollLeft, setScrollLeft] = useState(0);
     const [isPaused, setIsPaused] = useState(false);
+    const [showUnauthorizedModal, setShowUnauthorizedModal] = useState(false);
+    const [unauthorizedAction, setUnauthorizedAction] = useState('');
 
     const brands = [
       { src: './slider/slider1.svg', alt: 'LG' },
@@ -162,7 +164,13 @@ const Home = () => {
           console.error('Failed to add product to cart:', err);
           
           if (err?.status === 401 || err?.data?.status === 401) {
-            toast.error("Please log in first");
+            if (error?.status === 401 || error?.data?.status === 401 || error?.response?.status === 401) {
+                        setUnauthorizedAction('add items to cart');   
+                        setShowUnauthorizedModal(true);              
+                    } else {
+                        console.error('Add to cart error:', error);
+                        toast.error('Failed to add to cart');
+                    }
           } else {
             toast.error("Failed to add product to cart");
           }
@@ -183,20 +191,7 @@ const Home = () => {
         return iconMap[slug] || './Icons/banner-commercial.svg';
     };
 
-    const brandsImg = [
-      { src: './slider/slider1.svg', alt: 'Hem', slug: 'hem' },
-      { src: './slider/slider2.svg', alt: 'Hp', slug: 'hp' },
-      { src: './slider/slider3.svg', alt: 'Dell', slug: 'dell' },
-      { src: './slider/slider4.svg', alt: 'Lg', slug: 'lg' },
-      { src: './slider/slider5.svg', alt: 'Xprinter', slug: 'xprinter' },
-      { src: './slider/slider6.svg', alt: 'Lenovo', slug: 'lenovo' },
-      { src: './slider/slider7.svg', alt: 'Western Digital', slug: 'westernDigital' },
-      { src: './slider/slider8.svg', alt: 'Acer', slug: 'acer' },
-      { src: './slider/slider9.svg', alt: 'Hikvision', slug: 'hikvision' },
-      { src: './slider/slider10.svg', alt: 'Unv', slug: 'unv' },
-      { src: './slider/slider11.svg', alt: 'Canon', slug: 'canon' },
-      { src: './slider/slider12.svg', alt: 'Seagate', slug: 'seagate' }
-    ];
+    
 
     // Add handler to prevent dragging from interfering with clicks
     const handleBrandClick = (e, slug) => {
@@ -209,10 +204,10 @@ const Home = () => {
     <>
       <main className='bg-[#f7fafc] lg:pt-5'>
         
-        <div className='p-5 pb-0 md:pb-5'>
-            <SearchUI />
+        <div className='hidden lg:block md:p-5 pb-0 md:pb-5'>
+          
         </div>
-
+          <SearchUI />
         <section onMouseLeave={() => setHoveredCategorie(null)} className="lg:flex lg:w-[85vw] transition-all  lg:mx-auto lg:shadow-[0_4px_4px_rgba(0,0,0,0.25)] lg:rounded-lg lg:gap-5 lg:bg-white">
             
            <div className='hidden lg:mt-5 lg:m-4 lg:flex flex-col text-black mt-1 whitespace-nowrap'>
@@ -239,7 +234,8 @@ const Home = () => {
                   })
                 )}
             </div>
-
+            
+            
             <div className={`${hoveredCategorie || activeCategorie ? 'lg:hidden' : ''} border-[#E0E0E0]`}>
                 <BannerSlider />
             </div>
@@ -338,8 +334,10 @@ const Home = () => {
             </div>
         </section>
 
-
-        <InfiniteBrandSlider brandsImg={brandsImg}/>
+        <section className="md:mt-12 md:mx-4 lg:w-[85vw] lg:mx-auto">
+          <InfiniteBrandSlider />
+        </section>
+        
 
 
         <section className='mt-12 mx-4 inter lg:hidden'>
@@ -402,9 +400,9 @@ const Home = () => {
          
         
 
-       <section className='lg:flex lg:bg-white lg:mt-8 lg:rounded-lg lg:w-[85vw] mx-auto lg:border lg:border-gray-300 px-4 lg:pr-0'>
-        {/* Left section with timer */}
-        <div className='py-4 lg:pr-9 lg:border-r my-auto lg:border-gray-300 lg:min-w-[200px]'>
+        <section className='lg:flex lg:bg-white lg:mt-8 lg:rounded-lg lg:w-[85vw] mx-auto lg:border lg:border-gray-300 px-4 lg:pr-0'>
+          {/* Left section with timer */}
+          <div className='py-4 lg:pr-9 lg:border-r my-auto lg:border-gray-300 lg:min-w-[200px]'>
           <div className='inter py-4 lg:border-t-0 lg:p-0'>
             <h1 className='text-xl font-semibold mb-1'>Deals and offers</h1>
           </div>
@@ -419,10 +417,10 @@ const Home = () => {
           <div className='hidden lg:block'>
             <Link to='/products/hot-deals'className='flex gap-2 text-[#E60C03] font-semibold mt-3'>Explore now <img src="./Icons/rightarrowHome.svg" alt="" /></Link>
           </div>
-        </div>
-                    
-        {/* Products grid - responsive */}
-        <div className='flex-1'>
+          </div>
+
+          {/* Products grid - responsive */}
+          <div className='flex-1'>
           <div className='flex'>
             {/* Mobile: Show 2 items */}
             <div className='flex sm:hidden w-full'>
@@ -484,8 +482,8 @@ const Home = () => {
               )}
             </div>
           </div>
-        </div>
-      </section>
+          </div>
+        </section>
 
         <section className='mt-12 mx-4 lg:w-[85vw] lg:mx-auto'>
             <div className='flex justify-between text-xl font-semibold'>
@@ -493,7 +491,7 @@ const Home = () => {
                 <Link to='/products/recommended'><h1 className='text-[#E60C03] cursor-pointer text-lg'>More</h1></Link>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 [@media(min-width:1300px)]:grid-cols-5 lg:grid-cols-4 gap-2 mt-5 whitespace-nowrap">
+            <div className="grid grid-cols-2 sm:grid-cols-3 [@media(min-width:1300px)]:grid-cols-5 [@media(min-width:1500px)]:grid-cols-6 lg:grid-cols-4 gap-2 mt-5 whitespace-nowrap">
               {isRecommendedLoading ? (
                 <>
                   {[...Array(8)].map((_, i) => (
@@ -502,8 +500,18 @@ const Home = () => {
                 </>
               ) : (
                 recommended?.recentlyAdded.map(item => (
-                  <HomePageUI key={item.id} deal={false} product={item} url={item.primaryImageUrl} handleAddToCart={handleAddToCart} isAddingToCart={isAddingToCart} />
-                ))
+                <HomePageUI
+                    key={item.id}
+                    deal={false}
+                    product={item}
+                    url={item.primaryImageUrl}
+                    handleAddToCart={handleAddToCart}
+                    isAddingToCart={isAddingToCart}
+                    showUnauthorizedModal={showUnauthorizedModal}
+                    setShowUnauthorizedModal={setShowUnauthorizedModal}
+                    unauthorizedAction={unauthorizedAction}
+                    setUnauthorizedAction={setUnauthorizedAction}
+                  />                ))
               )}
             </div>
         </section>
@@ -514,7 +522,7 @@ const Home = () => {
                 <Link to='/products/hot-deals' className='text-[#E60C03] cursor-pointer text-lg'>More</Link>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 [@media(min-width:1300px)]:grid-cols-5 lg:grid-cols-4 gap-2 mt-5 whitespace-nowrap">
+            <div className="grid grid-cols-2 sm:grid-cols-3 [@media(min-width:1300px)]:grid-cols-5 [@media(min-width:1500px)]:grid-cols-6 lg:grid-cols-4 gap-2 mt-5 whitespace-nowrap">
               {isLoading ? (
                 <>
                   {[...Array(8)].map((_, i) => (
@@ -523,7 +531,18 @@ const Home = () => {
                 </>
               ) : (
                 hotDeals?.map(item => (
-                  <HomePageUI key={item.id} deal={true} product={item} url={item.primaryImageUrl} handleAddToCart={handleAddToCart} isAddingToCart={isAddingToCart}/>
+                  <HomePageUI
+                    key={item.id}
+                    deal={false}
+                    product={item}
+                    url={item.primaryImageUrl}
+                    handleAddToCart={handleAddToCart}
+                    isAddingToCart={isAddingToCart}
+                    showUnauthorizedModal={showUnauthorizedModal}
+                    setShowUnauthorizedModal={setShowUnauthorizedModal}
+                    unauthorizedAction={unauthorizedAction}
+                    setUnauthorizedAction={setUnauthorizedAction}
+                  /> 
                 ))
               )}
             </div>

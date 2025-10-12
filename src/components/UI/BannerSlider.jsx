@@ -52,14 +52,14 @@ const BannerSlider = () => {
         {bannersD?.map((banner, index) => (
           <div key={banner.id} className="w-full flex-shrink-0   relative">
             <img 
-              className="w-full object-cover rounded-lg lg:h-[400px] h-[35vh] lg:p-2" 
+              className="w-full object-cover md:rounded-lg lg:h-[400px] h-[26vh] md:h-[40vh] lg:p-2" 
               src={`https://smartteamaz-001-site1.qtempurl.com${banner.imageUrl}`}
               alt={`Banner ${index + 1}`} 
             />
             
             <div className="absolute top-[13%] left-[8%] lg:left-[100px] lg:top-[13%] flex flex-col gap-9 max-w-[80%]">
               <div className='flex flex-col gap-5'>
-               <h1 className="inter text-2xl lg:text-3xl lg:hidden font-medium">
+               <h1 className="inter text-xl lg:text-3xl lg:hidden font-medium">
                 {banner.title
                   .split(" ") // ✅ split string into words
                   .map((word, index) => (
@@ -94,7 +94,7 @@ const BannerSlider = () => {
 
               <Link 
                 to={`${banner.linkUrl}`}
-                className="px-7 py-3 lg:py-3 rounded-lg text-lg inter lg:text-lg bg-gradient-to-b from-[#FD1206] to-[#DD1205] transition text-white font-medium w-fit hover:shadow-lg transform hover:scale-105"
+                className="px-7 py-3 lg:py-3 rounded-lg text-sm inter lg:text-lg bg-gradient-to-b from-[#FD1206] to-[#DD1205] transition text-white font-medium w-fit hover:shadow-lg transform hover:scale-105"
               >
                 {banner.buttonText}
               </Link>

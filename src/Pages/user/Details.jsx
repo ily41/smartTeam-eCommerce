@@ -4,7 +4,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay } from 'swiper/modules'; 
 import 'swiper/css';
 import 'swiper/css/pagination';
-import { Heart, Download, Share2, Minus, Plus, X, Check, Copy, MessageCircle,   Send, LogIn, UserPlus, Loader2 } from 'lucide-react';
+import { Heart, Download, Share2, Minus, Plus, X, Check, Copy, MessageCircle,   Send, LogIn, UserPlus, Loader2, Section, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Breadcrumb } from '../../products/Breadcrumb';
 import SearchUI from '../../components/UI/SearchUI';
 import { 
@@ -218,71 +218,6 @@ const DesktopDetailsSkeleton = () => (
     </div>
   </div>
 );
-const ImageMagnifier = ({ src, alt, magnifierHeight = 150, magnifierWidth = 150, zoomLevel = 2.5 }) => {
-  const [showMagnifier, setShowMagnifier] = useState(false);
-  const [magnifierPosition, setMagnifierPosition] = useState({ x: 0, y: 0 });
-  const [imgSize, setImgSize] = useState({ width: 0, height: 0 });
-  const imgRef = useRef(null);
-
-  const handleMouseEnter = (e) => {
-    const elem = e.currentTarget;
-    const { width, height } = elem.getBoundingClientRect();
-    setImgSize({ width, height });
-    setShowMagnifier(true);
-  };
-
-  const handleMouseMove = (e) => {
-    const elem = e.currentTarget;
-    const { top, left } = elem.getBoundingClientRect();
-    const x = e.pageX - left - window.pageXOffset;
-    const y = e.pageY - top - window.pageYOffset;
-    setMagnifierPosition({ x, y });
-  };
-
-  const handleMouseLeave = () => {
-    setShowMagnifier(false);
-  };
-
-  return (
-    <div className="relative inline-block">
-      <img
-        ref={imgRef}
-        src={src}
-        alt={alt}
-        className="h-80 object-contain rounded-lg cursor-crosshair"
-        onMouseEnter={handleMouseEnter}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        onError={(e) => {
-          e.target.src = "/Icons/logo.svg";
-        }}
-      />
-
-      {showMagnifier && (
-        <div
-          style={{
-            position: 'absolute',
-            pointerEvents: 'none',
-            height: `${magnifierHeight}px`,
-            width: `${magnifierWidth}px`,
-            top: `${magnifierPosition.y - magnifierHeight / 2}px`,
-            left: `${magnifierPosition.x - magnifierWidth / 2}px`,
-            opacity: '1',
-            border: '2px solid #e5e7eb',
-            backgroundColor: 'white',
-            backgroundImage: `url('${src}')`,
-            backgroundRepeat: 'no-repeat',
-            borderRadius: '50%',
-            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-            backgroundSize: `${imgSize.width * zoomLevel}px ${imgSize.height * zoomLevel}px`,
-            backgroundPositionX: `${-magnifierPosition.x * zoomLevel + magnifierWidth / 2}px`,
-            backgroundPositionY: `${-magnifierPosition.y * zoomLevel + magnifierHeight / 2}px`,
-          }}
-        />
-      )}
-    </div>
-  );
-};
 
 function Details() {
   const { id } = useParams();
@@ -295,6 +230,29 @@ function Details() {
   const [showUnauthorizedModal, setShowUnauthorizedModal] = useState(false);
   const [unauthorizedAction, setUnauthorizedAction] = useState('');
   const {data: recommendation, isRecLoading} = useGetRecommendedQuery({limit: 6})
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [modalSlideIndex, setModalSlideIndex] = useState(0);
+  
+  // Replace the openDetail function with these functions
+  const openDetail = (initialIndex = 0) => {
+    setModalSlideIndex(initialIndex);
+    setShowDetailModal(true);
+  };
+  
+  const closeDetail = () => {
+    setShowDetailModal(false);
+  };
+  
+  const nextModalSlide = () => {
+    const totalImages = product?.images?.length || 0;
+    setModalSlideIndex((prev) => (prev + 1) % totalImages);
+  };
+  
+  const prevModalSlide = () => {
+    const totalImages = product?.images?.length || 0;
+    setModalSlideIndex((prev) => (prev - 1 + totalImages) % totalImages);
+  };
+  
 
   // RTK Query hooks
   const { data: product, isLoading: loading, error, isError } = useGetProductQuery(id, { skip: !id });
@@ -302,6 +260,7 @@ function Details() {
   const { data: productSpec, isLoading: isSpecLoading } = useGetProductSpecificationsQuery(product?.id, { skip: !product?.id });
   const { data: favoriteStatus } = useGetFavoriteStatusQuery({ productId: product?.id }, { skip: !product?.id });
   const [showSuccess, setShowSuccess] = useState(false);
+
 
 
   
@@ -568,31 +527,333 @@ function Details() {
   const features = getFeatures(product, productSpec);
   const hasDiscount = product.discountPercentage > 0;
 
-  
 
-  return (
-    <>
-      <UnauthorizedModal 
-        isOpen={showUnauthorizedModal} 
-        onClose={() => setShowUnauthorizedModal(false)}
-        action={unauthorizedAction}
-      />
-      
-      <div className='p-6 py-4 border-y-1 border-[#DEE2E6] sm:hidden flex flex-col gap-5'>
-        <SearchUI />
-        <Breadcrumb productData={product}/>
+   
+    
+    return (
+  <>
+    <UnauthorizedModal 
+      isOpen={showUnauthorizedModal} 
+      onClose={() => setShowUnauthorizedModal(false)}
+      action={unauthorizedAction}
+    />
+
+    {/* Image Detail Modal with Slider */}
+    {showDetailModal && (
+      <section className='fixed w-screen h-screen inset-0 bg-white bg-opacity-95 z-10000'>
+        <X 
+          onClick={closeDetail} 
+          className='absolute top-10 right-10 cursor-pointer hover:opacity-70 transition-opacity w-8 h-8 text-black z-10' 
+        />
         
+        {/* Previous Arrow */}
+        <button
+          onClick={prevModalSlide}
+          className='absolute left-10 top-1/2 -translate-y-1/2 p-2 md:p-3 bg-gray-200 hover:bg-gray-300 rounded-full cursor-pointer transition-all z-10'
+        >
+          <ChevronLeft className='w-5 h-5 md:w-8 md:h-8 text-black' />
+        </button>
+
+        {/* Next Arrow */}
+        <button
+          onClick={nextModalSlide}
+          className='absolute right-10 top-1/2 -translate-y-1/2 p-2 md:p-3 bg-gray-200 hover:bg-gray-300 rounded-full cursor-pointer transition-all z-10'
+        >
+          <ChevronRight className='w-5 h-5 md:w-8 md:h-8 text-black' />
+        </button>
+
+        {/* Image Display */}
+        <div className='w-full h-full flex items-center justify-center p-8'>
+          <img 
+            src={`https://smartteamaz-001-site1.qtempurl.com${product?.images[modalSlideIndex]?.imageUrl}`}
+            alt={product.name}
+            className="max-w-[200px] max-h-[200px] md:max-w-[500px] md:max-h-[500px] object-contain"
+            onError={(e) => {
+              e.target.src = "/Icons/logo.svg"
+            }}
+          />
+        </div>
+
+        {/* Slide Counter */}
+        <div className='absolute bottom-10 left-1/2 -translate-x-1/2 bg-gray-200 px-4 py-2 rounded-full'>
+          <span className='text-black font-medium'>
+            {modalSlideIndex + 1} / {product?.images?.length}
+          </span>
+        </div>
+      </section>
+    )}
+    
+    <div className='p-6 py-4 pt-0  border-y-1 border-[#DEE2E6] sm:hidden flex flex-col gap-5'>
+      <SearchUI />
+      <Breadcrumb productData={product}/>
+    </div>
+
+    <div className="min-h-[70vh] bg-gray-50 pt-8 sm:pt-0">
+      {/* Mobile Layout */}
+      <div className="md:hidden">
+        <div className="bg-white border-y-1 border-[#DEE2E6]">
+          <div className="px-7 py-3">
+            <div className="flex items-center text-lg font-medium mb-2 inter">
+              {isInStock ? (
+                <>
+                  <Check className='w-[20px] text-green-500' />
+                  <span className="text-green-500">In stock</span>
+                </>
+              ) : (
+                <>
+                  <X className='w-[20px] text-red-500' />
+                  <span className="text-red-500">No stock</span>
+                </>
+              )}
+            </div>
+            <div className="flex items-center">
+              <h1 className="text-xl text-gray-900 inter">{product.name}</h1>
+            </div>
+            {hasDiscount && (
+              <div className="flex items-center gap-2 mt-2">
+                <span className="text-2xl font-bold text-red-500">{product?.prices[0].discountedPrice} AZN</span>
+                <span className="text-lg text-gray-500 line-through">{product?.prices[0].price} AZN</span>
+                <span className="bg-red-100 text-red-800 px-2 py-1 rounded text-sm font-medium">
+                  -{product.discountPercentage}%
+                </span>
+              </div>
+            )}
+          </div>
+
+          <div className="relative px-4 mb-4 flex w-full justify-center">
+            <div className='self-center w-full'>
+              <Swiper
+                pagination={false}
+                autoplay={{ delay: 3000, disableOnInteraction: false }}
+                modules={[Pagination, Autoplay]}
+                className="mySwiper max-w-[65vw]"
+                onSlideChange={(swiper) => setActiveSlide(swiper.activeIndex)}
+                onSwiper={setSwiperRef}
+              >
+                {product?.images.map((item, index) => (
+                  <SwiperSlide key={index} className='relative h-64 py-5 pt-8 rounded-lg'>
+                    <img 
+                      onClick={() => openDetail(index)}
+                      className='w-full rounded-lg p-3  aspect-square cursor-pointer' 
+                      src={`https://smartteamaz-001-site1.qtempurl.com${item?.imageUrl}`} 
+                      alt={item?.name || 'Product'}
+                      onError={(e) => {
+                        e.target.src =  "/Icons/logo.svg"
+                      }}
+                    />
+                  </SwiperSlide>
+                ))}
+                <SwiperSlide className='relative h-64 py-5 pt-8 rounded-lg'>
+                   <img 
+                      onClick={() => openDetail(product?.images?.length || 0)}
+                      className='w-full rounded-lg p-3 aspect-square cursor-pointer' 
+                      src={`https://smartteamaz-001-site1.qtempurl.com${product?.imageUrl}`} 
+                      alt={product?.name || 'Product'}
+                      onError={(e) => {
+                        e.target.src =  "/Icons/logo.svg"
+                      }}
+                    />
+                </SwiperSlide>
+              </Swiper>
+            </div>
+
+            <div className="absolute top-10 right-6 flex flex-col gap-3">
+              <button onClick={() => handleToggleFavorite(id)} className="p-2 bg-gray-100 cursor-pointer rounded-lg hover:bg-gray-200 transition-colors"> 
+                <Heart className={`w-5 h-5 text-gray-600 ${favoriteStatus?.isFavorite && 'fill-current'}`} />
+              </button>
+              <button 
+                onClick={handleDownloadPdf} 
+                className="p-2 bg-gray-100 cursor-pointer rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                <Download className="w-5 h-5 text-gray-600" />
+              </button>
+              <div className="relative">
+                <button 
+                  onClick={() => setShowShareMenu(!showShareMenu)}
+                  className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  <Share2 className="w-5 h-5 text-gray-600" />
+                </button>
+                
+                {showShareMenu && (
+                  <>
+                    <div 
+                      className="fixed inset-0 z-40" 
+                      onClick={() => setShowShareMenu(false)}
+                    />
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                      <button
+                        onClick={() => handleShare('copy')}
+                        className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-3 text-sm"
+                      >
+                        <Copy className="w-4 h-4 text-gray-600" />
+                        <span>Copy Link</span>
+                      </button>
+                      <button
+                        onClick={() => handleShare('whatsapp')}
+                        className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-3 text-sm"
+                      >
+                        <MessageCircle className="w-4 h-4 text-green-600" />
+                        <span>WhatsApp</span>
+                      </button>
+                      <button
+                        onClick={() => handleShare('telegram')}
+                        className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-3 text-sm"
+                      >
+                        <Send className="w-4 h-4 text-blue-500" />
+                        <span>Telegram</span>
+                      </button>
+                      {navigator.share && (
+                        <>
+                          <hr className="my-2 border-gray-200" />
+                          <button
+                            onClick={() => handleShare('native')}
+                            className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-3 text-sm"
+                          >
+                            <Share2 className="w-4 h-4 text-gray-600" />
+                            <span>More Options</span>
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="px-4 pb-6 bg-white">
+            <div className="flex space-x-2 justify-center">
+              {product?.images.map((item, index) => (
+                <button 
+                  key={index} 
+                  className={`w-16 h-16 rounded-lg border-2 ${activeSlide === index ? 'border-red-500' : 'border-gray-200'} overflow-hidden`}
+                  onClick={() => swiperRef?.slideTo(index)}
+                >
+                  <img 
+                    src={`https://smartteamaz-001-site1.qtempurl.com${item?.imageUrl}`}
+                    alt={`${product.name} ${index + 1}`}
+                    className="w-full aspect-square h-full object-contain"
+                    onError={(e) => {
+                        e.target.src =  "/Icons/logo.svg"
+                      }}
+                  />
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="p-4 mb-6 space-y-3 border-y-1 border-[#DEE2E6] bg-white w-full h-full self-end">
+          <button 
+              onClick={handleAddToCart}
+              disabled={!isInStock || isAddingToCart || showSuccess}
+              className={`w-full flex justify-center items-center py-3 mt-6 rounded-lg font-medium transition-colors duration-200 ${
+                  !isInStock 
+                      ? 'bg-gray-400 cursor-not-allowed text-white' 
+                      : isAddingToCart
+                      ? 'bg-red-400 cursor-not-allowed text-white'
+                      : showSuccess
+                      ? 'bg-green-500 cursor-default text-white'
+                      : 'bg-red-500 hover:bg-red-600 cursor-pointer text-white'
+              }`}
+          >
+              {!isInStock ? (
+                  'Out of Stock'
+              ) : isAddingToCart ? (
+                  <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Adding...
+                  </>
+              ) : showSuccess ? (
+                  <>
+                      <Check className="w-4 h-4 mr-2" />
+                      Added to cart
+                  </>
+              ) : (
+                  'Add To Cart'
+              )}
+          </button>
+        </div>
+
+        <div className="bg-white border-y-1 border-[#DEE2E6] mt-4 helveticaNow">
+          <div className="px-4 py-4">
+            <div className="flex items-center justify-between mb-4 px-2 inter">
+              <h2 className="text-lg font-semibold text-gray-900">Features</h2>
+            </div>
+            <div className="space-y-3">
+              {features.slice(0, 5).map((feature, index) => (
+                <div key={index}>
+                  <div className="flex justify-between px-3 items-center inter">
+                    <span className="text-[#858a92]">{feature.label}</span>
+                    <span className="text-gray-900">{feature.value}</span>
+                  </div>
+                  {index < features.slice(0, 5).length - 1 && (
+                    <hr className="my-2 mx-2 border-gray-300" />
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <SimilarProducts
+           products={recommendation?.recentlyAdded} 
+           isLoading={isRecLoading} 
+         />
       </div>
-      <div className="min-h-[70vh] bg-gray-50 pt-8 sm:pt-0">
-        {/* Mobile Layout */}
-        <div className="md:hidden">
-          <div className="bg-white border-y-1 border-[#DEE2E6]">
-            <div className="px-7 py-3">
-              <div className="flex items-center text-lg font-medium mb-2 inter">
+
+      {/* Desktop Layout */}
+      <div className="hidden md:block max-w-7xl mx-auto px-4 pb-8">
+        <div className='py-4 pb-8'>
+          <Breadcrumb productData={product}/>
+        </div>
+        <div className="grid grid-cols-2 gap-8">
+          <div className="space-y-4 w-full">
+            <div className="bg-white rounded-lg p-4 w-full flex h-full justify-center flex-col items-center py-9 sm:border-1 sm:border-[#DEE2E6]">
+              <div onClick={() => openDetail(product?.images?.findIndex(img => img.imageUrl === hovered) !== -1 ? product?.images?.findIndex(img => img.imageUrl === hovered) : 0)} className='w-fit cursor-pointer hover:opacity-90 transition-opacity'>
+                <img 
+                  src={hovered ? `https://smartteamaz-001-site1.qtempurl.com${hovered}` : `https://smartteamaz-001-site1.qtempurl.com${product.imageUrl}`}
+                  alt={product.name}
+                  className="h-80 object-contain rounded-lg transition-opacity duration-300 ease-in-out"
+                  key={hovered || product.imageUrl}
+                  style={{ animation: 'fadeIn 0.3s ease-in-out' }}
+                  onError={(e) => {
+                    e.target.src = "/Icons/logo.svg"
+                  }}
+                />
+              </div>
+
+              <div className="flex space-x-2 mt-4">
+                {product?.images.map((item, index) => (
+                  <div 
+                    key={index} 
+                    onMouseEnter={() => setHovered(item.imageUrl)} 
+                    onMouseLeave={() => setHovered(null)} 
+                    onClick={() => openDetail(index)}
+                    className={`w-16 h-16 rounded-lg border-2 border-gray-200 overflow-hidden cursor-pointer transition-all duration-200 ease-in-out hover:scale-110 hover:shadow-lg ${hovered === item.imageUrl ? 'ring-2 ring-red-500 ring-offset-2' : ''}`}
+                  >
+                    <img 
+                      src={`https://smartteamaz-001-site1.qtempurl.com${item.imageUrl}`}
+                      alt={`${product.name} ${index + 1}`}
+                      className="w-full h-full object-contain transition-transform duration-200 hover:scale-105"
+                      onError={(e) => {
+                        e.target.src = "/Icons/logo.svg"
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-6 h-full">
+            <div className="bg-white rounded-lg flex flex-col justify-between p-10 h-full sm:border-1 sm:border-[#DEE2E6]">
+              <div className="flex items-center text-lg font-medium mb-3 inter">
                 {isInStock ? (
                   <>
                     <Check className='w-[20px] text-green-500' />
-                    <span className="text-green-500">In stock</span>
+                    <span className="text-green-500">In stock ({product.stockQuantity} available)</span>
                   </>
                 ) : (
                   <>
@@ -601,417 +862,165 @@ function Details() {
                   </>
                 )}
               </div>
-              <div className="flex items-center">
-                <h1 className="text-xl text-gray-900 inter">{product.name}</h1>
-              </div>
-              {hasDiscount && (
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-2xl font-bold text-red-500">{product?.prices[0].discountedPrice} AZN</span>
-                  <span className="text-lg text-gray-500 line-through">{product?.prices[0].price} AZN</span>
-                  <span className="bg-red-100 text-red-800 px-2 py-1 rounded text-sm font-medium">
-                    -{product.discountPercentage}%
-                  </span>
-                </div>
-              )}
-            </div>
-
-            <div className="relative px-4 mb-4 flex w-full justify-center">
-              <div className='self-center w-full'>
-                <Swiper
-                  pagination={false}
-                  autoplay={{ delay: 3000, disableOnInteraction: false }}
-                  modules={[Pagination, Autoplay]}
-                  className="mySwiper max-w-[65vw]"
-                  onSlideChange={(swiper) => setActiveSlide(swiper.activeIndex)}
-                  onSwiper={setSwiperRef}
-                >
-                  {product?.images.map((item, index) => (
-                    <SwiperSlide key={index} className='relative h-64 py-5 pt-8 rounded-lg'>
-                      <img 
-                        className='w-full rounded-lg p-3 aspect-square' 
-                        src={`https://smartteamaz-001-site1.qtempurl.com${item?.imageUrl}`} 
-                        alt={item?.name || 'Product'}
-                        onError={(e) => {
-                          e.target.src =  "/Icons/logo.svg"
-                        }}
-                      />
-                    </SwiperSlide>
-                  ))}
-                  <SwiperSlide className='relative h-64 py-5 pt-8 rounded-lg'>
-                     <img 
-                        className='w-full rounded-lg p-3 aspect-square' 
-                        src={`https://smartteamaz-001-site1.qtempurl.com${product?.imageUrl}`} 
-                        alt={product?.name || 'Product'}
-                        onError={(e) => {
-                          e.target.src =  "/Icons/logo.svg"
-                        }}
-                      />
-                  </SwiperSlide>
-                </Swiper>
-              </div>
-
-              <div className="absolute top-10 right-6 flex flex-col gap-3">
-                <button onClick={() => handleToggleFavorite(id)} className="p-2 bg-gray-100 cursor-pointer rounded-lg hover:bg-gray-200 transition-colors"> 
-                  <Heart className={`w-5 h-5 text-gray-600 ${favoriteStatus?.isFavorite && 'fill-current'}`} />
-                </button>
-                <button 
-                  onClick={handleDownloadPdf} 
-                  className="p-2 bg-gray-100 cursor-pointer rounded-lg hover:bg-gray-200 transition-colors"
-                >
-                  <Download className="w-5 h-5 text-gray-600" />
-                </button>
-                <div className="relative">
-                  <button 
-                    onClick={() => setShowShareMenu(!showShareMenu)}
-                    className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                  >
-                    <Share2 className="w-5 h-5 text-gray-600" />
-                  </button>
+              
+              <div className="flex items-start justify-between mb-6">
+                <div>
+                  <h1 className="text-2xl font-semibold text-gray-900 mb-2">{product.name}</h1>  
+                  <p className="text-gray-600 mb-4 line-clamp-5">{product.description}</p>
                   
-                  {showShareMenu && (
-                    <>
-                      <div 
-                        className="fixed inset-0 z-40" 
-                        onClick={() => setShowShareMenu(false)}
-                      />
-                      <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                        <button
-                          onClick={() => handleShare('copy')}
-                          className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-3 text-sm"
-                        >
-                          <Copy className="w-4 h-4 text-gray-600" />
-                          <span>Copy Link</span>
-                        </button>
-                        <button
-                          onClick={() => handleShare('whatsapp')}
-                          className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-3 text-sm"
-                        >
-                          <MessageCircle className="w-4 h-4 text-green-600" />
-                          <span>WhatsApp</span>
-                        </button>
-                        <button
-                          onClick={() => handleShare('telegram')}
-                          className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-3 text-sm"
-                        >
-                          <Send className="w-4 h-4 text-blue-500" />
-                          <span>Telegram</span>
-                        </button>
-                        {navigator.share && (
-                          <>
-                            <hr className="my-2 border-gray-200" />
-                            <button
-                              onClick={() => handleShare('native')}
-                              className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-3 text-sm"
-                            >
-                              <Share2 className="w-4 h-4 text-gray-600" />
-                              <span>More Options</span>
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="px-4 pb-6 bg-white">
-              <div className="flex space-x-2 justify-center">
-                {product?.images.map((item, index) => (
-                  <button 
-                    key={index} 
-                    className={`w-16 h-16 rounded-lg border-2 ${activeSlide === index ? 'border-red-500' : 'border-gray-200'} overflow-hidden`}
-                    onClick={() => swiperRef?.slideTo(index)}
-                  >
-                    <img 
-                      src={`https://smartteamaz-001-site1.qtempurl.com${item?.imageUrl}`}
-                      alt={`${product.name} ${index + 1}`}
-                      className="w-full aspect-square h-full object-contain"
-                      onError={(e) => {
-                          e.target.src =  "/Icons/logo.svg"
-                        }}
-                    />
-
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-
-          <div className="p-4 mb-6 space-y-3 border-y-1 border-[#DEE2E6] bg-white w-full h-full self-end">
-            <button 
-                onClick={handleAddToCart}
-                disabled={!isInStock || isAddingToCart || showSuccess}
-                className={`w-full flex justify-center items-center py-3 mt-6 rounded-lg font-medium transition-colors duration-200 ${
-                    !isInStock 
-                        ? 'bg-gray-400 cursor-not-allowed text-white' 
-                        : isAddingToCart
-                        ? 'bg-red-400 cursor-not-allowed text-white'
-                        : showSuccess
-                        ? 'bg-green-500 cursor-default text-white'
-                        : 'bg-red-500 hover:bg-red-600 cursor-pointer text-white'
-                }`}
-            >
-                {!isInStock ? (
-                    'Out of Stock'
-                ) : isAddingToCart ? (
-                    <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Adding...
-                    </>
-                ) : showSuccess ? (
-                    <>
-                        <Check className="w-4 h-4 mr-2" />
-                        Added to cart
-                    </>
-                ) : (
-                    'Add To Cart'
-                )}
-            </button>
-          </div>
-
-          <div className="bg-white border-y-1 border-[#DEE2E6] mt-4 helveticaNow">
-            <div className="px-4 py-4">
-              <div className="flex items-center justify-between mb-4 px-2 inter">
-                <h2 className="text-lg font-semibold text-gray-900">Features</h2>
-              </div>
-              <div className="space-y-3">
-                {features.slice(0, 5).map((feature, index) => (
-                  <div key={index}>
-                    <div className="flex justify-between px-3 items-center inter">
-                      <span className="text-[#858a92]">{feature.label}</span>
-                      <span className="text-gray-900">{feature.value}</span>
-                    </div>
-                    {index < features.slice(0, 5).length - 1 && (
-                      <hr className="my-2 mx-2 border-gray-300" />
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl font-bold text-red-500">{product?.prices[0].discountedPrice} AZN</span>
+                    {hasDiscount && (
+                      <>
+                        <span className="text-xl text-gray-500 line-through">{product?.prices[0].price} AZN</span>
+                        <span className="bg-red-100 text-red-800 px-3 py-1 rounded text-sm font-medium">
+                          -{product.discountPercentage}%
+                        </span>
+                      </>
                     )}
                   </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <SimilarProducts
-             products={recommendation?.recentlyAdded} 
-             isLoading={isRecLoading} 
-           />
-        </div>
-
-        {/* Desktop Layout */}
-        <div className="hidden md:block max-w-7xl mx-auto px-4 pb-8">
-          <div className='py-4 pb-8'>
-            <Breadcrumb productData={product}/>
-          </div>
-          <div className="grid grid-cols-2 gap-8">
-            <div className="space-y-4 w-full">
-              <div className="bg-white rounded-lg p-4 w-full flex h-full justify-center flex-col items-center py-9 sm:border-1 sm:border-[#DEE2E6]">
-                <div className='w-fit'>
-                  <ImageMagnifier
-                    src={hovered ? `https://smartteamaz-001-site1.qtempurl.com${hovered}` : `https://smartteamaz-001-site1.qtempurl.com${product.imageUrl}`}
-                    alt={product.name}
-                    magnifierHeight={180}
-                    magnifierWidth={180}
-                    zoomLevel={2.5}
-                  />
-                </div>
-
-                <div className="flex space-x-2 mt-4">
-                  {product?.images.map((item, index) => (
-                    <div 
-                      key={index} 
-                      onMouseEnter={() => setHovered(item.imageUrl)} 
-                      onMouseLeave={() => setHovered(null)} 
-                      className={`w-16 h-16 rounded-lg border-2 border-gray-200 overflow-hidden cursor-pointer transition-all duration-200 ease-in-out hover:scale-110 hover:shadow-lg ${hovered === item.imageUrl ? 'ring-2 ring-red-500 ring-offset-2' : ''}`}
-                    >
-                      <img 
-                        src={`https://smartteamaz-001-site1.qtempurl.com${item.imageUrl}`}
-                        alt={`${product.name} ${index + 1}`}
-                        className="w-full h-full object-contain transition-transform duration-200 hover:scale-105"
-                        onError={(e) => {
-                          e.target.src = "/Icons/logo.svg"
-                        }}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-6 h-full">
-              <div className="bg-white rounded-lg flex flex-col justify-between p-10 h-full sm:border-1 sm:border-[#DEE2E6]">
-                <div className="flex items-center text-lg font-medium mb-3 inter">
-                  {isInStock ? (
-                    <>
-                      <Check className='w-[20px] text-green-500' />
-                      <span className="text-green-500">In stock ({product.stockQuantity} available)</span>
-                    </>
-                  ) : (
-                    <>
-                      <X className='w-[20px] text-red-500' />
-                      <span className="text-red-500">No stock</span>
-                    </>
-                  )}
                 </div>
                 
-                <div className="flex items-start justify-between mb-6">
-                  <div>
-                    <h1 className="text-2xl font-semibold text-gray-900 mb-2">{product.name}</h1>  
-                    <p className="text-gray-600 mb-4 line-clamp-5">{product.description}</p>
-                    
-                    <div className="flex items-center gap-3">
-                      <span className="text-3xl font-bold text-red-500">{product?.prices[0].discountedPrice} AZN</span>
-                      {hasDiscount && (
-                        <>
-                          <span className="text-xl text-gray-500 line-through">{product?.prices[0].price} AZN</span>
-                          <span className="bg-red-100 text-red-800 px-3 py-1 rounded text-sm font-medium">
-                            -{product.discountPercentage}%
-                          </span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="flex space-x-2">
-                    <button 
-                      onClick={handleDownloadPdf} 
-                      className="p-2 bg-gray-100 cursor-pointer rounded-lg hover:bg-gray-200 transition-colors"
-                    >
-                      <Download className="w-5 h-5 text-gray-600" />
-                    </button>
-                    <div className="relative">
-                      <button 
-                        onClick={() => setShowShareMenu(!showShareMenu)}
-                        className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                      >
-                        <Share2 className="w-5 h-5 text-gray-600" />
-                      </button>
-                      
-                      {showShareMenu && (
-                        <>
-                          <div 
-                            className="fixed inset-0 z-40" 
-                            onClick={() => setShowShareMenu(false)}
-                          />
-                          <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                            <button
-                              onClick={() => handleShare('copy')}
-                              className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-3 text-sm"
-                            >
-                              <Copy className="w-4 h-4 text-gray-600" />
-                              <span>Copy Link</span>
-                            </button>
-                            <button
-                              onClick={() => handleShare('whatsapp')}
-                              className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-3 text-sm"
-                            >
-                              <MessageCircle className="w-4 h-4 text-green-600" />
-                              <span>WhatsApp</span>
-                            </button>
-                            <button
-                              onClick={() => handleShare('telegram')}
-                              className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-3 text-sm"
-                            >
-                              <Send className="w-4 h-4 text-blue-500" />
-                              <span>Telegram</span>
-                            </button>
-                            {navigator.share && (
-                              <>
-                                <hr className="my-2 border-gray-200" />
-                                <button
-                                  onClick={() => handleShare('native')}
-                                  className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-3 text-sm"
-                                >
-                                  <Share2 className="w-4 h-4 text-gray-600" />
-                                  <span>More Options</span>
-                                </button>
-                              </>
-                            )}
-                          </div>
-                        </>
-                      )}
-                    </div>
-                    <button onClick={() => handleToggleFavorite(id)} className="p-2 bg-gray-100 cursor-pointer rounded-lg hover:bg-gray-200 transition-colors">
-                      <Heart className={`w-5 h-5 text-gray-600 ${favoriteStatus?.isFavorite && 'fill-current'}`} />
-                    </button>
-                  </div>
-                </div>
-
-                {isInStock && (
-                  <div className="flex items-center gap-4 mb-6 mt-12">
-                    <button 
-                      onClick={() => handleQuantityChange(-1)}
-                      className="p-2 border border-transparent hover:border-gray-300 hover:bg-white cursor-pointer bg-[#ebebeb] rounded-full"
-                    >
-                      <Minus className="w-4 h-4 text-[#6C6C6C]" />
-                    </button>
-                    <span className="text-2xl self-center font-medium text-[#6C6C6C] text-center inter">{quantity}</span>
-                    <button 
-                      onClick={() => handleQuantityChange(1)}
-                      className="p-2 border border-transparent hover:border-gray-300 hover:bg-white cursor-pointer bg-[#ebebeb] rounded-full"
-                    >
-                      <Plus className="w-4 h-4 text-[#6C6C6C]" />
-                    </button>
-                  </div>
-                )}
-
-                <div className='flex flex-col'>
+                <div className="flex space-x-2">
                   <button 
-                      onClick={handleAddToCart}
-                      disabled={!isInStock || isAddingToCart || showSuccess}
-                      className={`w-full flex justify-center items-center py-3 mt-6 rounded-lg font-medium transition-colors duration-200 ${
-                          !isInStock 
-                              ? 'bg-gray-400 cursor-not-allowed text-white' 
-                              : isAddingToCart
-                              ? 'bg-red-400 cursor-not-allowed text-white'
-                              : showSuccess
-                              ? 'bg-green-500 cursor-default text-white'
-                              : 'bg-red-500 hover:bg-red-600 cursor-pointer text-white'
-                      }`}
+                    onClick={handleDownloadPdf} 
+                    className="p-2 bg-gray-100 cursor-pointer rounded-lg hover:bg-gray-200 transition-colors"
                   >
-                      {!isInStock ? (
-                          'Out of Stock'
-                      ) : isAddingToCart ? (
-                          <>
-                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                              Adding...
-                          </>
-                      ) : showSuccess ? (
-                          <>
-                              <Check className="w-4 h-4 mr-2" />
-                              Added to cart
-                          </>
-                      ) : (
-                          'Add To Cart'
-                      )}
+                    <Download className="w-5 h-5 text-gray-600" />
+                  </button>
+                  <div className="relative">
+                    <button 
+                      onClick={() => setShowShareMenu(!showShareMenu)}
+                      className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                    >
+                      <Share2 className="w-5 h-5 text-gray-600" />
+                    </button>
+                    
+                    {showShareMenu && (
+                      <>
+                        <div 
+                          className="fixed inset-0 z-40" 
+                          onClick={() => setShowShareMenu(false)}
+                        />
+                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                          <button
+                            onClick={() => handleShare('copy')}
+                            className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-3 text-sm"
+                          >
+                            <Copy className="w-4 h-4 text-gray-600" />
+                            <span>Copy Link</span>
+                          </button>
+                          <button
+                            onClick={() => handleShare('whatsapp')}
+                            className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-3 text-sm"
+                          >
+                            <MessageCircle className="w-4 h-4 text-green-600" />
+                            <span>WhatsApp</span>
+                          </button>
+                          <button
+                            onClick={() => handleShare('telegram')}
+                            className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-3 text-sm"
+                          >
+                            <Send className="w-4 h-4 text-blue-500" />
+                            <span>Telegram</span>
+                          </button>
+                          {navigator.share && (
+                            <>
+                              <hr className="my-2 border-gray-200" />
+                              <button
+                                onClick={() => handleShare('native')}
+                                className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-3 text-sm"
+                              >
+                                <Share2 className="w-4 h-4 text-gray-600" />
+                                <span>More Options</span>
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  <button onClick={() => handleToggleFavorite(id)} className="p-2 bg-gray-100 cursor-pointer rounded-lg hover:bg-gray-200 transition-colors">
+                    <Heart className={`w-5 h-5 text-gray-600 ${favoriteStatus?.isFavorite && 'fill-current'}`} />
                   </button>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <div className="bg-white rounded-lg p-6 mt-8 sm:border-1 sm:border-[#DEE2E6]">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Features</h2>
-            <div className="grid grid-cols-2 gap-x-12 gap-y-4">
-              {features.map((feature, index) => (
-                <div key={index}>
-                  <div className="flex justify-between items-center inter mx-2">
-                    <span className="text-gray-600">{feature.label}</span>
-                    <span className="text-gray-900 font-medium">{feature.value}</span>
-                  </div>
-                  <hr className="my-2 border-gray-300" />
+              {isInStock && (
+                <div className="flex items-center gap-4 mb-6 mt-12">
+                  <button 
+                    onClick={() => handleQuantityChange(-1)}
+                    className="p-2 border border-transparent hover:border-gray-300 hover:bg-white cursor-pointer bg-[#ebebeb] rounded-full"
+                  >
+                    <Minus className="w-4 h-4 text-[#6C6C6C]" />
+                  </button>
+                  <span className="text-2xl self-center font-medium text-[#6C6C6C] text-center inter">{quantity}</span>
+                  <button 
+                    onClick={() => handleQuantityChange(1)}
+                    className="p-2 border border-transparent hover:border-gray-300 hover:bg-white cursor-pointer bg-[#ebebeb] rounded-full"
+                  >
+                    <Plus className="w-4 h-4 text-[#6C6C6C]" />
+                  </button>
                 </div>
-              ))}
+              )}
+
+              <div className='flex flex-col'>
+                <button 
+                    onClick={handleAddToCart}
+                    disabled={!isInStock || isAddingToCart || showSuccess}
+                    className={`w-full flex justify-center items-center py-3 mt-6 rounded-lg font-medium transition-colors duration-200 ${
+                        !isInStock 
+                            ? 'bg-gray-400 cursor-not-allowed text-white' 
+                            : isAddingToCart
+                            ? 'bg-red-400 cursor-not-allowed text-white'
+                            : showSuccess
+                            ? 'bg-green-500 cursor-default text-white'
+                            : 'bg-red-500 hover:bg-red-600 cursor-pointer text-white'
+                    }`}
+                >
+                    {!isInStock ? (
+                        'Out of Stock'
+                    ) : isAddingToCart ? (
+                        <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Adding...
+                        </>
+                    ) : showSuccess ? (
+                        <>
+                            <Check className="w-4 h-4 mr-2" />
+                            Added to cart
+                        </>
+                    ) : (
+                        'Add To Cart'
+                    )}
+                </button>
+              </div>
             </div>
           </div>
-          <SimilarProducts
-             products={recommendation?.recentlyAdded} 
-             isLoading={isRecLoading} 
-           />
         </div>
+
+        <div className="bg-white rounded-lg p-6 mt-8 sm:border-1 sm:border-[#DEE2E6]">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Features</h2>
+          <div className="grid grid-cols-2 gap-x-12 gap-y-4">
+            {features.map((feature, index) => (
+              <div key={index}>
+                <div className="flex justify-between items-center inter mx-2">
+                  <span className="text-gray-600">{feature.label}</span>
+                  <span className="text-gray-900 font-medium">{feature.value}</span>
+                </div>
+                <hr className="my-2 border-gray-300" />
+              </div>
+            ))}
+          </div>
+        </div>
+        <SimilarProducts
+           products={recommendation?.recentlyAdded} 
+           isLoading={isRecLoading} 
+         />
       </div>
-    </>
-  )
+    </div>
+  </>
+    )
 }
 
 export default Details;
