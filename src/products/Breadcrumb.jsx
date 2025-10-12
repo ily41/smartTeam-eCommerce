@@ -37,7 +37,7 @@ export function Breadcrumb({ productData = null }) {
           <>
             <ChevronRight className="w-4 h-4 text-gray-400" />
             <Link
-              to={`/category/${productData.parentCategoryName
+              to={`/${productData.parentCategorySlug
                 .toLowerCase()
                 .replace(/\s+/g, "-")}`}
               className="hover:text-gray-900 transition-colors text-sm lg:text-lg"
@@ -52,7 +52,7 @@ export function Breadcrumb({ productData = null }) {
             <>
               <ChevronRight className="w-4 h-4 text-gray-400" />
               <Link
-                to={`/category/${productData.subCategoryName
+                to={`/products/${productData.categorySlug
                   .toLowerCase()
                   .replace(/\s+/g, "-")}`}
                 className="hover:text-gray-900 transition-colors text-sm lg:text-lg"

@@ -328,7 +328,7 @@ const Cart = () => {
                         {/* Mobile View */}
                         <div className="space-y-4 lg:hidden">
                           <div className="flex items-start rounded-lg">
-                            <div className="w-30 h-30 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center mr-4 overflow-hidden">
+                            <div className="w-30 h-30  rounded-lg flex items-center justify-center mr-4 overflow-hidden">
                               <img
                                 className='w-full rounded-lg p-3 aspect-square'
                                 src={`https://smartteamaz-001-site1.qtempurl.com${item?.productImageUrl}`}
@@ -479,7 +479,7 @@ const Cart = () => {
                   </div>
                   <div className="flex justify-between text-lg mb-7 font-bold text-gray-900 pt-2 border-t border-gray-200">
                     <span>Total:</span>
-                    <span>{cartItemsD.totalAmount - cartItemsD?.totalDiscount} AZN</span>
+                    <span>{(cartItemsD.totalAmount - cartItemsD?.totalDiscount).toFixed(2)} AZN</span>
                   </div>
                 </div>
 

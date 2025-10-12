@@ -80,7 +80,7 @@ const BannerSlider = () => {
                   ))}
               </h1>
 
-               <p className="hidden lg:block text-xl inter">
+               <p className="hidden md:block text-xl inter">
                 {banner.description
                   .split(" ") 
                   .map((word, index) => (

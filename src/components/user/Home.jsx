@@ -164,15 +164,10 @@ const Home = () => {
           console.error('Failed to add product to cart:', err);
           
           if (err?.status === 401 || err?.data?.status === 401) {
-            if (error?.status === 401 || error?.data?.status === 401 || error?.response?.status === 401) {
                         setUnauthorizedAction('add items to cart');   
-                        setShowUnauthorizedModal(true);              
-                    } else {
-                        console.error('Add to cart error:', error);
-                        toast.error('Failed to add to cart');
-                    }
+                        setShowUnauthorizedModal(true);             
           } else {
-            toast.error("Failed to add product to cart");
+            toast.error(t('failedAddToCart'));
           }
         }
       };
@@ -342,7 +337,7 @@ const Home = () => {
 
         <section className='mt-12 mx-4 inter lg:hidden'>
             <div className='flex justify-between text-xl font-semibold'>
-                <h1>Categories</h1>
+                <h1>{t('categories')}</h1>           
             </div>
 
             <div className='grid grid-cols-3 mt-10 gap-2 text-sm'>
@@ -352,7 +347,7 @@ const Home = () => {
                       <img className='w-full object-contain max-h-[160px]' src="./deals/network.svg" alt="" />
                     </div>
                     <div className='flex flex-col w-full text-start self-start'>
-                      <p className='text-xl inter mb-1 md:text-2xl'>Network Equipment</p>
+                      <p className='text-xl inter mb-1 md:text-2xl'>{t('networkEquipmentTitle')}</p>
                       <p className='text-sm md:text-base text-[#AFB0B1]'>Reliable routers, switches, and cabling systems for fast, stable, and secure connectivity. Scalable solutions to keep your business connected and future-ready.</p>
                     </div>
                   </div>
@@ -362,7 +357,7 @@ const Home = () => {
                 <div className='max-w-[130px]'>
                   <img className='min-h-[120px]' src="./deals/homeComputer.svg" alt="" />
                 </div>
-                <p className='text-center'>Computers</p>
+                <p className='text-center'>{t('computers')}</p>
               </Link>
               <Link to='noutbuklar' className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
@@ -374,25 +369,25 @@ const Home = () => {
                 <div className='max-w-[130px]'>
                   <img className='min-h-[120px]' src="./deals/homePrinter.svg" alt="" />
                 </div>
-                <p className='text-center'>Office Equipment</p>
+                <p className='text-center'>{t('officeEquipment')}</p>
               </Link>
               <Link to='ticaret-avadanliqlari' className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
                   <img className='min-h-[120px]' src="./deals/homeBarcode.svg" alt="" />
                 </div>
-                <p className='text-center'>Commercial Equipment</p>
+                <p className='text-center'>{t('commercialEquipment')}</p>
               </Link>
               <Link to='musahide-sistemleri' className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
                   <img className='min-h-[120px]' src="./deals/homeSurveillance.svg" alt="" />
                 </div>
-                <p className='text-center'>Surveillance system</p>
+                <p className='text-center'>{t('surveillanceSystem')}</p>
               </Link>
               <Link to='komputer-avadanliqlari' className='bg-white self-center justify-center items-center flex flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
                   <img className='min-h-[120px]' src="./deals/homeKeyboard.svg" alt="" />
                 </div>
-                <p className='text-center'>Computer Equipment</p>
+                <p className='text-center'>{t('computerEquipment')}</p>
               </Link>
             </div>
         </section>
@@ -404,18 +399,18 @@ const Home = () => {
           {/* Left section with timer */}
           <div className='py-4 lg:pr-9 lg:border-r my-auto lg:border-gray-300 lg:min-w-[200px]'>
           <div className='inter py-4 lg:border-t-0 lg:p-0'>
-            <h1 className='text-xl font-semibold mb-1'>Deals and offers</h1>
+            <h1 className='text-xl font-semibold mb-1'>{t('dealsAndOffers')}</h1>
           </div>
                     
           {/* Timer - hidden on mobile, shown on lg+ */}
           <div className='hidden lg:block text-[#8C8C8C]'>
-            <p>Get the hottest discounts on top</p>
-            <p>electronics — limited-time offers</p>
-            <p>you don't want to miss!</p>
+            <p>{t('dealDescription1')}</p>
+            <p>{t('dealDescription2')}</p>
+            <p>{t('dealDescription3')}</p>
           </div>
 
           <div className='hidden lg:block'>
-            <Link to='/products/hot-deals'className='flex gap-2 text-[#E60C03] font-semibold mt-3'>Explore now <img src="./Icons/rightarrowHome.svg" alt="" /></Link>
+            <Link to='/products/hot-deals'className='flex gap-2 text-[#E60C03] font-semibold mt-3'>{t('exploreNow')} <img src="./Icons/rightarrowHome.svg" alt="" /></Link>
           </div>
           </div>
 
@@ -518,8 +513,8 @@ const Home = () => {
 
         <section className='mt-12 mx-4 lg:w-[85vw] lg:mx-auto'>
             <div className='flex justify-between text-xl font-semibold'>
-                <h1>Hot Deals</h1>
-                <Link to='/products/hot-deals' className='text-[#E60C03] cursor-pointer text-lg'>More</Link>
+                <h1>{t('hotDeals')}</h1>
+                <Link to='/products/hot-deals' className='text-[#E60C03] cursor-pointer text-lg'>{t('more')}</Link>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 [@media(min-width:1300px)]:grid-cols-5 [@media(min-width:1500px)]:grid-cols-6 lg:grid-cols-4 gap-2 mt-5 whitespace-nowrap">
@@ -550,7 +545,7 @@ const Home = () => {
 
         <section className='py-12 mx-4  lg:w-[85vw] lg:mx-auto'>
             <div className='text-2xl mb-8 font-semibold'>
-                <h1>Location</h1>
+                <h1>{t('location')}</h1>
             </div>
             <MyMap />
         </section>

@@ -14,10 +14,12 @@ import {
   useGetFavoritesQuery,
   useGetHotDealsQuery,
   useGetRecommendedQuery,
-  useGetProductsBrandQuery
+  useGetProductsBrandQuery,
+  useGetProductsCategorySlugQuery
 } from '../../store/API';
 import { toast } from 'react-toastify';
 import { useParams } from 'react-router';
+import { useTranslation } from 'react-i18next';
 
 
 const ProductCardSkeleton = ({ col }) => (
@@ -104,13 +106,13 @@ const CustomDropdown = ({ value, onChange, options }) => {
 function Products() {
   const { slug } = useParams();
   const location = window.location.pathname;
+  const { t } = useTranslation();
   
   // Extract brand slug if this is a brand route
   const pathParts = location.split('/');
   const isBrandRoute = pathParts.includes('brand');
   const brandSlug = isBrandRoute ? pathParts[pathParts.indexOf('brand') + 1] : null;
   
-  console.log('slug:', slug, 'brandSlug:', brandSlug, 'isBrandRoute:', isBrandRoute);
   
   // Determine if this is a special slug
   const isHotDeals = slug === 'hot-deals';
@@ -130,11 +132,11 @@ function Products() {
   const [template, setTemplate] = useState(isMobile ? "cols" : "rows");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10); 
-  
-  const { data: productDefault, isLoading: isLoadingProducts } = useGetProductsQuery(slug, {
-    skip: isSpecialSlug
-  });
+  console.log(slug)
+  const { data: productDefault, isLoading: isLoadingProducts } = useGetProductsCategorySlugQuery(slug);
+  console.log("default")
   console.log(productDefault)
+
   const { data: hotDeals, isLoading: isHotDealsLoading } = useGetHotDealsQuery(undefined,
     { limit: 10 }, 
     { skip: !isHotDeals });
@@ -186,15 +188,21 @@ function Products() {
     if (isHotDeals && hotDeals && !filtersApplied) {
       setProducts(hotDeals);
       setTotalItems(hotDeals.length);
+      console.log("set to hotdeals")
+
     } else if (isRecommended && recommended?.recentlyAdded && !filtersApplied) {
       setProducts(recommended.recentlyAdded);
       setTotalItems(recommended.recentlyAdded.length);
+      console.log("set to recently")
+
     } else if (isBrand && brandProducts && !filtersApplied) {
       setProducts(brandProducts);
       setTotalItems(brandProducts.length);
+      console.log("set to brand")
     } else if (!isSpecialSlug && productDefault && !filtersApplied) {
       setProducts(productDefault);
       setTotalItems(productDefault.length);
+      console.log("set to default")
     }
   }, [productDefault, hotDeals, recommended, brandProducts, filtersApplied, isHotDeals, isRecommended, isBrand, isSpecialSlug]);
 
@@ -235,9 +243,7 @@ function Products() {
     }
   }, [productDefault, hotDeals, recommended, brandProducts, isHotDeals, isRecommended, isBrand]);
 
-  const handleRemoveFilter = (filterToRemove) => {
-    console.log('Remove filter:', filterToRemove);
-  };
+
 
   const handleSortChange = (e) => {
     const value = e.target.value;
@@ -334,7 +340,7 @@ function Products() {
             />
           </div>
 
-          <div className="flex-1">
+          <div className="flex-1"> 
             <MobileFilterButtons 
               onFilterResults={handleFilterResults}
               onLoadingChange={setIsLoading}

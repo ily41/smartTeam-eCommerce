@@ -1,20 +1,79 @@
 {
+
+  "dealsDescriptionLine1": "Get the hottest discounts on top",
+  "dealsDescriptionLine2": "electronics — limited-time offers",
+  "dealsDescriptionLine3": "you don't want to miss!",
+
+  "home": "Home",
+  "about": "About Us",
+  "download": "Download Program",
+  "contact": "Contact",
+  "favorites": "Favorites",
+  "myCart": "My Cart",
+  "login": "Login",
+  "phone": "Phone",
+  "searchProducts":"Search products...",
+  "featuredBrands": "Featured Brands",
+  "products":"Products",
+
+  "menu": {
+    "home": "Home",
+    "about": "About",
+    "download": "Download Programs",
+    "contact": "Contact Us",
+    "login": "Login"
+  },
+
   "categories": "Categories",
+  "networkEquipmentTitle": "Network Equipment",
+  "networkEquipmentDesc": "Reliable routers, switches, and cabling systems for fast, stable, and secure connectivity. Scalable solutions to keep your business connected and future-ready.",
   "computers": "Computers",
   "laptops": "Laptops",
   "officeEquipment": "Office Equipment",
   "commercialEquipment": "Commercial Equipment",
-  "surveillanceSystem": "Surveillance System",
+  "surveillanceSystem": "Surveillance system",
   "computerEquipment": "Computer Equipment",
-  "networkEquipmentTitle": "Network Equipment",
-  "networkEquipmentDesc": "Reliable routers, switches, and cabling systems for fast, stable, and secure connectivity.",
-  "dealsAndOffers": "Deals and Offers",
-  "dealsDescriptionLine1": "Get the hottest discounts on top",
-  "dealsDescriptionLine2": "electronics — limited-time offers",
-  "dealsDescriptionLine3": "you don't want to miss!",
+  "dealsAndOffers": "Deals and offers",
+  "dealDescription1": "Get the hottest discounts on top",
+  "dealDescription2": "electronics — limited-time offers",
+  "dealDescription3": "you don't want to miss!",
   "exploreNow": "Explore now",
   "recommendedItems": "Recommended Items",
-  "hotDeals": "Hot Deals",
   "more": "More",
-  "location": "Location"
+  "hotDeals": "Hot Deals",
+  "location": "Location",
+  "failedAddToCart": "Failed to add product to cart",
+
+  "footer": {
+    "desc1": "Our company provides sales and installation",
+    "desc2": "services for computers, office equipment, and",
+    "desc3": "low-current systems.",
+    "mainPages": "Main Pages",
+    "auth": "Authentication",
+    "home": "Home",
+    "about": "About Us",
+    "download": "Download Program",
+    "contact": "Contact",
+    "login": "Log In",
+    "contactUs": "Contact Us",
+    "address1": "Qurban Abbasov 35",
+    "address2": "Sadarak Mall, ",
+    "address3": "Row 5-6, Store 60",
+    "langEnglish": "English",
+    "langAzerbaijani": "Azerbaijani"
+  },
+
+  
+  "itemsFound": "items",
+  "inCategory": "in",
+  "noProductsFound": "No products found",
+  "tryAdjustingFilters": "Try adjusting your filters",
+  "sortBy": "Sort by",
+  "priceLowToHigh": "Price: Low to High",
+  "priceHighToLow": "Price: High to Low",
+  "nameAToZ": "Name: A to Z",
+  "nameZToA": "Name: Z to A",
+  "pleaseLoginFirst": "Please log in first",
+  "failedUpdateFavorites": "Failed to update favorites"
+
 }

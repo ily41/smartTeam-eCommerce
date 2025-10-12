@@ -1,12 +1,16 @@
 import React from "react";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 
-const center = {
-  lat: 40.3423741, lng: 49.8412698,
-};
-
 const markers = [
-{ lat: 40.3423741, lng: 49.8412698, title: "Smartteam" },];
+  { lat: 40.3419741, lng: 49.8399698, title: "Smartteam Office 1" },
+  { lat: 40.329590, lng: 49.781784, title: "Smartteam Office 2" },
+];
+
+// Calculate center between both markers
+const center = {
+  lat: (markers[0].lat + markers[1].lat) / 2,
+  lng: (markers[0].lng + markers[1].lng) / 2,
+};
 
 function MyMap() {
   return (
@@ -15,7 +19,7 @@ function MyMap() {
         <GoogleMap
           mapContainerStyle={{ width: "100%", height: "100%" }}
           center={center}
-          zoom={15}
+          zoom={13}
           options={{
             mapTypeControl: true,
             fullscreenControl: true,

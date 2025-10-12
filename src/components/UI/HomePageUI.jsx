@@ -43,7 +43,7 @@ import { toast } from 'react-toastify';
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
                   Sign In Required
                 </h3>
-                <p className="text-sm text-gray-600 mb-6">
+                <p className="text-sm whitespace-normal  text-gray-600 mb-6">
                   You need to be logged in to {action || 'perform this action'}. Please sign in or create an account to continue.
                 </p>
                 <div className="flex gap-3">
@@ -88,33 +88,28 @@ import { toast } from 'react-toastify';
     }, [favoriteStatus]);
 
     const onAddToCart = async (e, productId) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    setIsLoading(true);
-    setShowSuccess(false);
-    
-    try {
-        await handleAddToCart(productId);
-        setIsLoading(false);
-        setShowSuccess(true);
-        
-        setTimeout(() => {
-            setShowSuccess(false);
-        }, 2000);
-    } catch (error) {
-        setIsLoading(false);
-        
-        // ✅ CHECK FOR 401 UNAUTHORIZED ERROR
-        if (error?.status === 401 || error?.data?.status === 401 || error?.response?.status === 401) {
-            setUnauthorizedAction('add items to cart');   
-            setShowUnauthorizedModal(true);              
-        } else {
-            console.error('Add to cart error:', error);
-            toast.error('Failed to add to cart');
-        }
-    }
-};
+        e.preventDefault();
+        e.stopPropagation();
+
+        setIsLoading(true);
+        setShowSuccess(false);
+
+        try {
+            await handleAddToCart(productId);
+            setIsLoading(false);
+            setShowSuccess(true);
+
+            setTimeout(() => {
+                setShowSuccess(false);
+            }, 2000);
+        } catch (error) {
+            setIsLoading(false);
+
+            // ✅ CHECK FOR 401 UNAUTHORIZED ERROR
+                setUnauthorizedAction('add items to cart');   
+                setShowUnauthorizedModal(true);      
+            }
+    };
 
     const handleFavoriteClick = async (e) => {
         e.preventDefault();
@@ -256,7 +251,7 @@ import { toast } from 'react-toastify';
                     <button
                       onClick={handleFavoriteClick}
                       disabled={isTogglingFavorite}
-                      className="p-3 group rounded-lg absolute right-3 top-3 border-[#DEE2E7] cursor-pointer shadow-sm transition-colors disabled:opacity-50"
+                      className="p-2 group rounded-lg absolute right-3 top-3 border-[#DEE2E7] cursor-pointer shadow-sm transition-colors disabled:opacity-50"
                     >
                       <Heart
                         className={`

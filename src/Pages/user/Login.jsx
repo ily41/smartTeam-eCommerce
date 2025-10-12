@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLoginMutation } from '../../store/API';
 import { jwtDecode } from "jwt-decode";
-import { Loader2 } from 'lucide-react';
+import { Loader2, Eye, EyeOff } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
 
@@ -14,6 +14,12 @@ const Login = () => {
   const [currentView, setCurrentView] = useState('login');
   const [countdown, setCountdown] = useState(20);
   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
+  const [showPassword, setShowPassword] = useState({
+    loginPassword: false,
+    mobileLoginPassword: false,
+    mobileNewPassword: false,
+    mobileConfirmPassword: false
+  });
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -36,15 +42,10 @@ const Login = () => {
   }, [currentView, countdown]);
 
   const togglePassword = (inputId) => {
-    const input = document.getElementById(inputId);
-    const button = input.nextElementSibling;
-    if (input.type === 'password') {
-      input.type = 'text';
-      button.textContent = '🙈';
-    } else {
-      input.type = 'password';
-      button.textContent = '👁';
-    }
+    setShowPassword(prev => ({
+      ...prev,
+      [inputId]: !prev[inputId]
+    }));
   };
 
   const moveToNext = (current, index) => {
@@ -117,7 +118,7 @@ const Login = () => {
               />
               <div className="relative">
                 <input 
-                  type="password" 
+                  type={showPassword.mobileLoginPassword ? "text" : "password"}
                   required 
                   minLength={8} 
                   name='password' 
@@ -131,7 +132,7 @@ const Login = () => {
                   className="absolute right-3 top-1/2 transform cursor-pointer -translate-y-1/2 text-gray-400" 
                   onClick={() => togglePassword('mobileLoginPassword')}
                 >
-                  👁
+                  {showPassword.mobileLoginPassword ? <Eye size={20} /> : <EyeOff size={20} />}
                 </button>
               </div>
               <div className="text-right">
@@ -210,12 +211,34 @@ const Login = () => {
 
             <form className="space-y-4">
               <div className="relative">
-                <input type="password" id="mobileNewPassword" placeholder="New password" className="w-full px-4 py-3 border border-gray-300 rounded-lg pr-12" />
-                <button type="button" className="absolute right-3 top-1/2 transform cursor-pointer -translate-y-1/2 text-gray-400" onClick={() => togglePassword('mobileNewPassword')}>👁</button>
+                <input 
+                  type={showPassword.mobileNewPassword ? "text" : "password"}
+                  id="mobileNewPassword" 
+                  placeholder="New password" 
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg pr-12" 
+                />
+                <button 
+                  type="button" 
+                  className="absolute right-3 top-1/2 transform cursor-pointer -translate-y-1/2 text-gray-400" 
+                  onClick={() => togglePassword('mobileNewPassword')}
+                >
+                  {showPassword.mobileNewPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+                </button>
               </div>
               <div className="relative">
-                <input type="password" id="mobileConfirmPassword" placeholder="Confirm new password" className="w-full px-4 py-3 border border-gray-300 rounded-lg pr-12" />
-                <button type="button" className="absolute right-3 top-1/2 transform cursor-pointer -translate-y-1/2 text-gray-400" onClick={() => togglePassword('mobileConfirmPassword')}>👁</button>
+                <input 
+                  type={showPassword.mobileConfirmPassword ? "text" : "password"}
+                  id="mobileConfirmPassword" 
+                  placeholder="Confirm new password" 
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg pr-12" 
+                />
+                <button 
+                  type="button" 
+                  className="absolute right-3 top-1/2 transform cursor-pointer -translate-y-1/2 text-gray-400" 
+                  onClick={() => togglePassword('mobileConfirmPassword')}
+                >
+                  {showPassword.mobileConfirmPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+                </button>
               </div>
               <button type="button" className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold" onClick={() => setCurrentView('passwordChanged')}>Verify</button>
             </form>
@@ -264,7 +287,7 @@ const Login = () => {
               
               <div className="relative">
                 <input 
-                  type="password" 
+                  type={showPassword.loginPassword ? "text" : "password"}
                   required 
                   minLength={8} 
                   name='password' 
@@ -278,7 +301,7 @@ const Login = () => {
                   className="absolute right-3 top-1/2 cursor-pointer transform -translate-y-1/2 text-gray-400" 
                   onClick={() => togglePassword('loginPassword')}
                 >
-                  👁
+                  {showPassword.loginPassword ? <Eye size={20} /> : <EyeOff size={20} />}
                 </button>
               </div>
 

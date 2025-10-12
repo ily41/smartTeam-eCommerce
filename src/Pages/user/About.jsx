@@ -23,7 +23,8 @@ const About = () => {
               <img className="rounded-lg w-full md:hidden" src="/Banners/aboutBanner.svg" alt="" />
               <img className="rounded-lg  hidden md:block min-h-[250px] w-full object-cover" src="/Banners/aboutBannerDesk.svg" alt="" />
 
-              <div className="absolute left-[-6%] md:left-[-10%] bottom-[-6%] md:bottom-[-5%] md:min-w-[270px]  md:text-[11px] text-white rounded-lg border max-w-[280px] border-[#818686] bg-transparent backdrop-blur-[29px] p-4 w-[66%] md:w-[70%]  lg:text-[12px]   text-xs inter">
+              <div className="absolute left-[-6%] md:left-[-10%] bottom-[-6%] md:bottom-[-5%] md:min-w-[270px]  md:text-[11px] text-white rounded-lg 
+              border max-w-[280px] border-[#818686] bg-transparent backdrop-blur-[29px] p-4 w-[66%] md:w-[70%]  lg:text-[12px]   text-[6px] [@media(min-width:350px)]:text-[7px] [@media(min-width:360px)]:text-[8px] [@media(min-width:420px)]:text-[9px] [@media(min-width:460px)]:text-[11px] inter">
                 <p >
                  We believe that technology should make life easier, safer, and more productive. That is why we deliver modern IT and security solutions designed to support both businesses and individuals. From small offices to large enterprises, our services are built to provide efficiency, safety, and long-term reliability.
                 </p>
@@ -53,7 +54,7 @@ const About = () => {
             
         </div>
 
-         <section className="md:mt-12 md:mx-4  max-w-[90vw] lg:mx-auto">
+         <section className="md:mt-12   md:max-w-[90vw] md:mx-auto lg:mx-auto">
           <InfiniteBrandSlider />
         </section>
 

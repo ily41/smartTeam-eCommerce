@@ -459,17 +459,17 @@ export const API = createApi({
     }),
 
     editProductWithImage: builder.mutation({
-  query: ({ id, productData, formData }) => ({
-    url: `/api/v1/Products/${id}/with-image?productData=${productData}`,
-    method: 'PUT',
-    body: formData,
-    prepareHeaders: (headers) => {
-      headers.delete('Content-Type');
-      return headers;
-    },
-  }),
-  invalidatesTags: ['Products'],
-}),
+      query: ({ id, productData, formData }) => ({
+        url: `/api/v1/Products/${id}/with-image?productData=${productData}`,
+        method: 'PUT',
+        body: formData,
+        prepareHeaders: (headers) => {
+          headers.delete('Content-Type');
+          return headers;
+        },
+      }),
+      invalidatesTags: ['Products'],
+    }),
 
 
 
@@ -496,6 +496,17 @@ export const API = createApi({
     getProductSpecifications: builder.query({
       query: (id) => ({
         url: `/api/v1/Products/${id}/specifications`,
+        method: 'GET',
+      }),
+      providesTags: (result, error, id) => [{
+        type: 'Products',
+        id
+      }],
+    }),
+
+    getProductsCategorySlug: builder.query({
+      query: (categorySlug) => ({
+        url: `/api/v1/Products/category/slug/${categorySlug}`,
         method: 'GET',
       }),
       providesTags: (result, error, id) => [{
@@ -1147,6 +1158,7 @@ export const {
   useGetProductsQuery,
   useGetHotDealsQuery,
   useGetRecommendedQuery,
+  useGetProductsCategorySlugQuery,
 
   useGetUserStaticsQuery,
   useEditUserMutation,

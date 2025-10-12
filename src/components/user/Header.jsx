@@ -6,6 +6,8 @@ import { Search, X } from 'lucide-react';
 import { SearchContext } from '../../router/Context';
 import { FaRegFile, FaRegUser, FaRegUserCircle, FaUserCircle } from 'react-icons/fa';
 import { PiCarProfile } from 'react-icons/pi';
+import i18next from 'i18next';
+import { useTranslation } from 'react-i18next';
 
 // Skeleton for search results - Desktop
 const SearchProductSkeletonDesktop = () => (
@@ -31,22 +33,36 @@ const SearchProductSkeletonMobile = () => (
   </div>
 );
 
+// Helper function to get cookie value
+const getCookie = (name) => {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return null;
+};
+
 const Header = () => {
   const navigate = useNavigate();
-  const [burgerVi, setBurgerVi] = useState(false)
-  const [open, setOpen] = useState(false)
+  const [burgerVi, setBurgerVi] = useState(false);
+  const [open, setOpen] = useState(false);
+  
+  // Initialize language from cookie or default to 'en'
+  const [selected, setSelected] = useState(() => {
+    const savedLang = getCookie('language');
+    return savedLang || i18next.language || 'en';
+  });
+  
+  const { t } = useTranslation();
   const { searchOpen, setSearchOpen } = useContext(SearchContext);
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchQuery, setSearchQuery] = useState('');
   const dropdownRef = useRef(null);
   const searchDropdownRef = useRef(null);
   const mobileSearchDropdownRef = useRef(null);
   const hasToken = document.cookie.split('; ').some((row) => row.startsWith('token='));
   const { data: cartCount } = useGetCartCountQuery();
-  const { data: me, isLoading: isMeLoading } = useGetMeQuery()
-  console.log(me)
+  const { data: me, isLoading: isMeLoading } = useGetMeQuery();
   const { data: favoritesCount } = useGetFavoritesCountQuery();
-
-
+  
   const [searchWidth, setSearchWidth] = useState(0);
   const searchRef = useRef(null);
 
@@ -65,20 +81,69 @@ const Header = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const dropdownRefLang = useRef(null);
+
+  const languages = [
+    {
+      name: "English",
+      value: "en"
+    },
+    {
+      name: "Azerbaijani",
+      value: "az"
+    }
+  ];
+
+  const langName = {
+    en: "English",
+    az: "Azerbaijani"
+  };
+
+  // Initialize language on mount
+  useEffect(() => {
+    const savedLang = getCookie('language');
+    if (savedLang && savedLang !== i18next.language) {
+      i18next.changeLanguage(savedLang);
+      setSelected(savedLang);
+    }
+  }, []);
+
   // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    };
+
+    if (open) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [open]);
+
+  // Handle language change
+  useEffect(() => {
+    i18next.changeLanguage(selected);
+    // Store in cookie for persistence (1 year)
+    document.cookie = `language=${selected}; path=/; max-age=31536000`;
+  }, [selected]);
+
+  const handleSelect = (language) => {
+    setSelected(language);
+    setOpen(false);
+  };
 
   useEffect(() => {
-    console.log("worked")
     function handleClickOutside(event) {
-      // console.log("trigger")
-      // Check if click is on a Link element or inside search results
       if (dropdownRef?.current && !dropdownRef?.current.contains(event.target)) {
-        if(window.innerWidth > 1024) {
-          setSearchOpen(false) 
+        if (window.innerWidth > 1024) {
+          setSearchOpen(false);
         }
-        console.log("close")
       }
-      
     }
 
     if (open || searchOpen) {
@@ -90,11 +155,9 @@ const Header = () => {
     };
   }, [open, searchOpen, setSearchOpen]);
 
-  
-  const { data: searchResult, isLoading: isSearching } = useSearchProductsQuery({q: searchQuery}, {
+  const { data: searchResult, isLoading: isSearching } = useSearchProductsQuery({ q: searchQuery }, {
     skip: !searchQuery || searchQuery.length < 2
   });
-
 
   const handleSearchChange = (e) => {
     const value = e.target.value;
@@ -117,13 +180,12 @@ const Header = () => {
   };
 
   const handleProductClick = (e, productId) => {
-    console.log("works")
     e.preventDefault();
     e.stopPropagation();
     
     navigate(`/details/${productId}`);
     setTimeout(() => setSearchOpen(false), 100);
-};
+  };
 
   const handleViewAllClick = (e) => {
     e.preventDefault();
@@ -138,31 +200,27 @@ const Header = () => {
     }, 0);
   };
 
-  
-
   return (
     <header className='pt-[59px] lg:pt-[84px]'>
       <Burger burgerV={burgerVi} setBurgerV={setBurgerVi}/>
       <nav className=''>
-        <div className='flex justify-between lg:justify-around  fixed top-0 z-50 bg-white w-full lg:items-center p-3 px-6 items-center'>
+        <div className='flex justify-between lg:justify-around fixed top-0 z-50 bg-white w-full lg:items-center p-3 px-6 items-center'>
           <Link to='/' className='flex lg:flex-1 cursor-pointer lg:justify-center gap-2'>
-            {/* Logo */}
             <img
-              className='min-h-[35px] min-w-[70px]  lg:w-[20vh]'
+              className='min-h-[35px] min-w-[70px] lg:w-[20vh]'
               src="/Icons/logo.svg"
               alt="Logo"
             />
           </Link>
 
           {/* Desktop Search */}
-
           <div className='hidden lg:flex-4 mr-20 lg:mr-0 lg:px-10 lg:block relative' ref={searchDropdownRef}>
             <div className="max-w-4xl self-center mx-auto">
               <div ref={searchRef} className="flex pl-2 rounded-lg items-center overflow-hidden shadow-sm hover:shadow-md border-1 border-[#dee2e6] bg-white">
-                <Search  className='p-[3px]'/>
+                <Search className='p-[3px]'/>
                 <input
                   type="text"
-                  placeholder="Search products..."
+                  placeholder={t("searchProducts")}
                   value={searchQuery}
                   onChange={handleSearchChange}
                   onFocus={handleSearchFocus}
@@ -184,11 +242,11 @@ const Header = () => {
                   ref={dropdownRef}
                   style={{ width: searchWidth }} 
                   className="search-results-container absolute top-full mt-2 bg-white border border-[#dee2e6] rounded-lg shadow-lg z-50 overflow-hidden max-w-[95vw]"
-                  >         
+                >         
                   {isSearching ? (
                     <div className="p-2 sm:p-4">
-                      <h3 className="text-sm font-semibold text-gray-500 mb-3">PRODUCTS</h3>
-                      <div className="grid grid-cols-2 [@media(min-width:1200px)]:grid-cols-3  [@media(min-width:1500px)]:grid-cols-4 gap-2 sm:gap-3">
+                      <h3 className="text-sm font-semibold text-gray-500 mb-3">{t('products').toUpperCase()}</h3>
+                      <div className="grid grid-cols-2 [@media(min-width:1200px)]:grid-cols-3 [@media(min-width:1500px)]:grid-cols-4 gap-2 sm:gap-3">
                         {[...Array(4)].map((_, idx) => (
                           <SearchProductSkeletonDesktop key={idx} />
                         ))}
@@ -197,9 +255,9 @@ const Header = () => {
                   ) : searchResult && searchResult.length > 0 ? (
                     <div className="p-2 sm:p-4 overflow-y-auto w-full">
                       <h3 className="text-sm font-semibold text-gray-500 mb-3">
-                        PRODUCTS ({searchResult.length})
+                        {t('products').toUpperCase()} ({searchResult.length})
                       </h3>
-                      <div className="grid grid-cols-2  [@media(min-width:1200px)]:grid-cols-3 [@media(min-width:1500px)]:grid-cols-4 gap-2 sm:gap-3">
+                      <div className="grid grid-cols-2 [@media(min-width:1200px)]:grid-cols-3 [@media(min-width:1500px)]:grid-cols-4 gap-2 sm:gap-3">
                         {searchResult.slice(0, 4).map(product => (
                           <div
                             key={product.id}
@@ -267,25 +325,22 @@ const Header = () => {
                     </div>
                   ) : null}
                 </div>
-                  )}
-                </div>
+              )}
+            </div>
           </div>
 
           {/* Profile / Favorites / Cart */}
-
-          <div className='flex gap-3 lg:gap-5 lg:flex-1 '>
+          <div className='flex gap-5 lg:gap-5 lg:flex-1 '>
             <div className='lg:hidden relative' ref={mobileSearchDropdownRef}>
               <button 
                 className='p-2 hover:bg-gray-100 rounded-lg transition-colors'
               >
               </button>
-              
-              
             </div>
 
             <Link
               to={hasToken ? "/favorites" : "/login"}
-              className='flex flex-col  items-center cursor-pointer hover:opacity-80 transition-opacity duration-200 relative'
+              className='flex flex-col items-center cursor-pointer hover:opacity-80 transition-opacity duration-200 relative'
             >
               <div className="relative">
                 <img className='w-7' src="/Icons/favorites.svg" alt="Favorites" />
@@ -298,7 +353,7 @@ const Header = () => {
                 )}
               </div>
               <p className='text-gray-500 text-md hidden lg:block whitespace-nowrap'>
-                Favorites
+                {t('favorites')}
               </p>
             </Link>
 
@@ -317,7 +372,7 @@ const Header = () => {
                 )}
               </div>
               <p className='text-gray-500 text-md hidden lg:block whitespace-nowrap'>
-                My Cart
+                {t('myCart')}
               </p>
             </Link>
             
@@ -341,7 +396,7 @@ const Header = () => {
                 <>
                   <img className='w-7' src="/Icons/profile.svg" alt="Profile" />
                   <p className='text-gray-500 hidden lg:block text-md whitespace-nowrap'>
-                    Login
+                    {t('login')}
                   </p>
                 </>
               )}
@@ -349,51 +404,72 @@ const Header = () => {
 
             <img
               onClick={() => setBurgerVi(true)}
-              className='md:hidden  cursor-pointer'
+              className='md:hidden cursor-pointer'
               src="/Icons/burger.svg"
               alt="Menu"
             />
-
           </div>
-
-
         </div>
       </nav>
 
       {/* Bottom Menu */}
-      <div className="hidden md:block w-full bg-white  border-gray-200 px-2 py-4">
+      <div className="hidden md:block w-full bg-white border-gray-200 px-2 py-4">
         <div className="flex items-center justify-between max-w-[85vw] mx-auto">
           <div className="flex items-center space-x-8">
             {/* Navigation Links */}
             <nav className="flex items-center space-x-6 lg:space-x-8">
-              <Link to='/' className="text-gray-700 inter text-sm lg:text-base hover:text-gray-900 transition-colors duration-200">Home</Link>
-              <Link to='/about' className="text-gray-700 inter text-sm lg:text-base hover:text-gray-900 transition-colors duration-200">About Us</Link>
-              <Link to='/download' className="text-gray-700 inter text-sm lg:text-base hover:text-gray-900 transition-colors duration-200">Download Program</Link>
-              <Link to='/contact' className="text-gray-700 inter text-sm lg:text-base hover:text-gray-900 transition-colors duration-200">Contact</Link>
+              <Link to='/' className="text-gray-700 inter text-sm lg:text-base hover:text-gray-900 transition-colors duration-200">
+                {t('home')}
+              </Link>
+                          
+              <Link to='/about' className="text-gray-700 inter text-sm lg:text-base hover:text-gray-900 transition-colors duration-200">
+                {t('about')}
+              </Link>
+                          
+              <Link to='/download' className="text-gray-700 inter text-sm lg:text-base hover:text-gray-900 transition-colors duration-200">
+                {t('download')}
+              </Link>
+                          
+              <Link to='/contact' className="text-gray-700 inter text-sm lg:text-base hover:text-gray-900 transition-colors duration-200">
+                {t('contact')}
+              </Link>
             </nav>
           </div>
 
           {/* Language & Phone */}
           <div className="flex items-center space-x-6">
-            <div className="relative">
-              <div
-                onClick={() => setOpen(prev => !prev)}
-                className="flex items-center space-x-1 cursor-pointer hover:opacity-80 transition-opacity duration-200"
-              >
-                <span className="text-gray-700 inter text-sm lg:text-base">English</span>
-                <svg className="w-4 h-4 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
-              </div>
-
-              {open && (
+            <div className="flex items-center justify-center p-2">
+              <div className="relative" ref={dropdownRef}>
                 <div
-                  // ref={dropdownRef}
-                  className="absolute top-full mt-1 right-0 bg-white border-[1.5px] border-black rounded-sm px-3 py-1 whitespace-nowrap z-10"
+                  onClick={() => setOpen(prev => !prev)}
+                  className="flex items-center space-x-1 cursor-pointer hover:opacity-80 transition-opacity duration-200"
                 >
-                  <span>Azerbaijan</span>
+                  <span className="text-gray-700 inter text-sm lg:text-base">{langName[selected]}</span>
+                  <svg 
+                    className={`w-4 h-4 text-gray-600 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} 
+                    fill="currentColor" 
+                    viewBox="0 0 20 20"
+                  >
+                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
                 </div>
-              )}
+
+                {open && (
+                  <div className="absolute top-full mt-1 right-0 bg-white border-[1px] border-black rounded-sm py-1 whitespace-nowrap z-10 shadow-lg">
+                    {languages.map((language) => (
+                      <div
+                        key={language.value}
+                        onClick={() => handleSelect(language.value)}
+                        className={`px-3 py-2 cursor-pointer hover:bg-gray-100 transition-colors duration-150 text-sm lg:text-base ${
+                          selected === language.value ? 'bg-gray-50 font-medium' : ''
+                        }`}
+                      >
+                        {language.name}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="items-center space-x-2 cursor-pointer [@media(max-width:870px)]:hidden flex hover:opacity-80 transition-opacity duration-200">

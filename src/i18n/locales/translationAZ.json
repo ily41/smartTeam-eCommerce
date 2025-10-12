@@ -1,20 +1,80 @@
 {
+  "dealsDescriptionLine1": "Ən populyar elektronikada ən isti endirimlər",
+  "dealsDescriptionLine2": "məhdud müddətə — fürsəti qaçırmayın!",
+  "dealsDescriptionLine3": "",
+  
+
+  "home": "Ana səhifə",
+  "about": "Haqqımızda",
+  "download": "Proqram yüklə",
+  "contact": "Əlaqə",
+  "favorites": "Sevimlilər",
+  "myCart": "Səbətim",
+  "login": "Daxil ol",
+  "phone": "Telefon",
+  "searchProducts":"Məhsulları axtar...",
+  "featuredBrands": "Seçilmiş Brendlər",
+  "products":"Məhsullar",
+
+  "menu": {
+    "home": "Əsas səhifə",
+    "about": "Haqqımızda",
+    "download": "Proqramları yüklə",
+    "contact": "Bizimlə əlaqə",
+    "login": "Daxil ol"
+  },
+
   "categories": "Kateqoriyalar",
+  "networkEquipmentTitle": "Şəbəkə avadanlıqları",
+  "networkEquipmentDesc": "Sürətli, sabit və təhlükəsiz bağlantı üçün etibarlı marşrutlaşdırıcılar, açarlar və kabel sistemləri. Biznesinizi gələcəyə hazırlamaq üçün miqyaslana bilən həllər.",
   "computers": "Kompüterlər",
   "laptops": "Noutbuklar",
   "officeEquipment": "Ofis avadanlıqları",
   "commercialEquipment": "Ticarət avadanlıqları",
   "surveillanceSystem": "Müşahidə sistemləri",
   "computerEquipment": "Kompüter avadanlıqları",
-  "networkEquipmentTitle": "Şəbəkə avadanlıqları",
-  "networkEquipmentDesc": "Sürətli və sabit bağlantı üçün etibarlı marşrutlaşdırıcılar, keçidlər və kabellər.",
   "dealsAndOffers": "Endirimlər və təkliflər",
-  "dealsDescriptionLine1": "Ən populyar elektronikada ən isti endirimlər",
-  "dealsDescriptionLine2": "məhdud müddətə — fürsəti qaçırmayın!",
-  "dealsDescriptionLine3": "",
-  "exploreNow": "İndi bax",
+  "dealDescription1": "Ən populyar elektronikalarda isti endirimlər əldə edin,",
+  "dealDescription2": "məhdud müddətli təkliflərdən",
+  "dealDescription3": "geri qalmayın!",
+  "exploreNow": "Daha ətraflı bax",
   "recommendedItems": "Tövsiyə olunan məhsullar",
-  "hotDeals": "İsti təkliflər",
   "more": "Daha çox",
-  "location": "Məkan"
+  "hotDeals": "Qaynar təkliflər",
+  "location": "Məkan",
+  "failedAddToCart": "Məhsulu səbətə əlavə etmək alınmadı",
+
+  "footer": {
+    "desc1": "Şirkətimiz satış və quraşdırma xidmətləri göstərir",
+    "desc2": "kompüterlər, ofis avadanlıqları və",
+    "desc3": "zəif cərəyan sistemləri üçün.",
+    "mainPages": "Əsas Səhifələr",
+    "auth": "Autentifikasiya",
+    "home": "Ana Səhifə",
+    "about": "Haqqımızda",
+    "download": "Proqramı Yüklə",
+    "contact": "Əlaqə",
+    "login": "Daxil ol",
+    "contactUs": "Bizimlə Əlaqə",
+    "address1": "Qurban Abbasov 35",
+    "address2": "Sədərək Ticarət Mərkəzi, ",
+    "address3": "Sıra 5-6, Mağaza 60",
+    "langEnglish": "İngilis dili",
+    "langAzerbaijani": "Azərbaycan dili"
+  },
+
+
+  "itemsFound": "{{count}} məhsul",
+  "inCategory": "kateqoriyada",
+  "noProductsFound": "Heç bir məhsul tapılmadı",
+  "tryAdjustingFilters": "Filtrlərinizi dəyişməyi sınayın",
+  "sortBy": "Sırala",
+  "priceLowToHigh": "Qiymət: Aşağıdan Yuxarı",
+  "priceHighToLow": "Qiymət: Yuxarıdan Aşağı",
+  "nameAToZ": "Ad: A-dan Z-yə",
+  "nameZToA": "Ad: Z-dən A-ya",
+  "pleaseLoginFirst": "Zəhmət olmasa əvvəlcə daxil olun",
+  "failedUpdateFavorites": "Favoritləri yeniləmək mümkün olmadı"
+
+
 }
