@@ -433,6 +433,10 @@ const Header = () => {
               <Link to='/contact' className="text-gray-700 inter text-sm lg:text-base hover:text-gray-900 transition-colors duration-200">
                 {t('contact')}
               </Link>
+
+              <Link to='/brands' className="text-gray-700 inter text-sm lg:text-base hover:text-gray-900 transition-colors duration-200">
+                Brands
+              </Link>
             </nav>
           </div>
 

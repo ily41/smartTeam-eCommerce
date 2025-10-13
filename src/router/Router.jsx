@@ -28,6 +28,7 @@ import FileManagementPanel from "../components/admin/FileUpload/FIleUI";
 import { SearchProvider } from "./Context";
 import WP from '../components/UI/WP'
 import Register from "../Pages/user/Register";
+import Brands from "../Pages/user/Brands";
 const Router = () => {
   return (
     <BrowserRouter>
@@ -65,6 +66,7 @@ const Router = () => {
           <Route path="software" element={<Secure />} />
           <Route path="profile" element={<Profile />} />
           <Route path="/:slug" element={<SubCategories />} />
+          <Route path="/brands" element={<Brands />} />
         </Route>
 
         {/* Admin layout with Auth wrapper */}

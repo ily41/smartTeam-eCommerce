@@ -1,7 +1,8 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, Heart, Loader2, Check } from 'lucide-react';
 import { useToggleFavoriteMutation, useGetFavoriteStatusQuery, useAddCartItemMutation } from '../../store/API';
 import { toast } from 'react-toastify';
+import { Link } from 'react-router';
 
 const SkeletonProductCard = ({ isMobile = false }) => {
   if (isMobile) {
@@ -44,7 +45,7 @@ const ProductCard = ({ product, isAddingToCart, loadingProductId, showSuccess, o
   const [toggleFavorite, { isLoading: isTogglingFavorite }] = useToggleFavoriteMutation();
   const [localFavorite, setLocalFavorite] = useState(false);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (favoriteStatus) {
       setLocalFavorite(favoriteStatus.isFavorite);
     }
@@ -81,7 +82,7 @@ const ProductCard = ({ product, isAddingToCart, loadingProductId, showSuccess, o
       );
     }
     
-    if (showSuccess && loadingProductId === product.id) {
+    if (showSuccess === product.id) {
       return (
         <button
           disabled
@@ -104,7 +105,7 @@ const ProductCard = ({ product, isAddingToCart, loadingProductId, showSuccess, o
   };
 
   return (
-    <div className="bg-white rounded-lg p-4 border border-[#DEE2E6] min-w-[200px] flex-shrink-0 space-y-3">
+    <Link to={`/details/${product?.id}`} className="bg-white rounded-lg p-4 border cursor-pointer border-[#DEE2E6] min-w-[200px] flex-shrink-0 space-y-3">
       <div className="py-4">
         <img 
           src={`https://smartteamaz-001-site1.qtempurl.com${product.primaryImageUrl}`} 
@@ -126,7 +127,7 @@ const ProductCard = ({ product, isAddingToCart, loadingProductId, showSuccess, o
         <button 
           onClick={handleFavoriteClick}
           disabled={isTogglingFavorite}
-          className="top-2 right-2 self-start p-2 border border-[#DEE2E6] bg-white rounded-lg shadow-sm hover:bg-gray-50 transition-colors disabled:opacity-50"
+          className="top-2 right-2 self-start cursor-pointer p-2 border border-[#DEE2E6] bg-white rounded-lg shadow-sm hover:bg-gray-50 transition-colors disabled:opacity-50"
         >
           <Heart 
             className={`w-5 h-5 transition-colors ${
@@ -137,7 +138,7 @@ const ProductCard = ({ product, isAddingToCart, loadingProductId, showSuccess, o
       </div>
       
       {renderButton()}
-    </div>
+    </Link>
   );
 };
 
@@ -146,7 +147,7 @@ const MobileProductCard = ({ product, isAddingToCart, loadingProductId, showSucc
   const [toggleFavorite, { isLoading: isTogglingFavorite }] = useToggleFavoriteMutation();
   const [localFavorite, setLocalFavorite] = useState(false);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (favoriteStatus) {
       setLocalFavorite(favoriteStatus.isFavorite);
     }
@@ -183,7 +184,7 @@ const MobileProductCard = ({ product, isAddingToCart, loadingProductId, showSucc
       );
     }
     
-    if (showSuccess && loadingProductId === product.id) {
+    if (showSuccess === product.id) {
       return (
         <button
           disabled
@@ -242,38 +243,32 @@ const MobileProductCard = ({ product, isAddingToCart, loadingProductId, showSucc
 const SimilarProducts = ({ products, isLoading }) => {
   const scrollContainerRef = useRef(null);
   const [loadingProductId, setLoadingProductId] = useState(null);
-  const [showSuccess, setShowSuccess] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(null);
   const [addCartItem, { isLoading: isAddingToCart }] = useAddCartItemMutation();
 
-  useEffect(() => {
-    if (isAddingToCart && loadingProductId) {
-      setShowSuccess(false);
-    }
-  }, [isAddingToCart, loadingProductId]);
-
-  useEffect(() => {
-    if (!isAddingToCart && loadingProductId && !showSuccess) {
-      setShowSuccess(true);
-      const timer = setTimeout(() => {
-        setShowSuccess(false);
-        setLoadingProductId(null);
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [isAddingToCart, loadingProductId, showSuccess]);
-
   const onAddToCart = async (e, productId) => {
-    console.log(productId)
     e.preventDefault();
     e.stopPropagation();
     
     setLoadingProductId(productId);
+    
     try {
-      await addCartItem({productId,quantity: 1}).unwrap();
+      await addCartItem({ productId, quantity: 1 }).unwrap();
+      setShowSuccess(productId);
+      
+      setTimeout(() => {
+        setShowSuccess(null);
+        setLoadingProductId(null);
+      }, 2000);
     } catch (err) {
-      toast.error('Failed to add product to cart');
-      console.error('Add to cart error:', err);
       setLoadingProductId(null);
+      
+      if (err?.status === 401 || err?.data?.status === 401) {
+        toast.error("Please log in first");
+      } else {
+        toast.error("Failed to add to cart");
+      }
+      console.error('Add to cart error:', err);
     }
   };
 
