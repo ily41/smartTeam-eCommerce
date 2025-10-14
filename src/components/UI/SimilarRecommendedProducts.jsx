@@ -1,9 +1,10 @@
 import React, { useRef, useState } from 'react';
-import { ChevronLeft, ChevronRight, Heart, Loader2, Check } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Heart, Loader2, Check, LogIn, UserPlus } from 'lucide-react';
 import { useToggleFavoriteMutation, useGetFavoriteStatusQuery, useAddCartItemMutation } from '../../store/API';
 import { toast } from 'react-toastify';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 
+// Skeleton Loading Components
 const SkeletonProductCard = ({ isMobile = false }) => {
   if (isMobile) {
     return (
@@ -40,7 +41,65 @@ const SkeletonProductCard = ({ isMobile = false }) => {
   );
 };
 
-const ProductCard = ({ product, isAddingToCart, loadingProductId, showSuccess, onAddToCart }) => {
+// Unauthorized Modal
+const UnauthorizedModal = ({ isOpen, onClose, action }) => {
+  const navigate = useNavigate();
+  
+  if (!isOpen) return null;
+  
+  return (
+    <div 
+      className={`fixed inset-0 bg-white/30 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity duration-300 ${
+        isOpen ? 'opacity-100' : 'opacity-0'
+      }`}
+      onClick={onClose}
+    >
+      <div 
+        className={`bg-white rounded-lg max-w-md w-full p-6 shadow-xl transform transition-all duration-300 ${
+          isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
+        }`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="text-center">
+          <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+            <LogIn className="h-6 w-6 text-red-600" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            Sign In Required
+          </h3>
+          <p className="text-sm whitespace-normal text-gray-600 mb-6">
+            You need to be logged in to {action || 'perform this action'}. Please sign in or create an account to continue.
+          </p>
+          <div className="flex gap-3">
+            <button
+              onClick={() => navigate('/login')}
+              className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2.5 px-4 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
+            >
+              <LogIn className="w-4 h-4" />
+              Sign In
+            </button>
+            <button
+              onClick={() => navigate('/register')}
+              className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-900 py-2.5 px-4 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
+            >
+              <UserPlus className="w-4 h-4" />
+              Sign Up
+            </button>
+          </div>
+          <button
+            onClick={onClose}
+            className="mt-4 text-sm text-gray-500 hover:text-gray-700 transition-colors"
+          >
+            Continue browsing
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Desktop Product Card
+const ProductCard = ({ product, isAddingToCart, loadingProductId, showSuccess, onAddToCart, onUnauthorized }) => {
   const { data: favoriteStatus } = useGetFavoriteStatusQuery({ productId: product.id });
   const [toggleFavorite, { isLoading: isTogglingFavorite }] = useToggleFavoriteMutation();
   const [localFavorite, setLocalFavorite] = useState(false);
@@ -62,8 +121,14 @@ const ProductCard = ({ product, isAddingToCart, loadingProductId, showSuccess, o
       await toggleFavorite({ productId: product.id }).unwrap();
     } catch (err) {
       setLocalFavorite(!newFavoriteState);
-      toast.error('Failed to update favorites');
-      console.error('Toggle favorite error:', err);
+      
+      // Check for 401 Unauthorized error
+      if (err?.status === 401 || err?.originalStatus === 401) {
+        onUnauthorized('add items to favorites');
+      } else {
+        toast.error('Failed to update favorites');
+        console.error('Toggle favorite error:', err);
+      }
     }
   };
 
@@ -111,8 +176,8 @@ const ProductCard = ({ product, isAddingToCart, loadingProductId, showSuccess, o
           src={`https://smartteamaz-001-site1.qtempurl.com${product.primaryImageUrl}`} 
           alt={product.name}
           className="h-48 object-contain max-w-[300px] mx-10 rounded-lg" 
-          onError = { (e) => {
-            e.target.src="/Icons/logo.svg"
+          onError={(e) => {
+            e.target.src = "/Icons/logo.svg";
           }}
         />
       </div>
@@ -142,7 +207,8 @@ const ProductCard = ({ product, isAddingToCart, loadingProductId, showSuccess, o
   );
 };
 
-const MobileProductCard = ({ product, isAddingToCart, loadingProductId, showSuccess, onAddToCart }) => {
+// Mobile Product Card
+const MobileProductCard = ({ product, isAddingToCart, loadingProductId, showSuccess, onAddToCart, onUnauthorized }) => {
   const { data: favoriteStatus } = useGetFavoriteStatusQuery({ productId: product.id });
   const [toggleFavorite, { isLoading: isTogglingFavorite }] = useToggleFavoriteMutation();
   const [localFavorite, setLocalFavorite] = useState(false);
@@ -164,8 +230,14 @@ const MobileProductCard = ({ product, isAddingToCart, loadingProductId, showSucc
       await toggleFavorite({ productId: product.id }).unwrap();
     } catch (err) {
       setLocalFavorite(!newFavoriteState);
-      toast.error('Failed to update favorites');
-      console.error('Toggle favorite error:', err);
+      
+      // Check for 401 Unauthorized error
+      if (err?.status === 401 || err?.originalStatus === 401) {
+        onUnauthorized('add items to favorites');
+      } else {
+        toast.error('Failed to update favorites');
+        console.error('Toggle favorite error:', err);
+      }
     }
   };
 
@@ -213,8 +285,8 @@ const MobileProductCard = ({ product, isAddingToCart, loadingProductId, showSucc
           src={`https://smartteamaz-001-site1.qtempurl.com${product.primaryImageUrl}`} 
           alt={product.name} 
           className="w-full h-full max-w-[300px] object-contain" 
-          onError = { (e) => {
-            e.target.src="/Icons/logo.svg"
+          onError={(e) => {
+            e.target.src = "/Icons/logo.svg";
           }}
         />
       </div>
@@ -240,10 +312,13 @@ const MobileProductCard = ({ product, isAddingToCart, loadingProductId, showSucc
   );
 };
 
+// Main Component
 const SimilarProducts = ({ products, isLoading }) => {
   const scrollContainerRef = useRef(null);
   const [loadingProductId, setLoadingProductId] = useState(null);
   const [showSuccess, setShowSuccess] = useState(null);
+  const [showUnauthorizedModal, setShowUnauthorizedModal] = useState(false);
+  const [unauthorizedAction, setUnauthorizedAction] = useState('');
   const [addCartItem, { isLoading: isAddingToCart }] = useAddCartItemMutation();
 
   const onAddToCart = async (e, productId) => {
@@ -263,13 +338,20 @@ const SimilarProducts = ({ products, isLoading }) => {
     } catch (err) {
       setLoadingProductId(null);
       
-      if (err?.status === 401 || err?.data?.status === 401) {
-        toast.error("Please log in first");
+      // Check for 401 Unauthorized error
+      if (err?.status === 401 || err?.originalStatus === 401) {
+        setUnauthorizedAction('add items to cart');
+        setShowUnauthorizedModal(true);
       } else {
-        toast.error("Failed to add to cart");
+        toast.error('Failed to add item to cart');
+        console.error('Add to cart error:', err);
       }
-      console.error('Add to cart error:', err);
     }
+  };
+
+  const handleUnauthorized = (action) => {
+    setUnauthorizedAction(action);
+    setShowUnauthorizedModal(true);
   };
 
   const scroll = (direction) => {
@@ -330,6 +412,13 @@ const SimilarProducts = ({ products, isLoading }) => {
 
   return (
     <>
+      <UnauthorizedModal 
+        isOpen={showUnauthorizedModal} 
+        onClose={() => setShowUnauthorizedModal(false)}
+        action={unauthorizedAction}
+      />
+
+      {/* Mobile View */}
       <div className="md:hidden mt-4">
         <div className="px-4 py-4">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Similar Products</h2>
@@ -342,12 +431,14 @@ const SimilarProducts = ({ products, isLoading }) => {
                 loadingProductId={loadingProductId}
                 showSuccess={showSuccess}
                 onAddToCart={onAddToCart}
+                onUnauthorized={handleUnauthorized}
               />
             ))}
           </div>
         </div>
       </div>
 
+      {/* Desktop View */}
       <div className="mt-8 hidden md:block">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-xl font-semibold text-gray-900">Similar Products</h2>
@@ -376,6 +467,7 @@ const SimilarProducts = ({ products, isLoading }) => {
               loadingProductId={loadingProductId}
               showSuccess={showSuccess}
               onAddToCart={onAddToCart}
+              onUnauthorized={handleUnauthorized}
             />
           ))}
         </div>

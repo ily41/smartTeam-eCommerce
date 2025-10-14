@@ -102,7 +102,7 @@ const About = () => {
         >
           <img
             className="w-full rounded-t-md h-[190px] lg:h-[220px] object-cover"
-            src="./deals/cameraService.svg"
+            src="./deals/security-system-monitoring.webp"
             alt=""
           />
           <div className="relative bg-white p-5 pb-4 ">
@@ -129,7 +129,7 @@ const About = () => {
           >
             <img
               className="w-full rounded-t-md h-[190px] lg:h-[220px] object-cover"
-              src="./Banners/aboutExtra.svg"
+              src="./deals/hem.png"
               alt=""
             />
             <div className="relative bg-white p-5 pb-4 ">

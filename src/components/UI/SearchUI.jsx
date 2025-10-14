@@ -19,20 +19,36 @@ const SearchProductSkeletonMobile = () => (
 const SearchUI = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
+  
   const { searchOpen, setSearchOpen } = useContext(SearchContext);
   console.log(searchOpen)
   const searchDropdownRef = useRef(null);
   const closeMobileSearch = () => {
-    setSearchOpen(false);
-    setSearchQuery('');
-  };
+  setSearchOpen(false);
+  setSearchQuery('');
+  setResult([]);
+};
+
 
   const { data: searchResult, isLoading: isSearching } = useSearchProductsQuery(
-    { q: searchQuery }, 
+    { q: searchQuery },
     {
-      skip: !searchQuery || searchQuery.length < 2
+      skip: searchQuery.length < 2,
     }
   );
+  const [result,setResult] = useState(searchResult)
+  useEffect(() => {
+  if (!searchQuery || searchQuery.length < 2) {
+    setResult([]);
+  } else if (searchResult) {
+    setResult(searchResult);
+  }
+}, [searchQuery, searchResult]);
+
+
+  
+  
+
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -49,26 +65,25 @@ const SearchUI = () => {
     };
   }, [searchOpen, setSearchOpen]);
 
+
   const handleSearchChange = (e) => {
     const value = e.target.value;
-    setSearchQuery(value);
-    if (value.length >= 2) {
-      setSearchOpen(true);
-    } else {
-      ;
+
+    if(value == "") {
+      handleClearSearch()
     }
+    setSearchQuery(value);
+    setSearchOpen(true);
+   
   };
 
   const handleClearSearch = () => {
-    setSearchQuery('');
-    ;
-  };
+  setSearchQuery('');
+  setResult([]);
+};
 
   const handleSearchFocus = () => {
-    if (searchQuery.length >= 2) {
       setSearchOpen(true);
-      console.log(searchOpen)
-    }
   };
 
   const handleKeyDown = (e) => {
@@ -79,7 +94,6 @@ const SearchUI = () => {
   };
 
    const handleProductClick = (e, productId) => {
-    console.log("works")
     e.preventDefault();
     e.stopPropagation();
     
@@ -140,13 +154,13 @@ const SearchUI = () => {
                   ))}
                 </div>
               </div>
-            ) : searchResult && searchResult.length > 0 ? (
+            ) : result && result.length > 0 ? (
               <div>
                 <h3 className="text-sm font-semibold text-gray-500 mb-3">
-                  PRODUCTS ({searchResult.length})
+                  PRODUCTS ({result.length})
                 </h3>
                 <div className="grid grid-cols-3 gap-2">
-                  {searchResult.slice(0, 6).map(product => (
+                  {result.slice(0, 6).map(product => (
                     <div
                       key={product.id}
                       onClick={(e) => handleProductClick(e,product.id)}
@@ -193,12 +207,12 @@ const SearchUI = () => {
                     </div>
                   ))}
                 </div>
-                {searchResult.length > 6 && (
+                {result.length > 6 && (
                   <button
                     onClick={handleViewAllClick}
                     className="block w-full text-center mt-4 py-3 text-[#E60C03] hover:text-red-700 font-medium text-sm transition-colors bg-gray-50 rounded-lg"
                   >
-                    View all {searchResult.length} results →
+                    View all {result.length} results →
                   </button>
                 )}
               </div>
@@ -260,13 +274,13 @@ const SearchUI = () => {
                           ))}
                         </div>
                       </div>
-                    ) : searchResult && searchResult.length > 0 ? (
+                    ) : result && result.length > 0 ? (
                       <div>
                         <h3 className="text-sm font-semibold text-gray-500 mb-3">
-                          PRODUCTS ({searchResult.length})
+                          PRODUCTS ({result.length})
                         </h3>
                         <div className="grid grid-cols-2 md:grid-cols-3   gap-2">
-                          {searchResult.slice(0, 6).map(product => (
+                          {result.slice(0, 6).map(product => (
                             <div
                               key={product.id}
                               onClick={(e) => handleProductClick(e, product.id)}
@@ -314,12 +328,12 @@ const SearchUI = () => {
                             </div>
                           ))}
                         </div>
-                        {searchResult.length > 6 && (
+                        {result.length > 6 && (
                           <button
                             onClick={handleViewAllClick}
                             className="block w-full text-center mt-4 py-3 text-[#E60C03] hover:text-red-700 font-medium text-sm transition-colors bg-gray-50 rounded-lg"
                           >
-                            View all {searchResult.length} results →
+                            View all {result.length} results →
                           </button>
                         )}
                       </div>

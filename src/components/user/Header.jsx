@@ -160,24 +160,22 @@ const Header = () => {
   });
 
   const handleSearchChange = (e) => {
-    const value = e.target.value;
-    setSearchQuery(value);
-    if (value.length > 0) {
-      setSearchOpen(true);
-    } else {
-      setSearchOpen(false);
-    }
-  };
+  const value = e.target.value;
+  setSearchQuery(value);
+  // Keep dropdown open while typing
+  setSearchOpen(true);
+};
 
   const handleClearSearch = () => {
-    setSearchQuery('');
-  };
+  setSearchQuery('');
+  // Keep dropdown open after clearing, but you can change to false if you prefer
+  setSearchOpen(true);
+};
 
   const handleSearchFocus = () => {
-    if (searchQuery.length > 0) {
-      setSearchOpen(true);
-    }
-  };
+  // Open dropdown immediately when input is clicked
+  setSearchOpen(true);
+};
 
   const handleProductClick = (e, productId) => {
     e.preventDefault();
@@ -242,8 +240,17 @@ const Header = () => {
                   ref={dropdownRef}
                   style={{ width: searchWidth }} 
                   className="search-results-container absolute top-full mt-2 bg-white border border-[#dee2e6] rounded-lg shadow-lg z-50 overflow-hidden max-w-[95vw]"
-                >         
-                  {isSearching ? (
+                >        
+                {searchQuery.length === 0 || searchQuery.length === 1 ? (
+                  <div className="p-8 text-center">
+                    <Search className="w-12 h-12 mx-auto text-gray-300 mb-3" />
+                    <p className="text-gray-600 font-medium mb-1">Start typing to search</p>
+                    <p className="text-gray-400 text-sm">
+                      Search for products, categories, and more
+                    </p>
+                  </div>
+                ): 
+                  isSearching ? (
                     <div className="p-2 sm:p-4">
                       <h3 className="text-sm font-semibold text-gray-500 mb-3">{t('products').toUpperCase()}</h3>
                       <div className="grid grid-cols-2 [@media(min-width:1200px)]:grid-cols-3 [@media(min-width:1500px)]:grid-cols-4 gap-2 sm:gap-3">
@@ -306,6 +313,7 @@ const Header = () => {
                           </div>
                         ))}
                       </div>
+                      
                       {searchResult.length > 4 && (
                         <button
                           onClick={handleViewAllClick}

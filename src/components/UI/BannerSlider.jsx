@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { useGetBannersQuery, useGetCategoriesQuery, useGetParentCategoriesQuery } from '../../store/API';
 
 const BannerSlider = () => {
@@ -8,7 +8,7 @@ const BannerSlider = () => {
 
   const { data: bannersD, isBannersLoading,  } = useGetBannersQuery();
   console.log(bannersD)
-  
+  const navigate = useNavigate();
 
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
@@ -49,8 +49,10 @@ const BannerSlider = () => {
         className="flex transition-transform duration-500 ease-in-out h-fit"
         style={{ transform: `translateX(-${currentSlide * 100}%)` }}
       >
-        {bannersD?.map((banner, index) => (
-          <div key={banner.id} className="w-full flex-shrink-0   relative">
+        {bannersD?.map((banner, index) => {
+          console.log(banner)
+          return (
+          <div onClick={() => navigate(`${banner.linkUrl}`)} key={banner.id} className="w-full cursor-pointer flex-shrink-0   relative">
             <img 
               className="w-full object-cover md:rounded-lg lg:h-[400px] h-[26vh] md:h-[40vh] lg:p-2" 
               src={`https://smartteamaz-001-site1.qtempurl.com${banner.imageUrl}`}
@@ -100,7 +102,7 @@ const BannerSlider = () => {
               </Link>
             </div>
           </div>
-        ))}
+        )})}
       </div>
 
       {/* Navigation Arrows - Hidden on mobile, visible on desktop */}
