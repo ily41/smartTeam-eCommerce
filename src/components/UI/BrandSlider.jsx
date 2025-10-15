@@ -1,20 +1,36 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { useGetBrandsAdminQuery, useGetBrandsQuery } from '../../store/API';
 
 const InfiniteBrandSlider = () => {
-  const brandsImg = [
-    { src: './slider/slider1.svg', alt: 'Hem', slug: 'hem' },
-    { src: './slider/slider2.svg', alt: 'Hp', slug: 'hp' },
-    { src: './slider/slider3.svg', alt: 'Dell', slug: 'dell' },
-    { src: './slider/slider4.svg', alt: 'Lg', slug: 'lg' },
-    { src: './slider/slider5.svg', alt: 'Xprinter', slug: 'xprinter' },
-    { src: './slider/slider6.svg', alt: 'Lenovo', slug: 'lenovo' },
-    { src: './slider/slider7.svg', alt: 'Western Digital', slug: 'westernDigital' },
-    { src: './slider/slider8.svg', alt: 'Acer', slug: 'acer' },
-    { src: './slider/slider9.svg', alt: 'Hikvision', slug: 'hikvision' },
-    { src: './slider/slider10.svg', alt: 'Unv', slug: 'unv' },
-    { src: './slider/slider11.svg', alt: 'Canon', slug: 'canon' },
-    { src: './slider/slider12.svg', alt: 'Seagate', slug: 'seagate' }
-  ];
+    const { data: brands, isLoading: isBrandsLoading } = useGetBrandsAdminQuery();
+    console.log(brands)
+    console.log(brands)
+
+    // const brandsImg = [
+    //   brands?.map(brand => {
+    //     console.log(brand)
+    //     return { src: `https://smartteamaz-001-site1.qtempurl.com${brand?.logoUrl}`, alt: 'Hem', slug: brand?.slug }
+    //   })
+    //   // ,
+    //   // { src: './slider/slider2.svg', alt: 'Hp', slug: 'hp' },
+    //   // { src: './slider/slider3.svg', alt: 'Dell', slug: 'dell' },
+    //   // { src: './slider/slider4.svg', alt: 'Lg', slug: 'lg' },
+    //   // { src: './slider/slider5.svg', alt: 'Xprinter', slug: 'xprinter' },
+    //   // { src: './slider/slider6.svg', alt: 'Lenovo', slug: 'lenovo' },
+    //   // { src: './slider/slider7.svg', alt: 'Western Digital', slug: 'westernDigital' },
+    //   // { src: './slider/slider8.svg', alt: 'Acer', slug: 'acer' },
+    //   // { src: './slider/slider9.svg', alt: 'Hikvision', slug: 'hikvision' },
+    //   // { src: './slider/slider10.svg', alt: 'Unv', slug: 'unv' },
+    //   // { src: './slider/slider11.svg', alt: 'Canon', slug: 'canon' },
+    //   // { src: './slider/slider12.svg', alt: 'Seagate', slug: 'seagate' }
+    // ];
+
+    const brandsImg = brands?.map(brand => ({
+      src: `https://smartteamaz-001-site1.qtempurl.com${brand?.logoUrl}`,
+      alt: brand?.name || "Brand",
+      slug: brand?.slug
+    })) || [];
+
 
   const containerRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -164,7 +180,7 @@ const InfiniteBrandSlider = () => {
           {[0, 1, 2].map((setIndex) => (
             <div key={`set-${setIndex}`} className="flex gap-8 py-1 items-center brand-set">
               {brandsImg.map((brand, idx) =>
-                brand.slug ? (
+                brand?.slug ? (
                   <a
                     key={`set${setIndex}-${idx}`}
                     href={`/products/brand/${brand.slug}`}
@@ -173,7 +189,6 @@ const InfiniteBrandSlider = () => {
                   >
                     <img
                       src={brand.src}
-                      alt={brand.alt}
                       className="h-12 w-auto min-w-[80px] object-contain grayscale hover:grayscale-0 transition-transform duration-300 hover:scale-110"
                       draggable="false"
                     />
@@ -181,8 +196,7 @@ const InfiniteBrandSlider = () => {
                 ) : (
                   <div key={`set${setIndex}-${idx}`} className="flex-shrink-0">
                     <img
-                      src={brand.src}
-                      alt={brand.alt}
+                      src={brand?.src}
                       className="h-12 w-auto min-w-[80px] object-contain grayscale hover:grayscale-0 transition-transform duration-300 hover:scale-110 pointer-events-none"
                       draggable="false"
                     />

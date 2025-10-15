@@ -150,6 +150,7 @@ function Products() {
     { brandSlug }, 
     { skip: !isBrand }
   );
+  console.log(brandProducts)
   
   const { data: categories } = useGetCategoriesQuery();
   const { data: favorites } = useGetFavoritesQuery();

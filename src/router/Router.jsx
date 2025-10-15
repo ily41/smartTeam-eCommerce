@@ -29,6 +29,7 @@ import { SearchProvider } from "./Context";
 import WP from '../components/UI/WP'
 import Register from "../Pages/user/Register";
 import Brands from "../Pages/user/Brands";
+import Brand from "../Pages/admin/Brand";
 const Router = () => {
   return (
     <BrowserRouter>
@@ -86,6 +87,7 @@ const Router = () => {
           <Route path="filters" element={<FilterUi />} />
           <Route path="product-filters" element={<AssignFilter />} />
           <Route path="file-management" element={<FileManagementPanel />} />
+          <Route path="brands" element={<Brand />} />
         </Route>
         </Routes>
       </SearchProvider>

@@ -19,6 +19,7 @@ export const API = createApi({
         endpoint === 'uploadFile' ||
         endpoint === 'addProductPdf' ||
         endpoint === 'editProductWithImage' ||
+        endpoint === 'addBrandImage' ||
         body instanceof FormData;
 
       if (!isFormDataRequest) {
@@ -310,6 +311,8 @@ export const API = createApi({
       }),
       providesTags: ['Products'],
     }),
+
+    
 
     getProduct: builder.query({
       query: (id) => ({
@@ -1110,16 +1113,75 @@ export const API = createApi({
       invalidatesTags: ['Filters'],
     }),
 
-    // Don't forget to export the hook:
-    // export const { ..., useDownloadFileMutation } = API;
+    // GET all brands
+    getBrandsAdmin: builder.query({
+      query: () => ({
+        url: '/api/v1/Brands',
+        method: 'GET',
+      }),
+      providesTags: ['Brands'],
+    }),
 
-    // Don't forget to export the hook:
-    // export const { ..., useDownloadFileMutation } = API;
+    // GET brand by ID
+    getBrandById: builder.query({
+      query: (id) => `/api/v1/Brands/${id}`,
+      providesTags: (result, error, id) => [{ type: 'Brands', id }],
+    }),
 
+    // GET brand by slug
+    getBrandBySlug: builder.query({
+      query: (slug) => `/api/v1/Brands/slug/${slug}`,
+      providesTags: (result, error, slug) => [{ type: 'Brands', slug }],
+    }),
+
+    // POST create brand with image
+    addBrandImage: builder.mutation({
+      query: ({ name, sortOrder, file }) => {
+        const formData = new FormData();
+        formData.append("imageFile", file, file.name);
+      
+        return {
+          url: `/api/v1/Brands/with-image?name=${encodeURIComponent(name)}&sortOrder=${sortOrder}`,
+          method: 'POST',
+          body: formData,
+          prepareHeaders: (headers) => {
+            headers.delete('Content-Type');
+            return headers;
+          },
+        };
+      },
+      invalidatesTags: ['Brands'],
+    }),
+
+    // PUT update brand
+    editBrand: builder.mutation({
+      query: ({ id, ...data }) => ({
+        url: `/api/v1/Brands/${id}`,
+        method: 'PUT',
+        body: data,
+      }),
+      invalidatesTags: ['Brands'],
+    }),
+
+    // DELETE brand
+    deleteBrand: builder.mutation({
+      query: ({ id }) => ({
+        url: `/api/v1/Brands/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Brands'],
+    }),
   }),
 });
 
 export const {
+  useGetBrandByIdQuery,
+  useGetBrandBySlugQuery,
+  useGetBrandsAdminQuery,
+  useDeleteBrandMutation,
+  useEditBrandMutation,
+  useAddBrandImageMutation,
+
   useGetProductPdfByIdQuery,
   useGetProductPdfsQuery,
   useDeleteProductPdfMutation,

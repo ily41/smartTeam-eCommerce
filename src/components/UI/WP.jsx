@@ -5,7 +5,7 @@ const WhatsAppIcon = () => {
   return (
     <a
       className="p-4 lg:p-5 bg-white border-1 border-[#d7d7d7] fixed bottom-5 right-5 z-[999] rounded-full shadow-sm"
-      href="https://wa.me/0703569121" 
+      href="https://wa.me/+9940706740649" 
       target="_blank"
       rel="noopener noreferrer"
       
