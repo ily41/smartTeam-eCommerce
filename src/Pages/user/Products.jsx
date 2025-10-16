@@ -15,10 +15,11 @@ import {
   useGetHotDealsQuery,
   useGetRecommendedQuery,
   useGetProductsBrandQuery,
-  useGetProductsCategorySlugQuery
+  useGetProductsCategorySlugQuery,
+  useSearchProductsQuery
 } from '../../store/API';
 import { toast } from 'react-toastify';
-import { useParams } from 'react-router';
+import { useParams, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 
 
@@ -105,20 +106,28 @@ const CustomDropdown = ({ value, onChange, options }) => {
 
 function Products() {
   const { slug } = useParams();
+  const [searchParams] = useSearchParams();
   const location = window.location.pathname;
   const { t } = useTranslation();
+  
+  // Get search query from URL params
+  const searchQuery = searchParams.get('search');
+  const categoryParam = searchParams.get('category');
+  const brandParam = searchParams.get('brand');
   
   // Extract brand slug if this is a brand route
   const pathParts = location.split('/');
   const isBrandRoute = pathParts.includes('brand');
   const brandSlug = isBrandRoute ? pathParts[pathParts.indexOf('brand') + 1] : null;
   
-  
   // Determine if this is a special slug
   const isHotDeals = slug === 'hot-deals';
   const isRecommended = slug === 'recommended';
   const isBrand = isBrandRoute && brandSlug;
-  const isSpecialSlug = isHotDeals || isRecommended || isBrand;
+  const isSearch = !!searchQuery;
+  const isCategoryParam = !!categoryParam;
+  const isBrandParam = !!brandParam;
+  const isSpecialSlug = isHotDeals || isRecommended || isBrand || isSearch || isCategoryParam || isBrandParam;
   
   const categoryName = isHotDeals 
     ? 'Hot Deals' 
@@ -126,20 +135,35 @@ function Products() {
     ? 'Recommended' 
     : isBrand
     ? brandSlug.charAt(0).toUpperCase() + brandSlug.slice(1)
+    : isSearch
+    ? `Search Results for "${searchQuery}"`
+    : isCategoryParam
+    ? categoryParam.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+    : isBrandParam
+    ? 'Brand Products'
     : slug?.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024); 
   const [template, setTemplate] = useState(isMobile ? "cols" : "rows");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10); 
-  console.log(slug)
-  const { data: productDefault, isLoading: isLoadingProducts } = useGetProductsCategorySlugQuery(slug);
-  console.log("default")
-  console.log(productDefault)
 
-  const { data: hotDeals, isLoading: isHotDealsLoading } = useGetHotDealsQuery(undefined,
-    { limit: 10 }, 
-    { skip: !isHotDeals });
+  // Query for search results
+  const { data: searchResults, isLoading: isSearchLoading } = useSearchProductsQuery(
+    { q: searchQuery },
+    { skip: !isSearch || !searchQuery || searchQuery.length < 2 }
+  );
+
+  // Regular category query
+  const { data: productDefault, isLoading: isLoadingProducts } = useGetProductsCategorySlugQuery(
+    slug,
+    { skip: !slug || isSpecialSlug }
+  );
+
+  const { data: hotDeals, isLoading: isHotDealsLoading } = useGetHotDealsQuery(
+    undefined,
+    { skip: !isHotDeals }
+  );
   
   const { data: recommended, isLoading: isRecommendedLoading } = useGetRecommendedQuery(
     { limit: 10 }, 
@@ -150,7 +174,6 @@ function Products() {
     { brandSlug }, 
     { skip: !isBrand }
   );
-  console.log(brandProducts)
   
   const { data: categories } = useGetCategoriesQuery();
   const { data: favorites } = useGetFavoritesQuery();
@@ -172,7 +195,7 @@ function Products() {
     { value: 'price_asc', label: 'Price: Low to High' },
     { value: 'price_desc', label: 'Price: High to Low' },
     { value: 'name_asc' , label: 'Name: A to Z' },
-    { value: 'name_desc', label: 'Name: Z to A',  }
+    { value: 'name_desc', label: 'Name: Z to A' }
   ];
 
   // Find category ID from slug (only for regular category pages)
@@ -184,28 +207,39 @@ function Products() {
     return category?.id || null;
   }, [slug, categories, isSpecialSlug]);
 
-  // Set products based on slug type
+  // Set products based on slug type or search
   useEffect(() => {
-    if (isHotDeals && hotDeals && !filtersApplied) {
+    if (isSearch && searchResults && !filtersApplied) {
+      // Extract products from search results
+      const searchProducts = searchResults.products || [];
+      setProducts(searchProducts);
+      setTotalItems(searchProducts.length);
+    } else if (isHotDeals && hotDeals && !filtersApplied) {
       setProducts(hotDeals);
       setTotalItems(hotDeals.length);
-      console.log("set to hotdeals")
-
     } else if (isRecommended && recommended?.recentlyAdded && !filtersApplied) {
       setProducts(recommended.recentlyAdded);
       setTotalItems(recommended.recentlyAdded.length);
-      console.log("set to recently")
-
     } else if (isBrand && brandProducts && !filtersApplied) {
       setProducts(brandProducts);
       setTotalItems(brandProducts.length);
-      console.log("set to brand")
     } else if (!isSpecialSlug && productDefault && !filtersApplied) {
       setProducts(productDefault);
       setTotalItems(productDefault.length);
-      console.log("set to default")
     }
-  }, [productDefault, hotDeals, recommended, brandProducts, filtersApplied, isHotDeals, isRecommended, isBrand, isSpecialSlug]);
+  }, [
+    searchResults, 
+    productDefault, 
+    hotDeals, 
+    recommended, 
+    brandProducts, 
+    filtersApplied, 
+    isSearch,
+    isHotDeals, 
+    isRecommended, 
+    isBrand, 
+    isSpecialSlug
+  ]);
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
@@ -220,7 +254,11 @@ function Products() {
     if (data === null) {
       setFiltersApplied(false);
       // Reset to appropriate default data
-      if (isHotDeals && hotDeals) {
+      if (isSearch && searchResults) {
+        const searchProducts = searchResults.products || [];
+        setProducts(searchProducts);
+        setTotalItems(searchProducts.length);
+      } else if (isHotDeals && hotDeals) {
         setProducts(hotDeals);
         setTotalItems(hotDeals.length);
       } else if (isRecommended && recommended?.recentlyAdded) {
@@ -242,9 +280,17 @@ function Products() {
       setProducts([]);
       setTotalItems(0);
     }
-  }, [productDefault, hotDeals, recommended, brandProducts, isHotDeals, isRecommended, isBrand]);
-
-
+  }, [
+    searchResults,
+    productDefault, 
+    hotDeals, 
+    recommended, 
+    brandProducts, 
+    isSearch,
+    isHotDeals, 
+    isRecommended, 
+    isBrand
+  ]);
 
   const handleSortChange = (e) => {
     const value = e.target.value;
@@ -307,6 +353,7 @@ function Products() {
 
   // Determine loading state based on slug type
   const shouldShowLoading = isLoading || 
+    (isSearch && isSearchLoading && !filtersApplied) ||
     (isHotDeals && isHotDealsLoading && !filtersApplied) ||
     (isRecommended && isRecommendedLoading && !filtersApplied) ||
     (isBrand && isBrandLoading && !filtersApplied) ||
@@ -423,7 +470,9 @@ function Products() {
               ) : (
                 <div className="col-span-full text-center py-12">
                   <p className="text-gray-500 text-lg">No products found</p>
-                  <p className="text-gray-400 text-sm mt-2">Try adjusting your filters</p>
+                  <p className="text-gray-400 text-sm mt-2">
+                    {isSearch ? 'Try searching with different keywords' : 'Try adjusting your filters'}
+                  </p>
                 </div>
               )}
             </div>

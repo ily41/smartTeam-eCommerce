@@ -8,30 +8,7 @@ import { FaRegFile, FaRegUser, FaRegUserCircle, FaUserCircle } from 'react-icons
 import { PiCarProfile } from 'react-icons/pi';
 import i18next from 'i18next';
 import { useTranslation } from 'react-i18next';
-
-// Skeleton for search results - Desktop
-const SearchProductSkeletonDesktop = () => (
-  <div className="bg-white rounded-lg border border-[#dee2e6] p-3 animate-pulse">
-    <div className="w-full aspect-square bg-gray-200 rounded-lg mb-3" />
-    <div className="space-y-2">
-      <div className="h-4 bg-gray-200 rounded w-3/4" />
-      <div className="h-3 bg-gray-200 rounded w-1/2" />
-      <div className="h-5 bg-gray-200 rounded w-1/3 mt-2" />
-    </div>
-  </div>
-);
-
-// Skeleton for search results - Mobile
-const SearchProductSkeletonMobile = () => (
-  <div className="bg-white rounded-lg border border-[#dee2e6] p-2 animate-pulse">
-    <div className="w-full aspect-square bg-gray-200 rounded-lg mb-2" />
-    <div className="space-y-2">
-      <div className="h-3 bg-gray-200 rounded w-3/4" />
-      <div className="h-3 bg-gray-200 rounded w-1/2" />
-      <div className="h-4 bg-gray-200 rounded w-1/3 mt-1" />
-    </div>
-  </div>
-);
+import SearchDropdown from '../UI/SearchDropdown'; // Import the new component
 
 // Helper function to get cookie value
 const getCookie = (name) => {
@@ -139,7 +116,7 @@ const Header = () => {
 
   useEffect(() => {
     function handleClickOutside(event) {
-      if (dropdownRef?.current && !dropdownRef?.current.contains(event.target)) {
+      if (searchDropdownRef?.current && !searchDropdownRef?.current.contains(event.target)) {
         if (window.innerWidth > 1024) {
           setSearchOpen(false);
         }
@@ -160,32 +137,56 @@ const Header = () => {
   });
 
   const handleSearchChange = (e) => {
-  const value = e.target.value;
-  setSearchQuery(value);
-  // Keep dropdown open while typing
-  setSearchOpen(true);
-};
+    const value = e.target.value;
+    setSearchQuery(value);
+    setSearchOpen(true);
+  };
 
   const handleClearSearch = () => {
-  setSearchQuery('');
-  // Keep dropdown open after clearing, but you can change to false if you prefer
-  setSearchOpen(true);
-};
+    setSearchQuery('');
+    setSearchOpen(true);
+  };
 
   const handleSearchFocus = () => {
-  // Open dropdown immediately when input is clicked
-  setSearchOpen(true);
-};
+    setSearchOpen(true);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && searchQuery.trim().length >= 2) {
+      const query = searchQuery;
+      setSearchOpen(false);
+      setSearchQuery('');
+      navigate(`/products?search=${query}`);
+    } else if (e.key === 'Escape') {
+      handleClearSearch();
+      e.target.blur();
+    }
+  };
 
   const handleProductClick = (e, productId) => {
     e.preventDefault();
     e.stopPropagation();
     
     navigate(`/details/${productId}`);
-    setTimeout(() => setSearchOpen(false), 100);
+    setTimeout(() => {
+      setSearchOpen(false);
+      setSearchQuery('');
+    }, 100);
   };
 
-  const handleViewAllClick = (e) => {
+  const handleCategoryClick = (catSlug, categoryName) => {
+    navigate(`/products/${catSlug}`);
+    setSearchOpen(false);
+    setSearchQuery('');
+  };
+
+  const handleBrandClick = (brandSlug, brandName) => {
+    navigate(`/products/brand/${brandSlug}`);
+    setSearchOpen(false);
+    setSearchQuery('');
+  };
+
+  const handleViewAllProducts = (e) => {
     e.preventDefault();
     e.stopPropagation();
     
@@ -222,6 +223,7 @@ const Header = () => {
                   value={searchQuery}
                   onChange={handleSearchChange}
                   onFocus={handleSearchFocus}
+                  onKeyDown={handleKeyDown}
                   className="flex-1 py-2 px-3 text-base border-none outline-none placeholder-gray-400"
                 />
                 {searchQuery && (
@@ -237,101 +239,21 @@ const Header = () => {
               {/* Desktop Search Dropdown */}
               {searchOpen && (
                 <div 
-                  ref={dropdownRef}
                   style={{ width: searchWidth }} 
                   className="search-results-container absolute top-full mt-2 bg-white border border-[#dee2e6] rounded-lg shadow-lg z-50 overflow-hidden max-w-[95vw]"
-                >        
-                {searchQuery.length === 0 || searchQuery.length === 1 ? (
-                  <div className="p-8 text-center">
-                    <Search className="w-12 h-12 mx-auto text-gray-300 mb-3" />
-                    <p className="text-gray-600 font-medium mb-1">Start typing to search</p>
-                    <p className="text-gray-400 text-sm">
-                      Search for products, categories, and more
-                    </p>
-                  </div>
-                ): 
-                  isSearching ? (
-                    <div className="p-2 sm:p-4">
-                      <h3 className="text-sm font-semibold text-gray-500 mb-3">{t('products').toUpperCase()}</h3>
-                      <div className="grid grid-cols-2 [@media(min-width:1200px)]:grid-cols-3 [@media(min-width:1500px)]:grid-cols-4 gap-2 sm:gap-3">
-                        {[...Array(4)].map((_, idx) => (
-                          <SearchProductSkeletonDesktop key={idx} />
-                        ))}
-                      </div>
-                    </div>
-                  ) : searchResult && searchResult.length > 0 ? (
-                    <div className="p-2 sm:p-4 overflow-y-auto w-full">
-                      <h3 className="text-sm font-semibold text-gray-500 mb-3">
-                        {t('products').toUpperCase()} ({searchResult.length})
-                      </h3>
-                      <div className="grid grid-cols-2 [@media(min-width:1200px)]:grid-cols-3 [@media(min-width:1500px)]:grid-cols-4 gap-2 sm:gap-3">
-                        {searchResult.slice(0, 4).map(product => (
-                          <div
-                            key={product.id}
-                            onClick={(e) => handleProductClick(e, product.id)}
-                            onMouseDown={(e) => e.preventDefault()}
-                            className="bg-white rounded-lg border border-[#dee2e6] p-2 sm:p-3 hover:shadow-md cursor-pointer transition-all group"
-                          >
-                            <div className="relative w-full aspect-square bg-white rounded-lg flex items-center justify-center mb-2 sm:mb-3 overflow-hidden">
-                              <img 
-                                src={`https://smartteamaz-001-site1.qtempurl.com${product.primaryImageUrl}`}
-                                alt={product.name}
-                                className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
-                                onError={(e) => {
-                                  e.target.src = '/Icons/logo.svg';
-                                }}
-                              />
-                              {product.isHotDeal && (
-                                <div className="absolute top-1 sm:top-2 right-1 sm:right-2 bg-[#E60C03] text-white text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded">
-                                  Hot Deal
-                                </div>
-                              )}
-                              {product.discountPercentage > 0 && (
-                                <div className="absolute top-1 sm:top-2 left-1 sm:left-2 bg-red-500 text-white text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full font-semibold">
-                                  -{product.discountPercentage}%
-                                </div>
-                              )}
-                            </div>
-                            <div>
-                              <h4 className="text-gray-800 font-medium text-xs sm:text-sm mb-1 line-clamp-2 min-h-[32px] sm:min-h-[40px]">
-                                {product.name}
-                              </h4>
-                              <p className="text-gray-400 text-[10px] sm:text-xs mb-1 sm:mb-2 truncate">
-                                {product.categoryName?.replace(/-/g, ' ')}
-                              </p>
-                              <div className="flex items-center gap-1 sm:gap-2">
-                                <span className="text-[#E60C03] font-bold text-sm sm:text-base">
-                                  ${product.currentPrice.toLocaleString()}
-                                </span>
-                                {product.discountPercentage > 0 && (
-                                  <span className="text-gray-400 text-[10px] sm:text-xs line-through">
-                                    ${product.originalPrice.toLocaleString()}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                      
-                      {searchResult.length > 4 && (
-                        <button
-                          onClick={handleViewAllClick}
-                          className="block w-full cursor-pointer text-center mt-3 sm:mt-4 py-2 text-[#E60C03] hover:text-red-700 font-medium text-xs sm:text-sm transition-colors"
-                        >
-                          View all {searchResult.length} results →
-                        </button>
-                      )}
-                    </div>
-                  ) : searchQuery.length >= 2 ? (
-                    <div className="p-8 sm:p-12 text-center">
-                      <Search className="w-10 h-10 sm:w-12 sm:h-12 mx-auto text-gray-300 mb-3" />
-                      <p className="text-gray-600 font-medium mb-1 text-sm sm:text-base">No results found</p>
-                      <p className="text-gray-400 text-xs sm:text-sm">
-                        Try searching with different keywords
-                      </p>
-                    </div>
-                  ) : null}
+                >
+                  <SearchDropdown
+                    searchQuery={searchQuery}
+                    searchResult={searchResult}
+                    isSearching={isSearching}
+                    onClose={() => setSearchOpen(false)}
+                    onProductClick={handleProductClick}
+                    onCategoryClick={handleCategoryClick}
+                    onBrandClick={handleBrandClick}
+                    onViewAllProducts={handleViewAllProducts}
+                    t={t}
+                    width={searchWidth}
+                  />
                 </div>
               )}
             </div>
@@ -397,7 +319,7 @@ const Header = () => {
                 <div className='flex flex-col items-center gap-1'>
                   <FaUserCircle color='#64748b' size={28} />
                   <p className='text-gray-600 text-sm font-medium hidden lg:block whitespace-nowrap max-w-[100px] truncate'>
-                    {me.fullName}
+                    {me?.fullName}
                   </p>
                 </div>
               ) : (

@@ -7,7 +7,6 @@ const BannerSlider = () => {
 
 
   const { data: bannersD, isBannersLoading,  } = useGetBannersQuery();
-  console.log(bannersD)
   const navigate = useNavigate();
 
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -50,13 +49,16 @@ const BannerSlider = () => {
         style={{ transform: `translateX(-${currentSlide * 100}%)` }}
       >
         {bannersD?.map((banner, index) => {
-          console.log(banner)
           return (
           <div onClick={() => navigate(`${banner.linkUrl}`)} key={banner.id} className="w-full cursor-pointer flex-shrink-0   relative">
             <img 
               className="w-full object-cover md:rounded-lg lg:h-[400px] h-[26vh] md:h-[40vh] lg:p-2" 
               src={`https://smartteamaz-001-site1.qtempurl.com${banner.imageUrl}`}
               alt={`Banner ${index + 1}`} 
+              onError={(e) => {
+                      e.target.src = '/Icons/logo.svg';
+                      e.target.className = 'w-[70%] h-[70%] mx-auto object-contain  md:rounded-lg h-[26vh] md:h-[40vh] lg:p-2'
+                    }}
             />
             
             <div className="absolute top-[13%] left-[8%] lg:left-[100px] lg:top-[13%] flex flex-col gap-9 max-w-[80%]">

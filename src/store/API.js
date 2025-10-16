@@ -485,7 +485,7 @@ export const API = createApi({
       query: ({
         q
       }) => ({
-        url: '/api/v1/Products/search',
+        url: '/api/v1/Products/global-search',
         method: 'GET',
         params: {
           q
@@ -494,6 +494,7 @@ export const API = createApi({
       }),
       providesTags: ['Products'],
     }),
+    
 
     // *PRODUCT SPECIFICATIONS*
     getProductSpecifications: builder.query({
