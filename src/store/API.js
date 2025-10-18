@@ -823,6 +823,14 @@ export const API = createApi({
       invalidatesTags: ['Cart'],
     }),
 
+    quickOrder: builder.mutation({
+      query: (orderData) => ({
+        url: 'api/v1/Cart/quick-order',
+        method: 'POST',
+        body: orderData,
+      })
+    }),
+
     // Favorites
     addFavorite: builder.mutation({
       query: ({
@@ -1260,6 +1268,7 @@ export const {
   useRemoveCartMutation,
   useCreateWhatsappOrderMutation,
   useGetCartCountQuery,
+  useQuickOrderMutation,
 
   useAddFavoriteMutation,
   useRemoveFavoriteMutation,

@@ -218,6 +218,7 @@ const Home = () => {
                       <Link 
                         key={item.id}
                         to={`/${item.slug}`}
+                        state={{ name: item.name }}
                         onMouseEnter={() => {setHoveredCategorie(item.id); setHoveredName(item.name)}}
                         onClick={() => setActiveCategorie(activeCategorie === item.slug ? null : item.slug)}
                         className={`p-2 pl-3 flex gap-2 lg:mb-3 lg:hover:bg-[#ffe2e1] ${activeCategorie === item.slug ? 'bg-[#ffe2e1]' : ''} cursor-pointer lg:rounded-2xl min-w-[220px] lg:pr-5`}
@@ -232,6 +233,7 @@ const Home = () => {
             
             
             <div className={`${hoveredCategorie || activeCategorie ? 'lg:hidden' : ''} border-[#E0E0E0]`}>
+              
                 <BannerSlider />
             </div>
             

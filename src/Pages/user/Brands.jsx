@@ -28,13 +28,7 @@ const FeaturedBrandSkeleton = () => (
 
 const SkeletonLoader = () => (
   <section className='bg-[#F7FAFC] min-h-screen inter'>
-    {/* Hero Section Skeleton */}
-    <div className='bg-white border-b border-[#dee2e6]'>
-      <div className='max-w-[90vw] mx-auto py-12 md:py-16'>
-        <div className='h-10 bg-gray-200 rounded w-1/3 mx-auto mb-4 animate-pulse'></div>
-        <div className='h-4 bg-gray-200 rounded w-1/2 mx-auto animate-pulse'></div>
-      </div>
-    </div>
+
 
     <div className='max-w-[90vw] mx-auto py-8'>
       {/* Search Bar Skeleton */}
@@ -94,10 +88,7 @@ const Brands = () => {
   
   console.log(brands);
 
-  // Generate alphabet for filter
-  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
-  // Filter brands based on search and selected letter
   const filteredBrands = brands.filter(brand => {
     const matchesSearch = brand.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesLetter = selectedLetter === 'All' || brand.name.toUpperCase().startsWith(selectedLetter);
@@ -135,20 +126,11 @@ const Brands = () => {
   return (
     <section className='bg-[#F7FAFC] min-h-screen inter'>
       {/* Hero Section */}
-      <div className='bg-white border-b border-[#dee2e6]'>
-        <div className='max-w-[90vw] mx-auto py-12 md:py-16'>
-          <h1 className='text-3xl md:text-4xl font-bold text-center mb-4'>
-            Explore Our Brands
-          </h1>
-          <p className='text-center text-[#505050] max-w-2xl mx-auto'>
-            Discover premium technology brands. From computers to electronics, find trusted manufacturers for all your needs.
-          </p>
-        </div>
-      </div>
+
 
       <div className='max-w-[90vw] mx-auto py-8'>
         {/* Search Bar */}
-        <div className='bg-white rounded-lg border border-[#dee2e6] p-4 mb-6'>
+        <div className='bg-white rounded-lg border border-[#dee2e6]  mb-6'>
           <div className='relative'>
             <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400' size={20} />
             <input
@@ -161,34 +143,7 @@ const Brands = () => {
           </div>
         </div>
 
-        {/* Alphabet Filter */}
-        <div className='bg-white rounded-lg border border-[#dee2e6] p-4 mb-8 overflow-x-auto'>
-          <div className='flex gap-2 min-w-max'>
-            <button
-              onClick={() => setSelectedLetter('All')}
-              className={`px-3 py-2 rounded-lg font-medium transition-colors ${
-                selectedLetter === 'All'
-                  ? 'bg-[#E60C03] text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              All
-            </button>
-            {alphabet.map(letter => (
-              <button
-                key={letter}
-                onClick={() => setSelectedLetter(letter)}
-                className={`px-3 py-2 rounded-lg font-medium transition-colors ${
-                  selectedLetter === letter
-                    ? 'bg-[#E60C03] text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                {letter}
-              </button>
-            ))}
-          </div>
-        </div>
+        
 
         {/* Brands Count */}
         <div className='mb-6'>

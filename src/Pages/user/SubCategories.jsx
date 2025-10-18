@@ -1,6 +1,6 @@
 import React from 'react';
 import { useGetCategoryQuery, useGetRecommendedQuery } from '../../store/API';
-import { Link, useParams } from 'react-router';
+import { Link, useLocation, useParams } from 'react-router';
 import { Breadcrumb } from '../../products/Breadcrumb';
 import SimilarProducts from '../../components/UI/SimilarRecommendedProducts';
 
@@ -50,7 +50,6 @@ const SubCategoriesSkeleton = () => {
 
 // Main Components
 const CategoryCard = ({ title, imageSrc = null, slug }) => {
-    console.log(imageSrc)
   return(
   <Link to={`/products/${slug}`} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200 cursor-pointer group">
     <div className="flex flex-col items-center text-center h-full">
@@ -80,6 +79,9 @@ const SubCategories = () => {
     categoryId: subs?.id, 
     limit: 6
   });
+  const location = useLocation();
+  const { name } = location.state || {};
+  console.log(name)
   
 
   // Show skeleton while loading
@@ -98,14 +100,13 @@ const SubCategories = () => {
         {/* Page Title */}
         <div className="mb-8">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">
-            {formatName(slug)}
+            {name}
           </h1>
         </div>
         
         {/* Categories Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
           {subs?.subCategories?.map((category, index) => {
-            console.log(category)
             return (
               <CategoryCard 
                 key={index} 

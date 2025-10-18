@@ -4,7 +4,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay } from 'swiper/modules'; 
 import 'swiper/css';
 import 'swiper/css/pagination';
-import { Heart, Download, Share2, Minus, Plus, X, Check, Copy, MessageCircle,   Send, LogIn, UserPlus, Loader2, Section, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Heart, Download, Share2, Minus, Plus, X, Check, Copy, MessageCircle,   Send, LogIn, UserPlus, Loader2, Section, ChevronLeft, ChevronRight, ShoppingBag } from 'lucide-react';
 import { Breadcrumb } from '../../products/Breadcrumb';
 import SearchUI from '../../components/UI/SearchUI';
 import { 
@@ -17,6 +17,7 @@ import {
 } from '../../store/API';
 import { toast } from 'react-toastify';
 import SimilarProducts from '../../components/UI/SimilarRecommendedProducts';
+import QuickOrderModal from '../../components/UI/QuickOrderModal';
 
 
 // Unauthorized Modal Component
@@ -232,6 +233,7 @@ function Details() {
   const {data: recommendation, isRecLoading} = useGetRecommendedQuery({limit: 6})
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [modalSlideIndex, setModalSlideIndex] = useState(0);
+  const [showQuickOrderModal, setShowQuickOrderModal] = useState(false);
   
   // Replace the openDetail function with these functions
   const openDetail = (initialIndex = 0) => {
@@ -538,6 +540,14 @@ function Details() {
       action={unauthorizedAction}
     />
 
+
+    <QuickOrderModal
+      isOpen={showQuickOrderModal}
+      onClose={() => setShowQuickOrderModal(false)}
+      product={product}
+      quantity={quantity}
+    />
+
     {/* Image Detail Modal with Slider */}
     {showDetailModal && (
       <section className='fixed w-screen h-screen inset-0 bg-white bg-opacity-95 z-10000'>
@@ -747,6 +757,7 @@ function Details() {
         <div className="p-4 mb-6 space-y-3 border-y-1 border-[#DEE2E6] bg-white w-full h-full self-end">
           <button 
               onClick={handleAddToCart}
+              
               disabled={!isInStock || isAddingToCart || showSuccess}
               className={`w-full flex justify-center items-center py-3 mt-6 rounded-lg font-medium transition-colors duration-200 ${
                   !isInStock 
@@ -773,6 +784,18 @@ function Details() {
               ) : (
                   'Add To Cart'
               )}
+          </button>
+          <button 
+            onClick={() => setShowQuickOrderModal(true)}
+            disabled={!isInStock}
+            className={`w-full flex justify-center items-center py-3 mt-3 rounded-lg font-medium transition-colors duration-200 ${
+              !isInStock 
+                ? 'bg-gray-400 cursor-not-allowed text-white' 
+                : 'bg-green-500 hover:bg-green-600 cursor-pointer text-white'
+            }`}
+          >
+            <ShoppingBag className="w-4 h-4 mr-2" />
+            Buy Now
           </button>
         </div>
 
@@ -993,6 +1016,19 @@ function Details() {
                     ) : (
                         'Add To Cart'
                     )}
+                </button>
+
+                <button 
+                  onClick={() => setShowQuickOrderModal(true)}
+                  disabled={!isInStock}
+                  className={`w-full flex justify-center items-center py-3 mt-3 rounded-lg font-medium transition-colors duration-200 ${
+                    !isInStock 
+                      ? 'bg-gray-400 cursor-not-allowed text-white' 
+                      : 'bg-green-500 hover:bg-green-600 cursor-pointer text-white'
+                  }`}
+                >
+                  <ShoppingBag className="w-4 h-4 mr-2" />
+                  Buy Now
                 </button>
               </div>
             </div>

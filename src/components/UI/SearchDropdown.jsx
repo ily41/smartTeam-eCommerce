@@ -231,7 +231,7 @@ const SearchDropdown = ({
                   </p>
                   <div className="flex items-center gap-2">
                     <span className="text-[#E60C03] font-bold text-base">
-                      ${product.currentPrice.toLocaleString()}
+                      {product.currentPrice.toLocaleString()} AZN
                     </span>
                     {product.discountPercentage > 0 && (
                       <span className="text-gray-400 text-xs line-through">

@@ -107,11 +107,9 @@ const Cart = () => {
   const [removeCart] = useRemoveCartMutation();
   const [createWPOrder, { isLoading: isOrderLoading }] = useCreateWhatsappOrderMutation();
 
-  // Track which items are being removed
   const [removingItems, setRemovingItems] = useState(new Set());
   const [isRemovingCart, setIsRemovingCart] = useState(false);
 
-  // Local state for optimistic updates
   const [localQuantities, setLocalQuantities] = useState({});
   const [updatingItems, setUpdatingItems] = useState(new Set());
 
