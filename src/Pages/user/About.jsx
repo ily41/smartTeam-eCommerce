@@ -2,8 +2,10 @@ import { ArrowRight } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router';
 import InfiniteBrandSlider from '../../components/UI/BrandSlider';
+import { useTranslation } from 'react-i18next';
 
 const About = () => {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const software = useRef(null);
   const secure = useRef(null);
@@ -26,27 +28,25 @@ const About = () => {
               <div className="absolute left-[-6%] md:left-[-10%] bottom-[-6%] md:bottom-[-5%] md:min-w-[270px]  md:text-[11px] text-white rounded-lg 
               border max-w-[280px] border-[#818686] bg-transparent backdrop-blur-[29px] p-4 w-[66%] md:w-[70%]  lg:text-[12px]   text-[6px] [@media(min-width:350px)]:text-[7px] [@media(min-width:360px)]:text-[8px] [@media(min-width:420px)]:text-[9px] [@media(min-width:460px)]:text-[11px] inter">
                 <p >
-                 We believe that technology should make life easier, safer, and more productive. That is why we deliver modern IT and security solutions designed to support both businesses and individuals. From small offices to large enterprises, our services are built to provide efficiency, safety, and long-term reliability.
+                 {t('about.missionStatement')}
                 </p>
               </div>
             </div>
 
 
             <div className='mt-15 md:mt-0 text-center flex flex-col md:flex-4 md:items-start md:text-start items-center md:order-1'>
-                <h1 className='text-2xl font-semibold mb-4 '>Who we are?</h1>
+                <h1 className='text-2xl font-semibold mb-4 '>{t('about.whoWeAre')}</h1>
                 <span
                   className={`text-[#505050] md:line-clamp-none md:text-sm lg:text-lg max-w-[550px] ${expanded ? "" : "line-clamp-4 "}`}
                 >
-
-                Smartteam is a professional company engaged in the import of commercial equipment, computers, and electronic products.
-                Throughout our operations, we have strengthened our position in the market by providing our customers with reliable, high-quality, and innovative products. By constantly keeping up with technological advancements, we aim to add value to our partners and customers.
+                {t('about.companyDescription')}
                 </span>
             
                 <button
                   onClick={() => setExpanded(!expanded)}
                   className="text-[#e60c03] ml-1 font-medium md:hidden"
                 >
-                  {expanded ? "Less" : "More"}
+                  {expanded ? t('about.less') : t('about.more')}
                 </button>
             </div>
             
@@ -64,8 +64,8 @@ const About = () => {
                 <img className='mr-7 ml-2 md:mr-3  md:w-[55px] md:h-[55px] md:object-contain shrink-0  md:self-center' src="/Icons/about1.svg" alt="" />
 
                 <div className='flex flex-col justify-center  items-center'>
-                    <h1 className='text-md font-semibold self-start '>Who we are</h1>
-                    <p className='text-[#505050] text-xs md:text-base'>A trusted partner in IT and security solutions, serving businesses and individuals.</p>
+                    <h1 className='text-md font-semibold self-start '>{t('about.whoWeAreTitle')}</h1>
+                    <p className='text-[#505050] text-xs md:text-base'>{t('about.whoWeAreDesc')}</p>
                 </div>
 
             </div>
@@ -74,8 +74,8 @@ const About = () => {
                 <img className='mr-7 md:mr-3  md:w-[55px] shrink-0 md:self-center' src="/Icons/about2.svg" alt="" />
 
                 <div className='flex flex-col justify-center items-center'>
-                    <h1 className='text-md font-semibold self-start'>Who we do</h1>
-                    <p className='text-[#505050] text-xs md:text-base'>We provide professional sales, installation, and support for computers, office equipment, and low-current systems.</p>
+                    <h1 className='text-md font-semibold self-start'>{t('about.whatWeDo')}</h1>
+                    <p className='text-[#505050] text-xs md:text-base'>{t('about.whatWeDoDesc')}</p>
                 </div>
 
             </div>
@@ -84,14 +84,14 @@ const About = () => {
                 <img className='mr-7 md:mr-3  md:w-[55px] shrink-0 md:self-center' src="/Icons/about3.svg" alt="" />
 
                 <div className='flex flex-col justify-center items-center'>
-                    <h1 className='text-md font-semibold self-start'>Our mission</h1>
-                    <p className='text-[#505050] text-xs md:text-base'>To deliver secure, innovative, and reliable technology that improves efficiency and safety.</p>
+                    <h1 className='text-md font-semibold self-start'>{t('about.ourMission')}</h1>
+                    <p className='text-[#505050] text-xs md:text-base'>{t('about.ourMissionDesc')}</p>
                 </div>
 
             </div>
         </div>
         <div className="pb-10 pt-18 max-w-[90vw] mx-auto text-2xl font-semibold">
-          <h1>Our extra services</h1>
+          <h1>{t('about.extraServices')}</h1>
         </div>
             
         <div className="max-w-[90vw] mx-auto pb-25 flex flex-col md:flex-row md:gap-4">
@@ -106,15 +106,14 @@ const About = () => {
             alt=""
           />
           <div className="relative bg-white p-5 pb-4 ">
-            <h1 className="font-semibold text-xl">Security Systems</h1>
+            <h1 className="font-semibold text-xl">{t('about.securitySystems')}</h1>
             <p className="text-[#505050] text-sm mt-3 font-medium">
-              We reliably protect your workplaces and living spaces with
-              security systems developed...
+              {t('about.securitySystemsDesc')}
             </p>
           </div>
           <div className="bg-white p-7 pt-0 flex justify-end rounded-b-lg">
             <button className="flex self-end cursor-pointer items-center gap-4 border-1 border-[#dee2e6] rounded-full p-3 py-2">
-              Learn More
+              {t('about.learnMore')}
               <div className="p-1 bg-[#FF4B43] rounded-full ">
                 <ArrowRight size={18} color="white" />
               </div>
@@ -134,16 +133,15 @@ const About = () => {
             />
             <div className="relative bg-white p-5 pb-4 ">
               <h1 className="font-semibold text-xl">
-                Hemsoft Software Installation
+                {t('about.hemsoftInstallation')}
               </h1>
               <p className="text-[#505050] text-sm mt-3 font-medium">
-                The Hemsoft software, provided by Smartteam, is a modern POS and
-                management system...
+                {t('about.hemsoftDesc')}
               </p>
             </div>
             <div className="bg-white p-7 pt-0 flex justify-end rounded-b-lg">
               <button className="flex cursor-pointer self-end items-center gap-4 border-1 border-[#dee2e6] rounded-full p-3 py-2">
-                Learn More
+                {t('about.learnMore')}
                 <div className="p-1 bg-[#FF4B43] rounded-full ">
                   <ArrowRight size={18} color="white" />
                 </div>

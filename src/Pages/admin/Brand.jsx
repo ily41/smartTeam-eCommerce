@@ -5,8 +5,10 @@ import AddBrandUI from '../../components/admin/Brands/AddBrand';
 import { Loader2 } from 'lucide-react';
 import { useDeleteBrandMutation, useGetBrandsAdminQuery } from '../../store/API';
 import EditBrandUI from '../../components/admin/Brands/EditBrand';
+import { useTranslation } from 'react-i18next';
 
 const Brand = () => {
+  const { t } = useTranslation();
   const [modalType, setModalType] = useState(null); 
   const [edit, setEdit] = useState(null);
   const { data: brands, isLoading, error, refetch } = useGetBrandsAdminQuery();
@@ -16,11 +18,11 @@ const Brand = () => {
   const handleDeleteBrand = async (id) => {
     try {
       await deleteBrand({ id }).unwrap();
-      toast.success("Brand deleted successfully");
+      toast.success(t('admin.brandDeletedSuccess'));
       handleCloseModal();
     } catch (error) {
       console.log(error);
-      toast.error(error?.data || "Deleting Brand Failed");
+      toast.error(error?.data || t('admin.deletingBrandFailed'));
     }
   };
 
@@ -34,12 +36,12 @@ const Brand = () => {
     <div className="p-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-white">Brands</h1>
+        <h1 className="text-2xl font-bold text-white">{t('admin.brands')}</h1>
         <button
           onClick={() => setModalType("add")}
           className="px-6 py-3 font-semibold rounded-lg bg-white text-black hover:bg-gray-200 transition-all"
         >
-          Add New Brand
+          {t('admin.addNewBrand')}
         </button>
       </div>
 

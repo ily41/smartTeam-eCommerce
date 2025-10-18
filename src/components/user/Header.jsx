@@ -343,19 +343,19 @@ const Header = () => {
               </Link>
                           
               <Link to='/about' className="text-gray-700 inter text-sm lg:text-base hover:text-gray-900 transition-colors duration-200">
-                {t('about')}
+                {t('aboutPage')}
               </Link>
                           
               <Link to='/download' className="text-gray-700 inter text-sm lg:text-base hover:text-gray-900 transition-colors duration-200">
-                {t('download')}
+                {t('downloadPage')}
               </Link>
                           
               <Link to='/contact' className="text-gray-700 inter text-sm lg:text-base hover:text-gray-900 transition-colors duration-200">
-                {t('contact')}
+                {t('contactPage')}
               </Link>
 
               <Link to='/brands' className="text-gray-700 inter text-sm lg:text-base hover:text-gray-900 transition-colors duration-200">
-                Brands
+                {t('brands')}
               </Link>
             </nav>
           </div>

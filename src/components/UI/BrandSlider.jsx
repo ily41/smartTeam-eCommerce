@@ -1,7 +1,9 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useGetBrandsAdminQuery, useGetBrandsQuery } from '../../store/API';
+import { useTranslation } from 'react-i18next';
 
 const InfiniteBrandSlider = () => {
+    const { t } = useTranslation();
     const { data: brands, isLoading: isBrandsLoading } = useGetBrandsAdminQuery();
     console.log(brands)
     console.log(brands)
@@ -161,7 +163,7 @@ const InfiniteBrandSlider = () => {
   return (
     <>
       <div className="text-xl hidden md:block font-semibold mb-6">
-        <h1>Featured Brands</h1>
+        <h1>{t('featuredBrands')}</h1>
       </div>
 
       <div className="relative overflow-hidden bg-white rounded-lg border border-gray-200 py-3 md:p-6">

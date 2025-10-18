@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { SlidersHorizontal, Filter, X, ChevronUp, ChevronDown } from 'lucide-react';
 import { useFilterProductsMutation, useGetCategoriesQuery, useGetCategoryFiltersQuery, useGetFiltersQuery, useGetParentCategoriesQuery } from '../store/API';
+import { useTranslation } from 'react-i18next';
 
 // Move these components outside to prevent recreation on each render
 const FilterSection = ({ title, isExpanded, onToggle, children }) => (
@@ -45,6 +46,7 @@ const CheckboxItem = ({ label, checked, onChange }) => (
 );
 
 export function MobileFilterButtons({ onFilterResults, onLoadingChange, currentSort, onSortChange, currentPage, pageSize }) {
+  const { t } = useTranslation();
   const [isSort, setIsSort] = useState(false);
   const [isFilter, setIsFilter] = useState(false);
   const [showAllCategories, setShowAllCategories] = useState(false);
@@ -348,7 +350,7 @@ export function MobileFilterButtons({ onFilterResults, onLoadingChange, currentS
       {/* Mobile Filter Modal */}
       <div className={`fixed inset-0 bg-white z-50 flex flex-col ${isFilter ? 'block' : 'hidden'}`}>
         <div className="flex justify-between items-center p-4 border-b border-gray-200">
-          <h1 className="text-xl font-medium text-gray-900">Filters</h1>
+          <h1 className="text-xl font-medium text-gray-900">{t('filters.filters')}</h1>
           <button onClick={() => setIsFilter(false)} className="p-1">
             <X size={24} className="text-gray-600" />
           </button>
@@ -357,7 +359,7 @@ export function MobileFilterButtons({ onFilterResults, onLoadingChange, currentS
         <div className="flex-1 overflow-y-auto">
           {/* Category Filter */}
           <FilterSection
-            title="Category"
+            title={t('filters.category')}
             isExpanded={expandedSections.category}
             onToggle={() => toggleSection('category')}
           >
@@ -375,7 +377,7 @@ export function MobileFilterButtons({ onFilterResults, onLoadingChange, currentS
                   onClick={() => setShowAllCategories(!showAllCategories)}
                   className="text-sm text-red-500 hover:text-red-600 font-medium mt-2"
                 >
-                  {showAllCategories ? 'See less' : 'See all'}
+                  {showAllCategories ? t('filters.seeLess') : t('filters.seeAll')}
                 </button>
               )}
             </div>

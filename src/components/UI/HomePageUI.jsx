@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { useToggleFavoriteMutation, useGetFavoriteStatusQuery } from '../../store/API';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 
 // Unauthorized Modal Component
 
@@ -12,15 +13,14 @@ import { toast } from 'react-toastify';
       product,
       url,
       handleAddToCart,
-      isAddingToCart,
       showUnauthorizedModal,
       setShowUnauthorizedModal,
       unauthorizedAction,
       setUnauthorizedAction,
     }) => {
+    const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
-    const [hoverFav, setHoverFav] = useState(false);
     const UnauthorizedModal = ({ isOpen, onClose, action }) => {
       const navigate = useNavigate();
         
@@ -41,10 +41,10 @@ import { toast } from 'react-toastify';
                   <LogIn className="h-6 w-6 text-red-600" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Sign In Required
+                  {t('signInRequired')}
                 </h3>
                 <p className="text-sm whitespace-normal  text-gray-600 mb-6">
-                  You need to be logged in to {action || 'perform this action'}. Please sign in or create an account to continue.
+                  {t('signInRequiredMessage', { action: action || 'perform this action' })}
                 </p>
                 <div className="flex gap-3">
                   <button
@@ -52,21 +52,21 @@ import { toast } from 'react-toastify';
                     className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2.5 px-4 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
                   >
                     <LogIn className="w-4 h-4" />
-                    Sign In
+                    {t('signIn')}
                   </button>
                   <button
                     onClick={() => navigate('/register')}
                     className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-900 py-2.5 px-4 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
                   >
                     <UserPlus className="w-4 h-4" />
-                    Sign Up
+                    {t('signUp')}
                   </button>
                 </div>
                 <button
                   onClick={onClose}
                   className="mt-4 text-sm text-gray-500 hover:text-gray-700 transition-colors"
                 >
-                  Continue browsing
+                  {t('continueBrowsing')}
                 </button>
               </div>
             </div>
@@ -102,7 +102,7 @@ import { toast } from 'react-toastify';
             setTimeout(() => {
                 setShowSuccess(false);
             }, 2000);
-        } catch (error) {
+        } catch {
             setIsLoading(false);
 
             // ✅ CHECK FOR 401 UNAUTHORIZED ERROR
@@ -144,7 +144,7 @@ import { toast } from 'react-toastify';
                     className="w-full cursor-not-allowed flex justify-center items-center text-sm lg:text-md bg-red-400 text-white py-2 px-4 rounded-md font-medium transition-colors duration-200"
                 >
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Adding...
+                    {t('adding')}
                 </button>
             );
         }
@@ -156,7 +156,7 @@ import { toast } from 'react-toastify';
                     className="w-full cursor-default flex justify-center items-center text-sm lg:text-md bg-green-500 text-white py-2 px-4 rounded-md font-medium transition-colors duration-200"
                 >
                     <Check className="w-4 h-4 mr-2" />
-                    Added to cart
+                    {t('addedToCart')}
                 </button>
             );
         }
@@ -166,7 +166,7 @@ import { toast } from 'react-toastify';
                 onClick={(e) => onAddToCart(e, product.id)}
                 className="w-full cursor-pointer flex justify-center items-center text-sm lg:text-md bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-md font-medium transition-colors duration-200"
             >
-                Add to cart
+                {t('addToCart')}
             </button>
         );
     };

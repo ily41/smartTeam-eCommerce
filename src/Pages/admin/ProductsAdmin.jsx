@@ -6,8 +6,10 @@ import Modal from "../../components/UI/Modal";
 import AddProductStatic from "../../components/admin/Product/AddProduct";
 import EditProduct from "../../components/admin/Product/EditProduct";
 import { toast } from "react-toastify";
+import { useTranslation } from 'react-i18next';
 
 const ProductsUI = () => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const { data: products, isLoading, error, refetch } = useGetProductsQuery();
     const { data: productsSummary, isSummaryLoading } = useGetProductsSummaryQuery();
@@ -23,11 +25,11 @@ const ProductsUI = () => {
     const handleDeleteProduct = async (id) => {
       try {
         await deleteCategory({ id }).unwrap();
-        toast.success("Product deleted successfully");
+        toast.success(t('admin.productDeletedSuccess'));
         handleCloseModal();
       } catch (error) {
         console.log(error);
-        toast.error(error?.data || "Deleting Product Failed");
+        toast.error(error?.data || t('admin.deletingProductFailed'));
       }
     };
 
@@ -75,14 +77,14 @@ const ProductsUI = () => {
       <div className="container mx-auto">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h2 className="text-4xl font-bold text-white mb-2">Products</h2>
-            <p className="text-gray-400">Manage your product inventory</p>
+            <h2 className="text-4xl font-bold text-white mb-2">{t('admin.products')}</h2>
+            <p className="text-gray-400">{t('admin.manageProducts')}</p>
           </div>
           <button
             onClick={() => setModalType("add")}
             className="md:px-6 md:py-3 px-4 py-2 bg-white text-sm md:text-base transition-all duration-300 rounded-lg font-semibold text-gray-900 shadow-lg transform hover:bg-gray-100 hover:scale-105"
           >
-            Add New Product
+            {t('admin.addNewProduct')}
           </button>
         </div>
 

@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { X, ShoppingBag, Loader2, Check } from 'lucide-react';
 import { useQuickOrderMutation } from '../../store/API';
+import { useTranslation } from 'react-i18next';
 
 const QuickOrderModal = ({ isOpen, onClose, product, quantity }) => {
+    const { t } = useTranslation();
     console.log(product)
   const [formData, setFormData] = useState({
     customerName: '',
@@ -28,11 +30,11 @@ const QuickOrderModal = ({ isOpen, onClose, product, quantity }) => {
 
   const validateForm = () => {
     if (!formData.customerName.trim()) {
-      setError('Please enter your name');
+      setError(t('quickOrder.pleaseEnterName'));
       return false;
     }
     if (!formData.customerPhone.trim()) {
-      setError('Please enter your customer phone');
+      setError(t('quickOrder.pleaseEnterPhone'));
       return false;
     }
     return true;

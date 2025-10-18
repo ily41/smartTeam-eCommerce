@@ -5,8 +5,10 @@ import { useChangePasswordMutation, useGetMeQuery, useLogoutMutation } from '../
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router';
 import { LogIn } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const Profile = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { data: me, isLoading: isUserLoading, error: userError } = useGetMeQuery();
   const [changePass, { isLoading: isPasswordLoading, error: passwordError }] = useChangePasswordMutation(); 
@@ -21,14 +23,14 @@ const Profile = () => {
   });
 
   const roleNames = {
-    1: "Normal User",
-    2: "Retail",
-    3: "Wholesale",
-    4: "VIP"
+    1: t('profile.normalUser'),
+    2: t('profile.retail'),
+    3: t('profile.wholesale'),
+    4: t('profile.vip')
   };
 
   const getRoleName = (roleId) => {
-    return roleNames[roleId] || "Unknown Role";
+    return roleNames[roleId] || t('profile.unknownRole');
   };
   
   const [newPass, setNewPass] = useState('');
@@ -82,7 +84,7 @@ const Profile = () => {
     if (!data.password && !newPass) return '';
     
     if (data.password && newPass && data.password === newPass) {
-      return 'New password cannot be the same as current password';
+      return t('profile.passwordValidationError');
     }
     
     return '';
@@ -103,7 +105,7 @@ const Profile = () => {
   // Get API error message
   const getApiErrorMessage = (error) => {
     if (error?.status === 401) {
-      return 'Unauthorized: Please log in again';
+      return t('profile.unauthorizedMessage');
     }
     if (error?.data?.message) {
       return error.data.message;
@@ -111,21 +113,15 @@ const Profile = () => {
     if (error?.message) {
       return error.message;
     }
-    return 'An error occurred. Please try again.';
+    return t('profile.errorOccurred');
   };
 
   const handleDetailsSubmit = async (e) => {
     e.preventDefault();
     
     try {
-      const formDataToSend = {
-        firstName: data.name,
-        lastName: data.lastName,
-        email: data.email
-      };
-      
       setInitialData({ ...data, password: '' });
-      setSuccessMessage('Profile updated successfully!');
+      setSuccessMessage(t('profile.profileUpdatedSuccess'));
       
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (error) {
@@ -148,13 +144,12 @@ const Profile = () => {
         confirmNewPassword: newPass
       };
 
-      const result = await changePass(passwordData).unwrap();
-      
+      await changePass(passwordData).unwrap();
       
       setInitialPassword('');
       setData({ ...data, password: '' });
       setNewPass('');
-      setSuccessMessage('Password changed successfully!');
+      setSuccessMessage(t('profile.passwordChangedSuccess'));
       
       // Hide passwords after successful change
       setShowCurrentPassword(false);
@@ -172,11 +167,11 @@ const Profile = () => {
       await logout().unwrap();
       document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 
-      toast.success('Logged out successfully!');
+      toast.success(t('profile.loggedOutSuccess'));
       navigate('/login'); 
     } catch (error) {
       console.error('Failed to logout:', error);
-      toast.error('Failed to logout. Please try again.');
+      toast.error(t('profile.logoutFailed'));
     }
 
   };
@@ -332,16 +327,16 @@ const Profile = () => {
               <svg className="w-6 h-6 text-[#FD1206] mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>
-              <h3 className="text-xl font-semibold">Confirm Logout</h3>
+              <h3 className="text-xl font-semibold">{t('profile.confirmLogout')}</h3>
             </div>
-            <p className="text-gray-600 mb-6">Are you sure you want to logout from your account?</p>
+            <p className="text-gray-600 mb-6">{t('profile.logoutMessage')}</p>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowLogoutModal(false)}
                 disabled={isLogoutLoading}
                 className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Cancel
+                {t('profile.cancel')}
               </button>
               <button
                 onClick={handleLogout}
@@ -351,10 +346,10 @@ const Profile = () => {
                 {isLogoutLoading ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Logging out...
+                    {t('profile.loggingOut')}
                   </>
                 ) : (
-                  'Logout'
+                  t('profile.logout')
                 )}
               </button>
             </div>
@@ -375,7 +370,7 @@ const Profile = () => {
         </div>
         <div className='flex items-center justify-between mt-4'>
           <div className='flex items-center gap-3'>
-            <h1 className=''>Profile</h1>
+            <h1 className=''>{t('profile.profile')}</h1>
             <div className='px-4 py-2 rounded-xl bg-[#FFBBB8]'>
               <h3 className='text-base font-semibold text-black'>{getRoleName(me?.role)}</h3>
             </div>
@@ -390,7 +385,7 @@ const Profile = () => {
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>
-              <span className="hidden sm:inline">Logout</span>
+              <span className="hidden sm:inline">{t('profile.logout')}</span>
             </button>
           </div>
         </div>
@@ -413,15 +408,14 @@ const Profile = () => {
       <div className='bg-white md:max-w-[80vw] md:mx-auto'>
         {/* My details */}
         <div className={`bg-white p-6 pt-7 card-hover rounded-lg ${isVisible ? 'animate-fade-in' : 'opacity-0'}`} style={{ animationDelay: '0.1s' }}>
-          <h1 className='font-semibold text-2xl'>My details</h1>
-          <h1 className='mt-9 mb-2 font-semibold text-lg hidden md:block'>Personal Information</h1>
+          <h1 className='font-semibold text-2xl'>{t('profile.myDetails')}</h1>
+          <h1 className='mt-9 mb-2 font-semibold text-lg hidden md:block'>{t('profile.personalInformation')}</h1>
           <hr className='mb-10 hidden md:block'/>
 
           <div className='flex justify-between md:gap-14'>
             <div className='hidden md:block animate-slide-in-right' style={{ animationDelay: '0.2s' }}>
               <p className='max-w-[250px] text-[#878787]'>
-                View and update your personal details such as name, email address and other profile
-                information to keep your account up to date.
+                {t('profile.personalInfoDesc')}
               </p>
             </div>
 
@@ -430,7 +424,7 @@ const Profile = () => {
               className='md:grid w-full md:w-[480px] md:grid-cols-2 md:gap-x-5'
             >
               <div className='flex flex-col mt-5 md:mt-0'>
-                <span className='font-semibold'>First Name</span>
+                <span className='font-semibold'>{t('profile.firstName')}</span>
                 <input
                   type='text'
                   required
@@ -442,7 +436,7 @@ const Profile = () => {
               </div>
 
               <div className='flex flex-col mt-5 md:mt-0'>
-                <span className='font-semibold'>Last Name</span>
+                <span className='font-semibold'>{t('profile.lastName')}</span>
                 <input
                   type='text'
                   required
@@ -454,7 +448,7 @@ const Profile = () => {
               </div>
 
               <div className='flex flex-col col-span-2 mt-5'>
-                <span className='font-semibold'>E-mail</span>
+                <span className='font-semibold'>{t('profile.email')}</span>
                 <input
                   type='email'
                   required
@@ -477,10 +471,10 @@ const Profile = () => {
                 {isUserLoading ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Saving...
+                    {t('profile.saving')}
                   </>
                 ) : (
-                  'Save'
+                  t('profile.save')
                 )}
               </button>
             </form>
@@ -489,14 +483,13 @@ const Profile = () => {
 
         {/* Password section */}
         <div className={`bg-white p-6 pt-7 mt-10 card-hover rounded-lg ${isVisible ? 'animate-fade-in' : 'opacity-0'}`} style={{ animationDelay: '0.3s' }}>
-          <h1 className='mt-9 mb-2 font-semibold text-lg hidden md:block'>Password</h1>
+          <h1 className='mt-9 mb-2 font-semibold text-lg hidden md:block'>{t('profile.password')}</h1>
           <hr className='mb-10 hidden md:block'/>
 
           <div className='flex md:justify-between md:gap-14'>
             <div className='hidden md:block animate-slide-in-right' style={{ animationDelay: '0.4s' }}>
               <p className='max-w-[250px] text-[#878787]'>
-                Change your account password to keep your profile secure. For your safety, make sure to use a
-                strong password that includes letters, numbers, and symbols.
+                {t('profile.passwordDesc')}
               </p>
             </div>
 
@@ -505,7 +498,7 @@ const Profile = () => {
               className='md:grid w-full md:w-[480px] md:grid-cols-2 md:gap-x-5'
             >
               <div className='flex flex-col col-span-2 mt-5 md:mt-0'>
-                <span className='font-semibold'>Current Password</span>
+                <span className='font-semibold'>{t('profile.currentPassword')}</span>
                 <div className='relative'>
                   <input
                     type={showCurrentPassword ? 'text' : 'password'}
@@ -537,7 +530,7 @@ const Profile = () => {
               </div>
 
               <div className='flex flex-col col-span-2 mt-5'>
-                <span className='font-semibold'>New Password</span>
+                <span className='font-semibold'>{t('profile.newPassword')}</span>
                 <div className='relative'>
                   <input
                     type={showNewPassword ? 'text' : 'password'}
@@ -608,10 +601,10 @@ const Profile = () => {
                 {isPasswordLoading ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Changing Password...
+                    {t('profile.changingPassword')}
                   </>
                 ) : (
-                  'Save'
+                  t('profile.save')
                 )}
               </button>
             </form>

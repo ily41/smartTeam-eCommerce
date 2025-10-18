@@ -5,9 +5,9 @@
   "dealsDescriptionLine3": "you don't want to miss!",
 
   "home": "Home",
-  "about": "About Us",
-  "download": "Download Program",
-  "contact": "Contact",
+  "aboutPage": "About Us",
+  "downloadPage": "Download Program", 
+  "contactPage": "Contact",
   "favorites": "Favorites",
   "myCart": "My Cart",
   "login": "Login",
@@ -74,6 +74,129 @@
   "nameAToZ": "Name: A to Z",
   "nameZToA": "Name: Z to A",
   "pleaseLoginFirst": "Please log in first",
-  "failedUpdateFavorites": "Failed to update favorites"
+  "failedUpdateFavorites": "Failed to update favorites",
+
+  "signInRequired": "Sign In Required",
+  "signInRequiredMessage": "You need to be logged in to {{action}}. Please sign in or create an account to continue.",
+  "signIn": "Sign In",
+  "signUp": "Sign Up",
+  "continueBrowsing": "Continue browsing",
+  "adding": "Adding...",
+  "addedToCart": "Added to cart",
+  "addToCart": "Add to cart",
+  "brands": "Brands",
+
+  "about": {
+    "whoWeAre": "Who we are?",
+    "companyDescription": "Smartteam is a professional company engaged in the import of commercial equipment, computers, and electronic products. Throughout our operations, we have strengthened our position in the market by providing our customers with reliable, high-quality, and innovative products. By constantly keeping up with technological advancements, we aim to add value to our partners and customers.",
+    "more": "More",
+    "less": "Less",
+    "missionStatement": "We believe that technology should make life easier, safer, and more productive. That is why we deliver modern IT and security solutions designed to support both businesses and individuals. From small offices to large enterprises, our services are built to provide efficiency, safety, and long-term reliability.",
+    "whoWeAreTitle": "Who we are",
+    "whoWeAreDesc": "A trusted partner in IT and security solutions, serving businesses and individuals.",
+    "whatWeDo": "Who we do",
+    "whatWeDoDesc": "We provide professional sales, installation, and support for computers, office equipment, and low-current systems.",
+    "ourMission": "Our mission",
+    "ourMissionDesc": "To deliver secure, innovative, and reliable technology that improves efficiency and safety.",
+    "extraServices": "Our extra services",
+    "securitySystems": "Security Systems",
+    "securitySystemsDesc": "We reliably protect your workplaces and living spaces with security systems developed...",
+    "learnMore": "Learn More",
+    "hemsoftInstallation": "Hemsoft Software Installation",
+    "hemsoftDesc": "The Hemsoft software, provided by Smartteam, is a modern POS and management system..."
+  },
+
+  "profile": {
+    "profile": "Profile",
+    "myDetails": "My details",
+    "personalInformation": "Personal Information",
+    "personalInfoDesc": "View and update your personal details such as name, email address and other profile information to keep your account up to date.",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "E-mail",
+    "save": "Save",
+    "saving": "Saving...",
+    "password": "Password",
+    "passwordDesc": "Change your account password to keep your profile secure. For your safety, make sure to use a strong password that includes letters, numbers, and symbols.",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "changingPassword": "Changing Password...",
+    "passwordValidationError": "New password cannot be the same as current password",
+    "confirmLogout": "Confirm Logout",
+    "logoutMessage": "Are you sure you want to logout from your account?",
+    "cancel": "Cancel",
+    "logout": "Logout",
+    "loggingOut": "Logging out...",
+    "profileUpdatedSuccess": "Profile updated successfully!",
+    "passwordChangedSuccess": "Password changed successfully!",
+    "loggedOutSuccess": "Logged out successfully!",
+    "logoutFailed": "Failed to logout. Please try again.",
+    "unauthorizedMessage": "Unauthorized: Please log in again",
+    "errorOccurred": "An error occurred. Please try again.",
+    "normalUser": "Normal User",
+    "retail": "Retail",
+    "wholesale": "Wholesale",
+    "vip": "VIP",
+    "unknownRole": "Unknown Role"
+  },
+
+  "secure": {
+    "smartPosTitle": "Smart POS & Management with Hemsoft",
+    "hemsoftDesc": "The Hemsoft software, provided by Smartteam, is a modern POS and management system specially designed for your business. Take your business to the next level with Hemsoft.",
+    "checkoutHemsoft": "Checkout hemsoft.az"
+  },
+
+  "quickOrder": {
+    "customerName": "Customer Name",
+    "customerPhone": "Customer Phone",
+    "placeOrder": "Place Order",
+    "pleaseEnterName": "Please enter your name",
+    "pleaseEnterPhone": "Please enter your customer phone",
+    "orderPlacedSuccess": "Order placed successfully!",
+    "orderFailed": "Failed to place order. Please try again."
+  },
+
+  "download": {
+    "failedToLoad": "Failed to load files. Please try again later.",
+    "noFilesAvailable": "No files available for download yet.",
+    "download": "Download",
+    "clickToDownload": "Click to download",
+    "downloadFailed": "Failed to download file. Please try again."
+  },
+
+  "contact": {
+    "contactUs": "Contact Us",
+    "phoneNumber": "Phone number",
+    "email": "Email",
+    "socialMedia": "Watch us from our social media accounts"
+  },
+
+  "admin": {
+    "users": "Users",
+    "manageUsers": "Manage user accounts and permissions",
+    "totalUsers": "Total Users",
+    "admins": "Admins",
+    "products": "Products",
+    "manageProducts": "Manage your product inventory",
+    "addNewProduct": "Add New Product",
+    "brands": "Brands",
+    "addNewBrand": "Add New Brand",
+    "productDeletedSuccess": "Product deleted successfully",
+    "deletingProductFailed": "Deleting Product Failed",
+    "brandDeletedSuccess": "Brand deleted successfully",
+    "deletingBrandFailed": "Deleting Brand Failed"
+  },
+
+  "filters": {
+    "filters": "Filters",
+    "category": "Category",
+    "seeLess": "See less",
+    "seeAll": "See all",
+    "priceRange": "Price Range",
+    "minPrice": "Min Price",
+    "maxPrice": "Max Price",
+    "clearFilters": "Clear Filters",
+    "showResults": "Show Results"
+  }
 
 }
