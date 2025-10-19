@@ -169,7 +169,7 @@ const EditUserUi = ({ setOpen, edit }) => {
         <button
           type="submit"
           disabled={isLoading}
-          className="px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-gray-200 transition-all flex items-center justify-center"
+          className="px-6 py-3 bg-white cursor-pointer text-black font-semibold rounded-lg hover:bg-gray-200 transition-all flex items-center justify-center"
         >
           {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : "Save"}
         </button>

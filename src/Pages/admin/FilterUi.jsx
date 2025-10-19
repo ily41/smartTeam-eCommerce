@@ -227,19 +227,12 @@ const FilterUi = () => {
                       <div>
                         <div className="flex items-center gap-3 mb-1">
                           <h3 className="text-xl font-semibold text-white">{filter.name}</h3>
-                          <span className={`px-3 py-1 text-sm font-semibold rounded-full ${filter.isActive ? 'bg-green-600' : 'bg-red-600'} text-white`}>
-                            {filter.isActive ? 'Active' : 'Inactive'}
-                          </span>
-                          <span className="px-3 py-1 text-sm bg-gray-700 text-gray-300 rounded-full font-medium">{filter.typeName ?? filter.type}</span>
-                        </div>
-                        <p className="text-gray-400">/{filter.slug}</p>
+                         </div>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-3">
-                      <button onClick={() => toggleFilterStatus(filter.id)} className={`p-3 rounded-lg shadow-lg transform hover:scale-110 transition-all duration-200 ${filter.isActive ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`} title={filter.isActive ? 'Deactivate' : 'Activate'}>
-                        {filter.isActive ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                      </button>
+
                       <button onClick={() => openModal('edit', filter)} className="p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-lg transform hover:scale-110 transition-all duration-200" title="Edit"><Edit2 className="w-4 h-4" /></button>
                       <button onClick={() => deleteFilter(filter.id)} disabled={isRemoving} className="p-3 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-lg transform hover:scale-110 transition-all duration-200" title="Delete"><Trash2 className="w-4 h-4" /></button>
                     </div>
@@ -256,9 +249,7 @@ const FilterUi = () => {
                               <span className="text-gray-400 ml-3">({option.value})</span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <span className={`px-3 py-1 text-sm font-semibold rounded-full ${option.isActive ? 'bg-green-600' : 'bg-red-600'} text-white`}>
-                                {option.isActive ? 'Active' : 'Inactive'}
-                              </span>
+                           
                               <button 
                                 onClick={() => deleteFilterOption(filter.id, option.id)} 
                                 className="p-2 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-lg transform hover:scale-110 transition-all duration-200" 
@@ -329,12 +320,8 @@ const FilterUi = () => {
                           <div className="flex items-center gap-2">
                             {modalMode !== 'view' && (
                               <>
-                                <button type="button" onClick={() => toggleOptionStatus(option.id)} className={`px-3 py-1 text-sm font-semibold rounded-full ${option.isActive ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>{option.isActive ? 'Active' : 'Inactive'}</button>
                                 <button type="button" onClick={() => removeOption(option.id)} className="text-red-400 hover:bg-red-600 hover:text-white p-2 rounded-lg transition-colors"><Trash2 className="w-4 h-4" /></button>
                               </>
-                            )}
-                            {modalMode === 'view' && (
-                              <span className={`px-3 py-1 text-sm font-semibold rounded-full ${option.isActive ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>{option.isActive ? 'Active' : 'Inactive'}</span>
                             )}
                           </div>
                         </div>
