@@ -10,9 +10,7 @@ import { useTranslation } from 'react-i18next';
 const Users = () => {
     const { t } = useTranslation();
     const { data: users, error, isLoading, refetch } = useGetUsersQuery();
-    console.log(users)
     const { data: userRoles, isRolesLoading  } = useGetUserRolesQuery();
-    console.log(userRoles)
     const { data: userStatistics, error: Serror, isLoading: SisLoading, refetch: refetchStatistics } = useGetUserStaticsQuery();
     const [deleteUser, { isDeleteLoading }] = useDeleteUserMutation();
     const [editRole, { isRoleLoading }] = useEditUserRoleMutation();
@@ -369,7 +367,7 @@ const Users = () => {
             <div className="text-center py-12">
                 <div className="text-gray-500 mb-4">
                     <FaUsers className="text-4xl mx-auto mb-4 opacity-50" />
-                    <p>Showing 12 of 12 users</p>
+                    <p>Showing {users?.length} of {users?.length} users</p>
                 </div>
             </div>
         </div>

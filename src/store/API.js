@@ -19,7 +19,8 @@ export const API = createApi({
         endpoint === 'uploadFile' ||
         endpoint === 'addProductPdf' ||
         endpoint === 'editProductWithImage' ||
-        endpoint === 'addBrandImage' ||
+        endpoint === 'addBrandImage' || 
+        endpoint === 'editCategoryWithImage' || 
         body instanceof FormData;
 
       if (!isFormDataRequest) {
@@ -147,6 +148,17 @@ export const API = createApi({
       }),
       invalidatesTags: ['Categories'],
     }),
+
+    editCategoryWithImage: builder.mutation({
+          query: ({ id, formData }) => ({
+            url: `/api/v1/Categories/${id}/with-image`,
+            method: 'PUT',
+            body: formData,
+            // Important: Don't set Content-Type header
+            // RTK Query will automatically set it to multipart/form-data
+          }),
+          invalidatesTags: ['Category'], // Adjust based on your tag system
+        }),
 
     deleteCategory: builder.mutation({
       query: ({
@@ -463,7 +475,7 @@ export const API = createApi({
 
     editProductWithImage: builder.mutation({
       query: ({ id, productData, formData }) => ({
-        url: `/api/v1/Products/${id}/with-image?productData=${productData}`,
+        url: `/api/v1/Products/${id}/with-files`,
         method: 'PUT',
         body: formData,
         prepareHeaders: (headers) => {
@@ -1224,6 +1236,7 @@ export const {
   useAddCategoryImageMutation,
   useEditCategoryMutation,
   useDeleteCategoryMutation,
+  useEditCategoryWithImageMutation,
   useGetCategoryQuery,
 
   useGetProductsQuery,

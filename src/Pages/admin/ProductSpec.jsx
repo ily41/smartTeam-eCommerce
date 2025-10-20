@@ -274,19 +274,19 @@ const ProductDetailPage = () => {
                 
                 <div className='flex flex-col justify-between'>
                   <p className="text-gray-400 text-sm">Original Price</p>
-                  <p className="text-2xl font-bold text-green-400">${product.prices[0].discountedPrice}</p>
+                  <p className="text-2xl font-bold text-green-400">${product?.prices[0].discountedPrice}</p>
                 </div>
                 <div className='flex flex-col justify-between'>
                   <p className="text-gray-400 text-sm">Retail Price</p>
-                  <p className="text-2xl font-bold text-green-400">${product.prices[1].discountedPrice}</p>
+                  <p className="text-2xl font-bold text-green-400">${product?.prices[1]?.discountedPrice}</p>
                 </div>
                 <div className='flex flex-col justify-between'>
                   <p className="text-gray-400 text-sm">WholeSale Price</p>
-                  <p className="text-2xl font-bold text-green-400">${product.prices[2].discountedPrice}</p>
+                  <p className="text-2xl font-bold text-green-400">${product.prices[2]?.discountedPrice}</p>
                 </div>
                 <div className='flex flex-col justify-between'>
                   <p className="text-gray-400 text-sm">Vip Price</p>
-                  <p className="text-2xl font-bold text-green-400">${product.prices[3].discountedPrice}</p>
+                  <p className="text-2xl font-bold text-green-400">${product.prices[3]?.discountedPrice}</p>
                 </div>
               </div>
             </div>
