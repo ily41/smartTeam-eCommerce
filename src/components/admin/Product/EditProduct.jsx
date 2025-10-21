@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useEditProductWithImageMutation, useGetCategoriesQuery, useGetBrandsQuery, useGetProductQuery, useGetUserRolesQuery } from '../../../store/API';
+import { useEditProductWithImageMutation, useGetCategoriesQuery, useGetBrandsQuery, useGetProductQuery, useGetUserRolesQuery, useDeleteDetailImageMutation } from '../../../store/API';
 import { toast } from 'react-toastify';
+import { ClockFading } from 'lucide-react';
 
 const EditProduct = ({ setOpen, idPr }) => {
   const { data: edit, isLoading: loading } = useGetProductQuery(idPr, { skip: !idPr });
+  // console.log(edit)
   const [editProductWithImage, { isLoading: isEditLoading }] = useEditProductWithImageMutation();
+  const [deleteDetailImage] = useDeleteDetailImageMutation();
   const { data: categories } = useGetCategoriesQuery();
   const { data: brands } = useGetBrandsQuery();
   const { data: userRoles } = useGetUserRolesQuery();
@@ -13,12 +16,13 @@ const EditProduct = ({ setOpen, idPr }) => {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [pdfFile, setPdfFile] = useState(null);
+  console.log(pdfFile)
+  const [shouldUpdatePdf, setShouldUpdatePdf] = useState(false);
   
   // Gallery/Detail images
   const [existingGalleryImages, setExistingGalleryImages] = useState([]);
   const [newGalleryFiles, setNewGalleryFiles] = useState([]);
-  // console.log(newGalleryFiles)
-  // console.log(existingGalleryImages)
+  const [imagesToDelete, setImagesToDelete] = useState([]);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -38,6 +42,7 @@ const EditProduct = ({ setOpen, idPr }) => {
       { userRole: 3, price: 0, discountedPrice: 0, discountPercentage: 0 }
     ]
   });
+
 
   // Initialize form with edit data
   useEffect(() => {
@@ -134,11 +139,13 @@ const EditProduct = ({ setOpen, idPr }) => {
         return;
       }
       setPdfFile(file);
+      setShouldUpdatePdf(true);
     }
   };
 
   const removePdf = () => {
     setPdfFile(null);
+    setShouldUpdatePdf(false);
   };
 
   // Gallery/Detail images handlers
@@ -161,10 +168,11 @@ const EditProduct = ({ setOpen, idPr }) => {
     if (validFiles.length > 0) {
       setNewGalleryFiles(prev => [...prev, ...validFiles]);
     }
-
   };
 
   const removeExistingGalleryImage = (index) => {
+    const imageToRemove = existingGalleryImages[index];
+    setImagesToDelete(prev => [...prev, imageToRemove]);
     setExistingGalleryImages(prev => prev.filter((_, i) => i !== index));
   };
 
@@ -173,58 +181,72 @@ const EditProduct = ({ setOpen, idPr }) => {
   };
 
   const handleProductEdit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      const productData = {
-        name: formData.name,
-        description: formData.description,
-        shortDescription: formData.shortDescription,
-        sku: formData.sku,
-        isActive: formData.isActive,
-        isHotDeal: formData.isHotDeal,
-        stockQuantity: formData.stockQuantity,
-        categoryId: formData.categoryId,
-        brandId: formData.brandId,
-        prices: formData.prices
-      };
-
-      const formDataToSend = new FormData();
-      formDataToSend.append('productData', JSON.stringify(productData));
-
-      // Append main product image
-      if (imageFile) {
-        formDataToSend.append('imageFile', imageFile);
+  try {
+    if (imagesToDelete.length > 0) {
+      for (const image of imagesToDelete) {
+        try {
+          await deleteDetailImage({
+            id: idPr,
+            imageUrl: image.imageUrl,
+          }).unwrap();
+        } catch (error) {
+          console.error('Error deleting image:', error);
+          toast.error(`Failed to delete image`);
+        }
       }
-
-      // Append PDF
-      if (pdfFile) {
-        formDataToSend.append('pdfFile', pdfFile);
-      }
-
-      // Append new gallery/detail images
-      console.log([...existingGalleryImages, ...newGalleryFiles])
-      newGalleryFiles.forEach(file => {
-        formDataToSend.append('detailImageFile', file);
-      });
-
-      await editProductWithImage({
-        id: idPr,
-        formData: formDataToSend
-      }).unwrap();
-
-      // Reset file states
-      setImageFile(null);
-      setPdfFile(null);
-      setNewGalleryFiles([]);
-
-      toast.success('Product updated successfully');
-      setOpen();
-    } catch (error) {
-      console.error('Edit error:', error);
-      toast.error(error?.data?.message || error?.data || 'Failed to update product');
     }
-  };
+
+    const productData = {
+      name: formData.name,
+      shortDescription: formData.shortDescription,
+      sku: formData.sku,
+      isActive: formData.isActive,
+      isHotDeal: formData.isHotDeal,
+      stockQuantity: formData.stockQuantity,
+      categoryId: formData.categoryId,
+      brandId: formData.brandId,
+      prices: formData.prices,
+    };
+
+    const formDataToSend = new FormData();
+    formDataToSend.append('productData', JSON.stringify(productData));
+
+    if (imageFile) {
+      formDataToSend.append('imageFile', imageFile);
+    }
+
+    console.log(pdfFile)
+    if (shouldUpdatePdf && pdfFile) {
+      formDataToSend.append('pdfFile', pdfFile);
+    }
+
+    if (newGalleryFiles.length > 0) {
+      newGalleryFiles.forEach((file) => {
+        formDataToSend.append('detailImageFiles', file);
+      });
+    }
+
+    const result = await editProductWithImage({
+      id: idPr,
+      formData: formDataToSend,
+    }).unwrap();
+
+    setImageFile(null);
+    setPdfFile(null);
+    setShouldUpdatePdf(false);
+    setNewGalleryFiles([]);
+    setImagesToDelete([]);
+
+    toast.success('Product updated successfully');
+    setOpen();
+  } catch (error) {
+    console.error('Edit error:', error);
+    toast.error(error?.data?.message || error?.data || 'Failed to update product');
+  }
+};
+
 
   if (loading) {
     return (

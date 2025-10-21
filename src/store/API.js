@@ -21,6 +21,7 @@ export const API = createApi({
         endpoint === 'editProductWithImage' ||
         endpoint === 'addBrandImage' || 
         endpoint === 'editCategoryWithImage' || 
+        endpoint === 'editBrandWithImage' || 
         body instanceof FormData;
 
       if (!isFormDataRequest) {
@@ -474,10 +475,11 @@ export const API = createApi({
     }),
 
     editProductWithImage: builder.mutation({
-      query: ({ id, productData, formData }) => ({
+      query: ({ id, formData }) => ({
         url: `/api/v1/Products/${id}/with-files`,
         method: 'PUT',
         body: formData,
+        // 🚫 Important: don't set Content-Type manually — browser handles it
         prepareHeaders: (headers) => {
           headers.delete('Content-Type');
           return headers;
@@ -487,11 +489,13 @@ export const API = createApi({
     }),
 
 
-
-
-
-
-
+    deleteDetailImage: builder.mutation({
+      query: ({ id, imageUrl }) => ({
+        url: `/api/v1/Products/${id}/delete-detail-image?imageUrl=${encodeURIComponent(imageUrl)}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (result, error, { id }) => [{ type: 'Product', id }],
+    }),
 
     searchProducts: builder.query({
       query: ({
@@ -1184,6 +1188,23 @@ export const API = createApi({
       invalidatesTags: ['Brands'],
     }),
 
+    editBrandWithImage: builder.mutation({
+          query: ({ id, brandData, imageFile }) => {
+            const formData = new FormData();
+            formData.append('brandData', JSON.stringify(brandData));
+            if (imageFile) {
+              formData.append('imageFile', imageFile);
+            }
+
+            return {
+              url: `/api/v1/Brands/${id}/with-image`,
+              method: 'PUT',
+              body: formData,
+            };
+          },
+          invalidatesTags: ['Brands'],
+        }),
+
     // DELETE brand
     deleteBrand: builder.mutation({
       query: ({ id }) => ({
@@ -1201,6 +1222,7 @@ export const {
   useGetBrandsAdminQuery,
   useDeleteBrandMutation,
   useEditBrandMutation,
+  useEditBrandWithImageMutation ,
   useAddBrandImageMutation,
 
   useGetProductPdfByIdQuery,
@@ -1268,6 +1290,7 @@ export const {
   useGetBrandQuery,
   useGetProductsBrandQuery,
   useEditProductWithImageMutation,
+  useDeleteDetailImageMutation,
   
 
   useLogoutMutation,

@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Loader2, Upload, X } from "lucide-react";
 
 const EditCategoryUI = ({item, setOpen, categories}) => {
-    // Mock mutation for demo
     const [isCategoryLoading, setIsCategoryLoading] = useState(false);
     
     const [imageFile, setImageFile] = useState(null);
@@ -20,7 +19,6 @@ const EditCategoryUI = ({item, setOpen, categories}) => {
           name: item.name || "",
           description: item.description || ""
         });
-        // Set existing image preview
         if (item.imageUrl) {
           setImagePreview(item.imageUrl);
           setIsNewImage(false);
@@ -29,21 +27,25 @@ const EditCategoryUI = ({item, setOpen, categories}) => {
     }, [item]);
 
     const handleImageChange = (e) => {
-      const file = e.target.files?.[0]; // Added optional chaining
+      console.log("handleImageChange triggered");
+      const file = e.target.files?.[0];
       
       if (!file) {
         console.log("No file selected");
         return;
       }
 
-      console.log("File selected:", file.name, file.type, file.size);
+      console.log("File selected:", {
+        name: file.name,
+        type: file.type,
+        size: file.size
+      });
       
       if (!file.type.startsWith('image/')) {
         alert("Please select a valid image file");
         return;
       }
       
-      // Validate file size (e.g., max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         alert("Image size should be less than 5MB");
         return;
@@ -51,24 +53,28 @@ const EditCategoryUI = ({item, setOpen, categories}) => {
 
       setImageFile(file);
       setIsNewImage(true);
+      console.log("Set imageFile and isNewImage=true");
       
-      // Create preview
       const reader = new FileReader();
+      
       reader.onloadend = () => {
+        console.log("FileReader completed, setting preview");
         setImagePreview(reader.result);
       };
-      reader.onerror = () => {
-        console.error("Error reading file");
+      
+      reader.onerror = (error) => {
+        console.error("Error reading file:", error);
         alert("Error reading file");
       };
+      
       reader.readAsDataURL(file);
+      console.log("Started reading file as data URL");
     };
 
     const removeImage = () => {
       setImageFile(null);
       setImagePreview(item?.imageUrl || null);
       setIsNewImage(false);
-      // Reset file input
       const fileInput = document.getElementById('image-upload');
       if (fileInput) {
         fileInput.value = '';
@@ -81,10 +87,8 @@ const EditCategoryUI = ({item, setOpen, categories}) => {
       try {
         setIsCategoryLoading(true);
         
-        // Create FormData for multipart/form-data request
         const formDataToSend = new FormData();
         
-        // Create category data object
         const categoryData = {
           name: formData.name,
           description: formData.description || "description",
@@ -92,15 +96,12 @@ const EditCategoryUI = ({item, setOpen, categories}) => {
           sortOrder: 1
         };
         
-        // Append category data as JSON string
         formDataToSend.append('categoryData', JSON.stringify(categoryData));
         
-        // Append image file if selected
         if (imageFile) {
           formDataToSend.append('imageFile', imageFile);
         }
 
-        // Demo: simulate API call
         await new Promise(resolve => setTimeout(resolve, 1500));
         console.log("Category data to send:", categoryData);
         console.log("Image file:", imageFile?.name);
@@ -120,15 +121,18 @@ const EditCategoryUI = ({item, setOpen, categories}) => {
       setFormData({ ...formData, [name]: value });
     };
 
-    // Helper function to get the correct image URL
     const getImageUrl = () => {
-      if (isNewImage) {
-        // New image uploaded - use data URL directly
+      console.log("getImageUrl called:", { isNewImage, hasPreview: !!imagePreview });
+      
+      if (isNewImage && imagePreview) {
+        console.log("Returning new image preview (data URL)");
         return imagePreview;
       } else if (imagePreview) {
-        // Existing image from server - prepend base URL
+        console.log("Returning existing image URL");
         return `https://smartteamaz-001-site1.qtempurl.com/${imagePreview}`;
       }
+      
+      console.log("No image to display");
       return null;
     };
 
@@ -137,7 +141,6 @@ const EditCategoryUI = ({item, setOpen, categories}) => {
       onSubmit={handleCategory}
       className="flex flex-col gap-6 p-6 bg-[#1f1f1f] rounded-lg w-96 max-w-full"
     >
-      {/* Name Field */}
       <div className="flex flex-col">
         <label className="text-white text-sm mb-1" htmlFor="name">
           Name <span className="text-red-500">*</span>
@@ -153,7 +156,6 @@ const EditCategoryUI = ({item, setOpen, categories}) => {
         />
       </div>
 
-      {/* Description Field */}
       <div className="flex flex-col">
         <label className="text-white text-sm mb-1" htmlFor="description">
           Description
@@ -169,19 +171,22 @@ const EditCategoryUI = ({item, setOpen, categories}) => {
         />
       </div>
 
-      {/* Image Upload */}
       <div className="flex flex-col">
         <label className="text-white text-sm mb-2">
           Category Image
         </label>
         
-        {/* Image Preview */}
         {imagePreview && (
-          <div className="relative mb-3 w-full h-40 rounded-lg overflow-hidden bg-[#2a2a2a]">
+          <div className="relative mb-3 w-full h-40 rounded-lg overflow-hidden bg-[#2a2a2a] border border-gray-700">
             <img 
               src={getImageUrl()} 
               alt="Preview" 
               className="w-full h-full object-cover"
+              onError={(e) => {
+                console.error("Image failed to load");
+                console.log("Failed URL:", e.target.src);
+              }}
+              onLoad={() => console.log("Image loaded successfully")}
             />
             <button
               type="button"
@@ -193,7 +198,6 @@ const EditCategoryUI = ({item, setOpen, categories}) => {
           </div>
         )}
 
-        {/* Upload Button */}
         <label 
           htmlFor="image-upload"
           className="flex items-center justify-center gap-2 px-4 py-3 bg-[#2a2a2a] text-white border border-gray-700 rounded-lg cursor-pointer hover:bg-[#333333] transition-colors"
@@ -214,16 +218,17 @@ const EditCategoryUI = ({item, setOpen, categories}) => {
         </p>
       </div>
 
-      {/* Debug Info */}
       {imageFile && (
-        <div className="text-xs text-gray-400 p-3 bg-[#2a2a2a] rounded">
+        <div className="text-xs text-gray-400 p-3 bg-[#2a2a2a] rounded border border-gray-700">
+          <p className="font-semibold text-white mb-1">Debug Info:</p>
           <p>Selected file: {imageFile.name}</p>
           <p>Size: {(imageFile.size / 1024).toFixed(2)} KB</p>
           <p>Type: {imageFile.type}</p>
+          <p>Is new image: {isNewImage ? 'Yes' : 'No'}</p>
+          <p>Has preview: {imagePreview ? 'Yes' : 'No'}</p>
         </div>
       )}
 
-      {/* Save Button */}
       <div className="flex justify-end gap-3">
         <button
           type="button"
