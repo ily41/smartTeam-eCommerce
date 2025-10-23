@@ -105,14 +105,14 @@ const Cart = () => {
   const [updateCartItemQuantity] = useUpdateCartItemQuantityMutation();
   const [removeCartItem] = useRemoveCartItemMutation();
   const [removeCart] = useRemoveCartMutation();
-  const [createWPOrder, { isLoading: isOrderLoading }] = useCreateWhatsappOrderMutation();
+  
 
   const [removingItems, setRemovingItems] = useState(new Set());
   const [isRemovingCart, setIsRemovingCart] = useState(false);
 
   const [localQuantities, setLocalQuantities] = useState({});
   const [updatingItems, setUpdatingItems] = useState(new Set());
-
+const [createWPOrder, { isLoading: isOrderLoading }] = useCreateWhatsappOrderMutation();
   const createOrder = async () => {
     try {
       const orderPayload = {

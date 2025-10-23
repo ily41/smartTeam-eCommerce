@@ -27,32 +27,15 @@ const ProductFormUI = ({setOpen}) => {
     stockQuantity: 0,
     categoryId: "",
     brandId: "",
-    prices: [
-      {
-        userRole: 1,
-        price: 0,
-        discountedPrice: 0,
+    prices: [1, 2, 3, 4].map((role) => {
+      const price = 0; // default price
+      return {
+        userRole: role,
+        price,
+        discountedPrice: price, // same as price by default
         discountPercentage: 0
-      },
-      {
-        userRole: 2,
-        price: 0,
-        discountedPrice: 0,
-        discountPercentage: 0
-      },
-      {
-        userRole: 3,
-        price: 0,
-        discountedPrice: 0,
-        discountPercentage: 0
-      },
-      {
-        userRole: 4,
-        price: 0,
-        discountedPrice: 0,
-        discountPercentage: 0
-      }
-    ]
+      };
+    })
   });
 
 
@@ -189,6 +172,7 @@ const ProductFormUI = ({setOpen}) => {
     try {
       const formDataToSend = new FormData();
       const productDataString = JSON.stringify(formData);
+      console.log(formData)
       formDataToSend.append("productData", productDataString); 
       formDataToSend.append("imageFile", file, file.name);
       

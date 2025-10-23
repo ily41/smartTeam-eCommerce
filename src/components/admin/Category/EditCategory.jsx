@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import { Loader2, Upload, X } from "lucide-react";
+import { useEditCategoryWithImageMutation } from "../../../store/API";
+import { toast } from "react-toastify";
 
 const EditCategoryUI = ({item, setOpen, categories}) => {
+  console.log(item)
     const [isCategoryLoading, setIsCategoryLoading] = useState(false);
-    
+    const [editCategory, { isLoading }] = useEditCategoryWithImageMutation();
     const [imageFile, setImageFile] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
     const [isNewImage, setIsNewImage] = useState(false);
@@ -14,32 +17,39 @@ const EditCategoryUI = ({item, setOpen, categories}) => {
     });
 
     useEffect(() => {
-      if (item) {
-        setFormData({
-          name: item.name || "",
-          description: item.description || ""
-        });
-        if (item.imageUrl) {
-          setImagePreview(item.imageUrl);
-          setIsNewImage(false);
-        }
+      const input = document.getElementById('image-upload');
+      if (input) {
+        input.addEventListener('change', handleImageChange);
       }
-    }, [item]);
+    }, []);
+
+    useEffect(() => {
+  if (item) {
+    setFormData({
+      name: item.name || "",
+      description: item.description || ""
+    });
+
+    if (item.imageUrl) {
+      setImagePreview(item.imageUrl);
+      setIsNewImage(false);
+    } else {
+      setImagePreview(null); // 👈 clear old preview
+      setImageFile(null);
+      setIsNewImage(false);
+    }
+  }
+}, [item]);
+
 
     const handleImageChange = (e) => {
-      console.log("handleImageChange triggered");
       const file = e.target.files?.[0];
       
       if (!file) {
-        console.log("No file selected");
         return;
       }
 
-      console.log("File selected:", {
-        name: file.name,
-        type: file.type,
-        size: file.size
-      });
+ 
       
       if (!file.type.startsWith('image/')) {
         alert("Please select a valid image file");
@@ -53,32 +63,18 @@ const EditCategoryUI = ({item, setOpen, categories}) => {
 
       setImageFile(file);
       setIsNewImage(true);
-      console.log("Set imageFile and isNewImage=true");
       
       const reader = new FileReader();
       
       reader.onloadend = () => {
-        console.log("FileReader completed, setting preview");
         setImagePreview(reader.result);
       };
       
       reader.onerror = (error) => {
-        console.error("Error reading file:", error);
         alert("Error reading file");
       };
       
       reader.readAsDataURL(file);
-      console.log("Started reading file as data URL");
-    };
-
-    const removeImage = () => {
-      setImageFile(null);
-      setImagePreview(item?.imageUrl || null);
-      setIsNewImage(false);
-      const fileInput = document.getElementById('image-upload');
-      if (fileInput) {
-        fileInput.value = '';
-      }
     };
 
     const handleCategory = async (e) => {
@@ -102,16 +98,18 @@ const EditCategoryUI = ({item, setOpen, categories}) => {
           formDataToSend.append('imageFile', imageFile);
         }
 
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        console.log("Category data to send:", categoryData);
-        console.log("Image file:", imageFile?.name);
+        const result = await editCategory({
+          id: item.id,
+          formData: formDataToSend
+        }).unwrap();
+        console.log(result)
         
-        alert("Category updated successfully");
+        toast.success("Category updated successfully");
         setIsCategoryLoading(false);
         if (setOpen) setOpen();
       } catch (error) {
         console.log(error);
-        alert(error?.data?.message || "Updating category failed");
+        toast.error(error?.data?.message || "Updating category failed");
         setIsCategoryLoading(false);
       }
     };
@@ -122,17 +120,16 @@ const EditCategoryUI = ({item, setOpen, categories}) => {
     };
 
     const getImageUrl = () => {
-      console.log("getImageUrl called:", { isNewImage, hasPreview: !!imagePreview });
       
-      if (isNewImage && imagePreview) {
-        console.log("Returning new image preview (data URL)");
+      // If it's a new image (just uploaded), imagePreview is already a data URL
+      if (isNewImage) {
         return imagePreview;
-      } else if (imagePreview) {
-        console.log("Returning existing image URL");
+      } 
+      // If it's an existing image URL from the server
+      else if (imagePreview) {
         return `https://smartteamaz-001-site1.qtempurl.com/${imagePreview}`;
       }
       
-      console.log("No image to display");
       return null;
     };
 
@@ -182,19 +179,7 @@ const EditCategoryUI = ({item, setOpen, categories}) => {
               src={getImageUrl()} 
               alt="Preview" 
               className="w-full h-full object-cover"
-              onError={(e) => {
-                console.error("Image failed to load");
-                console.log("Failed URL:", e.target.src);
-              }}
-              onLoad={() => console.log("Image loaded successfully")}
             />
-            <button
-              type="button"
-              onClick={removeImage}
-              className="absolute top-2 right-2 p-1 bg-red-500 rounded-full hover:bg-red-600 transition-colors"
-            >
-              <X className="w-4 h-4 text-white" />
-            </button>
           </div>
         )}
 
@@ -207,12 +192,15 @@ const EditCategoryUI = ({item, setOpen, categories}) => {
         </label>
 
         <input
+          key="category-image-input"
           id="image-upload"
           type="file"
           accept="image/*"
-          onChange={handleImageChange}
+          onClick={(e) => (e.target.value = null)}
           className="hidden"
         />
+
+
         <p className="text-gray-400 text-xs mt-2">
           Accepted formats: JPG, PNG, GIF (Max 5MB)
         </p>
@@ -257,3 +245,4 @@ const EditCategoryUI = ({item, setOpen, categories}) => {
 };
 
 export default EditCategoryUI;
+

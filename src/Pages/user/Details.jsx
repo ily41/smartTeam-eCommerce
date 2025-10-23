@@ -14,6 +14,7 @@ import {
   useToggleFavoriteMutation, 
   useGetFavoriteStatusQuery,
   useGetRecommendedQuery,
+  useGetMeQuery,
 } from '../../store/API';
 import { toast } from 'react-toastify';
 import SimilarProducts from '../../components/UI/SimilarRecommendedProducts';
@@ -234,6 +235,11 @@ function Details() {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [modalSlideIndex, setModalSlideIndex] = useState(0);
   const [showQuickOrderModal, setShowQuickOrderModal] = useState(false);
+  const { data: me, isLoading: isMeLoading } = useGetMeQuery();
+  console.log(me)
+
+  const hasDiscount = false
+
   
   // Replace the openDetail function with these functions
   const openDetail = (initialIndex = 0) => {
@@ -258,7 +264,6 @@ function Details() {
 
   // RTK Query hooks
   const { data: product, isLoading: loading, error, isError } = useGetProductQuery(id, { skip: !id });
-  console.log(product)
   const { data: productSpec, isLoading: isSpecLoading } = useGetProductSpecificationsQuery(product?.id, { skip: !product?.id });
   const { data: favoriteStatus } = useGetFavoriteStatusQuery({ productId: product?.id }, { skip: !product?.id });
   const [showSuccess, setShowSuccess] = useState(false);
@@ -365,25 +370,29 @@ function Details() {
       console.error('Product not available');
       return;
     }
+    if(me) {
+      try {
+        await addCartItem({
+          productId: id,
+          quantity: quantity
+        }).unwrap();
 
-    try {
-      await addCartItem({
-        productId: id,
-        quantity: quantity
-      }).unwrap();
+        // Set success state after successful add
+        setShowSuccess(true);
+      } catch (err) {
+        console.error('Failed to add product to cart:', err);
 
-      // Set success state after successful add
-      setShowSuccess(true);
-    } catch (err) {
-      console.error('Failed to add product to cart:', err);
-
-      if (err?.status === 401 || err?.data?.status === 401) {
-        setUnauthorizedAction('add items to cart');
-        setShowUnauthorizedModal(true);
-      } else {
-        toast.error("Failed to add product to cart");
+        if (err?.status === 401 || err?.data?.status === 401) {
+          setUnauthorizedAction('add items to cart');
+          setShowUnauthorizedModal(true);
+        } else {
+          toast.error("Failed to add product to cart");
+        }
       }
+    }else {
+      
     }
+    
   };
 
   // Handle share functionality
@@ -527,7 +536,7 @@ function Details() {
 
   const specifications = getSpecifications(product, productSpec);
   const features = getFeatures(product, productSpec);
-  const hasDiscount = product.discountPercentage > 0;
+    
 
 
    
@@ -889,18 +898,40 @@ function Details() {
               <div className="flex items-start justify-between mb-6">
                 <div>
                   <h1 className="text-2xl font-semibold text-gray-900 mb-2">{product.name}</h1>  
-                  <p className="text-gray-600 mb-4 line-clamp-5">{product.description}</p>
+                  <p className="text-gray-600 mb-4 line-clamp-5 break-all pr-2">{product.description}</p>
                   
                   <div className="flex items-center gap-3">
-                    <span className="text-3xl font-bold text-red-500">{product?.prices[0].discountedPrice} AZN</span>
-                    {hasDiscount && (
-                      <>
-                        <span className="text-xl text-gray-500 line-through">{product?.prices[0].price} AZN</span>
-                        <span className="bg-red-100 text-red-800 px-3 py-1 rounded text-sm font-medium">
-                          -{product.discountPercentage}%
-                        </span>
-                      </>
-                    )}
+                    {console.log(product.prices)}
+                    {console.log(product)}
+                    <span className="text-3xl font-bold text-red-500">{me ? product?.prices[me?.role].discountedPrice : product?.prices[2].discountedPrice} AZN</span> /////////
+                     {/*{product?.prices && me?.role !== undefined && (
+                      (() => {
+                        const currentPrice = product.prices.find(p => p.userRole === me.role);
+                      
+                        if (!currentPrice) return null;
+                      
+                        const hasDiscount = currentPrice.discountPercentage > 0;
+                      
+                        return hasDiscount ? (
+                          <>
+                            <span className="text-xl text-gray-500 line-through">
+                              {currentPrice.price} AZN
+                            </span>
+
+                            <span className="text-green-700 font-semibold ml-2">
+                              {currentPrice.discountedPrice} AZN
+                            </span>
+
+                            <span className="bg-red-100 text-red-800 px-2 py-1 rounded text-sm font-medium ml-2">
+                              -{currentPrice.discountPercentage}%
+                            </span>
+                          
+                          </>
+                        ) : (
+                          <span className="text-xl text-gray-800">{currentPrice.price} AZN</span>
+                        );
+                      })()
+                    )} */}
                   </div>
                 </div>
                 

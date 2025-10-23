@@ -16,7 +16,6 @@ const EditProduct = ({ setOpen, idPr }) => {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [pdfFile, setPdfFile] = useState(null);
-  console.log(pdfFile)
   const [shouldUpdatePdf, setShouldUpdatePdf] = useState(false);
   
   // Gallery/Detail images
@@ -193,7 +192,6 @@ const EditProduct = ({ setOpen, idPr }) => {
           }).unwrap();
         } catch (error) {
           console.error('Error deleting image:', error);
-          toast.error(`Failed to delete image`);
         }
       }
     }
@@ -243,7 +241,6 @@ const EditProduct = ({ setOpen, idPr }) => {
     setOpen();
   } catch (error) {
     console.error('Edit error:', error);
-    toast.error(error?.data?.message || error?.data || 'Failed to update product');
   }
 };
 

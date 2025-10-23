@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next';
       unauthorizedAction,
       setUnauthorizedAction,
     }) => {
+
     const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
@@ -239,6 +240,7 @@ import { useTranslation } from 'react-i18next';
                     }}
                   />
                   <div className="font-semibold p-2 inter">
+                    {console.log(product)}
                     <h1 className="text-lg">{product.currentPrice} AZN</h1>
                     <p className="font-medium whitespace-normal mb-3">{product.name}</p>
                     <p className="text-gray-600 font-normal whitespace-normal [@media(min-width:450px)]:break-words line-clamp-3">

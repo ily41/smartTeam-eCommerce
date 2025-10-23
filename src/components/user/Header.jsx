@@ -278,7 +278,7 @@ const Header = () => {
             </Link>
 
             <Link
-              to={hasToken ? "/cart" : "/login"}
+              to={'/cart'}
               className='flex flex-col items-center cursor-pointer hover:opacity-80 transition-opacity duration-200 relative'
             >
               <div className="relative">

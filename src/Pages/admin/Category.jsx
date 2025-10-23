@@ -27,7 +27,6 @@ const Category = () => {
     });
     return map;
   }, [categories]);
-  console.log(    categories  )
 
   const handleDeleteCategory = async (id) => {
     try {
@@ -35,7 +34,6 @@ const Category = () => {
       toast.success("Category deleted successfully");
       handleCloseModal();
     } catch (error) {
-      console.log(error);
       toast.error(error?.data || "Deleting Category Failed");
     }
   };
@@ -46,9 +44,7 @@ const Category = () => {
     refetch();
   };
 
-  // ✅ Recursive renderer for nested categories
   const renderCategory = (cat) => {
-    console.log(cat)
     const hasChildren = groupedCategories[cat.id]?.length > 0;
     const isExpanded = expanded[cat.id];
 

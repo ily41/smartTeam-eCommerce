@@ -39,20 +39,20 @@ const BannerSlider = () => {
   return (
     <div className='w-full h-full '>
         <div 
-      className="w-full relative flex-1 overflow-hidden"
+      className="w-full relative flex-1 overflow-hidden h-full"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       {/* Banner Container */}
       <div 
-        className="flex transition-transform duration-500 ease-in-out h-fit"
+        className="flex transition-transform duration-500 h-full ease-in-out "
         style={{ transform: `translateX(-${currentSlide * 100}%)` }}
       >
         {bannersD?.map((banner, index) => {
           return (
-          <div onClick={() => navigate(`${banner.linkUrl}`)} key={banner.id} className="w-full cursor-pointer flex-shrink-0   relative">
+          <div onClick={() => navigate(`${banner.linkUrl}`)} key={banner.id} className="w-full cursor-pointer flex-shrink-0 h-full   relative">
             <img 
-              className="w-full object-cover md:rounded-lg lg:h-[400px] h-[26vh] md:h-[40vh] lg:p-2" 
+              className="w-full object-cover md:rounded-lg lg:h-full  h-[26vh] md:h-[40vh] lg:p-2" 
               src={`https://smartteamaz-001-site1.qtempurl.com${banner.imageUrl}`}
               alt={`Banner ${index + 1}`} 
               onError={(e) => {
