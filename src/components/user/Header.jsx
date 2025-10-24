@@ -35,10 +35,51 @@ const Header = () => {
   const dropdownRef = useRef(null);
   const searchDropdownRef = useRef(null);
   const mobileSearchDropdownRef = useRef(null);
-  const hasToken = document.cookie.split('; ').some((row) => row.startsWith('token='));
-  const { data: cartCount } = useGetCartCountQuery();
+  const hasToken = document.cookie.split('; ').some(row => row.startsWith('token='));
+
+  const { data: cartCountData } = useGetCartCountQuery(undefined, {
+    skip: !hasToken,
+  });
+  const { data: favoritesCount } = useGetFavoritesCountQuery(undefined, {
+    skip: !hasToken,
+  });
+  
+  const [cartCount, setCartCount] = useState(() => {
+    const localCart = JSON.parse(localStorage.getItem("ecommerce_cart")) || { items: [] };
+    return localCart.items.length;
+  });
+  
+  // ✅ handle both cases safely
+  useEffect(() => {
+    if (hasToken && cartCountData !== undefined) {
+      setCartCount(cartCountData);
+    } else if (!hasToken) {
+      const localCart = JSON.parse(localStorage.getItem("ecommerce_cart")) || { items: [] };
+      setCartCount(localCart.items.length);
+    }
+  }, [hasToken, cartCountData]);
+
+  useEffect(() => {
+    const updateCartCount = () => {
+      const cart = JSON.parse(localStorage.getItem("ecommerce_cart")) || { items: [] };
+      setCartCount(cart.items.length);
+    };
+
+    // Listen for custom event
+    window.addEventListener("cartUpdated", updateCartCount);
+
+    // Also listen for cross-tab storage changes
+    window.addEventListener("storage", updateCartCount);
+
+    return () => {
+      window.removeEventListener("cartUpdated", updateCartCount);
+      window.removeEventListener("storage", updateCartCount);
+    };
+  }, []);
+  
   const { data: me, isLoading: isMeLoading } = useGetMeQuery();
-  const { data: favoritesCount } = useGetFavoritesCountQuery();
+
+
   
   const [searchWidth, setSearchWidth] = useState(0);
   const searchRef = useRef(null);

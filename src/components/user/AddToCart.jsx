@@ -31,8 +31,8 @@ export const CartUtils = {
     
     // Extract needed data from product
     const cartItem = {
-      id: uuidv4(), // Generate unique cart item ID
-      cartId: uuidv4(), // Cart reference ID
+      id: uuidv4(), 
+      cartId: uuidv4(), 
       productId: product.id,
       productName: product.name,
       productSku: product.sku,

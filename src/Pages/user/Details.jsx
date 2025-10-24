@@ -19,6 +19,8 @@ import {
 import { toast } from 'react-toastify';
 import SimilarProducts from '../../components/UI/SimilarRecommendedProducts';
 import QuickOrderModal from '../../components/UI/QuickOrderModal';
+import CartUtils from '../../components/UI/CartUtils';
+import AuthUtils from '../../components/UI/AuthUtils';
 
 
 // Unauthorized Modal Component
@@ -236,7 +238,10 @@ function Details() {
   const [modalSlideIndex, setModalSlideIndex] = useState(0);
   const [showQuickOrderModal, setShowQuickOrderModal] = useState(false);
   const { data: me, isLoading: isMeLoading } = useGetMeQuery();
-  console.log(me)
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  useEffect(() => {
+    setIsAuthenticated(AuthUtils.isAuthenticated());
+  }, []);
 
   const hasDiscount = false
 
@@ -267,6 +272,7 @@ function Details() {
   const { data: productSpec, isLoading: isSpecLoading } = useGetProductSpecificationsQuery(product?.id, { skip: !product?.id });
   const { data: favoriteStatus } = useGetFavoriteStatusQuery({ productId: product?.id }, { skip: !product?.id });
   const [showSuccess, setShowSuccess] = useState(false);
+ 
 
 
 
@@ -370,28 +376,24 @@ function Details() {
       console.error('Product not available');
       return;
     }
-    if(me) {
       try {
-        await addCartItem({
-          productId: id,
-          quantity: quantity
-        }).unwrap();
+        if (isAuthenticated && handleAddToCart) {
+          await addCartItem({
+            productId: id,
+            quantity: quantity
+          }).unwrap();
+        } else {
+          CartUtils.addItem(product, 1);
+          window.dispatchEvent(new Event("cartUpdated"));
+        }
+        
 
-        // Set success state after successful add
         setShowSuccess(true);
       } catch (err) {
         console.error('Failed to add product to cart:', err);
-
-        if (err?.status === 401 || err?.data?.status === 401) {
-          setUnauthorizedAction('add items to cart');
-          setShowUnauthorizedModal(true);
-        } else {
-          toast.error("Failed to add product to cart");
-        }
+        toast.error("Failed to add product to cart");
       }
-    }else {
       
-    }
     
   };
 

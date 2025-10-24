@@ -1,10 +1,75 @@
-import React, { useState, useCallback, useMemo } from 'react'
+import React, { useState, useCallback, useMemo, useEffect } from 'react'
 import SearchUI from '../../components/UI/SearchUI'
 import { Breadcrumb } from '../../products/Breadcrumb'
 import { ArrowLeft, Minus, Plus, ShoppingCart, Trash2 } from 'lucide-react';
 import { Link, useParams } from 'react-router';
 import { useGetCartItemsQuery, useUpdateCartItemQuantityMutation, useRemoveCartItemMutation, useRemoveCartMutation, useGetMeQuery, useCreateWhatsappOrderMutation } from '../../store/API';
 import { toast } from 'react-toastify';
+
+// ============= AUTH UTILITIES =============
+const AuthUtils = {
+  isAuthenticated() {
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+      const [name] = cookie.trim().split('=');
+      if (name === 'token' || name === 'authToken' || name === 'accessToken' || name === 'jwt') {
+        return true;
+      }
+    }
+    return false;
+  }
+};
+
+// ============= CART UTILITIES =============
+const CartUtils = {
+  CART_KEY: 'ecommerce_cart',
+
+  getCart() {
+    try {
+      const cart = localStorage.getItem(this.CART_KEY);
+      return cart ? JSON.parse(cart) : { items: [], totalAmount: 0 };
+    } catch (error) {
+      console.error('Error reading cart:', error);
+      return { items: [], totalAmount: 0 };
+    }
+  },
+
+  saveCart(cart) {
+    try {
+      localStorage.setItem(this.CART_KEY, JSON.stringify(cart));
+      window.dispatchEvent(new CustomEvent('cartUpdated', { detail: cart }));
+    } catch (error) {
+      console.error('Error saving cart:', error);
+    }
+  },
+
+  removeItem(itemId) {
+    const cart = this.getCart();
+    cart.items = cart.items.filter(item => item.id !== itemId);
+    cart.totalAmount = cart.items.reduce((sum, item) => sum + item.totalPrice, 0);
+    this.saveCart(cart);
+    return cart;
+  },
+
+  updateQuantity(itemId, quantity) {
+    const cart = this.getCart();
+    const item = cart.items.find(item => item.id === itemId);
+    
+    if (item && quantity > 0) {
+      item.quantity = quantity;
+      item.totalPrice = item.quantity * item.unitPrice;
+      cart.totalAmount = cart.items.reduce((sum, item) => sum + item.totalPrice, 0);
+      this.saveCart(cart);
+    }
+    
+    return cart;
+  },
+
+  clearCart() {
+    localStorage.removeItem(this.CART_KEY);
+    window.dispatchEvent(new CustomEvent('cartUpdated', { detail: { items: [], totalAmount: 0 } }));
+  }
+};
 
 // Debounce utility function
 const debounce = (func, delay) => {
@@ -100,26 +165,61 @@ const EmptyCartSkeleton = () => (
 );
 
 const Cart = () => {
-  const { data: cartItemsD, isLoading, isError } = useGetCartItemsQuery();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [localCart, setLocalCart] = useState({ items: [], totalAmount: 0 });
+  
+  // API hooks - only used when authenticated
+  const { data: cartItemsD, isLoading: apiLoading, isError } = useGetCartItemsQuery(undefined, {
+    skip: !isAuthenticated
+  });
+
+  
   const { data: me } = useGetMeQuery();
   const [updateCartItemQuantity] = useUpdateCartItemQuantityMutation();
   const [removeCartItem] = useRemoveCartItemMutation();
   const [removeCart] = useRemoveCartMutation();
-  
+  const [createWPOrder, { isLoading: isOrderLoading }] = useCreateWhatsappOrderMutation();
 
   const [removingItems, setRemovingItems] = useState(new Set());
   const [isRemovingCart, setIsRemovingCart] = useState(false);
-
   const [localQuantities, setLocalQuantities] = useState({});
   const [updatingItems, setUpdatingItems] = useState(new Set());
-const [createWPOrder, { isLoading: isOrderLoading }] = useCreateWhatsappOrderMutation();
+
+  // Check authentication on mount
+  useEffect(() => {
+    const authStatus = AuthUtils.isAuthenticated();
+    setIsAuthenticated(authStatus);
+    
+    // If not authenticated, load localStorage cart
+    if (!authStatus) {
+      setLocalCart(CartUtils.getCart());
+    }
+  }, []);
+
+  // Listen for localStorage cart updates
+  useEffect(() => {
+    if (!isAuthenticated) {
+      const handleCartUpdate = (e) => {
+        setLocalCart(e.detail);
+      };
+      
+      window.addEventListener('cartUpdated', handleCartUpdate);
+      return () => window.removeEventListener('cartUpdated', handleCartUpdate);
+    }
+  }, [isAuthenticated]);
+
+  // Determine which cart data to use
+  const cartItems = isAuthenticated ? cartItemsD : localCart;
+  const isLoading = isAuthenticated ? apiLoading : false;
+
+  // Create WhatsApp order
   const createOrder = async () => {
     try {
       const orderPayload = {
         phoneNumber: "0506740649",
         customerName: me?.fullName || "",
         customerPhone: me?.phoneNumber?.replace(/\D/g, '') || "0000000",
-        items: cartItemsD?.items?.map(item => ({
+        items: cartItems?.items?.map(item => ({
           id: item.id,
           cartId: item.cartId,
           productId: item.productId,
@@ -132,7 +232,7 @@ const [createWPOrder, { isLoading: isOrderLoading }] = useCreateWhatsappOrderMut
           totalPrice: Number(item.totalPrice),
           createdAt: new Date(item.createdAt).toISOString(),
         })) ?? [],
-        totalAmount: Number(cartItemsD?.totalAmount) || 0,
+        totalAmount: Number(cartItems?.totalAmount) || 0,
         currency: "AZN",
       };
 
@@ -140,17 +240,27 @@ const [createWPOrder, { isLoading: isOrderLoading }] = useCreateWhatsappOrderMut
 
       if (response.whatsAppUrl) {
         window.open(response.whatsAppUrl, "_blank");
+        
+        // Clear cart after successful order
+        if (isAuthenticated) {
+          await removeCart().unwrap();
+        } else {
+          CartUtils.clearCart();
+          setLocalCart({ items: [], totalAmount: 0 });
+        }
       }
     } catch (error) {
       console.error(error?.data);
       console.error("Error details:", JSON.stringify(error, null, 2));
-      toast.error(error?.data);
+      toast.error(error?.data || "Error creating order");
     }
   };
 
-  // Debounced update function
+  // Debounced update function (for authenticated users)
   const debouncedUpdate = useMemo(
     () => debounce(async (cartItemId, quantity) => {
+      if (!isAuthenticated) return;
+      
       try {
         setUpdatingItems(prev => new Set(prev).add(cartItemId));
         await updateCartItemQuantity({ cartItemId, quantity }).unwrap();
@@ -169,12 +279,12 @@ const [createWPOrder, { isLoading: isOrderLoading }] = useCreateWhatsappOrderMut
         });
       }
     }, 500),
-    [updateCartItemQuantity]
+    [updateCartItemQuantity, isAuthenticated]
   );
 
   // Clean up local quantities when server data updates
-  React.useEffect(() => {
-    if (cartItemsD?.items) {
+  useEffect(() => {
+    if (isAuthenticated && cartItemsD?.items) {
       setLocalQuantities(prev => {
         const newState = { ...prev };
         let hasChanges = false;
@@ -189,7 +299,7 @@ const [createWPOrder, { isLoading: isOrderLoading }] = useCreateWhatsappOrderMut
         return hasChanges ? newState : prev;
       });
     }
-  }, [cartItemsD]);
+  }, [cartItemsD, isAuthenticated]);
 
   // Get effective quantity
   const getEffectiveQuantity = useCallback((item) => {
@@ -200,13 +310,19 @@ const [createWPOrder, { isLoading: isOrderLoading }] = useCreateWhatsappOrderMut
   const handleQuantityChange = useCallback((item, newQuantity) => {
     if (newQuantity < 1) return;
 
-    setLocalQuantities(prev => ({
-      ...prev,
-      [item.id]: newQuantity
-    }));
-
-    debouncedUpdate(item.id, newQuantity);
-  }, [debouncedUpdate]);
+    if (isAuthenticated) {
+      // API-based cart
+      setLocalQuantities(prev => ({
+        ...prev,
+        [item.id]: newQuantity
+      }));
+      debouncedUpdate(item.id, newQuantity);
+    } else {
+      // localStorage cart
+      const updatedCart = CartUtils.updateQuantity(item.id, newQuantity);
+      setLocalCart(updatedCart);
+    }
+  }, [isAuthenticated, debouncedUpdate]);
 
   // Handle increment
   const handleIncrement = useCallback((item) => {
@@ -222,11 +338,17 @@ const [createWPOrder, { isLoading: isOrderLoading }] = useCreateWhatsappOrderMut
     }
   }, [getEffectiveQuantity, handleQuantityChange]);
 
-  // Handle remove item - FIXED
+  // Handle remove item
   const handleRemoveItem = async (id) => {
     try {
       setRemovingItems(prev => new Set(prev).add(id));
-      await removeCartItem({ id }).unwrap();
+      
+      if (isAuthenticated) {
+        await removeCartItem({ id }).unwrap();
+      } else {
+        const updatedCart = CartUtils.removeItem(id);
+        setLocalCart(updatedCart);
+      }
     } catch (error) {
       console.error('Failed to remove cart item:', error);
       toast.error('Failed to remove item');
@@ -239,11 +361,17 @@ const [createWPOrder, { isLoading: isOrderLoading }] = useCreateWhatsappOrderMut
     }
   };
 
-  // Handle remove cart - FIXED
+  // Handle remove cart
   const handleRemoveCart = async () => {
     try {
       setIsRemovingCart(true);
-      await removeCart().unwrap();
+      
+      if (isAuthenticated) {
+        await removeCart().unwrap();
+      } else {
+        CartUtils.clearCart();
+        setLocalCart({ items: [], totalAmount: 0 });
+      }
     } catch (error) {
       console.error('Failed to remove cart:', error);
       toast.error('Failed to clear cart');
@@ -254,18 +382,18 @@ const [createWPOrder, { isLoading: isOrderLoading }] = useCreateWhatsappOrderMut
 
   // Calculate totals with local quantities
   const calculateTotals = useMemo(() => {
-    if (!cartItemsD?.items) return { subtotal: 0, total: 0 };
+    if (!cartItems?.items) return { subtotal: 0, total: 0, discount: 0 };
 
-    const subtotal = cartItemsD.items.reduce((sum, item) => {
+    const subtotal = cartItems.items.reduce((sum, item) => {
       const quantity = getEffectiveQuantity(item);
       return sum + (item.unitPrice * quantity);
     }, 0);
 
-    const discount = 15;
+    const discount = cartItems.totalDiscount || 0;
     const total = subtotal - discount;
 
     return { subtotal, discount, total };
-  }, [cartItemsD?.items, getEffectiveQuantity]);
+  }, [cartItems?.items, getEffectiveQuantity]);
 
   if (isError) {
     return (
@@ -297,7 +425,7 @@ const [createWPOrder, { isLoading: isOrderLoading }] = useCreateWhatsappOrderMut
           {isLoading ? (
             <div className="h-7 bg-gray-300 rounded w-40 animate-pulse"></div>
           ) : (
-            <h1>My Cart ({cartItemsD?.items?.length || 0})</h1>
+            <h1>My Cart ({cartItems?.items?.length || 0})</h1>
           )}
         </div>
 
@@ -310,13 +438,13 @@ const [createWPOrder, { isLoading: isOrderLoading }] = useCreateWhatsappOrderMut
           ) : (
             <>
               <div className='flex-5 flex gap-5 p-4 flex-col bg-white lg:rounded-lg'>
-                {cartItemsD?.items?.length === 0 ? (
+                {cartItems?.items?.length === 0 ? (
                   <div className="text-center py-12">
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">Your cart is empty</h3>
                     <p className="text-gray-600">Add some items to get started</p>
                   </div>
                 ) : (
-                  cartItemsD?.items?.map((item, index) => {
+                  cartItems?.items?.map((item, index) => {
                     const effectiveQuantity = getEffectiveQuantity(item);
                     const isItemUpdating = updatingItems.has(item.id);
                     const isItemRemoving = removingItems.has(item.id);
@@ -326,11 +454,11 @@ const [createWPOrder, { isLoading: isOrderLoading }] = useCreateWhatsappOrderMut
                         {/* Mobile View */}
                         <div className="space-y-4 lg:hidden">
                           <div className="flex items-start rounded-lg">
-                            <div className="w-30 h-30  rounded-lg flex items-center justify-center mr-4 overflow-hidden">
+                            <div className="w-30 h-30 rounded-lg flex items-center justify-center mr-4 overflow-hidden">
                               <img
                                 className='w-full rounded-lg p-3 aspect-square'
                                 src={`https://smartteamaz-001-site1.qtempurl.com${item?.productImageUrl}`}
-                                alt={item?.product?.name || 'Product'}
+                                alt={item?.productName || 'Product'}
                                 onError={(e) => {
                                   e.target.src = "/Icons/logo.svg"
                                 }}
@@ -386,7 +514,7 @@ const [createWPOrder, { isLoading: isOrderLoading }] = useCreateWhatsappOrderMut
                               <img
                                 className="w-full rounded-lg p-3 aspect-square"
                                 src={`https://smartteamaz-001-site1.qtempurl.com${item?.productImageUrl}`}
-                                alt={item?.product?.name || "Product"}
+                                alt={item?.productName || "Product"}
                                 onError={(e) => {
                                   e.currentTarget.src = "/Icons/logo.svg";
                                 }}
@@ -437,7 +565,7 @@ const [createWPOrder, { isLoading: isOrderLoading }] = useCreateWhatsappOrderMut
                           </div>
                         </div>
 
-                        {index < (cartItemsD?.items?.length - 1) && (
+                        {index < (cartItems?.items?.length - 1) && (
                           <hr className="mx-2 border-[#dee2e6] my-4" />
                         )}
                       </div>
@@ -445,7 +573,7 @@ const [createWPOrder, { isLoading: isOrderLoading }] = useCreateWhatsappOrderMut
                   })
                 )}
 
-                {cartItemsD?.items?.length > 0 && (
+                {cartItems?.items?.length > 0 && (
                   <>
                     <hr className="mx-2 border-[#dee2e6] hidden lg:block" />
                     <div className='justify-between hidden lg:flex'>
@@ -469,22 +597,22 @@ const [createWPOrder, { isLoading: isOrderLoading }] = useCreateWhatsappOrderMut
                 <div className="border-t lg:border-none border-gray-200 pt-4 space-y-3">
                   <div className="flex justify-between text-gray-600 text-lg">
                     <span>Subtotal:</span>
-                    <span>{cartItemsD?.totalAmount} AZN</span>
+                    <span>{cartItems?.totalAmount?.toFixed(2)} AZN</span>
                   </div>
                   <div className="flex justify-between text-red-500 text-lg">
                     <span>Discount:</span>
-                    <span>- {cartItemsD?.totalDiscount} AZN</span>
+                    <span>- {(cartItems?.totalDiscount || 0).toFixed(2)} AZN</span>
                   </div>
                   <div className="flex justify-between text-lg mb-7 font-bold text-gray-900 pt-2 border-t border-gray-200">
                     <span>Total:</span>
-                    <span>{(cartItemsD.totalAmount - cartItemsD?.totalDiscount).toFixed(2)} AZN</span>
+                    <span>{((cartItems?.totalAmount || 0) - (cartItems?.totalDiscount || 0)).toFixed(2)} AZN</span>
                   </div>
                 </div>
 
                 <button
                   onClick={() => createOrder()}
                   className="w-full cursor-pointer bg-red-500 hover:bg-red-600 text-white font-semibold py-4 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled={isOrderLoading}
+                  disabled={isOrderLoading || !cartItems?.items?.length}
                 >
                   <ShoppingCart size={20} />
                   <span>{isOrderLoading ? 'Processing...' : 'Buy Now'}</span>
@@ -499,4 +627,3 @@ const [createWPOrder, { isLoading: isOrderLoading }] = useCreateWhatsappOrderMut
 };
 
 export default Cart;
-

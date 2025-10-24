@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { Grid, List, ChevronDown, Check } from 'lucide-react';
 import { Breadcrumb } from '../../products/Breadcrumb';
 import SearchUI from '../../components/UI/SearchUI';
@@ -6,6 +6,8 @@ import { FilterSidebar } from '../../products/FilterSidebar';
 import { MobileFilterButtons } from '../../products/MobileFilters';
 import { ProductCard } from '../../products/ProductCard';
 import { Pagination } from '../../products/Pagination';
+import CartUtils from '../../components/UI/CartUtils';
+import AuthUtils from '../../components/UI/AuthUtils';
 import { 
   useAddCartItemMutation, 
   useGetProductsQuery, 
@@ -141,7 +143,7 @@ function Products() {
     ? categoryParam.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
     : isBrandParam
     ? 'Brand Products'
-    : slug?.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+    : slug?.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) || 'All Products';
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024); 
   const [template, setTemplate] = useState(isMobile ? "cols" : "rows");
@@ -174,6 +176,12 @@ function Products() {
     { brandSlug }, 
     { skip: !isBrand }
   );
+
+  // Query for all products when no special slug or category
+  const { data: allProductsData, isLoading: isLoadingAllProducts } = useGetProductsQuery(
+    undefined,
+    { skip: !!slug || isSpecialSlug }
+  );
   
   const { data: categories } = useGetCategoriesQuery();
   const { data: favorites } = useGetFavoritesQuery();
@@ -188,6 +196,11 @@ function Products() {
   const [addCartItem] = useAddCartItemMutation();
   const [toggleFavorite] = useToggleFavoriteMutation();
   const [addingIds, setAddingIds] = useState(new Set());
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    setIsAuthenticated(AuthUtils.isAuthenticated());
+  }, []);
 
   // Sort options for dropdown
   const sortOptions = [
@@ -199,7 +212,7 @@ function Products() {
   ];
 
   // Find category ID from slug (only for regular category pages)
-  const categoryId = React.useMemo(() => {
+  const categoryId = useMemo(() => {
     if (!slug || !categories || isSpecialSlug) return null;
     const category = categories.find(cat => 
       cat.name.toLowerCase().replace(/\s+/g, '-') === slug.toLowerCase()
@@ -209,39 +222,57 @@ function Products() {
 
   // Set products based on slug type or search
   useEffect(() => {
-    if (isSearch && searchResults && !filtersApplied) {
-      // Extract products from search results
+    if (filtersApplied) return; // Don't override filtered results
+    
+    setCurrentPage(1); // Reset to first page when products change
+    
+    if (isSearch && searchResults) {
       const searchProducts = searchResults.products || [];
       setProducts(searchProducts);
       setTotalItems(searchProducts.length);
-    } else if (isHotDeals && hotDeals && !filtersApplied) {
+    } else if (isHotDeals && hotDeals) {
       setProducts(hotDeals);
       setTotalItems(hotDeals.length);
-    } else if (isRecommended && recommended?.recentlyAdded && !filtersApplied) {
+    } else if (isRecommended && recommended?.recentlyAdded) {
       setProducts(recommended.recentlyAdded);
       setTotalItems(recommended.recentlyAdded.length);
-    } else if (isBrand && brandProducts && !filtersApplied) {
+    } else if (isBrand && brandProducts) {
       setProducts(brandProducts);
       setTotalItems(brandProducts.length);
-    } else if (!isSpecialSlug && productDefault && !filtersApplied) {
+    } else if (slug && !isSpecialSlug && productDefault) {
+      // Regular category products
       setProducts(productDefault);
       setTotalItems(productDefault.length);
+    } else if (!slug && !isSpecialSlug && allProductsData) {
+      // All products when no slug
+      setProducts(allProductsData);
+      setTotalItems(allProductsData.length);
     }
   }, [
     searchResults, 
     productDefault, 
     hotDeals, 
     recommended, 
-    brandProducts, 
+    brandProducts,
+    allProductsData,
     filtersApplied, 
     isSearch,
     isHotDeals, 
     isRecommended, 
     isBrand, 
-    isSpecialSlug
+    isSpecialSlug,
+    slug
   ]);
 
+  // Calculate pagination
   const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  // Get paginated products - memoized to prevent unnecessary recalculations
+  const paginatedProducts = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return products.slice(startIndex, endIndex);
+  }, [products, currentPage, itemsPerPage]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -250,6 +281,7 @@ function Products() {
 
   const handleFilterResults = useCallback((data, filters = []) => {
     setActiveFilters(filters);
+    setCurrentPage(1); // Reset to first page when filters change
 
     if (data === null) {
       setFiltersApplied(false);
@@ -267,9 +299,12 @@ function Products() {
       } else if (isBrand && brandProducts) {
         setProducts(brandProducts);
         setTotalItems(brandProducts.length);
-      } else if (productDefault) {
+      } else if (slug && productDefault) {
         setProducts(productDefault);
         setTotalItems(productDefault.length);
+      } else if (!slug && allProductsData) {
+        setProducts(allProductsData);
+        setTotalItems(allProductsData.length);
       }
     } else if (data?.products) {
       setFiltersApplied(true);
@@ -282,29 +317,37 @@ function Products() {
     }
   }, [
     searchResults,
-    productDefault, 
+    productDefault,
+    allProductsData,
     hotDeals, 
     recommended, 
     brandProducts, 
     isSearch,
     isHotDeals, 
     isRecommended, 
-    isBrand
+    isBrand,
+    slug
   ]);
 
   const handleSortChange = (e) => {
     const value = e.target.value;
     setSortBy(value);
-    setCurrentPage(1);
   };
 
-  const handleAddToCart = async (id) => {
+  const handleAddToCart = async (id, productData) => {
     if (!id) return;
 
     setAddingIds(prev => new Set(prev).add(id));
 
     try {
-      await addCartItem({ productId: id, quantity: 1 }).unwrap();
+      if (isAuthenticated) {
+        // Use API for authenticated users
+        await addCartItem({ productId: id, quantity: 1 }).unwrap();
+      } else {
+        // Use localStorage for non-authenticated users
+        CartUtils.addItem(productData, 1);
+        window.dispatchEvent(new Event("cartUpdated"));
+      }
     } catch (err) {
       console.error(err);
       if (err?.status === 401 || err?.data?.status === 401) {
@@ -357,7 +400,8 @@ function Products() {
     (isHotDeals && isHotDealsLoading && !filtersApplied) ||
     (isRecommended && isRecommendedLoading && !filtersApplied) ||
     (isBrand && isBrandLoading && !filtersApplied) ||
-    (!isSpecialSlug && isLoadingProducts && !filtersApplied);
+    (slug && !isSpecialSlug && isLoadingProducts && !filtersApplied) ||
+    (!slug && !isSpecialSlug && isLoadingAllProducts && !filtersApplied);
 
   return (
     <div className="min-h-screen bg-[#f7fafc] inter">
@@ -368,7 +412,7 @@ function Products() {
       
       <div className='lg:hidden bg-white px-4 py-4'>
         <h1 className="text-2xl font-medium text-gray-900">
-          {categoryName || 'Products'} ({totalItems})
+          {categoryName} ({totalItems || 0})
         </h1>
       </div>
        
@@ -384,7 +428,7 @@ function Products() {
               currentPage={currentPage}
               pageSize={itemsPerPage}
               forcedCategoryId={categoryId}
-              showCategory={isSpecialSlug}
+              showCategory={isSpecialSlug || !slug}
             />
           </div>
 
@@ -410,7 +454,7 @@ function Products() {
               ) : (
                 <>
                   <span className="text-sm text-gray-600">
-                    {totalItems.toLocaleString()} items
+                    {(totalItems || 0).toLocaleString()} items
                     {categoryName && <> in <span className='font-semibold'>{categoryName}</span></>}
                   </span>
 
@@ -445,8 +489,8 @@ function Products() {
                 Array.from({ length: 6 }).map((_, index) => (
                   <ProductCardSkeleton key={index} col={template === "cols"} />
                 ))
-              ) : products?.length > 0 ? (
-                products.map((item, index) => {
+              ) : paginatedProducts?.length > 0 ? (
+                paginatedProducts.map((item, index) => {
                   const cardInfo = {
                     url: item.primaryImageUrl,
                     name: item.name,
@@ -460,6 +504,7 @@ function Products() {
                       key={item.id || index} 
                       col={template === "cols"} 
                       info={cardInfo}
+                      productData={item}
                       handleAddToCart={handleAddToCart}
                       isAddingToCart={addingIds.has(item.id)}
                       toggleFavorite={handleToggleFavorite}

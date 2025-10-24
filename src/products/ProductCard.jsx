@@ -5,6 +5,7 @@ import { Link } from 'react-router';
 export function ProductCard({
   col,
   info,
+  productData,
   handleAddToCart,
   isAddingToCart,
   toggleFavorite,
@@ -28,7 +29,7 @@ export function ProductCard({
     e.preventDefault();
     e.stopPropagation();
     if (handleAddToCart) {
-      handleAddToCart(id);
+      handleAddToCart(id, productData);
       setJustAdded(true);
     }
   };

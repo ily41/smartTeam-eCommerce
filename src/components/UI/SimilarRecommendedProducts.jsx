@@ -1,8 +1,10 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, Heart, Loader2, Check, LogIn, UserPlus } from 'lucide-react';
 import { useToggleFavoriteMutation, useGetFavoriteStatusQuery, useAddCartItemMutation } from '../../store/API';
 import { toast } from 'react-toastify';
 import { Link, useNavigate } from 'react-router';
+import CartUtils from './CartUtils';
+import AuthUtils from './AuthUtils';
 
 // Skeleton Loading Components
 const SkeletonProductCard = ({ isMobile = false }) => {
@@ -161,7 +163,7 @@ const ProductCard = ({ product, isAddingToCart, loadingProductId, showSuccess, o
 
     return (
       <button
-        onClick={(e) => onAddToCart(e, product.id)}
+        onClick={(e) => onAddToCart(e, product)}
         className="w-full cursor-pointer flex justify-center items-center text-sm bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg font-medium transition-colors duration-200"
       >
         Add to Cart
@@ -270,7 +272,7 @@ const MobileProductCard = ({ product, isAddingToCart, loadingProductId, showSucc
 
     return (
       <button
-        onClick={(e) => onAddToCart(e, product.id)}
+        onClick={(e) => onAddToCart(e, product)}
         className="w-full cursor-pointer flex justify-center items-center text-xs bg-red-500 hover:bg-red-600 text-white py-1.5 px-3 rounded-md font-medium transition-colors duration-200"
       >
         Add to Cart
@@ -320,15 +322,27 @@ const SimilarProducts = ({ products, isLoading }) => {
   const [showUnauthorizedModal, setShowUnauthorizedModal] = useState(false);
   const [unauthorizedAction, setUnauthorizedAction] = useState('');
   const [addCartItem, { isLoading: isAddingToCart }] = useAddCartItemMutation();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  useEffect(() => {
+    setIsAuthenticated(AuthUtils.isAuthenticated());
+  }, []);
 
-  const onAddToCart = async (e, productId) => {
+  const onAddToCart = async (e, product) => {
     e.preventDefault();
     e.stopPropagation();
+    const productId = product.id
     
     setLoadingProductId(productId);
     
     try {
-      await addCartItem({ productId, quantity: 1 }).unwrap();
+       if (isAuthenticated) {
+          await addCartItem({ productId, quantity: 1 }).unwrap();
+
+       } else {
+         // Use localStorage for non-authenticated users
+         CartUtils.addItem(product, 1);
+         window.dispatchEvent(new Event("cartUpdated"));
+       }
       setShowSuccess(productId);
       
       setTimeout(() => {
