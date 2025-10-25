@@ -197,6 +197,28 @@
     "maxPrice": "Max Price",
     "clearFilters": "Clear Filters",
     "showResults": "Show Results"
-  }
+  },
 
+  "yourCartIsEmpty": "Your cart is empty",
+  "addItemsToStart": "Add some items to get started",
+  "remove": "Remove",
+  "removing": "Removing...",
+  "removeAll": "Remove all",
+  "removingAll": "Removing All...",
+  "subtotal": "Subtotal",
+  "discount": "Discount",
+  "total": "Total",
+  "backToShop": "Back to Shop",
+  "buyNow": "Buy Now",
+  "checkout": "Checkout",
+  "continueShopping": "Continue Shopping",
+  "quantity": "Quantity",
+  "price": "Price",
+  "totalAmount": "Total Amount",
+  "errorLoadingCart": "Error loading cart",
+  "pleaseTryAgainLater": "Please try again later",
+  "whatsappOrder": "Order via WhatsApp",
+  "itemAddedToCart": "Item added to cart",
+  "itemRemoved": "Item removed",
+  "cartCleared": "Cart cleared"
 }

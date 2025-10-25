@@ -20,7 +20,12 @@ const Login = () => {
     mobileNewPassword: false,
     mobileConfirmPassword: false
   });
-  const navigate = useNavigate();
+  const navigate = useNavigate()
+  // const navigate('/') = () => {
+  //   console.log("NAVIGATED")
+  //   navigate('/')
+  //   window.location.reload();
+  // }
   const location = useLocation();
 
   const from = location.state?.from || '/';
@@ -75,7 +80,7 @@ const Login = () => {
         if (from && from !== '/') {
           navigate(from, { replace: true });
         } else {
-          navigate("/");
+          window.location.href = '/'
         }
       } else {
         navigate("/admin");
@@ -158,7 +163,7 @@ const Login = () => {
             </div>
 
             <div className="mt-4 text-center">
-              <button type="button" className="text-gray-500 text-sm hover:text-gray-700 underline" onClick={() => navigate('/')}>Continue without logging in</button>
+              <button type="button" className="text-gray-500 text-sm hover:text-gray-700 underline" onClick={() => {navigate('/'); window.location.reload();}}>Continue without logging in</button>
             </div>
           </div>
         )}
@@ -318,7 +323,7 @@ const Login = () => {
             </div>
 
             <div className="mt-4 text-center">
-              <button type="button" className="text-gray-500 text-sm hover:text-gray-700 underline" onClick={() => navigate('/')}>Continue without logging in</button>
+              <button type="button" className="text-gray-500 text-sm hover:text-gray-700 underline" onClick={() => {navigate('/'); window.location.reload();}}>Continue without logging in</button>
             </div>
           </div>
         </div>

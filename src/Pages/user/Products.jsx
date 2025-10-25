@@ -10,22 +10,21 @@ import CartUtils from '../../components/UI/CartUtils';
 import AuthUtils from '../../components/UI/AuthUtils';
 import { 
   useAddCartItemMutation, 
-  useGetProductsQuery, 
   useGetCategoriesQuery, 
   useToggleFavoriteMutation,
   useGetFavoritesQuery,
-  useGetHotDealsQuery,
-  useGetRecommendedQuery,
-  useGetProductsBrandQuery,
-  useGetProductsCategorySlugQuery,
-  useSearchProductsQuery
+  useSearchProductsPageQuery,
+  useGetProductsCategorySlugPageQuery,
+  useGetHotDealsPageQuery,
+  useGetRecommendedPageQuery,
+  useGetProductsBrandPageQuery,
+  useGetProductsPaginatedQuery
 } from '../../store/API';
 import { toast } from 'react-toastify';
 import { useParams, useSearchParams } from 'react-router';
-import { useTranslation } from 'react-i18next';
+import UnauthorizedModal from '../../components/UI/UnauthorizedModal';
 
-
-const ProductCardSkeleton = ({ col }) => (
+const ProductCardSkeleton = React.memo(({ col }) => (
   <div className={`bg-white rounded-lg border border-gray-200 overflow-hidden ${col ? '' : 'flex'}`}>
     {col ? (
       <>
@@ -47,14 +46,16 @@ const ProductCardSkeleton = ({ col }) => (
       </>
     )}
   </div>
-);
+));
 
-
-const CustomDropdown = ({ value, onChange, options }) => {
+const CustomDropdown = React.memo(({ value, onChange, options }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  const selectedOption = options.find(opt => opt.value === value) || options[0];
+  const selectedOption = useMemo(() => 
+    options.find(opt => opt.value === value) || options[0],
+    [options, value]
+  );
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -67,10 +68,10 @@ const CustomDropdown = ({ value, onChange, options }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleSelect = (optionValue) => {
+  const handleSelect = useCallback((optionValue) => {
     onChange({ target: { value: optionValue } });
     setIsOpen(false);
-  };
+  }, [onChange]);
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -104,46 +105,44 @@ const CustomDropdown = ({ value, onChange, options }) => {
       )}
     </div>
   );
-};
+});
 
 function Products() {
   const { slug } = useParams();
   const [searchParams] = useSearchParams();
   const location = window.location.pathname;
-  const { t } = useTranslation();
+  const [showUnauthorizedModal, setShowUnauthorizedModal] = useState(false);
+  const [unauthorizedAction, setUnauthorizedAction] = useState('');
   
   // Get search query from URL params
   const searchQuery = searchParams.get('search');
   const categoryParam = searchParams.get('category');
   const brandParam = searchParams.get('brand');
   
-  // Extract brand slug if this is a brand route
-  const pathParts = location.split('/');
-  const isBrandRoute = pathParts.includes('brand');
-  const brandSlug = isBrandRoute ? pathParts[pathParts.indexOf('brand') + 1] : null;
+  // Extract brand slug if this is a brand route - memoize this
+  const { isBrandRoute, brandSlug, isHotDeals, isRecommended, isBrand, isSearch, isCategoryParam, isBrandParam, isSpecialSlug } = useMemo(() => {
+    const pathParts = location.split('/');
+    const isBrandRoute = pathParts.includes('brand');
+    const brandSlug = isBrandRoute ? pathParts[pathParts.indexOf('brand') + 1] : null;
+    const isHotDeals = slug === 'hot-deals';
+    const isRecommended = slug === 'recommended';
+    const isBrand = isBrandRoute && brandSlug;
+    const isSearch = !!searchQuery;
+    const isCategoryParam = !!categoryParam;
+    const isBrandParam = !!brandParam;
+    const isSpecialSlug = isHotDeals || isRecommended || isBrand || isSearch || isCategoryParam || isBrandParam;
+    
+    return { isBrandRoute, brandSlug, isHotDeals, isRecommended, isBrand, isSearch, isCategoryParam, isBrandParam, isSpecialSlug };
+  }, [location, slug, searchQuery, categoryParam, brandParam]);
   
-  // Determine if this is a special slug
-  const isHotDeals = slug === 'hot-deals';
-  const isRecommended = slug === 'recommended';
-  const isBrand = isBrandRoute && brandSlug;
-  const isSearch = !!searchQuery;
-  const isCategoryParam = !!categoryParam;
-  const isBrandParam = !!brandParam;
-  const isSpecialSlug = isHotDeals || isRecommended || isBrand || isSearch || isCategoryParam || isBrandParam;
-  
-  const categoryName = isHotDeals 
-    ? 'Hot Deals' 
-    : isRecommended 
-    ? 'Recommended' 
-    : isBrand
-    ? brandSlug.charAt(0).toUpperCase() + brandSlug.slice(1)
-    : isSearch
-    ? `Search Results for "${searchQuery}"`
-    : isCategoryParam
-    ? categoryParam.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
-    : isBrandParam
-    ? 'Brand Products'
-    : slug?.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) || 'All Products';
+  const categoryName = useMemo(() => {
+    if (isHotDeals) return 'Hot Deals';
+    if (isRecommended) return 'Recommended';
+    if (isBrand) return brandSlug.charAt(0).toUpperCase() + brandSlug.slice(1);
+    if (isSearch) return `Search Results for "${searchQuery}"`;
+    if (isCategoryParam) return categoryParam.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+    return slug?.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) || 'All Products';
+  }, [isHotDeals, isRecommended, isBrand, isSearch, isCategoryParam, brandSlug, searchQuery, categoryParam, slug]);
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024); 
   const [template, setTemplate] = useState(isMobile ? "cols" : "rows");
@@ -151,38 +150,56 @@ function Products() {
   const [itemsPerPage] = useState(10); 
 
   // Query for search results
-  const { data: searchResults, isLoading: isSearchLoading } = useSearchProductsQuery(
-    { q: searchQuery },
+  const { data: searchResults, isLoading: isSearchLoading } = useSearchProductsPageQuery(
+    { 
+      searchTerm: searchQuery,
+      page: currentPage,
+      pageSize: 10
+    },
     { skip: !isSearch || !searchQuery || searchQuery.length < 2 }
   );
+  console.log(searchResults)
 
-  // Regular category query
-  const { data: productDefault, isLoading: isLoadingProducts } = useGetProductsCategorySlugQuery(
-    slug,
+  const { data: productDefault, isLoading: isLoadingProducts } = useGetProductsCategorySlugPageQuery(
+    {
+      categorySlug: slug,
+      page: currentPage,
+      pageSize: 10
+    },
     { skip: !slug || isSpecialSlug }
   );
 
-  const { data: hotDeals, isLoading: isHotDealsLoading } = useGetHotDealsQuery(
-    undefined,
+  const { data: hotDeals, isLoading: isHotDealsLoading } = useGetHotDealsPageQuery(
+    {
+      page: currentPage,
+      pageSize: 10
+    },
     { skip: !isHotDeals }
   );
-  
-  const { data: recommended, isLoading: isRecommendedLoading } = useGetRecommendedQuery(
-    { limit: 10 }, 
+
+  const { data: recommended, isLoading: isRecommendedLoading } = useGetRecommendedPageQuery(
+    {
+      limit: 10,
+      page: currentPage,
+      pageSize: 10
+    }, 
     { skip: !isRecommended }
   );
-  
-  const { data: brandProducts, isLoading: isBrandLoading } = useGetProductsBrandQuery(
-    { brandSlug }, 
+
+  const { data: brandProducts, isLoading: isBrandLoading } = useGetProductsBrandPageQuery(
+    {
+      brandSlug: brandSlug,
+      page: currentPage,
+      pageSize: 10
+    }, 
     { skip: !isBrand }
   );
 
-  // Query for all products when no special slug or category
-  const { data: allProductsData, isLoading: isLoadingAllProducts } = useGetProductsQuery(
-    undefined,
+  const { data: allProductsData, isLoading: isLoadingAllProducts } = useGetProductsPaginatedQuery(
+    { page: currentPage, pageSize: 10 },
     { skip: !!slug || isSpecialSlug }
   );
-  
+
   const { data: categories } = useGetCategoriesQuery();
   const { data: favorites } = useGetFavoritesQuery();
   
@@ -196,22 +213,18 @@ function Products() {
   const [addCartItem] = useAddCartItemMutation();
   const [toggleFavorite] = useToggleFavoriteMutation();
   const [addingIds, setAddingIds] = useState(new Set());
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => AuthUtils.isAuthenticated());
 
-  useEffect(() => {
-    setIsAuthenticated(AuthUtils.isAuthenticated());
-  }, []);
-
-  // Sort options for dropdown
-  const sortOptions = [
+  // Sort options for dropdown - memoized
+  const sortOptions = useMemo(() => [
     { value: null, label: 'Sort by' },
     { value: 'price_asc', label: 'Price: Low to High' },
     { value: 'price_desc', label: 'Price: High to Low' },
     { value: 'name_asc' , label: 'Name: A to Z' },
     { value: 'name_desc', label: 'Name: Z to A' }
-  ];
+  ], []);
 
-  // Find category ID from slug (only for regular category pages)
+  // Find category ID from slug (only for regular category pages) - memoized
   const categoryId = useMemo(() => {
     if (!slug || !categories || isSpecialSlug) return null;
     const category = categories.find(cat => 
@@ -220,33 +233,51 @@ function Products() {
     return category?.id || null;
   }, [slug, categories, isSpecialSlug]);
 
-  // Set products based on slug type or search
+  // Set products based on slug type or search - optimized with ref to track previous values
+  const prevDataRef = useRef({});
+  
   useEffect(() => {
-    if (filtersApplied) return; // Don't override filtered results
+    if (filtersApplied) return; 
     
-    setCurrentPage(1); // Reset to first page when products change
-    
-    if (isSearch && searchResults) {
-      const searchProducts = searchResults.products || [];
-      setProducts(searchProducts);
-      setTotalItems(searchProducts.length);
+    let newProducts = null;
+    let newTotalItems = 0;
+    let dataKey = '';
+
+    if (isSearch && searchResults?.items) {
+      dataKey = 'search';
+      newProducts = searchResults?.items;
+      newTotalItems = searchResults?.totalCount;
     } else if (isHotDeals && hotDeals) {
-      setProducts(hotDeals);
-      setTotalItems(hotDeals.length);
-    } else if (isRecommended && recommended?.recentlyAdded) {
-      setProducts(recommended.recentlyAdded);
-      setTotalItems(recommended.recentlyAdded.length);
+      dataKey = 'hotDeals';
+      newProducts = hotDeals?.items;
+      newTotalItems = hotDeals?.totalCount;
+    } else if (isRecommended && recommended?.items) {
+      dataKey = 'recommended';
+      newProducts = recommended?.items;
+      newTotalItems = recommended?.totalCount;
     } else if (isBrand && brandProducts) {
-      setProducts(brandProducts);
-      setTotalItems(brandProducts.length);
+      dataKey = 'brand';
+      newProducts = brandProducts?.items;
+      newTotalItems = brandProducts?.totalCount;
     } else if (slug && !isSpecialSlug && productDefault) {
-      // Regular category products
-      setProducts(productDefault);
-      setTotalItems(productDefault.length);
+      dataKey = 'category';
+      newProducts = productDefault?.items;
+      newTotalItems = productDefault?.totalCount;
     } else if (!slug && !isSpecialSlug && allProductsData) {
-      // All products when no slug
-      setProducts(allProductsData);
-      setTotalItems(allProductsData.length);
+      dataKey = 'all';
+      newProducts = allProductsData?.items;
+      newTotalItems = allProductsData.totalCount;
+    }
+
+    // Only update if data actually changed
+    if (newProducts && (
+      prevDataRef.current.key !== dataKey || 
+      prevDataRef.current.products !== newProducts ||
+      prevDataRef.current.totalItems !== newTotalItems
+    )) {
+      prevDataRef.current = { key: dataKey, products: newProducts, totalItems: newTotalItems };
+      setProducts(newProducts);
+      setTotalItems(newTotalItems);
     }
   }, [
     searchResults, 
@@ -264,47 +295,39 @@ function Products() {
     slug
   ]);
 
-  // Calculate pagination
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  // Calculate pagination - memoized
+  const totalPages = useMemo(() => Math.ceil(totalItems / itemsPerPage), [totalItems, itemsPerPage]);
 
-  // Get paginated products - memoized to prevent unnecessary recalculations
-  const paginatedProducts = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    return products.slice(startIndex, endIndex);
-  }, [products, currentPage, itemsPerPage]);
-
-  const handlePageChange = (page) => {
+  const handlePageChange = useCallback((page) => {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, []);
 
   const handleFilterResults = useCallback((data, filters = []) => {
     setActiveFilters(filters);
-    setCurrentPage(1); // Reset to first page when filters change
 
     if (data === null) {
       setFiltersApplied(false);
       // Reset to appropriate default data
       if (isSearch && searchResults) {
-        const searchProducts = searchResults.products || [];
+        const searchProducts = searchResults.items || [];
         setProducts(searchProducts);
-        setTotalItems(searchProducts.length);
+        setTotalItems(searchResults.totalCount || 0);
       } else if (isHotDeals && hotDeals) {
-        setProducts(hotDeals);
-        setTotalItems(hotDeals.length);
-      } else if (isRecommended && recommended?.recentlyAdded) {
-        setProducts(recommended.recentlyAdded);
-        setTotalItems(recommended.recentlyAdded.length);
+        setProducts(hotDeals.items || []);
+        setTotalItems(hotDeals.totalCount || 0);
+      } else if (isRecommended && recommended?.items) {
+        setProducts(recommended.items);
+        setTotalItems(recommended.totalCount || 0);
       } else if (isBrand && brandProducts) {
-        setProducts(brandProducts);
-        setTotalItems(brandProducts.length);
+        setProducts(brandProducts.items || []);
+        setTotalItems(brandProducts.totalCount || 0);
       } else if (slug && productDefault) {
-        setProducts(productDefault);
-        setTotalItems(productDefault.length);
+        setProducts(productDefault.items || []);
+        setTotalItems(productDefault.totalCount || 0);
       } else if (!slug && allProductsData) {
-        setProducts(allProductsData);
-        setTotalItems(allProductsData.length);
+        setProducts(allProductsData.items || []);
+        setTotalItems(allProductsData.totalCount || 0);
       }
     } else if (data?.products) {
       setFiltersApplied(true);
@@ -329,22 +352,20 @@ function Products() {
     slug
   ]);
 
-  const handleSortChange = (e) => {
+  const handleSortChange = useCallback((e) => {
     const value = e.target.value;
     setSortBy(value);
-  };
+  }, []);
 
-  const handleAddToCart = async (id, productData) => {
+  const handleAddToCart = useCallback(async (id, productData) => {
     if (!id) return;
 
     setAddingIds(prev => new Set(prev).add(id));
 
     try {
       if (isAuthenticated) {
-        // Use API for authenticated users
         await addCartItem({ productId: id, quantity: 1 }).unwrap();
       } else {
-        // Use localStorage for non-authenticated users
         CartUtils.addItem(productData, 1);
         window.dispatchEvent(new Event("cartUpdated"));
       }
@@ -362,9 +383,9 @@ function Products() {
         return newSet;
       });
     }
-  };
+  }, [isAuthenticated, addCartItem]);
 
-  const handleToggleFavorite = async (id) => {
+  const handleToggleFavorite = useCallback(async (id) => {
     if (!id) return;
 
     try {
@@ -372,17 +393,19 @@ function Products() {
     } catch (err) {
       console.error(err);
       if (err?.status === 401 || err?.data?.status === 401) {
-        toast.error("Please log in first");
+        setUnauthorizedAction('add items to cart');
+        setShowUnauthorizedModal(true);
+        setIsAuthenticated(false);
       } else {
         toast.error("Failed to update favorites");
       }
     }
-  };
+  }, [toggleFavorite]);
 
-  const isProductFavorited = (productId) => {
+  const isProductFavorited = useCallback((productId) => {
     if (!favorites) return false;
     return favorites.includes(productId);
-  };
+  }, [favorites]);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 1024);
@@ -394,145 +417,179 @@ function Products() {
     setTemplate(isMobile ? "cols" : "rows"); 
   }, [isMobile]);
 
-  // Determine loading state based on slug type
-  const shouldShowLoading = isLoading || 
-    (isSearch && isSearchLoading && !filtersApplied) ||
-    (isHotDeals && isHotDealsLoading && !filtersApplied) ||
-    (isRecommended && isRecommendedLoading && !filtersApplied) ||
-    (isBrand && isBrandLoading && !filtersApplied) ||
-    (slug && !isSpecialSlug && isLoadingProducts && !filtersApplied) ||
-    (!slug && !isSpecialSlug && isLoadingAllProducts && !filtersApplied);
+  // Determine loading state based on slug type - memoized
+  const shouldShowLoading = useMemo(() => {
+    return isLoading || 
+      (isSearch && isSearchLoading && !filtersApplied) ||
+      (isHotDeals && isHotDealsLoading && !filtersApplied) ||
+      (isRecommended && isRecommendedLoading && !filtersApplied) ||
+      (isBrand && isBrandLoading && !filtersApplied) ||
+      (slug && !isSpecialSlug && isLoadingProducts && !filtersApplied) ||
+      (!slug && !isSpecialSlug && isLoadingAllProducts && !filtersApplied);
+  }, [
+    isLoading,
+    isSearch,
+    isSearchLoading,
+    isHotDeals,
+    isHotDealsLoading,
+    isRecommended,
+    isRecommendedLoading,
+    isBrand,
+    isBrandLoading,
+    slug,
+    isSpecialSlug,
+    isLoadingProducts,
+    isLoadingAllProducts,
+    filtersApplied
+  ]);
+
+  // Memoize skeleton array
+  const skeletonArray = useMemo(() => Array.from({ length: 6 }), []);
 
   return (
-    <div className="min-h-screen bg-[#f7fafc] inter">
-      <div className='lg:hidden px-4 py-4 border-y-1 border-[#dee2e6] bg-white'>
-        <div className='mb-4'><SearchUI /></div>
-        <Breadcrumb />
-      </div>
-      
-      <div className='lg:hidden bg-white px-4 py-4'>
-        <h1 className="text-2xl font-medium text-gray-900">
-          {categoryName} ({totalItems || 0})
-        </h1>
-      </div>
-       
-      <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-        <div className='hidden lg:block lg:pl-4'><Breadcrumb /></div>
+    <>
+      <UnauthorizedModal 
+        isOpen={showUnauthorizedModal} 
+        onClose={() => setShowUnauthorizedModal(false)}
+        action={unauthorizedAction}
+      />
+
+      <div className="min-h-screen bg-[#f7fafc] inter">
+        <div className='lg:hidden px-4 py-4 border-y-1 border-[#dee2e6] bg-white'>
+          <div className='mb-4'><SearchUI /></div>
+          <Breadcrumb />
+        </div>
         
-        <div className="lg:flex lg:gap-8 lg:mt-5">
-          <div className="hidden lg:block lg:w-64 lg:flex-shrink-0">
-            <FilterSidebar 
-              onFilterResults={handleFilterResults}
-              onLoadingChange={setIsLoading}
-              currentSort={sortBy}
-              currentPage={currentPage}
-              pageSize={itemsPerPage}
-              forcedCategoryId={categoryId}
-              showCategory={isSpecialSlug || !slug}
-            />
-          </div>
-
-          <div className="flex-1"> 
-            <MobileFilterButtons 
-              onFilterResults={handleFilterResults}
-              onLoadingChange={setIsLoading}
-              currentSort={sortBy}
-              onSortChange={handleSortChange}
-              currentPage={currentPage}
-              pageSize={itemsPerPage}
-              forcedCategoryId={categoryId}
-            />
-            <div className="hidden lg:flex items-center justify-between bg-white p-3 rounded-lg border-[#dee2e6] border-1">
-              {shouldShowLoading ? (
-                <>
-                  <div className="h-5 bg-gray-200 rounded animate-pulse w-48" />
-                  <div className="flex items-center space-x-4">
-                    <div className="h-10 bg-gray-200 rounded animate-pulse w-32" />
-                    <div className="h-10 bg-gray-200 rounded animate-pulse w-20" />
-                  </div>
-                </>
-              ) : (
-                <>
-                  <span className="text-sm text-gray-600">
-                    {(totalItems || 0).toLocaleString()} items
-                    {categoryName && <> in <span className='font-semibold'>{categoryName}</span></>}
-                  </span>
-
-                  <div className="hidden lg:flex items-center space-x-4">
-                    <CustomDropdown
-                      value={sortBy}
-                      onChange={handleSortChange}
-                      options={sortOptions}
-                    />
-                    <div className="flex border border-gray-300 rounded-md overflow-hidden">
-                      <button 
-                        onClick={() => setTemplate("cols")} 
-                        className={`p-2 ${template === "cols" ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'} cursor-pointer`}
-                      >
-                        <Grid className="w-4 h-4" />
-                      </button>
-
-                      <button 
-                        onClick={() => setTemplate("rows")} 
-                        className={`p-2 ${template === "cols" ? 'bg-white text-gray-900' : 'bg-gray-900 text-white'} cursor-pointer`}
-                      >
-                        <List className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-
-            <div className={`mt-4 ${template === "cols" ? 'grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6' : 'flex flex-col gap-4'}`}>
-              {shouldShowLoading ? (
-                Array.from({ length: 6 }).map((_, index) => (
-                  <ProductCardSkeleton key={index} col={template === "cols"} />
-                ))
-              ) : paginatedProducts?.length > 0 ? (
-                paginatedProducts.map((item, index) => {
-                  const cardInfo = {
-                    url: item.primaryImageUrl,
-                    name: item.name,
-                    priceOriginal: item?.originalPrice,
-                    price: item?.currentPrice,
-                    id: item.id,
-                    description: item.shortDescription
-                  };
-                  return (
-                    <ProductCard 
-                      key={item.id || index} 
-                      col={template === "cols"} 
-                      info={cardInfo}
-                      productData={item}
-                      handleAddToCart={handleAddToCart}
-                      isAddingToCart={addingIds.has(item.id)}
-                      toggleFavorite={handleToggleFavorite}
-                      isFavorite={isProductFavorited(item.id)}
-                    />
-                  );
-                })
-              ) : (
-                <div className="col-span-full text-center py-12">
-                  <p className="text-gray-500 text-lg">No products found</p>
-                  <p className="text-gray-400 text-sm mt-2">
-                    {isSearch ? 'Try searching with different keywords' : 'Try adjusting your filters'}
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {!shouldShowLoading && totalPages > 1 && (
-              <Pagination 
+        <div className='lg:hidden bg-white px-4 py-4'>
+          <h1 className="text-2xl font-medium text-gray-900">
+            {categoryName} ({totalItems || 0})
+          </h1>
+        </div>
+        
+        <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+          <div className='hidden lg:block lg:pl-4'><Breadcrumb /></div>
+          
+          <div className="lg:flex lg:gap-8 lg:mt-5">
+            <div className="hidden lg:block lg:w-64 lg:flex-shrink-0">
+              <FilterSidebar 
+                onFilterResults={handleFilterResults}
+                onLoadingChange={setIsLoading}
+                currentSort={sortBy}
                 currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
+                isHotDeals={isHotDeals ? true : false}
+                isRecommended={isRecommended ? true : false}
+                isBrand={isBrand ? brandSlug : ''} 
+                isSearch={isSearch ? searchQuery : ''} 
+                setCurrentPage={setCurrentPage}
+                pageSize={itemsPerPage}
+                forcedCategoryId={categoryId}
+                showCategory={isSpecialSlug || !slug}
               />
-            )}
+            </div>
+
+            <div className="flex-1"> 
+              <MobileFilterButtons 
+                onFilterResults={handleFilterResults}
+                onLoadingChange={setIsLoading}
+                currentSort={sortBy}
+                onSortChange={handleSortChange}
+                currentPage={currentPage}
+                pageSize={itemsPerPage}
+                forcedCategoryId={categoryId}
+              />
+              
+              <div className="hidden lg:flex items-center justify-between bg-white p-3 rounded-lg border-[#dee2e6] border-1">
+                {shouldShowLoading ? (
+                  <>
+                    <div className="h-5 bg-gray-200 rounded animate-pulse w-48" />
+                    <div className="flex items-center space-x-4">
+                      <div className="h-10 bg-gray-200 rounded animate-pulse w-32" />
+                      <div className="h-10 bg-gray-200 rounded animate-pulse w-20" />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-sm text-gray-600">
+                      {(totalItems || 0).toLocaleString()} items
+                      {categoryName && <> in <span className='font-semibold'>{categoryName}</span></>}
+                    </span>
+
+                    <div className="hidden lg:flex items-center space-x-4">
+                      <CustomDropdown
+                        value={sortBy}
+                        onChange={handleSortChange}
+                        options={sortOptions}
+                      />
+                      <div className="flex border border-gray-300 rounded-md overflow-hidden">
+                        <button 
+                          onClick={() => setTemplate("cols")} 
+                          className={`p-2 ${template === "cols" ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'} cursor-pointer`}
+                        >
+                          <Grid className="w-4 h-4" />
+                        </button>
+
+                        <button 
+                          onClick={() => setTemplate("rows")} 
+                          className={`p-2 ${template === "cols" ? 'bg-white text-gray-900' : 'bg-gray-900 text-white'} cursor-pointer`}
+                        >
+                          <List className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <div className={`mt-4 ${template === "cols" ? 'grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6' : 'flex flex-col gap-4'}`}>
+                {shouldShowLoading ? (
+                  skeletonArray.map((_, index) => (
+                    <ProductCardSkeleton key={index} col={template === "cols"} />
+                  ))
+                ) : products?.length > 0 ? (
+                  products.map((item) => {
+                    const cardInfo = {
+                      url: item.primaryImageUrl,
+                      name: item.name,
+                      priceOriginal: item?.originalPrice,
+                      price: item?.currentPrice,
+                      id: item.id,
+                      description: item.shortDescription
+                    };
+                    return (
+                      <ProductCard 
+                        key={item.id} 
+                        col={template === "cols"} 
+                        info={cardInfo}
+                        productData={item}
+                        handleAddToCart={handleAddToCart}
+                        isAddingToCart={addingIds.has(item.id)}
+                        toggleFavorite={handleToggleFavorite}
+                        isFavorite={isProductFavorited(item.id)}
+                      />
+                    );
+                  })
+                ) : (
+                  <div className="col-span-full text-center py-12">
+                    <p className="text-gray-500 text-lg">No products found</p>
+                    <p className="text-gray-400 text-sm mt-2">
+                      {isSearch ? 'Try searching with different keywords' : 'Try adjusting your filters'}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {!shouldShowLoading && totalPages > 1 && (
+                <Pagination 
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                />
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

@@ -30,6 +30,7 @@ import WP from '../components/UI/WP'
 import Register from "../Pages/user/Register";
 import Brands from "../Pages/user/Brands";
 import Brand from "../Pages/admin/Brand";
+import ErrorPage from "../products/ErrorPage";
 const Router = () => {
   return (
     <BrowserRouter>
@@ -55,8 +56,10 @@ const Router = () => {
           }
         >
           <Route index element={<Home />} />
-          <Route path="products/:slug?" element={<Products />} />
+          <Route path="products/:slug?" element={<Products />} /> 
           <Route path="products/brand/:slug?" element={<Products />} />
+
+          
           <Route path="/details/:id" element={<Details />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/favorites" element={<WishList />} />
@@ -66,9 +69,13 @@ const Router = () => {
           <Route path="secure" element={<Software />} />
           <Route path="software" element={<Secure />} />
           <Route path="profile" element={<Profile />} />
-          <Route path="/:slug" element={<SubCategories />} />
+          <Route path="/categories/:slug" element={<SubCategories />} />
           <Route path="/brands" element={<Brands />} />
+
+          {/* 404 Error Page - MUST BE LAST */}
+           
         </Route>
+        <Route path="*" element={<ErrorPage />} />
 
         {/* Admin layout with Auth wrapper */}
         <Route

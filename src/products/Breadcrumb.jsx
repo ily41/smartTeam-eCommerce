@@ -36,7 +36,7 @@ export function Breadcrumb({ productData = null }) {
           <>
             <ChevronRight className="w-4 h-4 text-gray-400" />
             <Link
-              to={`/${productData.parentCategorySlug
+              to={`/categories/${productData.parentCategorySlug
                 .toLowerCase()
                 .replace(/\s+/g, "-")}`}
               className="hover:text-gray-900 transition-colors text-sm lg:text-lg"
@@ -97,7 +97,7 @@ export function Breadcrumb({ productData = null }) {
       </Link>
 
       {pathnames.map((value, index) => {
-        if (isId(value)) return null;
+        if (isId(value) || value == "categories") return null;
 
         const to = `/${pathnames.slice(0, index + 1).join("/")}`;
         const isLast = index === pathnames.length - 1;

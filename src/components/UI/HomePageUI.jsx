@@ -6,64 +6,14 @@ import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import CartUtils from './CartUtils';
 import AuthUtils from './AuthUtils';
+import UnauthorizedModal from './UnauthorizedModal';
 
 
 
 
 
 // ============= UNAUTHORIZED MODAL =============
-const UnauthorizedModal = ({ isOpen, onClose, action }) => {
-  const navigate = useNavigate();
-  const { t } = useTranslation();
-    
-  if (!isOpen) return null;
-    
-  return (
-    <div 
-      className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-      onClick={onClose}
-    >
-      <div 
-        className="bg-white rounded-lg max-w-md w-full p-6 shadow-xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="text-center">
-          <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-            <LogIn className="h-6 w-6 text-red-600" />
-          </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            {t('signInRequired')}
-          </h3>
-          <p className="text-sm whitespace-normal text-gray-600 mb-6">
-            {t('signInRequiredMessage', { action: action || 'perform this action' })}
-          </p>
-          <div className="flex gap-3">
-            <button
-              onClick={() => navigate('/login')}
-              className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2.5 px-4 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
-            >
-              <LogIn className="w-4 h-4" />
-              {t('signIn')}
-            </button>
-            <button
-              onClick={() => navigate('/register')}
-              className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-900 py-2.5 px-4 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
-            >
-              <UserPlus className="w-4 h-4" />
-              {t('signUp')}
-            </button>
-          </div>
-          <button
-            onClick={onClose}
-            className="mt-4 text-sm text-gray-500 hover:text-gray-700 transition-colors"
-          >
-            {t('continueBrowsing')}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
+ 
 
 // ============= MAIN COMPONENT =============
 const HomePageUI = ({
@@ -205,11 +155,7 @@ const HomePageUI = ({
   if (deal) {
     return (
       <>
-        <UnauthorizedModal 
-          isOpen={showUnauthorizedModal} 
-          onClose={() => setShowUnauthorizedModal(false)}
-          action={unauthorizedAction}
-        />
+       
         
         <Link to={`/details/${product.id}`} className='bg-white p-1 border-1 flex flex-col justify-between border-gray-300 cursor-pointer rounded-lg relative transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-gray-400 '>
           <img 
@@ -257,7 +203,7 @@ const HomePageUI = ({
   // ============= RENDER REGULAR PRODUCT CARD =============
   return (
     <>
-      <UnauthorizedModal 
+      <UnauthorizedModal
         isOpen={showUnauthorizedModal} 
         onClose={() => setShowUnauthorizedModal(false)}
         action={unauthorizedAction}

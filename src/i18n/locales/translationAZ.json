@@ -77,7 +77,7 @@
   "failedUpdateFavorites": "Favoritləri yeniləmək mümkün olmadı",
 
   "signInRequired": "Daxil Olmaq Tələb Olunur",
-  "signInRequiredMessage": "{{action}} üçün daxil olmalısınız. Davam etmək üçün daxil olun və ya hesab yaradın.",
+  "signInRequiredMessage": "Sevimlilərə əlavə etmək üçün üçün daxil olmalısınız. Davam etmək üçün daxil olun və ya hesab yaradın.",
   "signIn": "Daxil Ol",
   "signUp": "Qeydiyyat",
   "continueBrowsing": "Baxışa davam et",
@@ -197,6 +197,30 @@
     "maxPrice": "Maksimum Qiymət",
     "clearFilters": "Filtrləri Təmizlə",
     "showResults": "Nəticələri Göstər"
-  }
+  },
+
+
+  "yourCartIsEmpty": "Səbətiniz boşdur",
+  "addItemsToStart": "Başlamaq üçün məhsul əlavə edin",
+  "remove": "Sil",
+  "removing": "Silinir...",
+  "removeAll": "Hamısını sil",
+  "removingAll": "Hamısı silinir...",
+  "subtotal": "Cəmi",
+  "discount": "Endirim",
+  "total": "Ümumi məbləğ",
+  "backToShop": "Mağazaya qayıt",
+  "buyNow": "İndi al",
+  "checkout": "Sifarişi tamamla",
+  "continueShopping": "Alış-verişə davam et",
+  "quantity": "Miqdar",
+  "price": "Qiymət",
+  "totalAmount": "Ümumi məbləğ",
+  "errorLoadingCart": "Səbəti yükləmək mümkün olmadı",
+  "pleaseTryAgainLater": "Zəhmət olmasa, bir az sonra yenidən cəhd edin",
+  "whatsappOrder": "WhatsApp ilə sifariş et",
+  "itemAddedToCart": "Məhsul səbətə əlavə olundu",
+  "itemRemoved": "Məhsul səbətdən silindi",
+  "cartCleared": "Səbət təmizləndi"
 
 }

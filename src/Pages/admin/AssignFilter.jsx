@@ -284,13 +284,16 @@ const ProductFilterAssignment = () => {
                         <td className="py-4 px-4">
                           <div className="flex flex-wrap gap-1">
                             {product.filters && product.filters.length > 0 ? (
-                              product.filters.map((assignment, index) => (
+                              product.filters.map((assignment, index) => {
+                                console.log(assignment)
+                                return(
+                                
                                 <span 
                                   key={index}
                                   className="px-2 py-1 bg-blue-600 text-white rounded-full text-xs flex items-center gap-1 group"
                                   title={`${assignment.filterName}: ${assignment.value || assignment.optionName}`}
                                 >
-                                  {assignment.filterName}
+                                  {assignment.filterOptionDisplayName}
                                   {assignment.value && (
                                     <span className="text-blue-200">: {assignment.value}</span>
                                   )}
@@ -305,7 +308,7 @@ const ProductFilterAssignment = () => {
                                     <X className="w-3 h-3 cursor-pointer" />
                                   </button>
                                 </span>
-                              ))
+                              )})
                             ) : (
                               <span className="text-gray-500 text-sm italic">No filters assigned</span>
                             )}
@@ -313,7 +316,7 @@ const ProductFilterAssignment = () => {
                         </td>
                         <td className="py-4 px-4">
                           <div className="flex items-center justify-center gap-2">
-                            <button
+                            {/* <button
                               onClick={() => {
                                 setSelectedProducts([product.id]);
                                 setAssignmentMode('single');
@@ -323,7 +326,7 @@ const ProductFilterAssignment = () => {
                             >
                               <Tags className="w-3 h-3" />
                               Assign
-                            </button>
+                            </button> */}
                             {product.filters && product.filters.length > 0 && (
                               <button
                                 onClick={() => handleRemoveAllFilters(product.id, product.name)}

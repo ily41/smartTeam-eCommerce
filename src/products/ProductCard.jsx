@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Heart, Check } from 'lucide-react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
+import { useGetFavoriteStatusQuery } from '../store/API';
+
+
+
 
 export function ProductCard({
   col,
@@ -15,6 +19,9 @@ export function ProductCard({
   const [localFavorite, setLocalFavorite] = useState(isFavorite);
   const [isTogglingFavorite, setIsTogglingFavorite] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
+  const { data: favoriteStatus } = useGetFavoriteStatusQuery({ productId: info.id });
+  
+
 
   const hasDiscount = priceOriginal && price && priceOriginal > price;
 
@@ -34,25 +41,20 @@ export function ProductCard({
     }
   };
 
+  
+
   const handleFavoriteClick = async (e) => {
     e.preventDefault();
     e.stopPropagation();
     
     if (isTogglingFavorite || !toggleFavorite) return;
     
-    // Optimistically update local state
-    const previousState = localFavorite;
-    setLocalFavorite(!localFavorite);
-    setIsTogglingFavorite(true);
     
     try {
+       
       await toggleFavorite(id);
     } catch (error) {
-      // Revert on error
-      setLocalFavorite(previousState);
-      console.error('Failed to toggle favorite:', error);
-    } finally {
-      setIsTogglingFavorite(false);
+      console.log(error)
     }
   };
 
@@ -60,6 +62,7 @@ export function ProductCard({
     // Column layout (grid view)
     return (
       <div className="bg-white rounded-xl shadow-sm border flex flex-col justify-between border-gray-200 overflow-hidden relative">
+
         <Link to={`/details/${id}`} className="block">
           <div className="aspect-square p-4 relative">
             <img
@@ -92,11 +95,10 @@ export function ProductCard({
             className="absolute top-4 right-4 p-2 rounded-lg border border-gray-200 bg-white shadow-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed z-10"
           >
             <Heart
-              className={`w-5 h-5 transition-colors cursor-pointer ${
-                localFavorite
-                  ? 'fill-red-500 text-red-500'
-                  : 'text-red-500'
+              className={`w-5 h-5 transition-colors text-red-500 hover:fill-red-400 cursor-pointer ${
+                favoriteStatus?.isFavorite && 'fill-red-500'
               }`}
+
             />
           </button>
 
@@ -132,7 +134,7 @@ export function ProductCard({
           <button
             onClick={handleCartClick}
             disabled={isAddingToCart || justAdded}
-            className={`w-full text-sm lg:text-md py-3 px-4 rounded-md font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+            className={`w-full cursor-pointer text-sm lg:text-md py-3 px-4 rounded-md font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
               justAdded
                 ? 'bg-green-500 hover:bg-green-600 text-white'
                 : 'bg-[#E60C03] hover:bg-red-600 disabled:bg-red-400 disabled:cursor-not-allowed text-white'
@@ -155,7 +157,8 @@ export function ProductCard({
   } else {
     // Row layout (list view)
     return (
-      <Link
+      <>
+        <Link
         to={`/details/${id}`}
         className="border border-[#dbdbdb] rounded-xl p-4 bg-white flex items-center gap-6 relative"
       >
@@ -201,7 +204,7 @@ export function ProductCard({
                 <p className="text-2xl font-bold text-[#E60C03]">
                   {price} ₼
                 </p>
-                {hasDiscount && (
+                {/* {hasDiscount && (
                   <>
                     <p className="text-lg text-gray-400 line-through">
                       {priceOriginal} ₼
@@ -210,7 +213,7 @@ export function ProductCard({
                       Save {(priceOriginal - price).toFixed(2)} ₼
                     </span>
                   </>
-                )}
+                )} */}
               </div>
             </div>
 
@@ -220,10 +223,9 @@ export function ProductCard({
               className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Heart
-                className={`w-6 h-6 transition-colors cursor-pointer ${
-                  localFavorite
-                    ? 'fill-red-500 text-red-500'
-                    : 'text-red-500'
+                className={`w-6 h-6 transition-colors text-red-500 hover:fill-red-400  cursor-pointer ${
+                  favoriteStatus?.isFavorite
+                    && 'fill-red-500 '
                 }`}
               />
             </button>
@@ -232,7 +234,7 @@ export function ProductCard({
           <button
             onClick={handleCartClick}
             disabled={isAddingToCart || justAdded}
-            className={`h-fit self-end w-[200px] text-sm lg:text-md py-3 px-4 rounded-md font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+            className={`h-fit self-end cursor-pointer w-[200px] text-sm lg:text-md py-3 px-4 rounded-md font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
               justAdded
                 ? 'bg-green-500 hover:bg-green-600 text-white'
                 : 'bg-[#E60C03] hover:bg-red-600 disabled:bg-red-400 disabled:cursor-not-allowed text-white'
@@ -250,7 +252,9 @@ export function ProductCard({
             )}
           </button>
         </div>
-      </Link>
+        </Link>
+        
+      </>
     );
   }
 }

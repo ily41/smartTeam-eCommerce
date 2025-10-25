@@ -214,10 +214,11 @@ const Home = () => {
                   </>
                 ) : (
                   parentCategories?.map((item) => {
+                    {console.log(item)}
                     return (
                       <Link 
                         key={item.id}
-                        to={`/${item.slug}`}
+                        to={`/categories/${item.slug}`}
                         state={{ name: item.name }}
                         onMouseEnter={() => {setHoveredCategorie(item.id); setHoveredName(item.name)}}
                         onClick={() => setActiveCategorie(activeCategorie === item.slug ? null : item.slug)}

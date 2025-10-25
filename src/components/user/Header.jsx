@@ -9,6 +9,7 @@ import { PiCarProfile } from 'react-icons/pi';
 import i18next from 'i18next';
 import { useTranslation } from 'react-i18next';
 import SearchDropdown from '../UI/SearchDropdown'; // Import the new component
+import UnauthorizedModal from '../UI/UnauthorizedModal';
 
 // Helper function to get cookie value
 const getCookie = (name) => {
@@ -36,6 +37,8 @@ const Header = () => {
   const searchDropdownRef = useRef(null);
   const mobileSearchDropdownRef = useRef(null);
   const hasToken = document.cookie.split('; ').some(row => row.startsWith('token='));
+  const [showUnauthorizedModal, setShowUnauthorizedModal] = useState(false)
+  const [unauthorizedAction, setUnauthorizedAction] = useState('')
 
   const { data: cartCountData } = useGetCartCountQuery(undefined, {
     skip: !hasToken,
@@ -183,6 +186,12 @@ const Header = () => {
     setSearchOpen(true);
   };
 
+  const handleFavoriteClick = () => {
+    console.log("salam")
+    setUnauthorizedAction('add items to Favorites');
+    setShowUnauthorizedModal(true);
+  }
+
   const handleClearSearch = () => {
     setSearchQuery('');
     setSearchOpen(true);
@@ -198,6 +207,7 @@ const Header = () => {
       setSearchOpen(false);
       setSearchQuery('');
       navigate(`/products?search=${query}`);
+      window.location.reload()
     } else if (e.key === 'Escape') {
       handleClearSearch();
       e.target.blur();
@@ -221,6 +231,14 @@ const Header = () => {
     setSearchQuery('');
   };
 
+  const handleViewAllClick = () => {
+    console.log("works")
+    const query = encodeURIComponent(searchQuery);
+    navigate(`/products?search=${query}`);
+    setSearchOpen(false);
+    setSearchQuery('');
+  };
+
   const handleBrandClick = (brandSlug, brandName) => {
     navigate(`/products/brand/${brandSlug}`);
     setSearchOpen(false);
@@ -233,6 +251,11 @@ const Header = () => {
 
   return (
     <header className='pt-[59px] lg:pt-[84px]'>
+      <UnauthorizedModal 
+        isOpen={showUnauthorizedModal} 
+        onClose={() => setShowUnauthorizedModal(false)}
+        action={unauthorizedAction}
+      />
       <Burger burgerV={burgerVi} setBurgerV={setBurgerVi}/>
       <nav className=''>
         <div className='flex justify-between lg:justify-around fixed top-0 z-50 bg-white w-full lg:items-center p-3 px-6 items-center'>
@@ -282,6 +305,7 @@ const Header = () => {
                     onProductClick={handleProductClick}
                     onCategoryClick={handleCategoryClick}
                     onBrandClick={handleBrandClick}
+                    onViewAllProducts={handleViewAllClick}
                     t={t}
                     width={searchWidth}
                   />
@@ -299,9 +323,9 @@ const Header = () => {
               </button>
             </div>
 
-            <Link
-              to={hasToken ? "/favorites" : "/login"}
-              className='flex flex-col items-center cursor-pointer hover:opacity-80 transition-opacity duration-200 relative'
+            <div
+              onClick={() => {hasToken ? navigate('/favorites') : handleFavoriteClick()}}
+              className='flex flex-col items-center justify-center cursor-pointer hover:opacity-80 transition-opacity duration-200 relative'
             >
               <div className="relative">
                 <img className='w-7' src="/Icons/favorites.svg" alt="Favorites" />
@@ -316,7 +340,7 @@ const Header = () => {
               <p className='text-gray-500 text-md hidden lg:block whitespace-nowrap'>
                 {t('favorites')}
               </p>
-            </Link>
+            </div>
 
             <Link
               to={'/cart'}

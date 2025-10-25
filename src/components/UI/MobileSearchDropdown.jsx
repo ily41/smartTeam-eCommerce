@@ -116,7 +116,7 @@ const MobileSearchDropdown = ({
   const hasProducts = searchResult.products && searchResult.products.length > 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 ">
       {/* Categories Section */}
       {hasCategories && (
         <div>
@@ -157,7 +157,7 @@ const MobileSearchDropdown = ({
             {searchResult.brands.slice(0, 6).map((brand) => (
               <div
                 key={brand.id}
-                onClick={() => onBrandClick(brand.id, brand.name)}
+                onClick={() => onBrandClick(brand.slug, brand.name)}
                 className="flex items-center gap-2 px-2.5 py-1.5 bg-gray-50 hover:bg-gray-100 active:bg-gray-200 rounded-full cursor-pointer transition-colors border border-gray-200"
               >
                 {brand.logoUrl ? (

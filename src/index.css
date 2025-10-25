@@ -20,6 +20,10 @@
   font-family: 'montserrat', sans-serif;
 }
 
+button {
+  cursor: pointer;
+}
+
 @font-face {
   font-family: 'helveticaNow';
   src: url('/font/helvetica-now-text-medium.ttf') format('truetype');

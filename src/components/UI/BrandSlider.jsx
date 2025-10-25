@@ -5,8 +5,6 @@ import { useTranslation } from 'react-i18next';
 const InfiniteBrandSlider = () => {
     const { t } = useTranslation();
     const { data: brands, isLoading: isBrandsLoading } = useGetBrandsAdminQuery();
-    console.log(brands)
-    console.log(brands)
 
     // const brandsImg = [
     //   brands?.map(brand => {
@@ -158,7 +156,7 @@ const InfiniteBrandSlider = () => {
     if (slug) {
       console.log('Navigate to:', slug);
     }
-  };
+  }
 
   return (
     <>

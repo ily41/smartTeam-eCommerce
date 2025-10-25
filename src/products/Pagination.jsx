@@ -3,7 +3,6 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { current } from '@reduxjs/toolkit';
 
 export function Pagination({ currentPage, totalPages, onPageChange }) {
-  console.log(currentPage, totalPages)
   const getPageNumbers = () => {
     const pages = [];
     const showPages = 5;

@@ -55,7 +55,7 @@ export const API = createApi({
           password
         },
       }),
-      invalidatesTags: ['Auth'],
+      invalidatesTags: ['Auth','Products'],
     }),
 
     signup: builder.mutation({
@@ -325,6 +325,100 @@ export const API = createApi({
       providesTags: ['Products'],
     }),
 
+    getProductsPaginated: builder.query({
+      query: ({ page, pageSize }) => ({
+        url: '/api/v1/Products/paginated',
+        method: 'GET',
+        params: {
+          Page: page,
+          PageSize: pageSize,
+        },
+      }),
+      
+      providesTags: ['Products'],
+    }),
+
+    getProductsCategoryIdPage: builder.query({
+      query: ({ categoryId, page, pageSize }) => ({
+        url: `/api/v1/Products/category/${categoryId}/paginated`,
+        method: 'GET',
+        params: {
+          Page: page,
+          PageSize: pageSize,
+        },
+      }),
+      providesTags: ['Products'],
+    }),
+
+    // Get products by category slug
+    getProductsCategorySlugPage: builder.query({
+      query: ({ categorySlug, page, pageSize }) => ({
+        url: `/api/v1/Products/category/slug/${categorySlug}/paginated`,
+        method: 'GET',
+        params: {
+          Page: page,
+          PageSize: pageSize,
+        },
+      }),
+      providesTags: ['Products'],
+    }),
+
+    // Get products by brand
+    getProductsBrandPage: builder.query({
+      query: ({ brandSlug, page, pageSize }) => ({
+        url: `/api/v1/Products/brand/${brandSlug}/paginated`,
+        method: 'GET',
+        params: {
+          Page: page,
+          PageSize: pageSize,
+        },
+      }),
+      providesTags: ['Products'],
+    }),
+
+    // Get hot deals
+    getHotDealsPage: builder.query({
+      query: ({ page, pageSize }) => ({
+        url: '/api/v1/Products/hot-deals/paginated',
+        method: 'GET',
+        params: {
+          Page: page,
+          PageSize: pageSize,
+        },
+      }),
+      providesTags: ['Products'],
+    }),
+
+    // Search products
+    searchProductsPage: builder.query({
+      query: ({ searchTerm, page, pageSize }) => ({
+        url: '/api/v1/Products/search/paginated',
+        method: 'GET',
+        params: {
+          SearchTerm: searchTerm,
+          Page: page,
+          PageSize: pageSize,
+        },
+      }),
+      providesTags: ['Products'],
+    }),
+
+    // Get recommended products
+    getRecommendedPage: builder.query({
+      query: ({ productId, categoryId, limit, page, pageSize }) => ({
+        url: '/api/v1/Products/recommendations/paginated',
+        method: 'GET',
+        params: {
+          ProductId: productId,
+          CategoryId: categoryId,
+          Limit: limit,
+          Page: page,
+          PageSize: pageSize,
+        },
+      }),
+      providesTags: ['Products'],
+    }),
+
     
 
     getProduct: builder.query({
@@ -498,7 +592,7 @@ export const API = createApi({
     }),
 
     searchProducts: builder.query({
-      query: ({
+      query: ({ 
         q
       }) => ({
         url: '/api/v1/Products/global-search',
@@ -1262,6 +1356,13 @@ export const {
   useGetCategoryQuery,
 
   useGetProductsQuery,
+  useGetProductsPaginatedQuery,
+  useGetProductsCategoryIdPageQuery,
+  useGetProductsCategorySlugPageQuery,
+  useGetProductsBrandPageQuery,
+  useGetHotDealsPageQuery,
+  useSearchProductsPageQuery,
+  useGetRecommendedPageQuery,
   useGetHotDealsQuery,
   useGetRecommendedQuery,
   useGetProductsCategorySlugQuery,

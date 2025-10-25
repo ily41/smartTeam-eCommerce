@@ -43,7 +43,7 @@ const SearchDropdown = ({
   t,
   width 
 }) => {
-  const navigate = useNavigate();
+  
 
   // Empty state - before typing
   if (searchQuery.length === 0 || searchQuery.length === 1) {

@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router'
 import { Search, X } from 'lucide-react';
 import { SearchContext } from '../../router/Context';
 import { useSearchProductsQuery } from "../../store/API";
-import MobileSearchDropdown from './MobileSearchDropdown'; // Import the new component
+import MobileSearchDropdown from './MobileSearchDropdown';
 
 const SearchUI = () => {
   const navigate = useNavigate();
@@ -23,6 +23,28 @@ const SearchUI = () => {
       skip: searchQuery.length < 2,
     }
   );
+
+  
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (searchDropdownRef.current && !searchDropdownRef.current.contains(event.target)) {
+        // Optional: close on outside click
+      }
+    }
+
+    if (searchOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      // Prevent background scrolling on mobile
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      // Restore scrolling when closed
+      document.body.style.overflow = 'unset';
+    };
+  }, [searchOpen, setSearchOpen]);
+  
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -73,24 +95,23 @@ const SearchUI = () => {
     setSearchQuery('');
   };
 
-  const handleCategoryClick = (categoryId, categoryName) => {
-    const slug = categoryName.toLowerCase().replace(/\s+/g, '-');
-    navigate(`/products?category=${slug}`);
+  const handleCategoryClick = (categorySlug, categoryName) => {
+    navigate(`/products?category=${categorySlug}`);
     setSearchOpen(false);
     setSearchQuery('');
   };
 
-  const handleBrandClick = (brandId, brandName) => {
-    navigate(`/products?brand=${brandId}`);
+  const handleBrandClick = (brandSlug, brandName) => {
+    navigate(`/products/brand/${brandName}`);
     setSearchOpen(false);
     setSearchQuery('');
   };
-
   const handleViewAllClick = () => {
-    const query = searchQuery;
-    setSearchQuery('');
-    setSearchOpen(false);
+    console.log("works")
+    const query = encodeURIComponent(searchQuery);
     navigate(`/products?search=${query}`);
+    setSearchOpen(false);
+    setSearchQuery('');
   };
 
   return (
@@ -128,7 +149,7 @@ const SearchUI = () => {
 
       {/* Mobile Search Dropdown - Full Screen Overlay */}
       {searchOpen && (
-        <div className="search-results-container fixed inset-0 bg-white z-50 overflow-y-auto">
+        <div className="search-results-container fixed inset-0 bg-white z-5000 overflow-y-auto">
           <div className="p-4">
             {/* Mobile Search Header */}
             <div className="flex items-center gap-3 mb-4">

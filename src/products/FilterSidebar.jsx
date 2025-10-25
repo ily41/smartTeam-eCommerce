@@ -1,18 +1,31 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useFilterProductsMutation, useGetCategoriesQuery, useGetCategoryFiltersQuery, useGetFiltersQuery, useGetParentCategoriesQuery } from '../store/API';
 
-export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, currentPage, pageSize, forcedCategoryId = null, showCategory = false }) {
-  console.log('showCategory prop:', showCategory);
+export const FilterSidebar = React.memo(({ 
+  onFilterResults, 
+  onLoadingChange, 
+  currentSort, 
+  currentPage, 
+  isHotDeals, 
+  isRecommended, 
+  isBrand, 
+  isSearch,      
+  setCurrentPage, 
+  pageSize, 
+  forcedCategoryId = null, 
+  showCategory = false 
+}) => {
+  
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [selectedFilters, setSelectedFilters] = useState({});
+  
   const { data: categories, isLoading: isCategoriesLoading } = useGetCategoriesQuery();
   const { data: ParentCat, isLoading: isParentCatLoading } = useGetParentCategoriesQuery();
   const { data: customFilters, isLoading: isCustomLoading } = useGetFiltersQuery();
-  
   const [filterProducts, { isLoading: isFiltering }] = useFilterProductsMutation();
   
   const hasFiltersApplied = useRef(false);
@@ -31,8 +44,8 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
   const filtersToShow = activeCategoryId && categoryFilters ? categoryFilters : customFilters;
   const isFiltersLoading = activeCategoryId ? isCategoryFiltersLoading : isCustomLoading;
 
-  // Memoize buildActiveFilters to prevent recreating on every render
-  const buildActiveFilters = useMemo(() => {
+  // Memoize buildActiveFilters function - don't include it in dependencies
+  const buildActiveFilters = useCallback(() => {
     const activeFilters = [];
     
     // Add category filters only if shown
@@ -112,10 +125,12 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
         }
       });
       
-      setSelectedFilters(prev => ({
-        ...prev,
-        ...initialFilters
-      }));
+      if (Object.keys(initialFilters).length > 0) {
+        setSelectedFilters(prev => ({
+          ...prev,
+          ...initialFilters
+        }));
+      }
     }
   }, [filtersToShow]);
 
@@ -125,20 +140,23 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
     }
   }, [activeCategoryId]);
 
-  const toggleShowAll = () => {
+  const toggleShowAll = useCallback(() => {
     setShowAllCategories(prev => !prev);
-  };
+  }, []);
 
-  const handleCategoryChange = (categoryId) => {
+  const handleCategoryChange = useCallback((categoryId) => {
+    setCurrentPage(1);
     setSelectedCategories(prev => {
       if (prev.includes(categoryId)) {
         return prev.filter(id => id !== categoryId);
       }
       return [categoryId];
     });
-  };
+  }, [setCurrentPage]);
 
-  const handleFilterChange = (isChecked, filterId, optionId) => {
+  const handleFilterChange = useCallback((isChecked, filterId, optionId) => {
+    setCurrentPage(1);
+
     setSelectedFilters(prev => {
       const updatedFilters = { ...prev };
       
@@ -154,7 +172,7 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
 
       if (isChecked) {
         if (!updatedFilters[filterId].filterOptionIds.includes(optionId)) {
-          updatedFilters[filterId].filterOptionIds.push(optionId);
+          updatedFilters[filterId].filterOptionIds = [...updatedFilters[filterId].filterOptionIds, optionId];
         }
       } else {
         updatedFilters[filterId].filterOptionIds = updatedFilters[filterId].filterOptionIds.filter(
@@ -164,9 +182,9 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
 
       return updatedFilters;
     });
-  };
+  }, [setCurrentPage]);
 
-  const buildFilterCriteria = () => {
+  const buildFilterCriteria = useCallback(() => {
     const criteria = [];
     
     Object.values(selectedFilters).forEach(filter => {
@@ -182,9 +200,9 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
     });
     
     return criteria;
-  };
+  }, [selectedFilters]);
 
-  const hasActiveFilters = () => {
+  const hasActiveFilters = useCallback(() => {
     const hasCategories = showCategory && selectedCategories.length > 0;
     const hasPrice = minPrice || maxPrice;
     const hasCustomFilters = Object.values(selectedFilters).some(filter => 
@@ -197,7 +215,7 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
     const hasSort = currentSort;
 
     return hasCategories || hasPrice || hasCustomFilters || hasForcedCategory || hasSort;
-  };
+  }, [showCategory, selectedCategories, minPrice, maxPrice, selectedFilters, forcedCategoryId, currentSort]);
 
   // Separate effect for filter criteria changes (excludes currentPage)
   useEffect(() => {
@@ -225,17 +243,21 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
 
       const filterCriteria = buildFilterCriteria();
       const categoryIdToUse = forcedCategoryId || (selectedCategories.length > 0 ? selectedCategories[0] : null);
-
       const filterPayload = {
-        categoryId: categoryIdToUse,
+        categoryId: categoryIdToUse || null,
+        brandSlug: isBrand || null,
+        isHotDeal: isHotDeals || null,
+        isRecommended: isRecommended || null,
+        searchTerm: isSearch || null,
         filterCriteria: filterCriteria.length > 0 ? filterCriteria : [],
         minPrice: minPrice ? parseFloat(minPrice) : null,
-        maxPrice: maxPrice ? parseFloat(maxPrice) : null,
-        sortBy: currentSort?.split("_")[0],
-        sortOrder: currentSort?.split("_")[1],
-        page: 1, // Always reset to page 1 when filters change
+        maxPrice: maxPrice ? parseFloat(maxPrice) : 1000000,
+        sortBy: currentSort?.split("_")[0] || null,
+        sortOrder: currentSort?.split("_")[1] || null,
+        page: 1,
         pageSize: pageSize || 20
       };
+      console.log(filterPayload)
     
       if (onLoadingChange) {
         onLoadingChange(true); 
@@ -243,14 +265,11 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
     
       try {
         const result = await filterProducts(filterPayload).unwrap();
-        console.log(result);
 
         if (onFilterResults) {
-          onFilterResults(result, buildActiveFilters);
+          onFilterResults(result, buildActiveFilters());
         }
       } catch (error) {
-        console.error('Failed to filter products:', error);
-
         if (onFilterResults) {
           onFilterResults({ products: [], totalCount: 0 }, []);
         }
@@ -266,7 +285,7 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
         clearTimeout(debounceTimer.current);
       }
     };
-  }, [selectedCategories, selectedFilters, minPrice, maxPrice, currentSort, forcedCategoryId]);
+  }, [selectedCategories, selectedFilters, minPrice, maxPrice, currentSort, forcedCategoryId, isHotDeals, isBrand, isSearch, pageSize]);
 
   // Separate effect for page changes only (no debounce)
   useEffect(() => {
@@ -280,6 +299,9 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
 
       const filterPayload = {
         categoryId: categoryIdToUse,
+        brandSlug: isBrand,
+        isHotDeal: isHotDeals,
+        searchTerm: isSearch,
         filterCriteria: filterCriteria.length > 0 ? filterCriteria : [],
         minPrice: minPrice ? parseFloat(minPrice) : null,
         maxPrice: maxPrice ? parseFloat(maxPrice) : null,
@@ -295,14 +317,11 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
     
       try {
         const result = await filterProducts(filterPayload).unwrap();
-        console.log(result);
 
         if (onFilterResults) {
-          onFilterResults(result, buildActiveFilters);
+          onFilterResults(result, buildActiveFilters());
         }
       } catch (error) {
-        console.error('Failed to filter products:', error);
-
         if (onFilterResults) {
           onFilterResults({ products: [], totalCount: 0 }, []);
         }
@@ -315,6 +334,16 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
 
     applyFiltersWithNewPage();
   }, [currentPage, pageSize]);
+
+  const handleMinPriceChange = useCallback((e) => {
+    setCurrentPage(1);
+    setMinPrice(e.target.value);
+  }, [setCurrentPage]);
+
+  const handleMaxPriceChange = useCallback((e) => {
+    setCurrentPage(1);
+    setMaxPrice(e.target.value);
+  }, [setCurrentPage]);
 
   if (isCategoriesLoading) {
     return (
@@ -349,7 +378,7 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
                   <label key={item.id} className="flex items-center space-x-2 cursor-pointer">
                     <input 
                       type="checkbox" 
-                      className="w-4 h-4 text-red-500 border-gray-300 rounded focus:ring-red-500"
+                      className="w-4 h-4 text-red-500 cursor-pointer border-gray-300 rounded focus:ring-red-500"
                       checked={selectedCategories.includes(item.id)}
                       onChange={() => handleCategoryChange(item.id)}
                     />
@@ -395,7 +424,7 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
                   <label key={option.id} className="flex items-center space-x-2 cursor-pointer">
                     <input 
                       type="checkbox" 
-                      className="w-4 h-4 text-red-500 border-gray-300 rounded focus:ring-red-500"
+                      className="w-4 h-4 text-red-500 cursor-pointer border-gray-300 rounded focus:ring-red-500"
                       checked={selectedFilters[filter.id]?.filterOptionIds?.includes(option.id) || false}
                       onChange={(e) => {
                         handleFilterChange(e.target.checked, filter.id, option.id);
@@ -422,7 +451,7 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
               type="number"
               placeholder="Min"
               value={minPrice}
-              onChange={(e) => setMinPrice(e.target.value)}
+              onChange={handleMinPriceChange}
               className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
               min="0"
             />
@@ -431,7 +460,7 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
               type="number"
               placeholder="Max"
               value={maxPrice}
-              onChange={(e) => setMaxPrice(e.target.value)}
+              onChange={handleMaxPriceChange}
               className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
               min="0"
             />
@@ -447,4 +476,4 @@ export function FilterSidebar({ onFilterResults, onLoadingChange, currentSort, c
       )}
     </div>
   );
-}
+});

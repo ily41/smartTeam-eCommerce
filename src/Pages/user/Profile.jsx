@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router';
 import { LogIn } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
 
 const Profile = () => {
   const { t } = useTranslation();
@@ -23,6 +24,7 @@ const Profile = () => {
   });
 
   const roleNames = {
+    0: 'Admin Role',
     1: t('profile.normalUser'),
     2: t('profile.retail'),
     3: t('profile.wholesale'),
@@ -161,12 +163,10 @@ const Profile = () => {
       console.error('Failed to change password:', error);
     }
   };
-
   const handleLogout = async () => {
     try {
       await logout().unwrap();
       document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-
       toast.success(t('profile.loggedOutSuccess'));
       navigate('/login'); 
     } catch (error) {

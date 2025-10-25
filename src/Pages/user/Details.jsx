@@ -21,62 +21,11 @@ import SimilarProducts from '../../components/UI/SimilarRecommendedProducts';
 import QuickOrderModal from '../../components/UI/QuickOrderModal';
 import CartUtils from '../../components/UI/CartUtils';
 import AuthUtils from '../../components/UI/AuthUtils';
+import UnauthorizedModal from '../../components/UI/UnauthorizedModal';
 
 
 // Unauthorized Modal Component
-const UnauthorizedModal = ({ isOpen, onClose, action }) => {
-  const navigate = useNavigate();
-  
-  if (!isOpen) return null;
 
-  return (
-    <>
-      <div 
-        className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-        onClick={onClose}
-      >
-        <div 
-          className="bg-white rounded-lg max-w-md w-full p-6 shadow-xl"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="text-center">
-            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-              <LogIn className="h-6 w-6 text-red-600" />
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Sign In Required
-            </h3>
-            <p className="text-sm text-gray-600 mb-6">
-              You need to be logged in to {action || 'perform this action'}. Please sign in or create an account to continue.
-            </p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => navigate('/login')}
-                className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2.5 px-4 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
-              >
-                <LogIn className="w-4 h-4" />
-                Sign In
-              </button>
-              <button
-                onClick={() => navigate('/register')}
-                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-900 py-2.5 px-4 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
-              >
-                <UserPlus className="w-4 h-4" />
-                Sign Up
-              </button>
-            </div>
-            <button
-              onClick={onClose}
-              className="mt-4 text-sm text-gray-500 hover:text-gray-700 transition-colors"
-            >
-              Continue browsing
-            </button>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-};
 
 
 
@@ -545,7 +494,7 @@ function Details() {
     
     return (
   <>
-    <UnauthorizedModal 
+    <UnauthorizedModal
       isOpen={showUnauthorizedModal} 
       onClose={() => setShowUnauthorizedModal(false)}
       action={unauthorizedAction}
@@ -905,9 +854,11 @@ function Details() {
                   <div className="flex items-center gap-3">
                     {console.log(product.prices)}
                     {console.log(product)}
-                    <span className="text-3xl font-bold text-red-500">{me ? product?.prices[me?.role].discountedPrice : product?.prices[2].discountedPrice} AZN</span> /////////
+                    {console.log(me?.role )
+                    }
+                    <span className="text-3xl font-bold text-red-500">{me ? product?.prices[me?.role - 1]?.discountedPrice : product?.prices[0].discountedPrice} AZN</span> 
                      {/*{product?.prices && me?.role !== undefined && (
-                      (() => {
+                      (() => { 
                         const currentPrice = product.prices.find(p => p.userRole === me.role);
                       
                         if (!currentPrice) return null;
