@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Heart, Check } from 'lucide-react';
-import { Link, useNavigate } from 'react-router';
+import { Link } from 'react-router';
 import { useGetFavoriteStatusQuery } from '../store/API';
-
-
-
+import { translateDynamicField } from '../i18n'; // your dynamic translation helper
+import { useTranslation } from 'react-i18next';
 
 export function ProductCard({
   col,
@@ -15,15 +14,34 @@ export function ProductCard({
   toggleFavorite,
   isFavorite = false
 }) {
-  const { url, name, priceOriginal, price, id, description, discountPercentage, isHotDeal } = info;
+  const { id, url, name: originalName, description: originalDescription, priceOriginal, price, discountPercentage, isHotDeal } = info;
   const [localFavorite, setLocalFavorite] = useState(isFavorite);
   const [isTogglingFavorite, setIsTogglingFavorite] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
-  const { data: favoriteStatus } = useGetFavoriteStatusQuery({ productId: info.id });
-  
-
+  const [name, setName] = useState(originalName);
+  const [description, setDescription] = useState(originalDescription);
+  const { data: favoriteStatus } = useGetFavoriteStatusQuery({ productId: id });
+  const { i18n } = useTranslation();
 
   const hasDiscount = priceOriginal && price && priceOriginal > price;
+
+  // Translate dynamic fields on language change
+  useEffect(() => {
+  async function translateFields() {
+    const targetLang = i18n.language;
+    // Only translate AZ → EN
+    if (targetLang === "en") {
+      setName(await translateDynamicField(originalName, targetLang));
+      setDescription(await translateDynamicField(originalDescription, targetLang));
+    } else {
+      // AZ default
+      setName(originalName);
+      setDescription(originalDescription);
+    }
+  }
+  translateFields();
+}, [i18n.language, originalName, originalDescription]);
+
 
   useEffect(() => {
     if (justAdded) {
@@ -41,20 +59,15 @@ export function ProductCard({
     }
   };
 
-  
-
   const handleFavoriteClick = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    
     if (isTogglingFavorite || !toggleFavorite) return;
-    
-    
+
     try {
-       
       await toggleFavorite(id);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
 
@@ -62,19 +75,15 @@ export function ProductCard({
     // Column layout (grid view)
     return (
       <div className="bg-white rounded-xl shadow-sm border flex flex-col justify-between border-gray-200 overflow-hidden relative">
-
         <Link to={`/details/${id}`} className="block">
           <div className="aspect-square p-4 relative">
             <img
               src={`https://smartteamaz-001-site1.qtempurl.com${url}`}
               alt={name || 'Product'}
               className="w-full h-full object-contain"
-              onError={(e) => {
-                e.target.src = '/Icons/logo.svg';
-              }}
+              onError={(e) => { e.target.src = '/Icons/logo.svg'; }}
             />
-            
-            {/* Badges */}
+
             {isHotDeal && (
               <div className="absolute top-2 right-2 bg-[#E60C03] text-white text-xs px-2 py-1 rounded font-semibold">
                 Hot Deal
@@ -88,7 +97,7 @@ export function ProductCard({
           </div>
         </Link>
 
-        <div className="p-4 ">
+        <div className="p-4 relative">
           <button
             onClick={handleFavoriteClick}
             disabled={isTogglingFavorite}
@@ -98,7 +107,6 @@ export function ProductCard({
               className={`w-5 h-5 transition-colors text-red-500 hover:fill-red-400 cursor-pointer ${
                 favoriteStatus?.isFavorite && 'fill-red-500'
               }`}
-
             />
           </button>
 
@@ -111,19 +119,13 @@ export function ProductCard({
                 {description}
               </p>
             )}
-            
-            {/* Price Display - Always show both prices */}
+
             <div className="flex items-center gap-2 mt-2 flex-wrap">
-              <p className="text-xl font-bold text-[#E60C03]">
-                {price} ₼
-              </p>
+              <p className="text-xl font-bold text-[#E60C03]">{price} ₼</p>
               {hasDiscount && (
-                <p className="text-sm text-gray-400 line-through">
-                  {priceOriginal} ₼
-                </p>
+                <p className="text-sm text-gray-400 line-through">{priceOriginal} ₼</p>
               )}
             </div>
-            
             {hasDiscount && (
               <p className="text-xs text-green-600 font-medium mt-1">
                 Save {(priceOriginal - price).toFixed(2)} ₼
@@ -157,16 +159,14 @@ export function ProductCard({
   } else {
     // Row layout (list view)
     return (
-      <>
-        <Link
+      <Link
         to={`/details/${id}`}
         className="border border-[#dbdbdb] rounded-xl p-4 bg-white flex items-center gap-6 relative"
       >
-        {/* Product Image */}
         <div className="flex-shrink-0 h-full w-full max-w-[150px] relative">
           <img
             src={`https://smartteamaz-001-site1.qtempurl.com${url}`}
-            alt={name || "Product"}
+            alt={name || 'Product'}
             className="max-w-[150px] object-cover aspect-square w-full h-full rounded-lg"
             onError={(e) => {
               e.currentTarget.src = "/Icons/logo.svg";
@@ -174,8 +174,7 @@ export function ProductCard({
                 "object-contain aspect-square w-full h-full rounded-lg";
             }}
           />
-          
-          {/* Badges on image */}
+
           {hasDiscount && discountPercentage > 0 && (
             <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-semibold">
               -{discountPercentage}%
@@ -188,32 +187,15 @@ export function ProductCard({
           )}
         </div>
 
-        {/* Product Info */}
         <div className="flex flex-col flex-1 space-y-4">
           <div className="flex justify-between items-start">
             <div className="flex-1">
               <h2 className="text-2xl font-semibold">{name}</h2>
               {description && (
-                <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                  {description}
-                </p>
+                <p className="text-sm text-gray-600 mt-1 line-clamp-2">{description}</p>
               )}
-              
-              {/* Price Display - Always show both prices */}
               <div className="flex items-center gap-3 mt-3 flex-wrap">
-                <p className="text-2xl font-bold text-[#E60C03]">
-                  {price} ₼
-                </p>
-                {/* {hasDiscount && (
-                  <>
-                    <p className="text-lg text-gray-400 line-through">
-                      {priceOriginal} ₼
-                    </p>
-                    <span className="text-sm text-green-600 font-medium bg-green-50 px-2 py-1 rounded">
-                      Save {(priceOriginal - price).toFixed(2)} ₼
-                    </span>
-                  </>
-                )} */}
+                <p className="text-2xl font-bold text-[#E60C03]">{price} ₼</p>
               </div>
             </div>
 
@@ -223,9 +205,8 @@ export function ProductCard({
               className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Heart
-                className={`w-6 h-6 transition-colors text-red-500 hover:fill-red-400  cursor-pointer ${
-                  favoriteStatus?.isFavorite
-                    && 'fill-red-500 '
+                className={`w-6 h-6 transition-colors text-red-500 hover:fill-red-400 cursor-pointer ${
+                  favoriteStatus?.isFavorite && 'fill-red-500'
                 }`}
               />
             </button>
@@ -252,9 +233,7 @@ export function ProductCard({
             )}
           </button>
         </div>
-        </Link>
-        
-      </>
+      </Link>
     );
   }
 }
