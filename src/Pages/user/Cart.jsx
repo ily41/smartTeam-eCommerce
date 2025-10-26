@@ -178,7 +178,7 @@ const Cart = () => {
   const { data: cartItemsD, isLoading: apiLoading, isError } = useGetCartItemsQuery(undefined, {
     skip: !isAuthenticated
   });
-
+  
   
   const { data: me } = useGetMeQuery();
   const [updateCartItemQuantity] = useUpdateCartItemQuantityMutation();
@@ -374,6 +374,7 @@ const Cart = () => {
     }
   }, [getEffectiveQuantity, handleQuantityChange]);
 
+  console.log(cartItems)
   // Handle remove item
   const handleRemoveItem = async (id) => {
     try {
@@ -639,7 +640,7 @@ const Cart = () => {
                 <div className="border-t lg:border-none border-gray-200 pt-4 space-y-3">
                   <div className="flex justify-between text-gray-600 text-lg">
                     <span>{t('subtotal')}:</span>
-                    <span>{(translatedCartItems || cartItems)?.totalAmount?.toFixed(2)} AZN</span>
+                    <span>{(translatedCartItems || cartItems)?.totalPriceBeforeDiscount?.toFixed(2)} AZN</span>
                   </div>
                   <div className="flex justify-between text-red-500 text-lg">
                     <span>{t('discount')}:</span>
@@ -647,7 +648,7 @@ const Cart = () => {
                   </div>
                   <div className="flex justify-between text-lg mb-7 font-bold text-gray-900 pt-2 border-t border-gray-200">
                     <span>{t('total')}:</span>
-                    <span>{(((translatedCartItems || cartItems)?.totalAmount || 0) - ((translatedCartItems || cartItems)?.totalDiscount || 0)).toFixed(2)} AZN</span>
+                    <span>{(((translatedCartItems || cartItems)?.totalAmount || 0)).toFixed(2)} AZN</span>
                   </div>
                 </div>
 
