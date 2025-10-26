@@ -170,10 +170,10 @@ const Cart = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [localCart, setLocalCart] = useState({ items: [], totalAmount: 0 });
   
-  // API hooks - only used when authenticated
   const { data: cartItemsD, isLoading: apiLoading, isError } = useGetCartItemsQuery(undefined, {
     skip: !isAuthenticated
   });
+  console.log(cartItemsD)
 
   
   const { data: me } = useGetMeQuery();
@@ -615,7 +615,7 @@ const Cart = () => {
                   </div>
                   <div className="flex justify-between text-lg mb-7 font-bold text-gray-900 pt-2 border-t border-gray-200">
                     <span>{t('total')}:</span>
-                    <span>{((cartItems?.totalAmount || 0) - (cartItems?.totalDiscount || 0)).toFixed(2)} AZN</span>
+                    <span>{((cartItems?.totalAmount || 0)).toFixed(2)} AZN</span>
                   </div>
                 </div>
 

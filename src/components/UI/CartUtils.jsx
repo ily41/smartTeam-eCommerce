@@ -61,13 +61,13 @@ const CartUtils = {
             productSku: product.sku,
             productDescription: product.shortDescription || product.description,
             productImageUrl: product.primaryImageUrl || product.images ?.[0]?.imageUrl || '',
-            quantity,
+            quantity,   
+            // totalDiscount: product.prices[0].,
             unitPrice: this.getProductPrice(product),
             totalPrice: this.getProductPrice(product) * quantity,
             createdAt: new Date().toISOString(),
         };
 
-        // Check if product already exists
         const existingItemIndex = cart.items.findIndex(
             (item) => item.productId === product.id
         );
