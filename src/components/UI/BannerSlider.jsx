@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useGetBannersQuery, useGetCategoriesQuery, useGetParentCategoriesQuery } from '../../store/API';
+import { useTranslation } from 'react-i18next';
+import { translateDynamicField } from '../../i18n';
 
 const BannerSlider = () => {
-
-
-
+  const { i18n } = useTranslation();
   const { data: bannersD, isBannersLoading,  } = useGetBannersQuery();
   const navigate = useNavigate();
 
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true)
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  
+  // Dynamic translation states
+  const [translatedBanners, setTranslatedBanners] = useState([]);
   useEffect(() => {
     if (!isAutoPlaying) return;
 
@@ -36,6 +39,29 @@ const BannerSlider = () => {
   const handleMouseEnter = () => setIsAutoPlaying(false);
   const handleMouseLeave = () => setIsAutoPlaying(true);
 
+  // Dynamic translation effect
+  useEffect(() => {
+    async function translateBanners() {
+      if (!bannersD || bannersD.length === 0) return;
+      
+      const targetLang = i18n.language;
+      if (targetLang === 'en') {
+        const translated = await Promise.all(
+          bannersD.map(async (banner) => ({
+            ...banner,
+            title: await translateDynamicField(banner.title, targetLang),
+            description: await translateDynamicField(banner.description, targetLang),
+            buttonText: await translateDynamicField(banner.buttonText, targetLang)
+          }))
+        );
+        setTranslatedBanners(translated);
+      } else {
+        setTranslatedBanners(bannersD);
+      }
+    }
+    translateBanners();
+  }, [i18n.language, bannersD]);
+
   return (
     <div className='w-full h-full '>
         <div 
@@ -48,7 +74,7 @@ const BannerSlider = () => {
         className="flex transition-transform duration-500 h-full ease-in-out "
         style={{ transform: `translateX(-${currentSlide * 100}%)` }}
       >
-        {bannersD?.map((banner, index) => {
+        {(translatedBanners.length > 0 ? translatedBanners : bannersD)?.map((banner, index) => {
           return (
           <div onClick={() => navigate(`${banner.linkUrl}`)} key={banner.id} className="w-full cursor-pointer flex-shrink-0 h-full   relative">
             <img 

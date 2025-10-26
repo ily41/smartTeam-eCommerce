@@ -9,6 +9,7 @@ import { Loader2 } from 'lucide-react'
 import { toast } from 'react-toastify'
 import InfiniteBrandSlider from '../UI/BrandSlider'
 import { useTranslation } from 'react-i18next'
+import { translateDynamicField } from '../../i18n'
 
 // Skeleton Components
 const CategorySkeleton = () => (
@@ -56,7 +57,11 @@ const Home = () => {
     const { data: hotDeals, isLoading, error, refetch } = useGetHotDealsQuery({});
     const { data: recommended, isLoading: isRecommendedLoading } = useGetRecommendedQuery({limit: 10});
     const [addCartItem, { isLoading: isAddingToCart, error: cartError }] = useAddCartItemMutation();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    
+    // Dynamic translation states
+    const [translatedParentCategories, setTranslatedParentCategories] = useState([]);
+    const [translatedSubCategories, setTranslatedSubCategories] = useState([]);
     const scrollRef = useRef(null);
     const [isDragging, setIsDragging] = useState(false);
     const [startX, setStartX] = useState(0);
@@ -145,6 +150,54 @@ const Home = () => {
        ? parentCategories?.find(cat => cat.id === hoveredCategorie)?.subCategories 
        : null;
 
+    // Dynamic translation effect for parent categories
+    useEffect(() => {
+      async function translateParentCategories() {
+        if (!parentCategories || parentCategories.length === 0) return;
+        
+        const targetLang = i18n.language;
+        if (targetLang === 'en') {
+          const translated = await Promise.all(
+            parentCategories.map(async (category) => ({
+              ...category,
+              name: await translateDynamicField(category.name, targetLang),
+              subCategories: category.subCategories ? await Promise.all(
+                category.subCategories.map(async (subCategory) => ({
+                  ...subCategory,
+                  name: await translateDynamicField(subCategory.name, targetLang)
+                }))
+              ) : category.subCategories
+            }))
+          );
+          setTranslatedParentCategories(translated);
+        } else {
+          setTranslatedParentCategories(parentCategories);
+        }
+      }
+      translateParentCategories();
+    }, [i18n.language, parentCategories]);
+
+    // Dynamic translation effect for sub categories
+    useEffect(() => {
+      async function translateSubCategories() {
+        if (!subCategories || subCategories.length === 0) return;
+        
+        const targetLang = i18n.language;
+        if (targetLang === 'en') {
+          const translated = await Promise.all(
+            subCategories.map(async (subCategory) => ({
+              ...subCategory,
+              name: await translateDynamicField(subCategory.name, targetLang)
+            }))
+          );
+          setTranslatedSubCategories(translated);
+        } else {
+          setTranslatedSubCategories(subCategories);
+        }
+      }
+      translateSubCategories();
+    }, [i18n.language, subCategories]);
+
 
     const handleAddToCart = async (id) => {
         if (!id) {
@@ -213,7 +266,7 @@ const Home = () => {
                     ))}
                   </>
                 ) : (
-                  parentCategories?.map((item) => {
+                  (translatedParentCategories.length > 0 ? translatedParentCategories : parentCategories)?.map((item) => {
                     {console.log(item)}
                     return (
                       <Link 
@@ -252,8 +305,8 @@ const Home = () => {
                       ) : (
                         <div className='w-full p-8 py-10 animate-fadeIn'>
                           <h1 className='text-2xl font-bold text-gray-800 mb-8 pb-4 border-b-2 border-[#E60C03] animate-slideDown'>{hoveredName}</h1>
-                          <div className={`grid ${subCategories?.length <= 3 ? 'grid-cols-1' : subCategories?.length <= 6 ? 'grid-cols-2' : 'grid-cols-3'} gap-4`}>
-                            {subCategories?.map((item, index) => {
+                          <div className={`grid ${(translatedSubCategories.length > 0 ? translatedSubCategories : subCategories)?.length <= 3 ? 'grid-cols-1' : (translatedSubCategories.length > 0 ? translatedSubCategories : subCategories)?.length <= 6 ? 'grid-cols-2' : 'grid-cols-3'} gap-4`}>
+                            {(translatedSubCategories.length > 0 ? translatedSubCategories : subCategories)?.map((item, index) => {
                               return (
                                 <Link 
                                   key={item.id}

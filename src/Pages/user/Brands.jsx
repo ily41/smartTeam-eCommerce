@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router';
 import { useGetBrandsAdminQuery } from '../../store/API';
+import { useTranslation } from 'react-i18next';
+import { translateDynamicField } from '../../i18n';
 
 // Skeleton Components
 const BrandCardSkeleton = () => (
@@ -71,13 +73,40 @@ const SkeletonLoader = () => (
 );
 
 const Brands = () => {
+  const { t, i18n } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLetter, setSelectedLetter] = useState('All');
   const { data: brandsD, isLoading, error, refetch } = useGetBrandsAdminQuery();
+  
+  // Dynamic translation states
+  const [translatedBrands, setTranslatedBrands] = useState([]);
+  
   console.log(brandsD);
 
+  // Dynamic translation effect
+  useEffect(() => {
+    async function translateBrands() {
+      if (!brandsD || brandsD.length === 0) return;
+      
+      const targetLang = i18n.language;
+      if (targetLang === 'en') {
+        const translated = await Promise.all(
+          brandsD.map(async (brand) => ({
+            ...brand,
+            name: await translateDynamicField(brand.name, targetLang)
+          }))
+        );
+        setTranslatedBrands(translated);
+      } else {
+        setTranslatedBrands(brandsD);
+      }
+    }
+    translateBrands();
+  }, [i18n.language, brandsD]);
+
   // Transform API data to include all necessary properties
-  const brands = brandsD?.map(brand => ({
+  const currentBrands = translatedBrands.length > 0 ? translatedBrands : brandsD;
+  const brands = currentBrands?.map(brand => ({
     name: brand?.name || "Brand",
     logo: brand?.logoUrl 
       ? `https://smartteamaz-001-site1.qtempurl.com${brand.logoUrl}` 
@@ -109,13 +138,13 @@ const Brands = () => {
                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
               </svg>
             </div>
-            <h3 className='text-xl font-semibold text-gray-900 mb-2'>Error Loading Brands</h3>
-            <p className='text-[#505050] mb-4'>We couldn't load the brands. Please try again.</p>
+            <h3 className='text-xl font-semibold text-gray-900 mb-2'>{t('brandsSection.errorTitle')}</h3>
+            <p className='text-[#505050] mb-4'>{t('brandsSection.errorMessage')}</p>
             <button 
               onClick={() => refetch()}
               className='bg-[#E60C03] text-white px-6 py-2 rounded-lg hover:bg-[#c00a02] transition-colors'
             >
-              Retry
+              {t('brandsSection.retry')}
             </button>
           </div>
         </div>
@@ -135,7 +164,7 @@ const Brands = () => {
             <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400' size={20} />
             <input
               type='text'
-              placeholder='Search brands...'
+              placeholder={t('brandsSection.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className='w-full pl-10 pr-4 py-3 border border-[#dee2e6] rounded-lg focus:outline-none focus:border-[#E60C03] transition-colors'
@@ -148,7 +177,7 @@ const Brands = () => {
         {/* Brands Count */}
         <div className='mb-6'>
           <p className='text-[#505050]'>
-            Showing <span className='font-semibold text-black'>{filteredBrands.length}</span> brands
+            {t('brandsSection.showing')} <span className='font-semibold text-black'>{filteredBrands.length}</span> {t('brandsSection.brandCountLabel')}
           </p>
         </div>
 

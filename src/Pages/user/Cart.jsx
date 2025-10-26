@@ -6,6 +6,7 @@ import { Link, useParams } from 'react-router';
 import { useGetCartItemsQuery, useUpdateCartItemQuantityMutation, useRemoveCartItemMutation, useRemoveCartMutation, useGetMeQuery, useCreateWhatsappOrderMutation } from '../../store/API';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
+import { translateDynamicField } from '../../i18n';
 
 
 
@@ -166,9 +167,12 @@ const EmptyCartSkeleton = () => (
 );
 
 const Cart = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [localCart, setLocalCart] = useState({ items: [], totalAmount: 0 });
+  
+  // Dynamic translation states
+  const [translatedCartItems, setTranslatedCartItems] = useState(null);
   
   // API hooks - only used when authenticated
   const { data: cartItemsD, isLoading: apiLoading, isError } = useGetCartItemsQuery(undefined, {
@@ -214,6 +218,33 @@ const Cart = () => {
   const cartItems = isAuthenticated ? cartItemsD : localCart;
   const isLoading = isAuthenticated ? apiLoading : false;
   console.log(cartItems)
+
+  // Dynamic translation effect
+  useEffect(() => {
+    async function translateCartItems() {
+      if (!cartItems?.items || cartItems.items.length === 0) return;
+      
+      const targetLang = i18n.language;
+      if (targetLang === 'en') {
+        const translated = {
+          ...cartItems,
+          items: await Promise.all(
+            cartItems.items.map(async (item) => ({
+              ...item,
+              productName: await translateDynamicField(item.productName, targetLang),
+              productDescription: item.productDescription ? 
+                await translateDynamicField(item.productDescription, targetLang) : 
+                item.productDescription
+            }))
+          )
+        };
+        setTranslatedCartItems(translated);
+      } else {
+        setTranslatedCartItems(cartItems);
+      }
+    }
+    translateCartItems();
+  }, [i18n.language, cartItems]);
 
   // Create WhatsApp order
   const createOrder = async () => {
@@ -391,18 +422,19 @@ const Cart = () => {
 
   // Calculate totals with local quantities
   const calculateTotals = useMemo(() => {
-    if (!cartItems?.items) return { subtotal: 0, total: 0, discount: 0 };
+    const currentCartItems = translatedCartItems || cartItems;
+    if (!currentCartItems?.items) return { subtotal: 0, total: 0, discount: 0 };
 
-    const subtotal = cartItems.items.reduce((sum, item) => {
+    const subtotal = currentCartItems.items.reduce((sum, item) => {
       const quantity = getEffectiveQuantity(item);
       return sum + (item.unitPrice * quantity);
     }, 0);
 
-    const discount = cartItems.totalDiscount || 0;
+    const discount = currentCartItems.totalDiscount || 0;
     const total = subtotal - discount;
 
     return { subtotal, discount, total };
-  }, [cartItems?.items, getEffectiveQuantity]);
+  }, [cartItems?.items, translatedCartItems, getEffectiveQuantity]);
 
   if (isError) {
     return (
@@ -434,7 +466,7 @@ const Cart = () => {
           {isLoading ? (
             <div className="h-7 bg-gray-300 rounded w-40 animate-pulse"></div>
           ) : (
-            <h1>{t('myCart')} ({cartItems?.items?.length || 0})</h1>
+            <h1>{t('myCart')} ({(translatedCartItems || cartItems)?.items?.length || 0})</h1>
           )}
         </div>
 
@@ -447,13 +479,13 @@ const Cart = () => {
           ) : (
             <>
               <div className='flex-5 flex gap-5 p-4 flex-col bg-white lg:rounded-lg'>
-                {cartItems?.items?.length === 0 ? (
+                {(translatedCartItems || cartItems)?.items?.length === 0 ? (
                   <div className="text-center py-12">
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('yourCartIsEmpty')}</h3>
                     <p className="text-gray-600">{t('addItemsToStart')}</p>
                   </div>
                 ) : (
-                  cartItems?.items?.map((item, index) => {
+                  (translatedCartItems || cartItems)?.items?.map((item, index) => {
                     console.log(item)
                     const effectiveQuantity = getEffectiveQuantity(item);
                     const isItemUpdating = updatingItems.has(item.id);
@@ -575,7 +607,7 @@ const Cart = () => {
                           </div>
                         </div>
 
-                        {index < (cartItems?.items?.length - 1) && (
+                        {index < ((translatedCartItems || cartItems)?.items?.length - 1) && (
                           <hr className="mx-2 border-[#dee2e6] my-4" />
                         )}
                       </div>
@@ -583,7 +615,7 @@ const Cart = () => {
                   })
                 )}
 
-                {cartItems?.items?.length > 0 && (
+                {(translatedCartItems || cartItems)?.items?.length > 0 && (
                   <>
                     <hr className="mx-2 border-[#dee2e6] hidden lg:block" />
                     <div className='justify-between hidden lg:flex'>
@@ -607,22 +639,22 @@ const Cart = () => {
                 <div className="border-t lg:border-none border-gray-200 pt-4 space-y-3">
                   <div className="flex justify-between text-gray-600 text-lg">
                     <span>{t('subtotal')}:</span>
-                    <span>{cartItems?.totalAmount?.toFixed(2)} AZN</span>
+                    <span>{(translatedCartItems || cartItems)?.totalAmount?.toFixed(2)} AZN</span>
                   </div>
                   <div className="flex justify-between text-red-500 text-lg">
                     <span>{t('discount')}:</span>
-                    <span>- {(cartItems?.totalDiscount || 0).toFixed(2)} AZN</span>
+                    <span>- {((translatedCartItems || cartItems)?.totalDiscount || 0).toFixed(2)} AZN</span>
                   </div>
                   <div className="flex justify-between text-lg mb-7 font-bold text-gray-900 pt-2 border-t border-gray-200">
                     <span>{t('total')}:</span>
-                    <span>{((cartItems?.totalAmount || 0) - (cartItems?.totalDiscount || 0)).toFixed(2)} AZN</span>
+                    <span>{(((translatedCartItems || cartItems)?.totalAmount || 0) - ((translatedCartItems || cartItems)?.totalDiscount || 0)).toFixed(2)} AZN</span>
                   </div>
                 </div>
 
                 <button
                   onClick={() => createOrder()}
                   className="w-full cursor-pointer bg-red-500 hover:bg-red-600 text-white font-semibold py-4 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled={isOrderLoading || !cartItems?.items?.length}
+                  disabled={isOrderLoading || !(translatedCartItems || cartItems)?.items?.length}
                 >
                   <ShoppingCart size={20} />
                   <span>{isOrderLoading ? 'Processing...' : t('buyNow')}</span>

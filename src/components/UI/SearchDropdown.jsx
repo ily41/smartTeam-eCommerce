@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Package, Tag, Grid } from 'lucide-react';
 import { useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
+import { translateDynamicField } from '../../i18n';
 
 // Skeleton Components
 const CategorySkeleton = () => (
@@ -43,7 +45,58 @@ const SearchDropdown = ({
   t,
   width 
 }) => {
+  const { i18n } = useTranslation();
   
+  // Dynamic translation states
+  const [translatedSearchResult, setTranslatedSearchResult] = useState(null);
+  
+  // Dynamic translation effect
+  useEffect(() => {
+    async function translateSearchResult() {
+      if (!searchResult) return;
+      
+      const targetLang = i18n.language;
+      if (targetLang === 'en') {
+        const translated = { ...searchResult };
+        
+        // Translate categories
+        if (searchResult.categories) {
+          translated.categories = await Promise.all(
+            searchResult.categories.map(async (category) => ({
+              ...category,
+              name: await translateDynamicField(category.name, targetLang)
+            }))
+          );
+        }
+        
+        // Translate brands
+        if (searchResult.brands) {
+          translated.brands = await Promise.all(
+            searchResult.brands.map(async (brand) => ({
+              ...brand,
+              name: await translateDynamicField(brand.name, targetLang)
+            }))
+          );
+        }
+        
+        // Translate products
+        if (searchResult.products) {
+          translated.products = await Promise.all(
+            searchResult.products.map(async (product) => ({
+              ...product,
+              name: await translateDynamicField(product.name, targetLang),
+              categoryName: product.categoryName ? await translateDynamicField(product.categoryName, targetLang) : product.categoryName
+            }))
+          );
+        }
+        
+        setTranslatedSearchResult(translated);
+      } else {
+        setTranslatedSearchResult(searchResult);
+      }
+    }
+    translateSearchResult();
+  }, [i18n.language, searchResult]);
 
   // Empty state - before typing
   if (searchQuery.length === 0 || searchQuery.length === 1) {
@@ -105,7 +158,8 @@ const SearchDropdown = ({
   }
 
   // No results state
-  if (!searchResult || (!searchResult.categories?.length && !searchResult.brands?.length && !searchResult.products?.length)) {
+  const currentSearchResult = translatedSearchResult || searchResult;
+  if (!currentSearchResult || (!currentSearchResult.categories?.length && !currentSearchResult.brands?.length && !currentSearchResult.products?.length)) {
     return (
       <div className="p-12 text-center">
         <Search className="w-12 h-12 mx-auto text-gray-300 mb-3" />
@@ -117,9 +171,9 @@ const SearchDropdown = ({
     );
   }
 
-  const hasCategories = searchResult.categories && searchResult.categories.length > 0;
-  const hasBrands = searchResult.brands && searchResult.brands.length > 0;
-  const hasProducts = searchResult.products && searchResult.products.length > 0;
+  const hasCategories = currentSearchResult.categories && currentSearchResult.categories.length > 0;
+  const hasBrands = currentSearchResult.brands && currentSearchResult.brands.length > 0;
+  const hasProducts = currentSearchResult.products && currentSearchResult.products.length > 0;
 
   return (
     <div className="p-4 max-h-[70vh] overflow-y-auto">
@@ -128,10 +182,10 @@ const SearchDropdown = ({
         <div className="mb-6">
           <h3 className="text-xs font-semibold text-gray-500 mb-3 flex items-center gap-2">
             <Grid className="w-4 h-4" />
-            CATEGORIES ({searchResult.categories.length})
+            CATEGORIES ({currentSearchResult.categories.length})
           </h3>
           <div className="space-y-1">
-            {searchResult.categories.slice(0, 5).map((category) => (
+            {currentSearchResult.categories.slice(0, 5).map((category) => (
               <div
                 key={category.id}
                 onClick={() => onCategoryClick(category.slug, category.name)}
@@ -157,10 +211,10 @@ const SearchDropdown = ({
         <div className="mb-6">
           <h3 className="text-xs font-semibold text-gray-500 mb-3 flex items-center gap-2">
             <Tag className="w-4 h-4" />
-            BRANDS ({searchResult.brands.length})
+{t('brandsSection.brandsLabel')} ({currentSearchResult.brands.length})
           </h3>
           <div className="flex flex-wrap gap-2">
-            {searchResult.brands.slice(0, 6).map((brand) => (
+            {currentSearchResult.brands.slice(0, 6).map((brand) => (
               <div
                 key={brand.id}
                 onClick={() => onBrandClick(brand.slug, brand.name)}
@@ -192,10 +246,10 @@ const SearchDropdown = ({
         <div>
           <h3 className="text-xs font-semibold text-gray-500 mb-3 flex items-center gap-2">
             <Package className="w-4 h-4" />
-            PRODUCTS ({searchResult.products.length})
+            PRODUCTS ({currentSearchResult.products.length})
           </h3>
           <div className="grid grid-cols-2 [@media(min-width:1200px)]:grid-cols-3 [@media(min-width:1500px)]:grid-cols-4 gap-3">
-            {searchResult.products.slice(0, 4).map((product) => (
+            {currentSearchResult.products.slice(0, 4).map((product) => (
               <div
                 key={product.id}
                 onClick={(e) => onProductClick(e, product.id)}
@@ -244,12 +298,12 @@ const SearchDropdown = ({
             ))}
           </div>
           
-          {searchResult.products.length > 4 && (
+          {currentSearchResult.products.length > 4 && (
             <button
               onClick={onViewAllProducts}
               className="block w-full text-center mt-4 py-2 text-[#E60C03] hover:text-red-700 font-medium text-sm transition-colors"
             >
-              View all {searchResult.products.length} products →
+              View all {currentSearchResult.products.length} products →
             </button>
           )}
         </div>

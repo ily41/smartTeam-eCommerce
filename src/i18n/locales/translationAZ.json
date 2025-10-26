@@ -216,6 +216,31 @@
   "quantity": "Miqdar",
   "price": "Qiymət",
   "totalAmount": "Ümumi məbləğ",
+  
+  "features": {
+    "title": "Xüsusiyyətlər",
+    "name": "Ad",
+    "category": "Kateqoriya", 
+    "quantity": "Miqdar",
+    "sku": "SKU",
+    "stock": "Stok",
+    "hotDeal": "Hot Deal",
+    "inStock": "Stokda var",
+    "outOfStock": "Stokda yoxdur",
+    "yes": "Bəli",
+    "no": "Xeyr"
+  },
+
+  "brands": "Brendlər",
+  "brandsSection": {
+    "searchPlaceholder": "Brendlər axtar...",
+    "showing": "Göstərilir",
+    "brandCountLabel": "brend",
+    "brandsLabel": "BRENDLƏR",
+    "errorTitle": "Brendləri Yükləməkdə Xəta",
+    "errorMessage": "Brendləri yükləyə bilmədik. Zəhmət olmasa, yenidən cəhd edin.",
+    "retry": "Yenidən cəhd et"
+  },
   "errorLoadingCart": "Səbəti yükləmək mümkün olmadı",
   "pleaseTryAgainLater": "Zəhmət olmasa, bir az sonra yenidən cəhd edin",
   "whatsappOrder": "WhatsApp ilə sifariş et",

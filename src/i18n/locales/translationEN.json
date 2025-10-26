@@ -215,6 +215,31 @@
   "quantity": "Quantity",
   "price": "Price",
   "totalAmount": "Total Amount",
+  
+  "features": {
+    "title": "Features",
+    "name": "Name",
+    "category": "Category", 
+    "quantity": "Quantity",
+    "sku": "SKU",
+    "stock": "Stock",
+    "hotDeal": "Hot Deal",
+    "inStock": "In Stock",
+    "outOfStock": "Out of Stock",
+    "yes": "Yes",
+    "no": "No"
+  },
+
+  "brands": "Brands",
+  "brandsSection": {
+    "searchPlaceholder": "Search brands...",
+    "showing": "Showing",
+    "brandCountLabel": "brands",
+    "brandsLabel": "BRANDS",
+    "errorTitle": "Error Loading Brands",
+    "errorMessage": "We couldn't load the brands. Please try again.",
+    "retry": "Retry"
+  },
   "errorLoadingCart": "Error loading cart",
   "pleaseTryAgainLater": "Please try again later",
   "whatsappOrder": "Order via WhatsApp",
