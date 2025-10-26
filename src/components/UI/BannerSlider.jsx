@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useGetBannersQuery, useGetCategoriesQuery, useGetParentCategoriesQuery } from '../../store/API';
+import { useTranslation } from 'react-i18next';
+import { translateDynamicField } from '../../i18n';
 
 const BannerSlider = () => {
-
-
-
+  const { i18n } = useTranslation();
   const { data: bannersD, isBannersLoading,  } = useGetBannersQuery();
   const navigate = useNavigate();
 
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true)
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  
+  // Dynamic translation states
+  const [translatedBanners, setTranslatedBanners] = useState([]);
   useEffect(() => {
     if (!isAutoPlaying) return;
 
@@ -36,6 +39,29 @@ const BannerSlider = () => {
   const handleMouseEnter = () => setIsAutoPlaying(false);
   const handleMouseLeave = () => setIsAutoPlaying(true);
 
+  // Dynamic translation effect
+  useEffect(() => {
+    async function translateBanners() {
+      if (!bannersD || bannersD.length === 0) return;
+      
+      const targetLang = i18n.language;
+      if (targetLang === 'en') {
+        const translated = await Promise.all(
+          bannersD.map(async (banner) => ({
+            ...banner,
+            title: await translateDynamicField(banner.title, targetLang),
+            description: await translateDynamicField(banner.description, targetLang),
+            buttonText: await translateDynamicField(banner.buttonText, targetLang)
+          }))
+        );
+        setTranslatedBanners(translated);
+      } else {
+        setTranslatedBanners(bannersD);
+      }
+    }
+    translateBanners();
+  }, [i18n.language, bannersD]);
+
   return (
     <div className='w-full h-full '>
         <div 
@@ -48,7 +74,7 @@ const BannerSlider = () => {
         className="flex transition-transform duration-500 h-full ease-in-out "
         style={{ transform: `translateX(-${currentSlide * 100}%)` }}
       >
-        {bannersD?.map((banner, index) => {
+        {(translatedBanners.length > 0 ? translatedBanners : bannersD)?.map((banner, index) => {
           return (
           <div onClick={() => navigate(`${banner.linkUrl}`)} key={banner.id} className="w-full cursor-pointer flex-shrink-0 h-full   relative">
             <img 
@@ -63,7 +89,7 @@ const BannerSlider = () => {
             
             <div className="absolute top-[13%] left-[8%] lg:left-[100px] lg:top-[13%] flex flex-col gap-9 max-w-[80%]">
               <div className='flex flex-col gap-5'>
-               <h1 className="inter text-xl lg:text-3xl lg:hidden font-medium">
+               <h1 className={`inter ${banner.titleVisible && 'block'} text-xl lg:text-3xl lg:hidden font-medium`}>
                 {banner.title
                   .split(" ") // ✅ split string into words
                   .map((word, index) => (
@@ -73,7 +99,7 @@ const BannerSlider = () => {
                     </React.Fragment>
                   ))}
               </h1>
-               <h1 className="hidden lg:block text-3xl font-semibold inter">
+               <h1 className={`hidden lg:${banner.titleVisible && 'block'} text-3xl font-semibold inter`}>
                 {banner.title
                   .split(" ") // ✅ split string into words
                   .map((word, index) => (
@@ -84,7 +110,7 @@ const BannerSlider = () => {
                   ))}
               </h1>
 
-               <p className="hidden md:block text-xl inter">
+               <p className={`hidden md:${banner.descriptionVisible && 'block'}  text-xl inter`}>
                 {banner.description
                   .split(" ") 
                   .map((word, index) => (
@@ -98,7 +124,7 @@ const BannerSlider = () => {
 
               <Link 
                 to={`${banner.linkUrl}`}
-                className="px-7 py-3 lg:py-3 rounded-lg text-sm inter lg:text-lg bg-gradient-to-b from-[#FD1206] to-[#DD1205] transition text-white font-medium w-fit hover:shadow-lg transform hover:scale-105"
+                className={`px-7 py-3 lg:py-3 rounded-lg ${!banner.buttonVisible && 'hidden'}  text-sm inter lg:text-lg bg-gradient-to-b from-[#FD1206] to-[#DD1205] transition text-white font-medium w-fit hover:shadow-lg transform hover:scale-105`}
               >
                 {banner.buttonText}
               </Link>

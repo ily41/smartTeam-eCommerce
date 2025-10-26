@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SearchUI from '../../components/UI/SearchUI';
 import { Breadcrumb } from '../../products/Breadcrumb';
 import { Heart, Loader2, Check, Trash2 } from 'lucide-react';
@@ -13,14 +13,18 @@ import { toast } from 'react-toastify';
 import { Link } from 'react-router';
 import SimilarProducts from '../../components/UI/SimilarRecommendedProducts';
 import { useTranslation } from 'react-i18next';
+import { translateDynamicField } from '../../i18n';
 
 const WishList = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const [page, setPage] = useState(1);
   const pageSize = 20;
   const [loadingProductId, setLoadingProductId] = useState(null);
   const [showSuccess, setShowSuccess] = useState(null);
+  
+  // Dynamic translation states
+  const [translatedFavorites, setTranslatedFavorites] = useState([]);
 
   const { data: recommendation, isRecLoading } = useGetRecommendedQuery({ limit: 6 });
   const { data: favoritesData, isLoading, error } = useGetFavoritesQuery({ page, pageSize });
@@ -30,6 +34,33 @@ const WishList = () => {
 
   const favorites = favoritesData?.favorites || [];
   const totalCount = favoritesData?.totalCount || 0;
+
+  // Dynamic translation effect
+  useEffect(() => {
+    async function translateFavorites() {
+      if (!favorites || favorites.length === 0) return;
+      
+      const targetLang = i18n.language;
+      if (targetLang === 'en') {
+        const translated = await Promise.all(
+          favorites.map(async (favorite) => ({
+            ...favorite,
+            product: {
+              ...favorite.product,
+              name: await translateDynamicField(favorite.product.name, targetLang),
+              shortDescription: favorite.product.shortDescription ? 
+                await translateDynamicField(favorite.product.shortDescription, targetLang) : 
+                favorite.product.shortDescription
+            }
+          }))
+        );
+        setTranslatedFavorites(translated);
+      } else {
+        setTranslatedFavorites(favorites);
+      }
+    }
+    translateFavorites();
+  }, [i18n.language, favorites]);
 
   const handleRemoveFavorite = async (e, productId) => {
     e.preventDefault();
@@ -165,7 +196,7 @@ const WishList = () => {
               </div>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 [@media(min-width:1300px)]:grid-cols-5 lg:grid-cols-4 gap-2 whitespace-nowrap">
-                {favorites.map((item) => (
+                {(translatedFavorites.length > 0 ? translatedFavorites : favorites).map((item) => (
                   <Link
                     key={item.id}
                     to={`/details/${item.product.id}`}

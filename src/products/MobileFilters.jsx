@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { SlidersHorizontal, Filter, X, ChevronUp, ChevronDown } from 'lucide-react';
 import { useFilterProductsMutation, useGetCategoriesQuery, useGetCategoryFiltersQuery, useGetFiltersQuery, useGetParentCategoriesQuery } from '../store/API';
 import { useTranslation } from 'react-i18next';
+import { translateDynamicField } from '../i18n';
 
 // Move these components outside to prevent recreation on each render
 const FilterSection = ({ title, isExpanded, onToggle, children }) => (
@@ -46,7 +47,7 @@ const CheckboxItem = ({ label, checked, onChange }) => (
 );
 
 export function MobileFilterButtons({ onFilterResults, onLoadingChange, currentSort, onSortChange, currentPage, pageSize }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isSort, setIsSort] = useState(false);
   const [isFilter, setIsFilter] = useState(false);
   const [showAllCategories, setShowAllCategories] = useState(false);
@@ -54,6 +55,9 @@ export function MobileFilterButtons({ onFilterResults, onLoadingChange, currentS
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [selectedFilters, setSelectedFilters] = useState({});
+  
+  // Dynamic translation states
+  const [translatedParentCat, setTranslatedParentCat] = useState([]);
 
   const { data: categories, isLoading: isCategoriesLoading } = useGetCategoriesQuery();
   const { data: ParentCat, isLoading: isParentCatLoading } = useGetParentCategoriesQuery();
@@ -76,6 +80,27 @@ export function MobileFilterButtons({ onFilterResults, onLoadingChange, currentS
     category: true,
     priceRange: true
   });
+
+  // Dynamic translation effect for parent categories
+  useEffect(() => {
+    async function translateParentCat() {
+      if (!ParentCat || ParentCat.length === 0) return;
+      
+      const targetLang = i18n.language;
+      if (targetLang === 'en') {
+        const translated = await Promise.all(
+          ParentCat.map(async (category) => ({
+            ...category,
+            name: await translateDynamicField(category.name, targetLang)
+          }))
+        );
+        setTranslatedParentCat(translated);
+      } else {
+        setTranslatedParentCat(ParentCat);
+      }
+    }
+    translateParentCat();
+  }, [i18n.language, ParentCat]);
 
   useEffect(() => {
     if (isFilter) {
@@ -364,7 +389,7 @@ export function MobileFilterButtons({ onFilterResults, onLoadingChange, currentS
             onToggle={() => toggleSection('category')}
           >
             <div className="space-y-1">
-              {ParentCat?.slice(0, showAllCategories ? ParentCat.length : 5).map(item => (
+              {(translatedParentCat.length > 0 ? translatedParentCat : ParentCat)?.slice(0, showAllCategories ? (translatedParentCat.length > 0 ? translatedParentCat : ParentCat).length : 5).map(item => (
                 <CheckboxItem
                   key={item.id}
                   label={item.name}
@@ -372,7 +397,7 @@ export function MobileFilterButtons({ onFilterResults, onLoadingChange, currentS
                   onChange={() => handleCategoryChange(item.id)}
                 />
               ))}
-              {ParentCat?.length > 5 && (
+              {(translatedParentCat.length > 0 ? translatedParentCat : ParentCat)?.length > 5 && (
                 <button
                   onClick={() => setShowAllCategories(!showAllCategories)}
                   className="text-sm text-red-500 hover:text-red-600 font-medium mt-2"

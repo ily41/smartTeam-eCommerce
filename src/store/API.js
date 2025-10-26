@@ -454,9 +454,12 @@ export const API = createApi({
     }),
 
     getHotDeals: builder.query({
-      query: () => ({
+      query: ({limit}) => ({
         url: '/api/v1/Products/hot-deals',
         method: 'GET',
+        params: {
+          limit
+        }
       }),
       providesTags: ['Products'],
     }),

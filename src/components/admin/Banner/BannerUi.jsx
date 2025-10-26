@@ -179,7 +179,7 @@ const BannersUI = () => {
     };
 
     return (
-      <div className=" rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto dark-scrollbar">
+      <div className=" rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <h2 className="text-2xl font-bold text-white mb-6">Add New Banner</h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -191,7 +191,7 @@ const BannersUI = () => {
               type="text"
               value={formData.title}
               onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              className="w-full px-4 py-3  border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2  focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Enter banner title"
               required
             />
@@ -205,7 +205,7 @@ const BannersUI = () => {
               type="text"
               value={formData.buttonText}
               onChange={(e) => setFormData(prev => ({ ...prev, buttonText: e.target.value }))}
-              className="w-full px-4 py-3  border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2  focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="e.g., Shop Now, Learn More"
             />
           </div>
@@ -220,7 +220,7 @@ const BannersUI = () => {
                 <button
                   type="button"
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="w-full px-4 py-3  border border-gray-600 rounded-lg text-white text-left focus:ring-2  focus:border-transparent flex items-center justify-between"
+                  className="w-full px-4 py-3 border border-gray-600 rounded-lg text-white text-left focus:ring-2 focus:ring-blue-500 focus:border-transparent flex items-center justify-between"
                 >
                   <span className={getSelectedCategoryName() ? "text-white" : "text-gray-400"}>
                     {getSelectedCategoryName() || "Select a category..."}
@@ -236,7 +236,7 @@ const BannersUI = () => {
                 </button>
 
                 {isDropdownOpen && (
-                  <div className="absolute z-10 w-full mt-1 bg-gray-900  border border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                  <div className="absolute bg-gray-800 z-10 w-full mt-1 border border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
                     {isCatsLoading ? (
                       <div className="px-4 py-3 text-gray-400 text-center">Loading categories...</div>
                     ) : categoryOptions.length === 0 ? (
@@ -280,7 +280,7 @@ const BannersUI = () => {
                   setFormData(prev => ({ ...prev, linkUrl: e.target.value }));
                   setSelectedCategoryId("");
                 }}
-                className="w-full px-4 py-3  border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2  focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="https://example.com/page or /custom-path"
               />
             </div>
@@ -295,7 +295,7 @@ const BannersUI = () => {
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, description: e.target.value }))
               }
-              className="w-full px-4 py-3  border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2  focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               rows={4}
               placeholder="Enter a description..."
             />
@@ -311,7 +311,7 @@ const BannersUI = () => {
                 <div className="space-y-1 text-center">
                   <Image className="mx-auto h-12 w-12 text-gray-400" />
                   <div className="flex text-sm text-gray-400">
-                    <label className="relative cursor-pointer bg-gray-700 rounded-md font-medium text-blue-400 hover:text-blue-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500 px-2 py-1">
+                    <label className="relative cursor-pointer rounded-md font-medium text-blue-400 hover:text-blue-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500 px-2 py-1">
                       <span>Upload a file</span>
                       <input
                         id="banner-image-input"
@@ -346,7 +346,7 @@ const BannersUI = () => {
                   </div>
                 </div>
 
-                <div className="mt-3 flex items-center justify-between bg-gray-700 rounded-lg p-3">
+                <div className="mt-3 flex items-center justify-between rounded-lg p-3">
                   <div className="flex items-center space-x-3">
                     <Image className="w-5 h-5 text-gray-400" />
                     <div>
@@ -366,7 +366,7 @@ const BannersUI = () => {
                 </div>
 
                 <div className="mt-2">
-                  <label className="relative cursor-pointer bg-gray-700 rounded-md font-medium text-blue-400 hover:text-blue-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500 px-3 py-2 text-sm inline-block">
+                  <label className="relative cursor-pointer rounded-md font-medium text-blue-400 hover:text-blue-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500 px-3 py-2 text-sm inline-block">
                     <span>Change Image</span>
                     <input
                       type="file"
@@ -386,7 +386,7 @@ const BannersUI = () => {
               id="isActive"
               checked={formData.isActive}
               onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.checked }))}
-              className="h-4 w-4 text-blue-600  border-gray-600 rounded bg-gray-700"
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 rounded bg-gray-700"
             />
             <label htmlFor="isActive" className="ml-2 block text-sm text-gray-300">
               Active (visible on website)
@@ -411,7 +411,7 @@ const BannersUI = () => {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
+              className="flex-1 bg-gray-600 hover:text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
             >
               Cancel
             </button>
@@ -424,11 +424,15 @@ const BannersUI = () => {
   const EditBannerModal = ({ isOpen, onClose, banner }) => {
     const [file, setFile] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
+    console.log(banner?.buttonVisible)
     const [formData, setFormData] = useState({
       title: banner?.title || '',
+      titleVisible: banner?.titleVisible ,
       description: banner?.description || '',
+      descriptionVisible: banner?.descriptionVisible ,
       linkUrl: banner?.linkUrl || '',
       buttonText: banner?.buttonText || '',
+      buttonVisible: banner?.buttonVisible ,
       type: banner?.type || 0,
       isActive: banner?.isActive ?? true,
       sortOrder: banner?.sortOrder || 0,
@@ -441,14 +445,15 @@ const BannersUI = () => {
 
 
       try {
-        console.log(banner.id)
-        console.log(formData)
         
         const cleanFormData = {
           title: formData.title,
+          titleVisible: formData.titleVisible,
           description: formData.description,
+          descriptionVisible: formData.descriptionVisible,
           linkUrl: formData.linkUrl,
           buttonText: formData.buttonText,
+          buttonVisible: formData.buttonVisible,
           type: Number(formData.type),
           isActive: Boolean(formData.isActive),
           sortOrder: Number(formData.sortOrder),
@@ -485,7 +490,7 @@ const BannersUI = () => {
               type="text"
               value={formData.title}
               onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              className="w-full px-4 py-3  border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2  focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Enter banner title"
               required
             />
@@ -499,7 +504,7 @@ const BannersUI = () => {
               type="text"
               value={formData.buttonText}
               onChange={(e) => setFormData(prev => ({ ...prev, buttonText: e.target.value }))}
-              className="w-full px-4 py-3  border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2  focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="e.g., Shop Now, Learn More"
             />
           </div>
@@ -512,7 +517,7 @@ const BannersUI = () => {
               type="text"
               value={formData.linkUrl}
               onChange={(e) => setFormData(prev => ({ ...prev, linkUrl: e.target.value }))}
-              className="w-full px-4 py-3  border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2  focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="https://example.com/page or /custom-path"
             />
           </div>
@@ -525,23 +530,64 @@ const BannersUI = () => {
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
               rows={4}
-              className="w-full px-4 py-3  border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2  focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Enter banner description"
             />
           </div>
 
-          <div className="flex items-center">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex items-center">
             <input
               type="checkbox"
               id="editIsActive"
               checked={formData.isActive}
               onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.checked }))}
-              className="h-4 w-4 text-blue-600  border-gray-600 rounded "
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 rounded bg-gray-700"
             />
             <label htmlFor="editIsActive" className="ml-2 block text-sm text-gray-300">
-              Active (visible on website)
+              Banner visibility
             </label>
+            </div>
+            <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="editIsActive"
+              checked={formData.buttonVisible}
+              onChange={(e) => setFormData(prev => ({ ...prev, buttonVisible: e.target.checked }))}
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 rounded bg-gray-700"
+            />
+            <label htmlFor="editIsActive" className="ml-2 block text-sm text-gray-300">
+              Button  visibility
+            </label>
+            </div>
+            <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="editIsActive"
+              checked={formData.titleVisible}
+              onChange={(e) => setFormData(prev => ({ ...prev, titleVisible: e.target.checked }))}
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 rounded bg-gray-700"
+            />
+            <label htmlFor="editIsActive" className="ml-2 block text-sm text-gray-300">
+              Title visibility
+            </label>
+            </div>
+            <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="editIsActive"
+              checked={formData.descriptionVisible}
+              onChange={(e) => setFormData(prev => ({ ...prev, descriptionVisible: e.target.checked }))}
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 rounded bg-gray-700"
+            />
+            <label htmlFor="editIsActive" className="ml-2 block text-sm text-gray-300">
+              Description visibility
+            </label>
+            </div>
+
           </div>
+
+          
 
           <div className="flex gap-4 pt-4">
             <button
@@ -561,7 +607,7 @@ const BannersUI = () => {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 bg-gray-600 hover: text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
+              className="flex-1 bg-gray-600 hover:text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
             >
               Cancel
             </button>

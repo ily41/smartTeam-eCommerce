@@ -6,8 +6,7 @@ import { Link, useParams } from 'react-router';
 import { useGetCartItemsQuery, useUpdateCartItemQuantityMutation, useRemoveCartItemMutation, useRemoveCartMutation, useGetMeQuery, useCreateWhatsappOrderMutation } from '../../store/API';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
-
-
+import { translateDynamicField } from '../../i18n';
 
 const AuthUtils = {
   isAuthenticated() {
@@ -28,15 +27,29 @@ const CartUtils = {
   getCart() {
     try {
       const cart = localStorage.getItem(this.CART_KEY);
-      return cart ? JSON.parse(cart) : { items: [], totalAmount: 0 };
+      return cart ? JSON.parse(cart) : { 
+        items: [], 
+        totalPriceBeforeDiscount: 0, 
+        totalDiscount: 0, 
+        totalAmount: 0 
+      };
     } catch (error) {
       console.error('Error reading cart:', error);
-      return { items: [], totalAmount: 0 };
+      return { 
+        items: [], 
+        totalPriceBeforeDiscount: 0, 
+        totalDiscount: 0, 
+        totalAmount: 0 
+      };
     }
   },
 
   saveCart(cart) {
     try {
+      cart.totalPriceBeforeDiscount = cart.totalPriceBeforeDiscount || 0;
+      cart.totalDiscount = cart.totalDiscount || 0;
+      cart.totalAmount = cart.totalAmount || 0;
+      
       localStorage.setItem(this.CART_KEY, JSON.stringify(cart));
       window.dispatchEvent(new CustomEvent('cartUpdated', { detail: cart }));
     } catch (error) {
@@ -47,8 +60,7 @@ const CartUtils = {
   removeItem(itemId) {
     const cart = this.getCart();
     cart.items = cart.items.filter(item => item.id !== itemId);
-    cart.totalAmount = cart.items.reduce((sum, item) => sum + item.totalPrice, 0);
-    this.saveCart(cart);
+    this.updateCartTotals(cart);
     return cart;
   },
 
@@ -56,19 +68,56 @@ const CartUtils = {
     const cart = this.getCart();
     const item = cart.items.find(item => item.id === itemId);
     
-    if (item && quantity > 0) {
-      item.quantity = quantity;
-      item.totalPrice = item.quantity * item.unitPrice;
-      cart.totalAmount = cart.items.reduce((sum, item) => sum + item.totalPrice, 0);
-      this.saveCart(cart);
+    if (!item) {
+      console.warn(`Item with id ${itemId} not found`);
+      return cart;
     }
     
+    if (quantity <= 0) {
+      return this.removeItem(itemId);
+    }
+
+    item.quantity = quantity;
+    const originalUnitPrice = item.unitPrice + (item.productDiscount || 0);
+    item.totalPriceBeforeDiscount = originalUnitPrice * quantity;
+    item.totalPrice = item.unitPrice * quantity;
+
+    this.updateCartTotals(cart);
     return cart;
   },
 
   clearCart() {
-    localStorage.removeItem(this.CART_KEY);
-    window.dispatchEvent(new CustomEvent('cartUpdated', { detail: { items: [], totalAmount: 0 } }));
+    const emptyCart = { 
+      items: [], 
+      totalPriceBeforeDiscount: 0, 
+      totalDiscount: 0, 
+      totalAmount: 0 
+    };
+    localStorage.setItem(this.CART_KEY, JSON.stringify(emptyCart));
+    window.dispatchEvent(new CustomEvent('cartUpdated', { detail: emptyCart }));
+  },
+
+  updateCartTotals(cart) {
+    const totalPriceBeforeDiscount = cart.items.reduce(
+      (sum, item) => sum + (item.totalPriceBeforeDiscount || 0),
+      0
+    );
+
+    const totalDiscount = cart.items.reduce(
+      (sum, item) => sum + ((item.productDiscount || 0) * (item.quantity || 0)),
+      0
+    );
+
+    const totalAmount = cart.items.reduce(
+      (sum, item) => sum + (item.totalPrice || 0),
+      0
+    );
+
+    cart.totalPriceBeforeDiscount = isNaN(totalPriceBeforeDiscount) ? 0 : totalPriceBeforeDiscount;
+    cart.totalDiscount = isNaN(totalDiscount) ? 0 : totalDiscount;
+    cart.totalAmount = isNaN(totalAmount) ? 0 : totalAmount;
+
+    this.saveCart(cart);
   }
 };
 
@@ -166,15 +215,20 @@ const EmptyCartSkeleton = () => (
 );
 
 const Cart = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [localCart, setLocalCart] = useState({ items: [], totalAmount: 0 });
+  const [localCart, setLocalCart] = useState({ 
+    items: [], 
+    totalPriceBeforeDiscount: 0,
+    totalDiscount: 0,
+    totalAmount: 0 
+  });
+  
+  const [translatedCartItems, setTranslatedCartItems] = useState(null);
   
   const { data: cartItemsD, isLoading: apiLoading, isError } = useGetCartItemsQuery(undefined, {
     skip: !isAuthenticated
   });
-  console.log(cartItemsD)
-
   
   const { data: me } = useGetMeQuery();
   const [updateCartItemQuantity] = useUpdateCartItemQuantityMutation();
@@ -187,18 +241,15 @@ const Cart = () => {
   const [localQuantities, setLocalQuantities] = useState({});
   const [updatingItems, setUpdatingItems] = useState(new Set());
 
-  // Check authentication on mount
   useEffect(() => {
     const authStatus = AuthUtils.isAuthenticated();
     setIsAuthenticated(authStatus);
     
-    // If not authenticated, load localStorage cart
     if (!authStatus) {
       setLocalCart(CartUtils.getCart());
     }
   }, []);
 
-  // Listen for localStorage cart updates
   useEffect(() => {
     if (!isAuthenticated) {
       const handleCartUpdate = (e) => {
@@ -210,12 +261,35 @@ const Cart = () => {
     }
   }, [isAuthenticated]);
 
-  // Determine which cart data to use
   const cartItems = isAuthenticated ? cartItemsD : localCart;
   const isLoading = isAuthenticated ? apiLoading : false;
-  console.log(cartItems)
 
-  // Create WhatsApp order
+  useEffect(() => {
+    async function translateCartItems() {
+      if (!cartItems?.items || cartItems.items.length === 0) return;
+      
+      const targetLang = i18n.language;
+      if (targetLang === 'en') {
+        const translated = {
+          ...cartItems,
+          items: await Promise.all(
+            cartItems.items.map(async (item) => ({
+              ...item,
+              productName: await translateDynamicField(item.productName, targetLang),
+              productDescription: item.productDescription ? 
+                await translateDynamicField(item.productDescription, targetLang) : 
+                item.productDescription
+            }))
+          )
+        };
+        setTranslatedCartItems(translated);
+      } else {
+        setTranslatedCartItems(cartItems);
+      }
+    }
+    translateCartItems();
+  }, [i18n.language, cartItems]);
+
   const createOrder = async () => {
     try {
       const orderPayload = {
@@ -244,12 +318,16 @@ const Cart = () => {
       if (response.whatsAppUrl) {
         window.open(response.whatsAppUrl, "_blank");
         
-        // Clear cart after successful order
         if (isAuthenticated) {
           await removeCart().unwrap();
         } else {
           CartUtils.clearCart();
-          setLocalCart({ items: [], totalAmount: 0 });
+          setLocalCart({ 
+            items: [], 
+            totalPriceBeforeDiscount: 0,
+            totalDiscount: 0,
+            totalAmount: 0 
+          });
         }
         
         toast.success(t('cartCleared'));
@@ -261,7 +339,6 @@ const Cart = () => {
     }
   };
 
-  // Debounced update function (for authenticated users)
   const debouncedUpdate = useMemo(
     () => debounce(async (cartItemId, quantity) => {
       if (!isAuthenticated) return;
@@ -287,7 +364,6 @@ const Cart = () => {
     [updateCartItemQuantity, isAuthenticated]
   );
 
-  // Clean up local quantities when server data updates
   useEffect(() => {
     if (isAuthenticated && cartItemsD?.items) {
       setLocalQuantities(prev => {
@@ -306,36 +382,30 @@ const Cart = () => {
     }
   }, [cartItemsD, isAuthenticated]);
 
-  // Get effective quantity
   const getEffectiveQuantity = useCallback((item) => {
     return localQuantities[item.id] !== undefined ? localQuantities[item.id] : item.quantity;
   }, [localQuantities]);
 
-  // Handle quantity change
   const handleQuantityChange = useCallback((item, newQuantity) => {
     if (newQuantity < 1) return;
 
     if (isAuthenticated) {
-      // API-based cart
       setLocalQuantities(prev => ({
         ...prev,
         [item.id]: newQuantity
       }));
       debouncedUpdate(item.id, newQuantity);
     } else {
-      // localStorage cart
       const updatedCart = CartUtils.updateQuantity(item.id, newQuantity);
       setLocalCart(updatedCart);
     }
   }, [isAuthenticated, debouncedUpdate]);
 
-  // Handle increment
   const handleIncrement = useCallback((item) => {
     const currentQuantity = getEffectiveQuantity(item);
     handleQuantityChange(item, currentQuantity + 1);
   }, [getEffectiveQuantity, handleQuantityChange]);
 
-  // Handle decrement
   const handleDecrement = useCallback((item) => {
     const currentQuantity = getEffectiveQuantity(item);
     if (currentQuantity > 1) {
@@ -343,7 +413,6 @@ const Cart = () => {
     }
   }, [getEffectiveQuantity, handleQuantityChange]);
 
-  // Handle remove item
   const handleRemoveItem = async (id) => {
     try {
       setRemovingItems(prev => new Set(prev).add(id));
@@ -368,7 +437,6 @@ const Cart = () => {
     }
   };
 
-  // Handle remove cart
   const handleRemoveCart = async () => {
     try {
       setIsRemovingCart(true);
@@ -377,7 +445,12 @@ const Cart = () => {
         await removeCart().unwrap();
       } else {
         CartUtils.clearCart();
-        setLocalCart({ items: [], totalAmount: 0 });
+        setLocalCart({ 
+          items: [], 
+          totalPriceBeforeDiscount: 0,
+          totalDiscount: 0,
+          totalAmount: 0 
+        });
       }
       
       toast.success(t('cartCleared'));
@@ -388,21 +461,6 @@ const Cart = () => {
       setIsRemovingCart(false);
     }
   };
-
-  // Calculate totals with local quantities
-  const calculateTotals = useMemo(() => {
-    if (!cartItems?.items) return { subtotal: 0, total: 0, discount: 0 };
-
-    const subtotal = cartItems.items.reduce((sum, item) => {
-      const quantity = getEffectiveQuantity(item);
-      return sum + (item.unitPrice * quantity);
-    }, 0);
-
-    const discount = cartItems.totalDiscount || 0;
-    const total = subtotal - discount;
-
-    return { subtotal, discount, total };
-  }, [cartItems?.items, getEffectiveQuantity]);
 
   if (isError) {
     return (
@@ -417,7 +475,6 @@ const Cart = () => {
 
   return (
     <section className="inter bg-[#f7fafc] whitepsace-nowrap">
-      {/* Mobile Search + Breadcrumb */}
       <div className="lg:hidden px-4 pl-7 py-4 border-y bg-white lg:border-transparent border-[#dee2e6]">
         <div className="mb-4 lg:hidden">
           <SearchUI />
@@ -434,7 +491,7 @@ const Cart = () => {
           {isLoading ? (
             <div className="h-7 bg-gray-300 rounded w-40 animate-pulse"></div>
           ) : (
-            <h1>{t('myCart')} ({cartItems?.items?.length || 0})</h1>
+            <h1>{t('myCart')} ({(translatedCartItems || cartItems)?.items?.length || 0})</h1>
           )}
         </div>
 
@@ -447,14 +504,13 @@ const Cart = () => {
           ) : (
             <>
               <div className='flex-5 flex gap-5 p-4 flex-col bg-white lg:rounded-lg'>
-                {cartItems?.items?.length === 0 ? (
+                {(translatedCartItems || cartItems)?.items?.length === 0 ? (
                   <div className="text-center py-12">
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('yourCartIsEmpty')}</h3>
                     <p className="text-gray-600">{t('addItemsToStart')}</p>
                   </div>
                 ) : (
-                  cartItems?.items?.map((item, index) => {
-                    console.log(item)
+                  (translatedCartItems || cartItems)?.items?.map((item, index) => {
                     const effectiveQuantity = getEffectiveQuantity(item);
                     const isItemUpdating = updatingItems.has(item.id);
                     const isItemRemoving = removingItems.has(item.id);
@@ -575,7 +631,7 @@ const Cart = () => {
                           </div>
                         </div>
 
-                        {index < (cartItems?.items?.length - 1) && (
+                        {index < ((translatedCartItems || cartItems)?.items?.length - 1) && (
                           <hr className="mx-2 border-[#dee2e6] my-4" />
                         )}
                       </div>
@@ -583,7 +639,7 @@ const Cart = () => {
                   })
                 )}
 
-                {cartItems?.items?.length > 0 && (
+                {(translatedCartItems || cartItems)?.items?.length > 0 && (
                   <>
                     <hr className="mx-2 border-[#dee2e6] hidden lg:block" />
                     <div className='justify-between hidden lg:flex'>
@@ -607,22 +663,22 @@ const Cart = () => {
                 <div className="border-t lg:border-none border-gray-200 pt-4 space-y-3">
                   <div className="flex justify-between text-gray-600 text-lg">
                     <span>{t('subtotal')}:</span>
-                    <span>{cartItems?.totalAmount?.toFixed(2)} AZN</span>
+                    <span>{((translatedCartItems || cartItems)?.totalPriceBeforeDiscount || 0).toFixed(2)} AZN</span>
                   </div>
                   <div className="flex justify-between text-red-500 text-lg">
                     <span>{t('discount')}:</span>
-                    <span>- {(cartItems?.totalDiscount || 0).toFixed(2)} AZN</span>
+                    <span>- {((translatedCartItems || cartItems)?.totalDiscount || 0).toFixed(2)} AZN</span>
                   </div>
                   <div className="flex justify-between text-lg mb-7 font-bold text-gray-900 pt-2 border-t border-gray-200">
                     <span>{t('total')}:</span>
-                    <span>{((cartItems?.totalAmount || 0)).toFixed(2)} AZN</span>
+                    <span>{((translatedCartItems || cartItems)?.totalAmount || 0).toFixed(2)} AZN</span>
                   </div>
                 </div>
 
                 <button
                   onClick={() => createOrder()}
                   className="w-full cursor-pointer bg-red-500 hover:bg-red-600 text-white font-semibold py-4 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled={isOrderLoading || !cartItems?.items?.length}
+                  disabled={isOrderLoading || !(translatedCartItems || cartItems)?.items?.length}
                 >
                   <ShoppingCart size={20} />
                   <span>{isOrderLoading ? 'Processing...' : t('buyNow')}</span>

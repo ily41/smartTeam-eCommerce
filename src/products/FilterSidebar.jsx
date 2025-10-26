@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useFilterProductsMutation, useGetCategoriesQuery, useGetCategoryFiltersQuery, useGetFiltersQuery, useGetParentCategoriesQuery } from '../store/API';
+import { useTranslation } from 'react-i18next';
+import { translateDynamicField } from '../i18n';
 
 export const FilterSidebar = React.memo(({ 
   onFilterResults, 
@@ -16,6 +18,7 @@ export const FilterSidebar = React.memo(({
   forcedCategoryId = null, 
   showCategory = false 
 }) => {
+  const { i18n } = useTranslation();
   console.log(forcedCategoryId)
   
   const [showAllCategories, setShowAllCategories] = useState(false);
@@ -23,6 +26,11 @@ export const FilterSidebar = React.memo(({
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [selectedFilters, setSelectedFilters] = useState({});
+  
+  // Dynamic translation states
+  const [translatedCategories, setTranslatedCategories] = useState([]);
+  const [translatedParentCat, setTranslatedParentCat] = useState([]);
+  const [translatedCustomFilters, setTranslatedCustomFilters] = useState([]);
   
   const { data: categories, isLoading: isCategoriesLoading } = useGetCategoriesQuery();
   const { data: ParentCat, isLoading: isParentCatLoading } = useGetParentCategoriesQuery();
@@ -41,8 +49,61 @@ export const FilterSidebar = React.memo(({
     { skip: !activeCategoryId }
   );
 
+  // Dynamic translation effect
+  useEffect(() => {
+    async function translateData() {
+      const targetLang = i18n.language;
+      if (targetLang === 'en') {
+        // Translate categories
+        if (categories) {
+          const translated = await Promise.all(
+            categories.map(async (category) => ({
+              ...category,
+              name: await translateDynamicField(category.name, targetLang)
+            }))
+          );
+          setTranslatedCategories(translated);
+        }
+        
+        // Translate parent categories
+        if (ParentCat) {
+          const translated = await Promise.all(
+            ParentCat.map(async (category) => ({
+              ...category,
+              name: await translateDynamicField(category.name, targetLang)
+            }))
+          );
+          setTranslatedParentCat(translated);
+        }
+        
+        // Translate custom filters
+        if (customFilters) {
+          const translated = await Promise.all(
+            customFilters.map(async (filter) => ({
+              ...filter,
+              name: await translateDynamicField(filter.name, targetLang),
+              options: filter.options ? await Promise.all(
+                filter.options.map(async (option) => ({
+                  ...option,
+                  displayName: option.displayName ? await translateDynamicField(option.displayName, targetLang) : option.displayName,
+                  label: option.label ? await translateDynamicField(option.label, targetLang) : option.label
+                }))
+              ) : filter.options
+            }))
+          );
+          setTranslatedCustomFilters(translated);
+        }
+      } else {
+        setTranslatedCategories(categories || []);
+        setTranslatedParentCat(ParentCat || []);
+        setTranslatedCustomFilters(customFilters || []);
+      }
+    }
+    translateData();
+  }, [i18n.language, categories, ParentCat, customFilters]);
+
   // Determine which filters to show - category-specific or general
-  const filtersToShow = activeCategoryId && categoryFilters ? categoryFilters : customFilters;
+  const filtersToShow = activeCategoryId && categoryFilters ? categoryFilters : (translatedCustomFilters.length > 0 ? translatedCustomFilters : customFilters);
   const isFiltersLoading = activeCategoryId ? isCategoryFiltersLoading : isCustomLoading;
 
   // Memoize buildActiveFilters function - don't include it in dependencies
@@ -50,9 +111,10 @@ export const FilterSidebar = React.memo(({
     const activeFilters = [];
     
     // Add category filters only if shown
-    if (showCategory && selectedCategories.length > 0 && categories) {
+    if (showCategory && selectedCategories.length > 0 && (translatedCategories.length > 0 ? translatedCategories : categories)) {
+      const categoriesToUse = translatedCategories.length > 0 ? translatedCategories : categories;
       selectedCategories.forEach(categoryId => {
-        const category = categories.find(cat => cat.id === categoryId);
+        const category = categoriesToUse.find(cat => cat.id === categoryId);
         if (category) {
           activeFilters.push({
             id: `category-${categoryId}`,
@@ -66,10 +128,11 @@ export const FilterSidebar = React.memo(({
     }
   
     // Add custom filter selections
-    if (customFilters) {
+    const filtersToUse = translatedCustomFilters.length > 0 ? translatedCustomFilters : customFilters;
+    if (filtersToUse) {
       Object.values(selectedFilters).forEach(filter => {
         if (filter.filterOptionIds && filter.filterOptionIds.length > 0) {
-          const customFilter = customFilters.find(cf => cf.id === filter.filterId);
+          const customFilter = filtersToUse.find(cf => cf.id === filter.filterId);
           if (customFilter) {
             filter.filterOptionIds.forEach(optionId => {
               const option = customFilter.options?.find(opt => opt.id === optionId);
@@ -373,8 +436,8 @@ export const FilterSidebar = React.memo(({
               <ChevronDown className="chevron w-4 h-4 text-gray-500 transition-transform duration-200" />
             </summary>
             <div className="px-4 pb-4 space-y-2">
-              {ParentCat
-                ?.slice(0, showAllCategories ? categories.length : 5)
+              {(translatedParentCat.length > 0 ? translatedParentCat : ParentCat)
+                ?.slice(0, showAllCategories ? (translatedParentCat.length > 0 ? translatedParentCat : ParentCat).length : 5)
                 .map(item => (
                   <label key={item.id} className="flex items-center space-x-2 cursor-pointer">
                     <input 
@@ -387,7 +450,7 @@ export const FilterSidebar = React.memo(({
                   </label>
                 ))}
 
-              {ParentCat?.length > 5 && (
+              {(translatedParentCat.length > 0 ? translatedParentCat : ParentCat)?.length > 5 && (
                 <button
                   onClick={toggleShowAll}
                   className="text-sm text-red-500 hover:text-red-600 font-medium"

@@ -49,6 +49,7 @@ const SkeletonProductCard = ({ isMobile = false }) => {
 
 // Desktop Product Card
 const ProductCard = ({ product, isAddingToCart, loadingProductId, showSuccess, onAddToCart, onUnauthorized }) => {
+  const {t} = useTranslation()
 
   
   const { data: favoriteStatus } = useGetFavoriteStatusQuery({ productId: product.id });
@@ -115,7 +116,7 @@ const ProductCard = ({ product, isAddingToCart, loadingProductId, showSuccess, o
         onClick={(e) => onAddToCart(e, product)}
         className="w-full cursor-pointer flex justify-center items-center text-sm bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg font-medium transition-colors duration-200"
       >
-        Add to Cart
+        {t('addToCart')}
       </button>
     );
   };
@@ -160,6 +161,7 @@ const ProductCard = ({ product, isAddingToCart, loadingProductId, showSuccess, o
 
 // Mobile Product Card
 const MobileProductCard = ({ product, isAddingToCart, loadingProductId, showSuccess, onAddToCart, onUnauthorized }) => {
+  const {t} = useTranslation()
   const { data: favoriteStatus } = useGetFavoriteStatusQuery({ productId: product.id });
   const [toggleFavorite, { isLoading: isTogglingFavorite }] = useToggleFavoriteMutation();
   const [localFavorite, setLocalFavorite] = useState(false);
@@ -193,6 +195,7 @@ const MobileProductCard = ({ product, isAddingToCart, loadingProductId, showSucc
   };
 
   const renderButton = () => {
+    const {t} = useTranslation()
     const isThisProductLoading = isAddingToCart && loadingProductId === product.id;
     
     if (isThisProductLoading) {
@@ -224,7 +227,7 @@ const MobileProductCard = ({ product, isAddingToCart, loadingProductId, showSucc
         onClick={(e) => onAddToCart(e, product)}
         className="w-full cursor-pointer flex justify-center items-center text-xs bg-red-500 hover:bg-red-600 text-white py-1.5 px-3 rounded-md font-medium transition-colors duration-200"
       >
-        Add to Cart
+       {t('addToCart')}
       </button>
     );
   };

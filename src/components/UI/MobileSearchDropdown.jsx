@@ -151,7 +151,7 @@ const MobileSearchDropdown = ({
         <div>
           <h3 className="text-xs font-semibold text-gray-500 mb-3 flex items-center gap-2">
             <Tag className="w-4 h-4" />
-            BRANDS ({searchResult.brands.length})
+{t('brandsSection.brandsLabel')} ({searchResult.brands.length})
           </h3>
           <div className="flex flex-wrap gap-2">
             {searchResult.brands.slice(0, 6).map((brand) => (

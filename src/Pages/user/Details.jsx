@@ -22,6 +22,8 @@ import QuickOrderModal from '../../components/UI/QuickOrderModal';
 import CartUtils from '../../components/UI/CartUtils';
 import AuthUtils from '../../components/UI/AuthUtils';
 import UnauthorizedModal from '../../components/UI/UnauthorizedModal';
+import { useTranslation } from 'react-i18next';
+import { translateDynamicField } from '../../i18n';
 
 
 // Unauthorized Modal Component
@@ -173,6 +175,7 @@ const DesktopDetailsSkeleton = () => (
 );
 
 function Details() {
+  const { t, i18n } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
@@ -188,6 +191,11 @@ function Details() {
   const [showQuickOrderModal, setShowQuickOrderModal] = useState(false);
   const { data: me, isLoading: isMeLoading } = useGetMeQuery();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
+  // Dynamic translation states
+  const [translatedProduct, setTranslatedProduct] = useState(null);
+  const [translatedProductSpec, setTranslatedProductSpec] = useState(null);
+  
   useEffect(() => {
     setIsAuthenticated(AuthUtils.isAuthenticated());
   }, []);
@@ -221,6 +229,68 @@ function Details() {
   const { data: productSpec, isLoading: isSpecLoading } = useGetProductSpecificationsQuery(product?.id, { skip: !product?.id });
   const { data: favoriteStatus } = useGetFavoriteStatusQuery({ productId: product?.id }, { skip: !product?.id });
   const [showSuccess, setShowSuccess] = useState(false);
+
+  // Dynamic translation effect
+  useEffect(() => {
+    async function translateProductData() {
+      if (!product) return;
+      
+      const targetLang = i18n.language;
+      if (targetLang === 'en') {
+        const translated = { ...product };
+        
+        if (product.name) {
+          translated.name = await translateDynamicField(product.name, targetLang);
+        }
+        if (product.description) {
+          translated.description = await translateDynamicField(product.description, targetLang);
+        }
+        if (product.shortDescription) {
+          translated.shortDescription = await translateDynamicField(product.shortDescription, targetLang);
+        }
+        if (product.categoryName) {
+          translated.categoryName = await translateDynamicField(product.categoryName, targetLang);
+        }
+        
+        setTranslatedProduct(translated);
+      } else {
+        setTranslatedProduct(product);
+      }
+    }
+    translateProductData();
+  }, [i18n.language, product]);
+
+  // Dynamic translation effect for product specifications
+  useEffect(() => {
+    async function translateProductSpec() {
+      if (!productSpec) return;
+      
+      const targetLang = i18n.language;
+      if (targetLang === 'en') {
+        const translated = { ...productSpec };
+        
+        if (productSpec.specificationGroups) {
+          translated.specificationGroups = await Promise.all(
+            productSpec.specificationGroups.map(async (group) => ({
+              ...group,
+              items: group.items ? await Promise.all(
+                group.items.map(async (item) => ({
+                  ...item,
+                  name: await translateDynamicField(item.name, targetLang),
+                  value: await translateDynamicField(item.value, targetLang)
+                }))
+              ) : group.items
+            }))
+          );
+        }
+        
+        setTranslatedProductSpec(translated);
+      } else {
+        setTranslatedProductSpec(productSpec);
+      }
+    }
+    translateProductSpec();
+  }, [i18n.language, productSpec]);
  
 
 
@@ -398,9 +468,10 @@ function Details() {
     if (!product) return [];
     
     const specs = [];
+    const currentProductSpec = translatedProductSpec || productSpec;
     
-    if (productSpec && productSpec.specificationGroups) {
-      productSpec.specificationGroups.forEach(group => {
+    if (currentProductSpec && currentProductSpec.specificationGroups) {
+      currentProductSpec.specificationGroups.forEach(group => {
         if (group.items && Array.isArray(group.items)) {
           group.items.forEach(item => {
             const basicFields = ['sku', 'category', 'stock status', 'availability', 'name'];
@@ -425,16 +496,18 @@ function Details() {
     if (!product) return [];
     
     const features = [];
+    const currentProduct = translatedProduct || product;
+    const currentProductSpec = translatedProductSpec || productSpec;
     
     features.push(
-      { label: 'Name', value: product.name },
-      { label: 'SKU', value: product.sku },
-      { label: 'Category', value: product.categoryName },
-      { label: 'Stock', value: product.stockQuantity > 0 ? 'In Stock' : 'Out of Stock' }
+      { label: t('features.name'), value: currentProduct.name },
+      { label: t('features.sku'), value: currentProduct.sku },
+      { label: t('features.category'), value: currentProduct.categoryName },
+      { label: t('features.stock'), value: currentProduct.stockQuantity > 0 ? t('features.inStock') : t('features.outOfStock') }
     );
     
-    if (productSpec && productSpec.specificationGroups) {
-      productSpec.specificationGroups.forEach(group => {
+    if (currentProductSpec && currentProductSpec.specificationGroups) {
+      currentProductSpec.specificationGroups.forEach(group => {
         if (group.items && Array.isArray(group.items)) {
           group.items.forEach(item => {
             const duplicateFields = ['sku', 'category', 'stock status', 'availability'];
@@ -485,8 +558,9 @@ function Details() {
     );
   }
 
-  const specifications = getSpecifications(product, productSpec);
-  const features = getFeatures(product, productSpec);
+  const currentProduct = translatedProduct || product;
+  const specifications = getSpecifications(currentProduct, productSpec);
+  const features = getFeatures(currentProduct, productSpec);
     
 
 
@@ -577,7 +651,7 @@ function Details() {
               )}
             </div>
             <div className="flex items-center">
-              <h1 className="text-xl text-gray-900 inter">{product.name}</h1>
+              <h1 className="text-xl text-gray-900 inter">{currentProduct.name}</h1>
             </div>
             {hasDiscount && (
               <div className="flex items-center gap-2 mt-2">
@@ -742,7 +816,8 @@ function Details() {
                       Added to cart
                   </>
               ) : (
-                  'Add To Cart'
+                  // t('addToCart')
+                  ''
               )}
           </button>
           <button 
@@ -762,7 +837,7 @@ function Details() {
         <div className="bg-white border-y-1 border-[#DEE2E6] mt-4 helveticaNow">
           <div className="px-4 py-4">
             <div className="flex items-center justify-between mb-4 px-2 inter">
-              <h2 className="text-lg font-semibold text-gray-900">Features</h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t('features.title')}</h2>
             </div>
             <div className="space-y-3">
               {features.slice(0, 5).map((feature, index) => (
@@ -848,8 +923,8 @@ function Details() {
               
               <div className="flex items-start justify-between mb-6">
                 <div>
-                  <h1 className="text-2xl font-semibold text-gray-900 mb-2">{product.name}</h1>  
-                  <p className="text-gray-600 mb-4 line-clamp-5 break-all pr-2">{product.description}</p>
+                  <h1 className="text-2xl font-semibold text-gray-900 mb-2">{currentProduct.name}</h1>  
+                  <p className="text-gray-600 mb-4 line-clamp-5 break-all pr-2">{currentProduct.description}</p>
                   
                   <div className="flex items-center gap-3">
                     {console.log(product.prices)}
@@ -998,7 +1073,7 @@ function Details() {
                             Added to cart
                         </>
                     ) : (
-                        'Add To Cart'
+                        t('addToCart')
                     )}
                 </button>
 
@@ -1012,7 +1087,7 @@ function Details() {
                   }`}
                 >
                   <ShoppingBag className="w-4 h-4 mr-2" />
-                  Buy Now
+                  {t('buyNow')}
                 </button>
               </div>
             </div>
@@ -1020,7 +1095,7 @@ function Details() {
         </div>
 
         <div className="bg-white rounded-lg p-6 mt-8 sm:border-1 sm:border-[#DEE2E6]">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Features</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('features.title')}</h2>
           <div className="grid grid-cols-2 gap-x-12 gap-y-4">
             {features.map((feature, index) => (
               <div key={index}>

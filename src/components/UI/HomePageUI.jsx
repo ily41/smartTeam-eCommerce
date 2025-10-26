@@ -1,9 +1,10 @@
 import { Heart, Loader2, Check, LogIn, UserPlus } from 'lucide-react'
 import React, { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router'
+import { Link } from 'react-router'
 import { useToggleFavoriteMutation, useGetFavoriteStatusQuery } from '../../store/API';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
+import { translateDynamicField } from '../../i18n';
 import CartUtils from './CartUtils';
 import AuthUtils from './AuthUtils';
 import UnauthorizedModal from './UnauthorizedModal';
@@ -26,9 +27,13 @@ const HomePageUI = ({
   unauthorizedAction,
   setUnauthorizedAction,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  
+  // Dynamic translation states
+  const [translatedProductName, setTranslatedProductName] = useState(product?.name || '');
+  const [translatedProductDescription, setTranslatedProductDescription] = useState(product?.shortDescription || '');
  
   
   // Get favorite status for this product
@@ -41,6 +46,25 @@ const HomePageUI = ({
   useEffect(() => {
     setIsAuthenticated(AuthUtils.isAuthenticated());
   }, []);
+
+  // Dynamic translation effect
+  useEffect(() => {
+    async function translateFields() {
+      const targetLang = i18n.language;
+      if (targetLang === 'en' && product?.name) {
+        setTranslatedProductName(await translateDynamicField(product.name, targetLang));
+      } else {
+        setTranslatedProductName(product?.name || '');
+      }
+      
+      if (targetLang === 'en' && product?.shortDescription) {
+        setTranslatedProductDescription(await translateDynamicField(product.shortDescription, targetLang));
+      } else {
+        setTranslatedProductDescription(product?.shortDescription || '');
+      }
+    }
+    translateFields();
+  }, [i18n.language, product?.name, product?.shortDescription]);
 
   // Update local favorite state when API data arrives
   useEffect(() => {
@@ -85,7 +109,7 @@ const HomePageUI = ({
         // Update auth state
         setIsAuthenticated(false);
       } else {
-        toast.error(t('errorAddingToCart') || 'Error adding to cart');
+        toast.error(t('oCart') || 'Error adding to cart');
         console.error('Add to cart error:', error);
       }
     }
@@ -172,8 +196,8 @@ const HomePageUI = ({
               <h1 className="text-[#FF4B43] truncate">{product.currentPrice} AZN</h1>
             </div>
 
-            <p className='font-medium mb-3 whitespace-normal'>{product.name}</p>
-            <p className='text-gray-600 font-normal whitespace-normal [@media(min-width:450px)]:break-words line-clamp-3'>{product.shortDescription}</p>
+            <p className='font-medium mb-3 whitespace-normal'>{translatedProductName}</p>
+            <p className='text-gray-600 font-normal whitespace-normal [@media(min-width:450px)]:break-words line-clamp-3'>{translatedProductDescription}</p>
           </div>
           <div className='absolute top-2 left-2 lg:top-3 lg:right-3 p-6 w-0 h-0 flex justify-center items-center rounded-[50%] bg-[#FF4B43] text-white inter'>
             <p className='text-xs text-center font-semibold lg:text-sm'>{product.discountPercentage}%</p>
@@ -223,9 +247,9 @@ const HomePageUI = ({
         />
         <div className="font-semibold p-2 inter">
           <h1 className="text-lg">{product.currentPrice} AZN</h1>
-          <p className="font-medium whitespace-normal mb-3">{product.name}</p>
+          <p className="font-medium whitespace-normal mb-3">{translatedProductName}</p>
           <p className="text-gray-600 font-normal whitespace-normal [@media(min-width:450px)]:break-words line-clamp-3">
-            {product.shortDescription}
+            {translatedProductDescription}
           </p>
         </div>
         <div className="flex gap-3 p-2">

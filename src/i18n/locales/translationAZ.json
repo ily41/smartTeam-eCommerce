@@ -74,7 +74,7 @@
   "nameAToZ": "Ad: A-dan Z-yə",
   "nameZToA": "Ad: Z-dən A-ya",
   "pleaseLoginFirst": "Zəhmət olmasa əvvəlcə daxil olun",
-  "failedUpdateFavorites": "Favoritləri yeniləmək mümkün olmadı",
+  "failedUpdateFavorites": "Sevimliləri yeniləmək mümkün olmadı",
 
   "signInRequired": "Daxil Olmaq Tələb Olunur",
   "signInRequiredMessage": "Sevimlilərə əlavə etmək üçün üçün daxil olmalısınız. Davam etmək üçün daxil olun və ya hesab yaradın.",
@@ -84,7 +84,6 @@
   "adding": "Əlavə edilir...",
   "addedToCart": "Səbətə əlavə edildi",
   "addToCart": "Səbətə əlavə et",
-  "brands": "Brendlər",
 
   "about": {
     "whoWeAre": "Biz kimik?",
@@ -216,6 +215,31 @@
   "quantity": "Miqdar",
   "price": "Qiymət",
   "totalAmount": "Ümumi məbləğ",
+  
+  "features": {
+    "title": "Xüsusiyyətlər",
+    "name": "Ad",
+    "category": "Kateqoriya", 
+    "quantity": "Miqdar",
+    "sku": "SKU",
+    "stock": "Stok",
+    "hotDeal": "Hot Deal",
+    "inStock": "Stokda var",
+    "outOfStock": "Stokda yoxdur",
+    "yes": "Bəli",
+    "no": "Xeyr"
+  },
+
+  "brands": "Brendlər",
+  "brandsSection": {
+    "searchPlaceholder": "Brendlər axtar...",
+    "showing": "Göstərilir",
+    "brandCountLabel": "brend",
+    "brandsLabel": "BRENDLƏR",
+    "errorTitle": "Brendləri Yükləməkdə Xəta",
+    "errorMessage": "Brendləri yükləyə bilmədik. Zəhmət olmasa, yenidən cəhd edin.",
+    "retry": "Yenidən cəhd et"
+  },
   "errorLoadingCart": "Səbəti yükləmək mümkün olmadı",
   "pleaseTryAgainLater": "Zəhmət olmasa, bir az sonra yenidən cəhd edin",
   "whatsappOrder": "WhatsApp ilə sifariş et",
@@ -227,18 +251,18 @@
   "favoritesEmpty": "Favorit siyahınız boşdur",
   "favoritesEmptyHint": "Bəyəndiyiniz məhsulları əlavə etməyə başlayın!",
   "clearAll": "Hamısını sil",
-  "clearingFavorites": "Favoritlər silinir...",
+  "clearingFavorites": "Sevimlilər silinir...",
   "addingToCart": "Əlavə olunur...",
   "previous": "Əvvəlki",
   "next": "Növbəti",
   "page": "Səhifə",
   "of": "-dən",
-  "loadingFavorites": "Favoritlər yüklənir...",
-  "errorLoadingFavorites": "Favoritlər yüklənərkən xəta baş verdi",
+  "loadingFavorites": "Sevimlilər yüklənir...",
+  "errorLoadingFavorites": "Sevimlilər yüklənərkən xəta baş verdi",
   "confirmClearFavorites": "Bütün favoritləri silmək istədiyinizə əminsiniz?",
   "failedToRemoveFavorite": "Favoritdən silmək mümkün olmadı",
   "failedToAddToCart": "Səbətə əlavə edilə bilmədi",
-  "failedToClearFavorites": "Favoritlər silinə bilmədi",
+  "failedToClearFavorites": "Sevimlilər silinə bilmədi",
   "recommendedForYou": "Sizin üçün tövsiyə olunanlar",
   "description": "Açıqlama",
 
