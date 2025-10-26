@@ -107,15 +107,16 @@ const EditBrandUI = ({item, setOpen}) => {
             <img 
               src={imagePreview} 
               alt="Brand logo preview" 
-              className="w-32 h-32 object-cover rounded-lg border-2 border-gray-700"
+              className="relative w-32 h-32 mx-auto object-cover rounded-lg border-2 border-gray-700"
             />
             <button
               type="button"
               onClick={removeImage}
-              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition"
+              className="absolute -top-2 right-24 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition"
             >
               <X className="w-4 h-4" />
-            </button>
+            </button>                       
+            
           </div>
         )}
 

@@ -201,6 +201,7 @@ function Products() {
   );
 
   const { data: categories } = useGetCategoriesQuery();
+  console.log(categories)
   const { data: favorites } = useGetFavoritesQuery();
   
   const [products, setProducts] = useState([]);
@@ -224,16 +225,18 @@ function Products() {
     { value: 'name_desc', label: 'Name: Z to A' }
   ], []);
 
-  // Find category ID from slug (only for regular category pages) - memoized
   const categoryId = useMemo(() => {
     if (!slug || !categories || isSpecialSlug) return null;
+     
     const category = categories.find(cat => 
-      cat.name.toLowerCase().replace(/\s+/g, '-') === slug.toLowerCase()
+      cat.slug.toLowerCase().replace(/\s+/g, '-') === slug.toLowerCase()
     );
-    return category?.id || null;
-  }, [slug, categories, isSpecialSlug]);
 
-  // Set products based on slug type or search - optimized with ref to track previous values
+    console.log(category)
+    return category?.id ;
+  }, [slug, categories, isSpecialSlug]);
+  console.log(categoryId)
+
   const prevDataRef = useRef({});
   
   useEffect(() => {

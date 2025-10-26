@@ -221,6 +221,28 @@
   "whatsappOrder": "WhatsApp ilə sifariş et",
   "itemAddedToCart": "Məhsul səbətə əlavə olundu",
   "itemRemoved": "Məhsul səbətdən silindi",
-  "cartCleared": "Səbət təmizləndi"
+  "cartCleared": "Səbət təmizləndi",
+
+  
+  "favoritesEmpty": "Favorit siyahınız boşdur",
+  "favoritesEmptyHint": "Bəyəndiyiniz məhsulları əlavə etməyə başlayın!",
+  "clearAll": "Hamısını sil",
+  "clearingFavorites": "Favoritlər silinir...",
+  "addingToCart": "Əlavə olunur...",
+  "previous": "Əvvəlki",
+  "next": "Növbəti",
+  "page": "Səhifə",
+  "of": "-dən",
+  "loadingFavorites": "Favoritlər yüklənir...",
+  "errorLoadingFavorites": "Favoritlər yüklənərkən xəta baş verdi",
+  "confirmClearFavorites": "Bütün favoritləri silmək istədiyinizə əminsiniz?",
+  "failedToRemoveFavorite": "Favoritdən silmək mümkün olmadı",
+  "failedToAddToCart": "Səbətə əlavə edilə bilmədi",
+  "failedToClearFavorites": "Favoritlər silinə bilmədi",
+  "recommendedForYou": "Sizin üçün tövsiyə olunanlar",
+  "description": "Açıqlama",
+
+  "similarProd": "Oxşar məhsullar"
+
 
 }

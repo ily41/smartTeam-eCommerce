@@ -89,7 +89,8 @@ const EditCategoryUI = ({item, setOpen, categories}) => {
           name: formData.name,
           description: formData.description || "description",
           isActive: true,
-          sortOrder: 1
+          sortOrder: 1,
+          parentCategoryId: item.parentCategoryId
         };
         
         formDataToSend.append('categoryData', JSON.stringify(categoryData));

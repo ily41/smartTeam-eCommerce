@@ -163,6 +163,7 @@ button {
 } */
 /* Universal Dark Theme Scrollbar Class */
 
+
 .dark-scrollbar {
   /* Firefox */
   scrollbar-width: thin;
@@ -194,7 +195,6 @@ button {
   background: #6a6a6a;
 }
 
-/* Corner where horizontal and vertical scrollbars meet */
 .dark-scrollbar::-webkit-scrollbar-corner {
   background: #2c2c2c;
 }

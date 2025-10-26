@@ -5,8 +5,10 @@ import { ArrowLeft, Minus, Plus, ShoppingCart, Trash2 } from 'lucide-react';
 import { Link, useParams } from 'react-router';
 import { useGetCartItemsQuery, useUpdateCartItemQuantityMutation, useRemoveCartItemMutation, useRemoveCartMutation, useGetMeQuery, useCreateWhatsappOrderMutation } from '../../store/API';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 
-// ============= AUTH UTILITIES =============
+
+
 const AuthUtils = {
   isAuthenticated() {
     const cookies = document.cookie.split(';');
@@ -20,7 +22,6 @@ const AuthUtils = {
   }
 };
 
-// ============= CART UTILITIES =============
 const CartUtils = {
   CART_KEY: 'ecommerce_cart',
 
@@ -165,6 +166,7 @@ const EmptyCartSkeleton = () => (
 );
 
 const Cart = () => {
+  const { t } = useTranslation();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [localCart, setLocalCart] = useState({ items: [], totalAmount: 0 });
   
@@ -211,6 +213,7 @@ const Cart = () => {
   // Determine which cart data to use
   const cartItems = isAuthenticated ? cartItemsD : localCart;
   const isLoading = isAuthenticated ? apiLoading : false;
+  console.log(cartItems)
 
   // Create WhatsApp order
   const createOrder = async () => {
@@ -248,6 +251,8 @@ const Cart = () => {
           CartUtils.clearCart();
           setLocalCart({ items: [], totalAmount: 0 });
         }
+        
+        toast.success(t('cartCleared'));
       }
     } catch (error) {
       console.error(error?.data);
@@ -349,6 +354,8 @@ const Cart = () => {
         const updatedCart = CartUtils.removeItem(id);
         setLocalCart(updatedCart);
       }
+      
+      toast.success(t('itemRemoved'));
     } catch (error) {
       console.error('Failed to remove cart item:', error);
       toast.error('Failed to remove item');
@@ -372,6 +379,8 @@ const Cart = () => {
         CartUtils.clearCart();
         setLocalCart({ items: [], totalAmount: 0 });
       }
+      
+      toast.success(t('cartCleared'));
     } catch (error) {
       console.error('Failed to remove cart:', error);
       toast.error('Failed to clear cart');
@@ -399,8 +408,8 @@ const Cart = () => {
     return (
       <section className="inter bg-[#f7fafc] min-h-[80vh] flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Error loading cart</h2>
-          <p className="text-gray-600">Please try again later</p>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">{t('errorLoadingCart')}</h2>
+          <p className="text-gray-600">{t('pleaseTryAgainLater')}</p>
         </div>
       </section>
     );
@@ -425,7 +434,7 @@ const Cart = () => {
           {isLoading ? (
             <div className="h-7 bg-gray-300 rounded w-40 animate-pulse"></div>
           ) : (
-            <h1>My Cart ({cartItems?.items?.length || 0})</h1>
+            <h1>{t('myCart')} ({cartItems?.items?.length || 0})</h1>
           )}
         </div>
 
@@ -440,11 +449,12 @@ const Cart = () => {
               <div className='flex-5 flex gap-5 p-4 flex-col bg-white lg:rounded-lg'>
                 {cartItems?.items?.length === 0 ? (
                   <div className="text-center py-12">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Your cart is empty</h3>
-                    <p className="text-gray-600">Add some items to get started</p>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('yourCartIsEmpty')}</h3>
+                    <p className="text-gray-600">{t('addItemsToStart')}</p>
                   </div>
                 ) : (
                   cartItems?.items?.map((item, index) => {
+                    console.log(item)
                     const effectiveQuantity = getEffectiveQuantity(item);
                     const isItemUpdating = updatingItems.has(item.id);
                     const isItemRemoving = removingItems.has(item.id);
@@ -533,7 +543,7 @@ const Cart = () => {
                                 onClick={() => handleRemoveItem(item.id)}
                                 disabled={isItemRemoving || isItemUpdating}
                               >
-                                {isItemRemoving ? 'Removing...' : 'Remove'}
+                                {isItemRemoving ? t('removing') : t('remove')}
                               </button>
                             </div>
                           </div>
@@ -579,14 +589,14 @@ const Cart = () => {
                     <div className='justify-between hidden lg:flex'>
                       <Link to='/' className='flex items-center gap-2 text-white bg-black inter p-2 rounded-lg'>
                         <ArrowLeft size={20} />
-                        <p>Back to Shop</p>
+                        <p>{t('backToShop')}</p>
                       </Link>
                       <button
                         onClick={() => handleRemoveCart()}
                         className='px-3 bg-white hover:bg-gray-100 cursor-pointer text-red-500 rounded-lg border-1 border-[#bfc2c6] disabled:opacity-50 disabled:cursor-not-allowed'
                         disabled={isRemovingCart}
                       >
-                        {isRemovingCart ? "Removing All..." : "Remove all"}
+                        {isRemovingCart ? t('removingAll') : t('removeAll')}
                       </button>
                     </div>
                   </>
@@ -596,15 +606,15 @@ const Cart = () => {
               <div className='lg:bg-white lg:p-5 lg:shadow-sm py-1 lg:h-fit flex-2 lg:rounded-lg'>
                 <div className="border-t lg:border-none border-gray-200 pt-4 space-y-3">
                   <div className="flex justify-between text-gray-600 text-lg">
-                    <span>Subtotal:</span>
+                    <span>{t('subtotal')}:</span>
                     <span>{cartItems?.totalAmount?.toFixed(2)} AZN</span>
                   </div>
                   <div className="flex justify-between text-red-500 text-lg">
-                    <span>Discount:</span>
+                    <span>{t('discount')}:</span>
                     <span>- {(cartItems?.totalDiscount || 0).toFixed(2)} AZN</span>
                   </div>
                   <div className="flex justify-between text-lg mb-7 font-bold text-gray-900 pt-2 border-t border-gray-200">
-                    <span>Total:</span>
+                    <span>{t('total')}:</span>
                     <span>{((cartItems?.totalAmount || 0) - (cartItems?.totalDiscount || 0)).toFixed(2)} AZN</span>
                   </div>
                 </div>
@@ -615,7 +625,7 @@ const Cart = () => {
                   disabled={isOrderLoading || !cartItems?.items?.length}
                 >
                   <ShoppingCart size={20} />
-                  <span>{isOrderLoading ? 'Processing...' : 'Buy Now'}</span>
+                  <span>{isOrderLoading ? 'Processing...' : t('buyNow')}</span>
                 </button>
               </div>
             </>

@@ -514,19 +514,6 @@ const EditProduct = ({ setOpen, idPr }) => {
             </label>
           </div>
 
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="isActive"
-              name="isActive"
-              checked={formData.isActive}
-              onChange={handleInputChange}
-              className="w-4 h-4 text-indigo-600 bg-[#2c2c2c] border-gray-600 rounded focus:ring-indigo-500 focus:ring-2"
-            />
-            <label htmlFor="isActive" className="text-sm font-medium">
-              Active
-            </label>
-          </div>
         </div>
 
         {/* Descriptions */}

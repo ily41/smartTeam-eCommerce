@@ -28,11 +28,11 @@ const ProductFormUI = ({setOpen}) => {
     categoryId: "",
     brandId: "",
     prices: [1, 2, 3, 4].map((role) => {
-      const price = 0; // default price
+      const price = 0;
       return {
         userRole: role,
         price,
-        discountedPrice: price, // same as price by default
+        discountedPrice: price, 
         discountPercentage: 0
       };
     })

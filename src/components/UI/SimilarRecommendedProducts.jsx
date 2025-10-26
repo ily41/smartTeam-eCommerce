@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router';
 import CartUtils from './CartUtils';
 import AuthUtils from './AuthUtils';
 import UnauthorizedModal from './UnauthorizedModal';
+import { useTranslation } from 'react-i18next';
 
 // Skeleton Loading Components
 const SkeletonProductCard = ({ isMobile = false }) => {
@@ -44,11 +45,12 @@ const SkeletonProductCard = ({ isMobile = false }) => {
   );
 };
 
-// Unauthorized Modal
 
 
 // Desktop Product Card
 const ProductCard = ({ product, isAddingToCart, loadingProductId, showSuccess, onAddToCart, onUnauthorized }) => {
+
+  
   const { data: favoriteStatus } = useGetFavoriteStatusQuery({ productId: product.id });
   const [toggleFavorite, { isLoading: isTogglingFavorite }] = useToggleFavoriteMutation();
   const [localFavorite, setLocalFavorite] = useState(false);
@@ -270,6 +272,7 @@ const SimilarProducts = ({ products, isLoading }) => {
   const [unauthorizedAction, setUnauthorizedAction] = useState('');
   const [addCartItem, { isLoading: isAddingToCart }] = useAddCartItemMutation();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const {t} = useTranslation()
   useEffect(() => {
     setIsAuthenticated(AuthUtils.isAuthenticated());
   }, []);
@@ -382,7 +385,7 @@ const SimilarProducts = ({ products, isLoading }) => {
       {/* Mobile View */}
       <div className="md:hidden mt-4">
         <div className="px-4 py-4">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Similar Products</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('similarProd')}</h2>
           <div className="overflow-x-scroll scrollbar-hide flex gap-3 rounded-lg p-3">
             {products.map((product) => (
               <MobileProductCard 
@@ -402,7 +405,7 @@ const SimilarProducts = ({ products, isLoading }) => {
       {/* Desktop View */}
       <div className="mt-8 hidden md:block">
         <div className="flex items-center justify-between mb-2">
-          <h2 className="text-xl font-semibold text-gray-900">Similar Products</h2>
+          <h2 className="text-xl font-semibold text-gray-900">{t('similarProd')}</h2>
           <div className="flex space-x-2">
             <button 
               onClick={() => scroll('left')}

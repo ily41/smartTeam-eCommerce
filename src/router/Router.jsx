@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Outlet } from "react-router";
+import { BrowserRouter, Routes, Route, Outlet, useLocation } from "react-router";
 import Header from "../components/user/Header";
 import Footer from "../components/user/Footer";
 import Home from "../components/user/Home";
@@ -32,6 +32,7 @@ import Brands from "../Pages/user/Brands";
 import Brand from "../Pages/admin/Brand";
 import ErrorPage from "../products/ErrorPage";
 const Router = () => {
+  
   return (
     <BrowserRouter>
       <ScrollToTop />
@@ -86,15 +87,15 @@ const Router = () => {
             </Auth> 
           }
         >
-          <Route index element={<Users />} />
-          <Route path="category" element={<Category />} />
-          <Route path="products" element={<ProductsUI />} />
-          <Route path="products/:id" element={<ProductSpec />} />
-          <Route path="banners" element={<BannersUI />} />
-          <Route path="filters" element={<FilterUi />} />
-          <Route path="product-filters" element={<AssignFilter />} />
-          <Route path="file-management" element={<FileManagementPanel />} />
-          <Route path="brands" element={<Brand />} />
+            <Route index element={<Users />} />
+            <Route path="category" element={<Category />} />
+            <Route path="products" element={<ProductsUI />} />
+            <Route path="products/:id" element={<ProductSpec />} />
+            <Route path="banners" element={<BannersUI />} />
+            <Route path="filters" element={<FilterUi />} />
+            <Route path="product-filters" element={<AssignFilter />} />
+            <Route path="file-management" element={<FileManagementPanel />} />
+            <Route path="brands" element={<Brand />} />
         </Route>
         </Routes>
       </SearchProvider>

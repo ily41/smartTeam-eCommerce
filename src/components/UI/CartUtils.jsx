@@ -60,7 +60,7 @@ const CartUtils = {
             productName: product.name,
             productSku: product.sku,
             productDescription: product.shortDescription || product.description,
-            productImageUrl: product.imageUrl || product.images ?.[0]?.imageUrl || '',
+            productImageUrl: product.primaryImageUrl || product.images ?.[0]?.imageUrl || '',
             quantity,
             unitPrice: this.getProductPrice(product),
             totalPrice: this.getProductPrice(product) * quantity,

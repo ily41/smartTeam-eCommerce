@@ -16,6 +16,7 @@ export const FilterSidebar = React.memo(({
   forcedCategoryId = null, 
   showCategory = false 
 }) => {
+  console.log(forcedCategoryId)
   
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState([]);

@@ -220,5 +220,30 @@
   "whatsappOrder": "Order via WhatsApp",
   "itemAddedToCart": "Item added to cart",
   "itemRemoved": "Item removed",
-  "cartCleared": "Cart cleared"
+  "cartCleared": "Cart cleared",
+
+
+
+  "favoritesEmpty": "Your favorites list is empty",
+  "favoritesEmptyHint": "Start adding products you love!",
+  "clearAll": "Clear All",
+  "clearingFavorites": "Clearing favorites...",
+  "addingToCart": "Adding...",
+  "previous": "Previous",
+  "next": "Next",
+  "page": "Page",
+  "of": "of",
+  "loadingFavorites": "Loading favorites...",
+  "errorLoadingFavorites": "Error loading favorites",
+  "confirmClearFavorites": "Are you sure you want to clear all favorites?",
+  "failedToRemoveFavorite": "Failed to remove from favorites",
+  "failedToAddToCart": "Failed to add to cart",
+  "failedToClearFavorites": "Failed to clear favorites",
+  "recommendedForYou": "Recommended for you",
+  "description": "Description",
+
+  "similarProd": "Similar Products"
+
+
+
 }
