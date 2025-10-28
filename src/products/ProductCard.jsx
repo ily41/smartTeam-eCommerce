@@ -98,22 +98,25 @@ export function ProductCard({
         </Link>
 
         <div className="p-4 relative">
-          <button
-            onClick={handleFavoriteClick}
-            disabled={isTogglingFavorite}
-            className="absolute top-4 right-4 p-2 rounded-lg border border-gray-200 bg-white shadow-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed z-10"
-          >
-            <Heart
-              className={`w-5 h-5 transition-colors text-red-500 hover:fill-red-400 cursor-pointer ${
-                favoriteStatus?.isFavorite && 'fill-red-500'
-              }`}
-            />
-          </button>
+          
 
           <Link to={`/details/${id}`} className="block mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[56px]">
-              {name}
-            </h3>
+            <div className='flex gap-2'>
+              <h3 className="text-sm font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[56px]">
+                {name}
+              </h3>
+              <button
+                onClick={handleFavoriteClick}
+                disabled={isTogglingFavorite}
+                className=" top-4 right-4 p-1 lg:p-2 h-fit rounded-lg border border-gray-200 bg-white shadow-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed z-10"
+              >
+                <Heart
+                  className={`w-4 h-4 lg:w-5 lg:h-5 transition-colors text-red-500 hover:fill-red-400 cursor-pointer ${
+                    favoriteStatus?.isFavorite && 'fill-red-500'
+                  }`}
+                />
+              </button>
+            </div>
             {description && (
               <p className="text-sm text-gray-600 mb-2 line-clamp-2">
                 {description}

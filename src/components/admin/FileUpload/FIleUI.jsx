@@ -80,7 +80,6 @@ const FileManagementPanel = () => {
   };
 
   const handleDelete = async (fileId) => {
-    if (!window.confirm('Are you sure you want to delete this file?')) return;
 
     try {
       await removeFile(fileId).unwrap();

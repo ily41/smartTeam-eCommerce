@@ -111,6 +111,7 @@ function Products() {
   const { slug } = useParams();
   const [searchParams] = useSearchParams();
   const location = window.location.pathname;
+
   const [showUnauthorizedModal, setShowUnauthorizedModal] = useState(false);
   const [unauthorizedAction, setUnauthorizedAction] = useState('');
   

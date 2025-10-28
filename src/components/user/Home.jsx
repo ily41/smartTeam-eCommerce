@@ -267,7 +267,6 @@ const Home = () => {
                   </>
                 ) : (
                   (translatedParentCategories.length > 0 ? translatedParentCategories : parentCategories)?.map((item) => {
-                    {console.log(item)}
                     return (
                       <Link 
                         key={item.id}
@@ -397,7 +396,7 @@ const Home = () => {
             </div>
 
             <div className='grid grid-cols-3 mt-10 gap-2 text-sm'>
-                <Link to='sebeke-avadanliqlari' className='justify-center md:justify-start flex col-span-3 items-center bg-white lg:hidden rounded-lg border border-[#DEE2E6] p-4'>
+                <Link to='categories/sebeke-avadanliqlari' state={{ name: 'sebeke avadanliqlari' }} className='justify-center md:justify-start flex col-span-3 items-center bg-white lg:hidden rounded-lg border border-[#DEE2E6] p-4'>
                   <div className='flex flex-row gap-4'>
                     <div className='w-full h-full flex-shrink-0 my-auto object-cover max-w-[140px] md:max-w-[160px]'>
                       <img className='w-full object-contain max-h-[160px]' src="./deals/network.svg" alt="" />
@@ -409,37 +408,37 @@ const Home = () => {
                   </div>
                 </Link>
 
-              <Link to='komputerler' className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
+              <Link to='categories/komputerler' state={{ name: 'komputerler' }} className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
                   <img className='min-h-[120px]' src="./deals/homeComputer.svg" alt="" />
                 </div>
                 <p className='text-center'>{t('computers')}</p>
               </Link>
-              <Link to='noutbuklar' className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
+              <Link to='categories/noutbuklar' state={{ name: 'noutbuklar' }} className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
                   <img className='min-h-[120px]' src="./deals/homeLaptop.svg" alt="" />
                 </div>
                 <p className='text-center'>Laptops</p>
               </Link>
-              <Link to='ofis-avadanliqlari' className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
+              <Link to='categories/ofis-avadanliqlari' state={{ name: 'ofis avadanliqlari' }} className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
                   <img className='min-h-[120px]' src="./deals/homePrinter.svg" alt="" />
                 </div>
                 <p className='text-center'>{t('officeEquipment')}</p>
               </Link>
-              <Link to='ticaret-avadanliqlari' className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
+              <Link to='categories/ticaret-avadanliqlari' state={{ name: 'ticaret avadanliqlari' }} className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
                   <img className='min-h-[120px]' src="./deals/homeBarcode.svg" alt="" />
                 </div>
                 <p className='text-center'>{t('commercialEquipment')}</p>
               </Link>
-              <Link to='musahide-sistemleri' className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
+              <Link to='categories/musahide-sistemleri' state={{ name: 'musahide sistemleri' }} className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
                   <img className='min-h-[120px]' src="./deals/homeSurveillance.svg" alt="" />
                 </div>
                 <p className='text-center'>{t('surveillanceSystem')}</p>
               </Link>
-              <Link to='komputer-avadanliqlari' className='bg-white self-center justify-center items-center flex flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
+              <Link to='categories/komputer-avadanliqlari' state={{ name: 'komputer avadanliqlari' }} className='bg-white self-center justify-center items-center flex flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
                   <img className='min-h-[120px]' src="./deals/homeKeyboard.svg" alt="" />
                 </div>
@@ -603,7 +602,10 @@ const Home = () => {
             <div className='text-2xl mb-8 font-semibold'>
                 <h1>{t('location')}</h1>
             </div>
-            <MyMap />
+               <div className='w-full h-[400px] md:h-[500px] lg:h-[600px]'>
+     <MyMap markerIndex={null} />
+   </div>
+            
         </section>
 
       </main>

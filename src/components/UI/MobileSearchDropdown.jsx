@@ -1,5 +1,6 @@
 import React from 'react';
 import { Search, Package, Tag, Grid } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 // Skeleton Components
 const CategorySkeletonMobile = () => (
@@ -40,6 +41,7 @@ const MobileSearchDropdown = ({
   onViewAllProducts
 }) => {
   // Empty state - before typing
+  const {t} = useTranslation()
   if (searchQuery.length === 0 || searchQuery.length === 1) {
     return (
       <div className="py-12 text-center">
@@ -151,7 +153,7 @@ const MobileSearchDropdown = ({
         <div>
           <h3 className="text-xs font-semibold text-gray-500 mb-3 flex items-center gap-2">
             <Tag className="w-4 h-4" />
-{t('brandsSection.brandsLabel')} ({searchResult.brands.length})
+            {t('brandsSection.brandsLabel')} ({searchResult.brands.length})
           </h3>
           <div className="flex flex-wrap gap-2">
             {searchResult.brands.slice(0, 6).map((brand) => (

@@ -235,7 +235,7 @@ const BannersUI = () => {
                   </svg>
                 </button>
 
-                {isDropdownOpen && (
+                {isDropdownOpen && ( 
                   <div className="absolute bg-gray-800 z-10 w-full mt-1 border border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
                     {isCatsLoading ? (
                       <div className="px-4 py-3 text-gray-400 text-center">Loading categories...</div>

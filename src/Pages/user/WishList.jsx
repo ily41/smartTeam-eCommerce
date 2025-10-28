@@ -96,14 +96,12 @@ const WishList = () => {
   };
 
   const handleClearAll = async () => {
-    if (window.confirm(t('confirmClearFavorites'))) {
       try {
         await clearFavorites().unwrap();
       } catch (err) {
         toast.error(t('failedToClearFavorites'));
         console.error('Clear favorites error:', err);
       }
-    }
   };
 
   const renderButton = (productId) => {
@@ -136,7 +134,7 @@ const WishList = () => {
     return (
       <button
         onClick={(e) => handleAddToCart(e, productId)}
-        className="w-full cursor-pointer flex justify-center items-center text-sm lg:text-md bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-md font-medium transition-colors duration-200"
+        className="w-full whitespace-nowrap cursor-pointer flex justify-center items-center text-sm lg:text-md bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-md font-medium transition-colors duration-200"
       >
         {t('addToCart')}
       </button>
@@ -160,7 +158,7 @@ const WishList = () => {
   }
 
   return (
-    <section className="inter bg-[#f7fafc] whitespace-nowrap pb-8">
+    <section className="inter bg-[#f7fafc]  pb-8">
       {/* Mobile Search + Breadcrumb */}
       <div className="lg:hidden px-4 pl-7 py-4 bg-white lg:border-transparent">
         <Breadcrumb />
@@ -186,7 +184,7 @@ const WishList = () => {
           )}
         </div>
 
-        <div className="lg:bg-transparent rounded-lg flex flex-col mx-auto md:mx-0 max-w-[95vh] md:max-w-full lg:flex-row lg:gap-4 shadow-sm lg:shadow-none p-4 space-y-4">
+        <div className="lg:bg-transparent rounded-lg flex flex-col mx-auto md:mx-0 max-w-[95vh] md:max-w-full lg:flex-row lg:gap-4 shadow-sm lg:shadow-none lg: p-4 space-y-4">
           <div className="flex-5 flex gap-5 flex-col lg:rounded-lg">
             {favorites?.length === 0 ? (
               <div className="text-center py-12 bg-white rounded-lg">
@@ -195,12 +193,12 @@ const WishList = () => {
                 <p className="text-gray-500 mt-2">{t('favoritesEmptyHint')}</p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 [@media(min-width:1300px)]:grid-cols-5 lg:grid-cols-4 gap-2 whitespace-nowrap">
+              <div className="grid grid-cols-2 sm:grid-cols-3 [@media(min-width:1300px)]:grid-cols-5 lg:grid-cols-4 gap-2 ">
                 {(translatedFavorites.length > 0 ? translatedFavorites : favorites).map((item) => (
                   <Link
                     key={item.id}
                     to={`/details/${item.product.id}`}
-                    className="bg-white p-1 border-1 cursor-pointer border-gray-300 rounded-lg transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-gray-400 relative"
+                    className="bg-white flex flex-col justify-between p-1 border-1 cursor-pointer border-gray-300 rounded-lg transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-gray-400 relative"
                   >
                     <img
                       className="w-full rounded-lg p-3 aspect-square"
@@ -214,7 +212,7 @@ const WishList = () => {
                       <h1 className="text-lg">
                         {item.product.currentPrice} AZN
                       </h1>
-                      <p className="font-medium mb-3 line-clamp-2">{item.product.name || 'Product'}</p>
+                      <p className="font-medium mb-3 whitepsace-normal">{item.product.name || 'Product'}</p>
                       {item.product.shortDescription && (
                         <p className="text-gray-600 font-normal whitespace-normal [@media(min-width:450px)]:break-words line-clamp-3 text-sm">
                           {item.product.shortDescription}
@@ -226,7 +224,7 @@ const WishList = () => {
                       <button
                         onClick={(e) => handleRemoveFavorite(e, item.product.id)}
                         disabled={isRemovingFavorite}
-                        className="p-3 rounded-lg border-[#DEE2E7] bg-white shadow-sm hover:bg-gray-50 transition-colors disabled:opacity-50"
+                        className="p-1 rounded-lg border-[#DEE2E7] bg-white shadow-sm hover:bg-gray-50 transition-colors disabled:opacity-50"
                       >
                         <Heart className="w-4 h-4 lg:w-5 lg:h-5 fill-red-500 text-red-500" />
                       </button>

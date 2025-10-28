@@ -1,25 +1,38 @@
 import React from "react";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 
-const markers = [
-  { lat: 40.3419741, lng: 49.8399698, title: "Smartteam Office 1" },
-  { lat: 40.329590, lng: 49.781784, title: "Smartteam Office 2" },
-];
 
 // Calculate center between both markers
-const center = {
-  lat: (markers[0].lat + markers[1].lat) / 2,
-  lng: (markers[0].lng + markers[1].lng) / 2,
-};
 
-function MyMap() {
+const MyMap = ({ markerIndex }) => {
+  const markers = [
+    { lat: 40.3419741, lng: 49.8399698, title: "Branch 1 - Sederek" },
+    { lat: 40.329590, lng: 49.781784, title: "Branch 2 - Bayil" },
+  ];
+
+  // Calculate center between both markers
+  const center = {
+    lat: (markers[0].lat + markers[1].lat) / 2,
+    lng: (markers[0].lng + markers[1].lng) / 2,
+  };
+
+  // If markerIndex is provided (not null/undefined), show single marker
+  // If markerIndex is null/undefined, show all markers
+  const showAllMarkers = markerIndex === null || markerIndex === undefined;
+  
+  const mapCenter = showAllMarkers 
+    ? center 
+    : { lat: markers[markerIndex].lat, lng: markers[markerIndex].lng };
+  
+  const mapZoom = showAllMarkers ? 14 : 15;
+
   return (
     <LoadScript googleMapsApiKey="AIzaSyD41sWartpep37guUs7W7ipsbijuI2nMzE">
-      <div className="w-full h-[400px] lg:h-[600px] rounded-lg overflow-hidden">
+      <div className="w-full h-full rounded-lg overflow-hidden">
         <GoogleMap
           mapContainerStyle={{ width: "100%", height: "100%" }}
-          center={center}
-          zoom={13}
+          center={mapCenter}
+          zoom={mapZoom}
           options={{
             mapTypeControl: true,
             fullscreenControl: true,
@@ -27,17 +40,26 @@ function MyMap() {
             streetViewControl: false,
           }}
         >
-          {markers.map((marker, i) => (
+          {showAllMarkers ? (
+            // Show all markers
+            markers.map((marker, index) => (
+              <Marker
+                key={index}
+                position={{ lat: marker.lat, lng: marker.lng }}
+                title={marker.title}
+              />
+            ))
+          ) : (
+            // Show only selected marker
             <Marker
-              key={i}
-              position={{ lat: marker.lat, lng: marker.lng }}
-              title={marker.title}
+              position={{ lat: markers[markerIndex].lat, lng: markers[markerIndex].lng }}
+              title={markers[markerIndex].title}
             />
-          ))}
+          )}
         </GoogleMap>
       </div>
     </LoadScript>
   );
-}
+};
 
 export default MyMap;

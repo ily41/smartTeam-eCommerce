@@ -187,7 +187,6 @@ const Header = () => {
   };
 
   const handleFavoriteClick = () => {
-    console.log("salam")
     setUnauthorizedAction('add items to Favorites');
     setShowUnauthorizedModal(true);
   }
@@ -406,6 +405,10 @@ const Header = () => {
               <Link to='/products' className="text-gray-700 inter text-sm lg:text-base hover:text-gray-900 transition-colors duration-200">
                 {t('products')}
               </Link>
+
+              <Link to='/brands' className="text-gray-700 inter text-sm lg:text-base hover:text-gray-900 transition-colors duration-200">
+                {t('brands')}
+              </Link>
                           
               <Link to='/about' className="text-gray-700 inter text-sm lg:text-base hover:text-gray-900 transition-colors duration-200">
                 {t('aboutPage')}
@@ -419,9 +422,7 @@ const Header = () => {
                 {t('contactPage')}
               </Link>
 
-              <Link to='/brands' className="text-gray-700 inter text-sm lg:text-base hover:text-gray-900 transition-colors duration-200">
-                {t('brands')}
-              </Link>
+              
             </nav>
           </div>
 

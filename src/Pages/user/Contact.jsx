@@ -1,6 +1,7 @@
 import { ArrowRight } from 'lucide-react'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next';
+import BranchesSection from './BranchSelection';
 
 const Contact = () => {
     const { t } = useTranslation();
@@ -9,7 +10,6 @@ const Contact = () => {
     const handleBranchClick = () => {
       setIsSwapped(!isSwapped);
     };
-    console.log(isSwapped)
   return (
     <section className='bg-[#f7fafc] pt-10 inter min-h-screen'>
         <div className='bg-white md:max-w-[80vw] mx-auto md:rounded-lg border-1 border-[#dee2e6]'>
@@ -83,7 +83,9 @@ const Contact = () => {
                                         ? 'translate-y-56'    // Move down when swapped
                                         : 'translate-y-0'    // Stay at top when not swapped
                                     }`}>
-                        <div className='flex-1 bg-gray-400 rounded-l-lg'></div>
+                        <div className='flex-1 bg-gray-400 rounded-l-lg  w-[184px] h-[200px]'>
+                            <img src="./contact/field1.jpg" className='h-full w-full object-contaion' alt="" />
+                        </div>
                         <div className={`flex-1 p-8 pt-6 pb-15 flex flex-col gap-3 ${isSwapped ? 'bg-[#323232]' : 'bg-white'} transition-all duration-500 ease-in-out  rounded-r-lg`}>
                             <h1 className={`text-2xl font-semibold mb-3 ${isSwapped ? 'text-white' : 'text-black'}`}>Branch 1</h1>
                             <hr className='text-[#9F9F9F]'/>
@@ -97,7 +99,9 @@ const Contact = () => {
                                         ? '-translate-y-56'    // Move down when swapped
                                         : 'translate-y-0'     // Stay at top when not swapped
                                     }`}>
-                        <div className='flex-1 bg-gray-400 rounded-l-lg'></div>
+                        <div className='flex-1 bg-gray-400 rounded-l-lg'>
+                            <img src="./contact/field1.jg" className='object-cover' alt="" />
+                        </div>
                         <div className={`flex-1 p-8 pt-6 pb-15 flex flex-col gap-3 ${isSwapped ? 'bg-white' : 'bg-[#323232]'} transition-all duration-500 ease-in-out  rounded-r-lg`}>
                             <h1 className={`text-2xl font-semibold mb-3 ${isSwapped ? 'text-black' : 'text-white'}`}>Branch 2</h1>
                             <hr className='text-[#9F9F9F]'/>
@@ -127,6 +131,8 @@ const Contact = () => {
                 </div>
             </div>
         </div> */}
+
+        <BranchesSection />
 
 
 

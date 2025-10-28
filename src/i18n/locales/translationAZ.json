@@ -266,7 +266,11 @@
   "recommendedForYou": "Sizin üçün tövsiyə olunanlar",
   "description": "Açıqlama",
 
-  "similarProd": "Oxşar məhsullar"
+  "similarProd": "Oxşar məhsullar",
+  "sederek": "Sədərək filialı",
+  "bayil":"Bayil Filiali",
+  "workTime1":"1-6: 9:00  - 18:00",
+  "workTime2":"1-6: 9:00  - 18:00 PM"
 
 
 }

@@ -8,6 +8,8 @@ export function Breadcrumb({ productData = null }) {
   const { i18n } = useTranslation();
   const location = useLocation();
   const pathnames = location.pathname.split("/").filter((x) => x);
+
+
   
   // Dynamic translation states
   const [translatedProductData, setTranslatedProductData] = useState(null);
@@ -123,7 +125,6 @@ export function Breadcrumb({ productData = null }) {
     );
   }
 
-  // ✅ Default breadcrumb (for About, Contact, etc.)
   return (
     <nav className="flex items-center space-x-2 text-sm text-[#8B96A5] inter">
       <Link
@@ -134,7 +135,8 @@ export function Breadcrumb({ productData = null }) {
       </Link>
 
       {pathnames.map((value, index) => {
-        if (isId(value) || value == "categories") return null;
+        if (isId(value) || value == "categories")  return null;
+        
 
         const to = `/${pathnames.slice(0, index + 1).join("/")}`;
         const isLast = index === pathnames.length - 1;

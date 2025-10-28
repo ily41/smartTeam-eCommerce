@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useGetCategoryQuery, useGetRecommendedQuery } from '../../store/API';
 import { Link, useLocation, useParams } from 'react-router';
 import { Breadcrumb } from '../../products/Breadcrumb';
 import SimilarProducts from '../../components/UI/SimilarRecommendedProducts';
+import { useTranslation } from 'react-i18next';
+import { translateDynamicField } from '../../i18n';
 
 // Skeleton Components
 const SkeletonCategoryCard = () => (
@@ -48,18 +50,22 @@ const SubCategoriesSkeleton = () => {
   );
 };
 
-// Main Components
-const CategoryCard = ({ title, imageSrc = null, slug }) => {
-  return(
-  <Link to={`/products/${slug}`} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200 cursor-pointer group">
+// Category Card
+const CategoryCard = ({ title, imageSrc = null, slug }) => (
+  <Link
+    to={`/products/${slug}`}
+    className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200 cursor-pointer group"
+  >
     <div className="flex flex-col items-center text-center h-full">
       <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 bg-gray-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-gray-50 transition-colors">
         {imageSrc ? (
-          <img src={`https://smartteamaz-001-site1.qtempurl.com/${imageSrc}`} alt={title} className="w-full h-full object-contain rounded-lg" />
+          <img
+            src={`https://smartteamaz-001-site1.qtempurl.com/${imageSrc}`}
+            alt={title}
+            className="w-full h-full object-contain rounded-lg"
+          />
         ) : (
-          <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-gray-200 rounded-md">
-            <img src={`https://smartteamaz-001-site1.qtempurl.com/${imageSrc}`  } alt="" />
-          </div>
+          <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-gray-200 rounded-md" />
         )}
       </div>
       <h3 className="text-sm sm:text-base md:text-lg font-medium text-gray-800 group-hover:text-blue-600 transition-colors">
@@ -67,25 +73,55 @@ const CategoryCard = ({ title, imageSrc = null, slug }) => {
       </h3>
     </div>
   </Link>
-)};
+);
 
-const formatName = (value) =>
-  value.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
-
+// Main Component
 const SubCategories = () => {
   const { slug } = useParams();
   const { data: subs, isLoading } = useGetCategoryQuery(slug);
   const { data: similar, isLoading: isSimilarLoading } = useGetRecommendedQuery({
-    categoryId: subs?.id, 
+    categoryId: subs?.id,
     limit: 6
   });
   const location = useLocation();
   const { name } = location.state || {};
-  console.log(name)
-  
+  const { i18n } = useTranslation();
+  const [translatedSubs, setTranslatedSubs] = useState(null);
 
-  // Show skeleton while loading
-  if (isLoading) {
+  // ✅ Translate category and subcategory names when language changes
+  useEffect(() => {
+    async function translateCategoryData() {
+      if (!subs) return;
+      const targetLang = i18n.language;
+
+      // If language is English, translate dynamically
+      if (targetLang === 'en') {
+        const translated = { ...subs };
+
+        if (subs.name) {
+          translated.name = await translateDynamicField(subs.name, targetLang);
+        }
+
+        if (Array.isArray(subs.subCategories)) {
+          translated.subCategories = await Promise.all(
+            subs.subCategories.map(async (sub) => ({
+              ...sub,
+              name: await translateDynamicField(sub.name, targetLang),
+            }))
+          );
+        }
+
+        setTranslatedSubs(translated);
+      } else {
+        // Use original data for non-English languages
+        setTranslatedSubs(subs);
+      }
+    }
+
+    translateCategoryData();
+  }, [i18n.language, subs]);
+
+  if (isLoading || !translatedSubs) {
     return <SubCategoriesSkeleton />;
   }
 
@@ -100,30 +136,27 @@ const SubCategories = () => {
         {/* Page Title */}
         <div className="mb-8">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">
-            {name}
+            {translatedSubs.name || name}
           </h1>
         </div>
         
         {/* Categories Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-          {subs?.subCategories?.map((category, index) => {
-            return (
-              <CategoryCard 
-                key={index} 
-                title={category.name} 
-                imageSrc={category.imageUrl}
-                slug={category.slug}
-              />
-            );
-          })}
+          {translatedSubs?.subCategories?.map((category, index) => (
+            <CategoryCard
+              key={index}
+              title={category.name}
+              imageSrc={category.imageUrl}
+              slug={category.slug}
+            />
+          ))}
         </div>
 
         {/* Similar Products Section */}
         <SimilarProducts
-          products={similar?.recentlyAdded} 
-          isLoading={isSimilarLoading} 
+          products={similar?.recentlyAdded}
+          isLoading={isSimilarLoading}
         />
-        
       </div>
     </section>
   );
