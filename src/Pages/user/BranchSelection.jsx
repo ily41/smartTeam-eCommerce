@@ -5,21 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 const BranchesSection = () => {
   const [selectedBranch, setSelectedBranch] = useState(0);
-
-  // Mock translation function for demo
-  const t = (key) => {
-    const translations = {
-      'footer.contactUs': 'Contact Us',
-      'sederek': 'Sederek Branch',
-      'bayil': 'Bayil Branch',
-      'footer.address1': 'Baku',
-      'footer.address2': 'Azerbaijan',
-      'footer.address3': ' - Main Store',
-      'workTime1': 'Mon-Fri: 9:00 AM - 6:00 PM',
-      'workTime2': 'Mon-Sat: 10:00 AM - 8:00 PM',
-    };
-    return translations[key] || key;
-  };
+  const { t } = useTranslation();
 
   const branches = [
     {
@@ -29,6 +15,8 @@ const BranchesSection = () => {
       locationDetails: 'footer.address2',
       locationStore: 'footer.address3',
       workTime: 'workTime1',
+      phone: '+994707513111',
+      phoneDisplay: '070-751-31-11',
       image: '/contact/field1.jpg',
       coordinates: { lat: 40.3419741, lng: 49.8399698 }
     },
@@ -39,6 +27,8 @@ const BranchesSection = () => {
       locationDetails: 'footer.address2',
       locationStore: 'footer.address3',
       workTime: 'workTime2',
+      phone: '+994706740649',
+      phoneDisplay: '070-674-06-49',
       image: '/contact/field2.jpg',
       coordinates: { lat: 40.329590, lng: 49.781784 }
     }
@@ -78,7 +68,15 @@ const BranchesSection = () => {
               </div>
               <div className='flex items-start gap-2 mb-4'>
                 <Clock className='w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0 mt-0.5' />
-                <p className='text-sm sm:text-base text-gray-600'>{t(branch.workTime)}</p>
+                <p className='text-sm sm:text-base text-gray-600'>
+                  {t(branch.workTime)}
+                  {branch.phone && (
+                    <>
+                      {' '}
+                      (<a href={`tel:${branch.phone}`} className='text-[#E60C03] hover:underline'>{branch.phoneDisplay}</a>)
+                    </>
+                  )}
+                </p>
               </div>
               <button 
                 onClick={() => setSelectedBranch(branch.id)}
@@ -153,7 +151,15 @@ const BranchesSection = () => {
               </div>
               <div className='flex items-start gap-3 text-base xl:text-lg'>
                 <Clock className='w-6 h-6 text-gray-700 flex-shrink-0 mt-1' />
-                <p className='text-gray-700'>{t(branches[selectedBranch].workTime)}</p>
+                <p className='text-gray-700'>
+                  {t(branches[selectedBranch].workTime)}
+                  {branches[selectedBranch].phone && (
+                    <>
+                      {' '}
+                      (<a href={`tel:${branches[selectedBranch].phone}`} className='text-[#E60C03] hover:underline'>{branches[selectedBranch].phoneDisplay}</a>)
+                    </>
+                  )}
+                </p>
               </div>
             </div>
           </div>
