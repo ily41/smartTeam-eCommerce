@@ -25,10 +25,10 @@ const Users = () => {
 
     const availableRoles = [
         { key: 'Admin', label: 'Admin', icon: FaUserShield },
-        { key: 'NormalUser', label: 'Normal User', icon: FaUser },
-        { key: 'Retail', label: 'Retail', icon: FaStore },
-        { key: 'Wholesale', label: 'Wholesale', icon: FaBoxes },
-        { key: 'VIP', label: 'VIP', icon: FaCrown }
+        { key: 'NormalUser', label: 'Ümumi', icon: FaUser },
+        { key: 'Retail', label: 'Topdan', icon: FaStore },
+        { key: 'Wholesale', label: 'Diller', icon: FaBoxes },
+        { key: 'VIP', label: 'Eksklüziv', icon: FaCrown }
     ];
 
     useEffect(() => {
@@ -54,13 +54,14 @@ const Users = () => {
             const result = await editRole({ id: userId, role: newRole }).unwrap();
             
             const roleLabel = availableRoles.find(r => r.key === newRole)?.label || newRole;
-            toast.success(`Role updated to ${userRoles[newRole].name} successfully`);
+            toast.success(`Rolu uğurla dəyişdirildi: ${userRoles[newRole].name}`);
+
             refetch();
             refetchStatistics();
             setActiveDropdown(null);
         } catch (error) {
             console.log(error);
-            toast.error(error?.data?.message || "Failed to update role");
+            toast.error(error?.data?.message || "Rol dəyişdirilə bilmədi");
         } finally {
             setIsUpdatingRole(null);
         }
@@ -109,12 +110,12 @@ const Users = () => {
             }).unwrap()
             console.log(result)
 
-            toast.success("User deleted succesfully")
+            toast.success("İstifadəçi uğurla silindi");
             handleCloseModal()
 
         } catch (error) {
             console.log(error)
-            toast.error(error?.data || "Deleting User Failed");
+            toast.error(error?.data || "İstifadəçini silmək uğursuz oldu");
         }
     }
 
@@ -181,7 +182,7 @@ const Users = () => {
                 <div className="bg-blue-500 rounded-xl p-6 relative overflow-hidden">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h3 className="text-white/80 text-sm font-medium">Normal Users</h3>
+                            <h3 className="text-white/80 text-sm font-medium">Ümumi istifadəçilər</h3>
                             <p className="text-3xl font-bold text-white mt-2">
                                 {userStatistics?.normalUsers}
                             </p>
@@ -195,7 +196,7 @@ const Users = () => {
                 <div className="bg-green-500 rounded-xl p-6 relative overflow-hidden">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h3 className="text-white/80 text-sm font-medium">Retail Users</h3>
+                            <h3 className="text-white/80 text-sm font-medium">Topdan istifadəçilər</h3>
                             <p className="text-3xl font-bold text-white mt-2">
                                 {userStatistics?.retailUsers}
                             </p>
@@ -209,7 +210,7 @@ const Users = () => {
                 <div className="bg-yellow-500 rounded-xl p-6 relative overflow-hidden">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h3 className="text-white/80 text-sm font-medium">Wholesale Users</h3>
+                            <h3 className="text-white/80 text-sm font-medium">Diller istifadəçilər</h3>
                             <p className="text-3xl font-bold text-white mt-2">
                                 {userStatistics?.wholesaleUsers}
                             </p>
@@ -223,7 +224,7 @@ const Users = () => {
                 <div className="bg-pink-600 rounded-xl p-6 relative overflow-hidden">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h3 className="text-white/80 text-sm font-medium">VIP Users</h3>
+                            <h3 className="text-white/80 text-sm font-medium">Ekslüziv istifadəçilər</h3>
                             <p className="text-3xl font-bold text-white mt-2">
                                 {userStatistics?.vipUsers}
                             </p>
@@ -254,7 +255,7 @@ const Users = () => {
                                         onClick={() => item.isActive ? handleDeActivateUser(item.id) : handleActivateUser(item.id)}
                                         className={`px-2 py-1 cursor-pointer rounded-md text-xs font-medium ${getStatusColor(item.isActive)}`}
                                     >
-                                        {item.isActive ? "Active" : "Inactive"}
+                                        {item.isActive ? "Aktiv" : "Deaktiv"}
                                     </span>
                                 </div>
 
@@ -340,20 +341,20 @@ const Users = () => {
 
                             <div className="px-6 pb-6 space-y-3">
                                 <div className="flex items-center justify-between text-sm">
-                                    <span className="text-gray-400">Joined:</span>
+                                    <span className="text-gray-400">Qoşulma tarixi:</span>
                                     <span className="text-gray-300">
                                         {new Date(item.createdAt).toLocaleString()}
                                     </span>
                                 </div>
 
                                 <div className="flex items-center justify-between text-sm">
-                                    <span className="text-gray-400">Last Login:</span>
+                                    <span className="text-gray-400">Son daxilolma:</span>
                                     <span className="text-gray-300">{item.lastLogin ?? "N/A"}</span>
                                 </div>
 
                                 <div className="pt-3 border-t border-gray-700">
                                     <div className="flex items-center justify-between text-xs text-gray-500">
-                                        <span>User ID</span>
+                                        <span>İstifadəçi ID</span>
                                         <span>{item.id}</span>
                                     </div>
                                 </div>
@@ -367,7 +368,7 @@ const Users = () => {
             <div className="text-center py-12">
                 <div className="text-gray-500 mb-4">
                     <FaUsers className="text-4xl mx-auto mb-4 opacity-50" />
-                    <p>Showing {users?.length} of {users?.length} users</p>
+                    <p>{users?.length} istifadəçi göstərilir</p>
                 </div>
             </div>
         </div>

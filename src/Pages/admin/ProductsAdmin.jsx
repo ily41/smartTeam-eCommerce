@@ -98,7 +98,7 @@ const ProductsUI = () => {
               <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6 rounded-xl shadow-lg">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-blue-100 text-sm">Total Products</p> 
+                    <p className="text-blue-100 text-sm">Ümumi məhsullar</p> 
                     {isLoading ? (
                       <div className="flex justify-center items-center py-20">
                         <Loader2 className="w-12 h-12 animate-spin text-indigo-500" />
@@ -113,7 +113,7 @@ const ProductsUI = () => {
               <div className="bg-gradient-to-r from-green-600 to-green-700 p-6 rounded-xl shadow-lg">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-green-100 text-sm">In Stock</p>
+                    <p className="text-green-100 text-sm">Anbarda var</p>
                     {isLoading ? (
                       <div className="flex justify-center items-center py-20">
                         <Loader2 className="w-12 h-12 animate-spin text-indigo-500" />
@@ -128,7 +128,7 @@ const ProductsUI = () => {
               <div className="bg-gradient-to-r from-orange-600 to-orange-700 p-6 rounded-xl shadow-lg">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-orange-100 text-sm">Low Stock</p>
+                    <p className="text-orange-100 text-sm">Az qalıb</p>
                     {isLoading ? (
                       <div className="flex justify-center items-center py-20">
                         <Loader2 className="w-12 h-12 animate-spin text-indigo-500" />
@@ -143,7 +143,7 @@ const ProductsUI = () => {
               <div className="bg-gradient-to-r from-red-600 to-red-700 p-6 rounded-xl shadow-lg">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-red-100 text-sm">Out of Stock</p>
+                    <p className="text-red-100 text-sm">Anbarda yoxdur</p>
                     {isLoading ? (
                       <div className="flex justify-center items-center py-20">
                         <Loader2 className="w-12 h-12 animate-spin text-indigo-500" />
@@ -181,7 +181,7 @@ const ProductsUI = () => {
                       <button
                         onClick={() => handleViewProduct(product)}
                         className="bg-green-600 hover:bg-green-700 p-2 rounded-lg shadow-lg transform hover:scale-110 transition-all duration-200"
-                        title="View Product"
+                        title="Məhsula bax"
                       >
                         <Eye className="w-4 h-4 text-white" />
                       </button>
@@ -192,7 +192,7 @@ const ProductsUI = () => {
                           setCat(product.id)
                         }}
                         className="bg-blue-600 hover:bg-blue-700 p-2 rounded-lg shadow-lg transform hover:scale-110 transition-all duration-200"
-                        title="Edit Product"
+                        title="Məhsulu redaktə et"
                       >
                         <Pen className="w-4 h-4 text-white" />
                       </button>
@@ -202,7 +202,7 @@ const ProductsUI = () => {
                           handleDeleteProduct(product.id);
                         }}
                         className="bg-red-600 hover:bg-red-700 p-2 rounded-lg shadow-lg transform hover:scale-110 transition-all duration-200"
-                        title="Delete Product"
+                        title="Məhsulu sil"
                       >
                         <Trash className="w-4 h-4 text-white" />
                       </button>
@@ -211,15 +211,15 @@ const ProductsUI = () => {
                     <div className="absolute top-3 left-3">
                       {product.stockQuantity === 0 ? (
                         <span className="bg-red-600 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                          Out of Stock
+                          Anbarda yoxdur
                         </span>
                       ) : product.stockQuantity <= 10 ? (
                         <span className="bg-orange-600 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                          Low Stock
+                          Anbarda azdır
                         </span>
                       ) : (
                         <span className="bg-green-600 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                          In Stock
+                          Anbarda var
                         </span>
                       )}
                     </div>
@@ -251,7 +251,7 @@ const ProductsUI = () => {
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-gray-400 flex items-center gap-1">
                           <Package className="w-4 h-4" />
-                          Stock
+                          Stok
                         </span>
                         <span className="text-white font-medium">{product.stockQuantity}</span>
                       </div>
@@ -260,7 +260,7 @@ const ProductsUI = () => {
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-gray-400 flex items-center gap-1">
                             <Palette className="w-4 h-4" />
-                            Colors
+                            Rənglər
                           </span>
                           <span className="text-white font-medium">
                             {product.colors.length}
@@ -272,7 +272,7 @@ const ProductsUI = () => {
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-gray-400 flex items-center gap-1">
                             <Ruler className="w-4 h-4" />
-                            Sizes
+                            Ölçülər
                           </span>
                           <span className="text-white font-medium">
                             {product.sizes.length}
@@ -284,7 +284,7 @@ const ProductsUI = () => {
                     {/* Colors Preview */}
                     {product.colors && product.colors.length > 0 && (
                       <div className="mb-3">
-                        <p className="text-xs text-gray-400 mb-2">Available Colors:</p>
+                        <p className="text-xs text-gray-400 mb-2">Mövcud rənglər:</p>
                         <div className="flex flex-wrap gap-1">
                           {product.colors.slice(0, 4).map((color, index) => (
                             <span
@@ -296,7 +296,7 @@ const ProductsUI = () => {
                           ))}
                           {product.colors.length > 4 && (
                             <span className="text-gray-400 text-xs self-center">
-                              +{product.colors.length - 4} more
+                              +{product.colors.length - 4} daha çox
                             </span>
                           )}
                         </div>
@@ -306,7 +306,7 @@ const ProductsUI = () => {
                     {/* Sizes Preview */}
                     {product.sizes && product.sizes.length > 0 && (
                       <div>
-                        <p className="text-xs text-gray-400 mb-2">Available Sizes:</p>
+                        <p className="text-xs text-gray-400 mb-2">Mövcud ölçülər:</p>
                         <div className="flex flex-wrap gap-1">
                           {product.sizes.slice(0, 4).map((size, index) => (
                             <span
@@ -332,13 +332,13 @@ const ProductsUI = () => {
             {products && products.length === 0 && (
               <div className="text-center py-20">
                 <Package className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-400 mb-2">No products found</h3>
-                <p className="text-gray-500 mb-6">Get started by adding your first product</p>
+                <h3 className="text-xl font-semibold text-gray-400 mb-2">Heç bir məhsul tapılmadı</h3>
+                <p className="text-gray-500 mb-6">İlk məhsulunu əlavə etməklə başla</p>
                 <button
                 onClick={() => setModalType("add")}
                   className="px-6 py-3 bg-white transition rounded-lg font-semibold text-gray-900 hover:bg-gray-100"
                 >
-                  Add Product
+                  Məhsul əlavə et
                 </button>
               </div>
             )}

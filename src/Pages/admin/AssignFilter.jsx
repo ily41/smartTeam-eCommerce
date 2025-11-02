@@ -176,15 +176,15 @@ const ProductFilterAssignment = () => {
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
           <div>
-            <h1 className="text-4xl font-bold text-white mb-2">Product Filter Assignment</h1>
-            <p className="text-gray-400 mt-1">Assign filters to products individually or in bulk</p>
+            <h1 className="text-4xl font-bold text-white mb-2">Məhsul Filtrinin Təyinatı</h1>
+            <p className="text-gray-400 mt-1">Filtrləri məhsullara tək-tək və ya toplu şəkildə təyin et</p>
           </div>
           <button 
             onClick={openModal}
             className="px-6 py-3 bg-white cursor-pointer text-gray-900 font-semibold rounded-lg shadow-lg flex items-center gap-2 hover:bg-gray-100 transition-all duration-200"
           >
             <Tags className="w-5 h-5" />
-            Assign Filters
+            Filtrləri təyin et
           </button>
         </div>
 
@@ -197,7 +197,7 @@ const ProductFilterAssignment = () => {
               </div>
               <div>
                 <h3 className="text-2xl font-bold text-white">{products?.length || 0}</h3>
-                <p className="text-gray-400">Total Products</p>
+                <p className="text-gray-400">Ümumi məhsul sayı</p>
               </div>
             </div>
           </div>
@@ -209,7 +209,7 @@ const ProductFilterAssignment = () => {
               </div>
               <div>
                 <h3 className="text-2xl font-bold text-white">{filters?.length || 0}</h3>
-                <p className="text-gray-400">Available Filters</p>
+                <p className="text-gray-400">Mövcud filtrlər</p>
               </div>
             </div>
           </div>
@@ -223,7 +223,7 @@ const ProductFilterAssignment = () => {
                 <h3 className="text-2xl font-bold text-white">
                   {filters?.reduce((acc, f) => acc + (f.options?.length || 0), 0) || 0}
                 </h3>
-                <p className="text-gray-400">Total Options</p>
+                <p className="text-gray-400">Ümumi seçimlər</p>
               </div>
             </div>
           </div>
@@ -233,13 +233,13 @@ const ProductFilterAssignment = () => {
         <div className="bg-gray-800 rounded-xl shadow-lg border border-gray-700 mb-8">
           <div className="p-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-              <h2 className="text-2xl font-bold text-white">Product Filter Assignments</h2>
+              <h2 className="text-2xl font-bold text-white">Məhsul Filtrinin Təyinatıs</h2>
               <div className="flex gap-2">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <input
                     type="text"
-                    placeholder="Search products..."
+                    placeholder="Məhsullarda axtar..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500"
@@ -422,7 +422,7 @@ const ProductFilterAssignment = () => {
                           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                           <input
                             type="text"
-                            placeholder="Search products..."
+                            placeholder="Məhsullarda axtar..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500"
@@ -557,7 +557,7 @@ const ProductFilterAssignment = () => {
                       <h4 className="text-sm font-medium text-gray-300 mb-2">Assignment Summary</h4>
                       <div className="space-y-1 text-sm">
                         <p className="text-white">
-                          <span className="text-gray-400">Products:</span> {getSelectedProductsText()}
+                          <span className="text-gray-400">Məhsullar:</span> {getSelectedProductsText()}
                         </p>
                         <p className="text-white">
                           <span className="text-gray-400">Filter:</span> {
@@ -595,7 +595,7 @@ const ProductFilterAssignment = () => {
                   >
                     {loading && <Loader2 className="w-4 h-4 animate-spin" />}
                     <Save className="w-4 h-4" />
-                    {assignmentMode === 'single' ? 'Assign Filter' : `Assign to ${selectedProducts.length} Products`}
+                    {assignmentMode === 'single' ? 'Assign Filter' : `Assign to ${selectedProducts.length} Məhsullar`}
                   </button>
                 </div>
               </div>

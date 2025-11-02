@@ -90,13 +90,13 @@ const Brand = () => {
                     }}
                     className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
                   >
-                    Edit
+                    Redaktə et
                   </button>
                   <button
                     onClick={() => handleDeleteBrand(brand.id)}
                     className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
                   >
-                    Delete
+                    Sil
                   </button>
                 </div>
               </div>

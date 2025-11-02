@@ -82,9 +82,10 @@ const Router = () => {
         <Route
           path="/admin"
           element={
-            <Auth>
-              <AdminLayout />
-            </Auth> 
+            // <Auth>
+            //   <AdminLayout />
+            // </Auth> 
+            <AdminLayout />
           }
         >
             <Route index element={<Users />} />
