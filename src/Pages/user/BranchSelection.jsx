@@ -24,8 +24,8 @@ const BranchesSection = () => {
       id: 1,
       name: 'bayil',
       location: 'footer.address1',
-      locationDetails: 'footer.address2',
-      locationStore: 'footer.address3',
+      locationDetails: null,
+      locationStore: null,
       workTime: 'workTime2',
       phone: '+994706740649',
       phoneDisplay: '070-674-06-49',
@@ -35,7 +35,11 @@ const BranchesSection = () => {
   ];
 
   const getFullAddress = (branch) => {
-    return `${t(branch.location)}, ${t(branch.locationDetails)}${t(branch.locationStore)}`;
+    if (branch.locationDetails) {
+      return `${t(branch.locationDetails)} ${t(branch.locationStore)}`;
+    } else {
+      return `${t(branch.location)}`;
+    }
   };
 
   return (
@@ -45,13 +49,13 @@ const BranchesSection = () => {
       {/* Mobile View - Cards */}
       <div className='lg:hidden space-y-4 sm:space-y-6'>
         {branches.map((branch) => (
-          <div 
+          <div
             key={branch.id}
             className='bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow'
           >
             <div className='h-32 sm:h-40 bg-gray-200 overflow-hidden'>
-              <img 
-                src={branch.image} 
+              <img
+                src={branch.image}
                 alt={t(branch.name)}
                 className='w-full h-full object-cover'
                 onError={(e) => {
@@ -73,12 +77,14 @@ const BranchesSection = () => {
                   {branch.phone && (
                     <>
                       {' '}
-                      (<a href={`tel:${branch.phone}`} className='text-[#E60C03] hover:underline'>{branch.phoneDisplay}</a>)
+                      (<a href={`tel:${branch.phone}`} className='text-[#E60C03] hover:underline'>
+                        {branch.phoneDisplay}
+                      </a>)
                     </>
                   )}
                 </p>
               </div>
-              <button 
+              <button
                 onClick={() => setSelectedBranch(branch.id)}
                 className='text-[#E60C03] font-semibold flex items-center gap-2 text-sm sm:text-base hover:gap-3 transition-all'
               >
@@ -87,7 +93,7 @@ const BranchesSection = () => {
             </div>
           </div>
         ))}
-        
+
         {/* Mobile Map View */}
         <div className='h-[400px] bg-gray-900 rounded-lg overflow-hidden'>
           <MyMap markerIndex={selectedBranch} />
@@ -107,8 +113,8 @@ const BranchesSection = () => {
               }`}
             >
               <div className='w-44 xl:w-52 h-60 xl:h-48 bg-gray-200 rounded-l-lg overflow-hidden flex-shrink-0'>
-                <img 
-                  src={branch.image} 
+                <img
+                  src={branch.image}
                   alt={t(branch.name)}
                   className='w-full h-full object-cover'
                   onError={(e) => {
@@ -117,20 +123,24 @@ const BranchesSection = () => {
                   }}
                 />
               </div>
-              <div 
+              <div
                 className={`flex-1 p-6 xl:p-8 flex flex-col rounded-r-lg transition-all duration-300 ${
-                  selectedBranch === index 
-                    ? 'bg-[#323232] text-white' 
-                    : 'bg-white text-black'
+                  selectedBranch === index ? 'bg-[#323232] text-white' : 'bg-white text-black'
                 }`}
               >
                 <div>
                   <h2 className='text-xl xl:text-2xl font-semibold mb-3'>{t(branch.name)}</h2>
-                  <hr className={`border-t ${selectedBranch === index ? 'border-gray-600' : 'border-gray-300'}`} />
+                  <hr
+                    className={`border-t ${
+                      selectedBranch === index ? 'border-gray-600' : 'border-gray-300'
+                    }`}
+                  />
                 </div>
-                <p className={`text-lg xl:text-xl font-medium mt-4 ${
-                  selectedBranch === index ? 'text-white' : 'text-gray-500'
-                }`}>
+                <p
+                  className={`text-lg xl:text-xl font-medium mt-4 ${
+                    selectedBranch === index ? 'text-white' : 'text-gray-500'
+                  }`}
+                >
                   {getFullAddress(branch)}
                 </p>
               </div>
@@ -156,7 +166,12 @@ const BranchesSection = () => {
                   {branches[selectedBranch].phone && (
                     <>
                       {' '}
-                      (<a href={`tel:${branches[selectedBranch].phone}`} className='text-[#E60C03] hover:underline'>{branches[selectedBranch].phoneDisplay}</a>)
+                      (<a
+                        href={`tel:${branches[selectedBranch].phone}`}
+                        className='text-[#E60C03] hover:underline'
+                      >
+                        {branches[selectedBranch].phoneDisplay}
+                      </a>)
                     </>
                   )}
                 </p>
@@ -174,4 +189,4 @@ const BranchesSection = () => {
   );
 };
 
-export default BranchesSection                                                                                 
+export default BranchesSection;

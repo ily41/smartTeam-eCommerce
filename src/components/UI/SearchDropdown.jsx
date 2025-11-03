@@ -222,7 +222,7 @@ const SearchDropdown = ({
               >
                 {brand.logoUrl ? (
                   <img 
-                    src={`https://smartteamaz-001-site1.qtempurl.com${brand.logoUrl}`}
+                    src={`https://smartteamaz2-001-site1.ntempurl.com${brand.logoUrl}`}
                     alt={brand.name}
                     className="w-6 h-6 rounded-full object-cover"
                     onError={(e) => {
@@ -258,7 +258,7 @@ const SearchDropdown = ({
               >
                 <div className="relative w-full aspect-square bg-white rounded-lg flex items-center justify-center mb-3 overflow-hidden">
                   <img 
-                    src={`https://smartteamaz-001-site1.qtempurl.com${product.primaryImageUrl}`}
+                    src={`https://smartteamaz2-001-site1.ntempurl.com${product.primaryImageUrl}`}
                     alt={product.name}
                     className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
                     onError={(e) => {

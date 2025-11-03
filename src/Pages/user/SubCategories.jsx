@@ -60,7 +60,7 @@ const CategoryCard = ({ title, imageSrc = null, slug }) => (
       <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 bg-gray-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-gray-50 transition-colors">
         {imageSrc ? (
           <img
-            src={`https://smartteamaz-001-site1.qtempurl.com/${imageSrc}`}
+            src={`https://smartteamaz2-001-site1.ntempurl.com/${imageSrc}`}
             alt={title}
             className="w-full h-full object-contain rounded-lg"
           />

@@ -21,7 +21,7 @@ const EditBrandUI = ({item, setOpen}) => {
       
       // Set existing image preview
       if (item.logoUrl) {
-        setImagePreview(`https://smartteamaz-001-site1.qtempurl.com${item.logoUrl}`);
+        setImagePreview(`https://smartteamaz2-001-site1.ntempurl.com${item.logoUrl}`);
       }
     }
   }, [item]);
@@ -71,7 +71,7 @@ const EditBrandUI = ({item, setOpen}) => {
 
   const removeImage = () => {
     setImageFile(null);
-    setImagePreview(item?.logoUrl ? `https://smartteamaz-001-site1.qtempurl.com${item.logoUrl}` : null);
+    setImagePreview(item?.logoUrl ? `https://smartteamaz2-001-site1.ntempurl.com${item.logoUrl}` : null);
   };
 
   return (

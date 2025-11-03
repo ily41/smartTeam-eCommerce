@@ -349,7 +349,7 @@ function Details() {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      const response = await fetch(`https://smartteamaz-001-site1.qtempurl.com/api/v1/product-pdfs/download/product/${product.id}`, {
+      const response = await fetch(`https://smartteamaz2-001-site1.ntempurl.com/api/v1/product-pdfs/download/product/${product.id}`, {
         method: 'GET',
         headers: headers,
         credentials: 'include',
@@ -609,7 +609,7 @@ function Details() {
         {/* Image Display */}
         <div className='w-full h-full flex items-center justify-center p-8'>
           <img 
-            src={`https://smartteamaz-001-site1.qtempurl.com${product?.images[modalSlideIndex]?.imageUrl}`}
+            src={`https://smartteamaz2-001-site1.ntempurl.com${product?.images[modalSlideIndex]?.imageUrl}`}
             alt={product.name}
             className="max-w-[200px] max-h-[200px] md:max-w-[500px] md:max-h-[500px] object-contain"
             onError={(e) => {
@@ -629,7 +629,9 @@ function Details() {
     
     <div className='p-6 py-4 pt-0  border-y-1 border-[#DEE2E6] sm:hidden flex flex-col gap-5'>
       <SearchUI />
-      <Breadcrumb productData={product}/>
+      <div className='hidden md:block'>
+        <Breadcrumb productData={product}/>
+      </div>
     </div>
 
     <div className="min-h-[70vh] bg-gray-50 pt-8 sm:pt-0">
@@ -679,7 +681,7 @@ function Details() {
                     <img 
                       onClick={() => openDetail(index)}
                       className='w-full rounded-lg p-3  aspect-square cursor-pointer' 
-                      src={`https://smartteamaz-001-site1.qtempurl.com${item?.imageUrl}`} 
+                      src={`https://smartteamaz2-001-site1.ntempurl.com${item?.imageUrl}`} 
                       alt={item?.name || 'Product'}
                       onError={(e) => {
                         e.target.src =  "/Icons/logo.svg"
@@ -691,7 +693,7 @@ function Details() {
                    <img 
                       onClick={() => openDetail(product?.images?.length || 0)}
                       className='w-full rounded-lg p-3 aspect-square cursor-pointer' 
-                      src={`https://smartteamaz-001-site1.qtempurl.com${product?.imageUrl}`} 
+                      src={`https://smartteamaz2-001-site1.ntempurl.com${product?.imageUrl}`} 
                       alt={product?.name || 'Product'}
                       onError={(e) => {
                         e.target.src =  "/Icons/logo.svg"
@@ -775,7 +777,7 @@ function Details() {
                   onClick={() => swiperRef?.slideTo(index)}
                 >
                   <img 
-                    src={`https://smartteamaz-001-site1.qtempurl.com${item?.imageUrl}`}
+                    src={`https://smartteamaz2-001-site1.ntempurl.com${item?.imageUrl}`}
                     alt={`${product.name} ${index + 1}`}
                     className="w-full aspect-square h-full object-contain"
                     onError={(e) => {
@@ -816,8 +818,8 @@ function Details() {
                       Added to cart
                   </>
               ) : (
-                  // t('addToCart')
-                  ''
+                  t('addToCart')
+                  
               )}
           </button>
           <button 
@@ -871,7 +873,7 @@ function Details() {
             <div className="bg-white rounded-lg p-4 w-full flex h-full justify-center flex-col items-center py-9 sm:border-1 sm:border-[#DEE2E6]">
               <div onClick={() => openDetail(product?.images?.findIndex(img => img.imageUrl === hovered) !== -1 ? product?.images?.findIndex(img => img.imageUrl === hovered) : 0)} className='w-fit cursor-pointer hover:opacity-90 transition-opacity'>
                 <img 
-                  src={hovered ? `https://smartteamaz-001-site1.qtempurl.com${hovered}` : `https://smartteamaz-001-site1.qtempurl.com${product.imageUrl}`}
+                  src={hovered ? `https://smartteamaz2-001-site1.ntempurl.com${hovered}` : `https://smartteamaz2-001-site1.ntempurl.com${product.imageUrl}`}
                   alt={product.name}
                   className="h-80 object-contain rounded-lg transition-opacity duration-300 ease-in-out"
                   key={hovered || product.imageUrl}
@@ -892,7 +894,7 @@ function Details() {
                     className={`w-16 h-16 rounded-lg border-2 border-gray-200 overflow-hidden cursor-pointer transition-all duration-200 ease-in-out hover:scale-110 hover:shadow-lg ${hovered === item.imageUrl ? 'ring-2 ring-red-500 ring-offset-2' : ''}`}
                   >
                     <img 
-                      src={`https://smartteamaz-001-site1.qtempurl.com${item.imageUrl}`}
+                      src={`https://smartteamaz2-001-site1.ntempurl.com${item.imageUrl}`}
                       alt={`${product.name} ${index + 1}`}
                       className="w-full h-full object-contain transition-transform duration-200 hover:scale-105"
                       onError={(e) => {

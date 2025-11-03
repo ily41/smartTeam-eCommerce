@@ -56,9 +56,9 @@
     "contact": "Əlaqə",
     "login": "Daxil ol",
     "contactUs": "Bizimlə Əlaqə",
-    "address1": "Qurban Abbasov 35",
-    "address2": "Sədərək Ticarət Mərkəzi, ",
-    "address3": "Sıra 5-6, Mağaza 60",
+    "address1": "35 Qurban Abbasov Street",
+    "address2": "Sədərək Trade Center,",
+    "address3": "Row 5-6, Store 60",
     "langEnglish": "İngilis dili",
     "langAzerbaijani": "Azərbaycan dili"
   },
@@ -270,7 +270,5 @@
   "sederek": "Sədərək filialı",
   "bayil":"Bayil Filiali",
   "workTime1":"1-6: 9:00  - 18:00",
-  "workTime2":"1-6: 9:00  - 18:00 PM"
-
-
+  "workTime2":"1-6: 9:00  - 18:00"
 }

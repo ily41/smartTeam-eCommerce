@@ -116,7 +116,7 @@ const FilterUi = () => {
           options: options,
           slug: formData.value || "new-filter"
         }).unwrap();
-        toast.success("Filter added successfully!");
+        toast.success("Filtr uğurla əlavə olundu!");
       } else if (modalMode === 'edit') {
         // Update filter basic info
         await updateFilter({
@@ -160,14 +160,14 @@ const FilterUi = () => {
           }
         }
 
-        toast.success("Filter updated successfully!");
+        toast.success("Filtr uğurla yeniləndi!");
       }
       
       refetch();
       closeModal();
     } catch (err) {
       console.error('submit error', err);
-      toast.error(err?.data?.message || err?.data || "Operation failed");
+      toast.error(err?.data?.message || err?.data || "Əməliyyat uğursuz oldu");
     }
     setLoading(false);
   };
@@ -175,22 +175,22 @@ const FilterUi = () => {
   const deleteFilter = async (filterId) => {
     try {
       await removeFilter({id: filterId}).unwrap();
-      toast.success("Filter deleted successfully");
+      toast.success("Filtr uğurla silindi");
       refetch();
     } catch (error) {
       console.error(error);
-      toast.error(error?.data?.message || "Deleting Filter Failed");
+      toast.error(error?.data?.message || "Filtri silmək alınmadı");
     }
   };
 
   const deleteFilterOption = async (filterId, optionId) => {
     try {
       await removeFilterOption({ filterId, optionId }).unwrap();
-      toast.success("Option deleted successfully");
+      toast.success("Seçim uğurla silindi");
       refetch();
     } catch (error) {
       console.error(error);
-      toast.error(error?.data?.message || "Deleting option failed");
+      toast.error(error?.data?.message || "Seçimi silmək alınmadı");
     }
   };
 
@@ -203,11 +203,11 @@ const FilterUi = () => {
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
           <div>
-            <h1 className="text-4xl font-bold text-white mb-2">Filter Management</h1>
-            <p className="text-gray-400 mt-1">Manage product filters and their options</p>
+            <h1 className="text-4xl font-bold text-white mb-2">Filterlərin idarə edilməsi</h1>
+            <p className="text-gray-400 mt-1">Məhsul filtrlərini və onların seçimlərini idarə et</p>
           </div>
           <button onClick={() => openModal('add')} className="px-6 py-3 bg-white text-gray-900 font-semibold rounded-lg shadow-lg flex items-center gap-2 hover:bg-gray-100 transition-all duration-200">
-            <Plus className="w-5 h-5" /> Add Filter
+            <Plus className="w-5 h-5" /> Filtr əlavə et
           </button>
         </div>
 
@@ -240,7 +240,7 @@ const FilterUi = () => {
 
                   {expandedFilters[filter.id] && Array.isArray(filter.options) && filter.options.length > 0 && (
                     <div className="mt-6 ml-12">
-                      <h4 className="font-semibold text-white mb-4 text-lg">Options ({filter.options.length})</h4>
+                      <h4 className="font-semibold text-white mb-4 text-lg">Seçimlər ({filter.options.length})</h4>
                       <div className="space-y-3">
                         {filter.options.map((option) => (
                           <div key={option.id} className="flex items-center justify-between p-4 bg-gray-700 rounded-lg">
@@ -275,7 +275,7 @@ const FilterUi = () => {
             <div className="bg-gray-800 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-gray-700">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-white">{modalMode === 'add' ? 'Add New Filter' : modalMode === 'edit' ? 'Edit Filter' : 'Filter Details'}</h2>
+                  <h2 className="text-2xl font-bold text-white">{modalMode === 'add' ? 'Add New Filter' : modalMode === 'edit' ? 'Redaktə et' : 'Filter detalları'}</h2>
                   <button onClick={closeModal} className="p-2 hover:bg-gray-700 rounded-lg transition-colors"><X className="w-5 h-5 text-gray-400" /></button>
                 </div>
 
@@ -283,7 +283,7 @@ const FilterUi = () => {
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Filter Name</label>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Filterin adı</label>
                       <input type="text" name="name" value={formData.name} onChange={handleInputChange} disabled={modalMode === 'view'} className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-600" />
                     </div>
 
@@ -295,7 +295,7 @@ const FilterUi = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Sort Order</label>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Sıra nömrəsi</label>
                       <input type="number" name="sortOrder" value={formData.sortOrder === 0 ? "" : formData.sortOrder} onChange={handleInputChange} disabled={modalMode === 'view'} className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:border-transparent disabled:bg-gray-600" min="0" />
                     </div>
                   </div>
@@ -304,9 +304,9 @@ const FilterUi = () => {
                     <label className="block text-sm font-medium text-gray-300 mb-4">Options</label>
                     {modalMode !== 'view' && (
                       <div className="flex gap-2 mb-4">
-                        <input type="text" placeholder="Option label" value={newOption.displayName} onChange={(e) => setNewOption(prev => ({ ...prev, displayName: e.target.value }))} className="flex-1 px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                        <input type="text" placeholder="Option value" value={newOption.value} onChange={(e) => setNewOption(prev => ({ ...prev, value: e.target.value }))} className="flex-1 px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                        <button type="button" onClick={addOption} className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold transition-colors">Add</button>
+                        <input type="text" placeholder="Seçim etiketi" value={newOption.displayName} onChange={(e) => setNewOption(prev => ({ ...prev, displayName: e.target.value }))} className="flex-1 px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        <input type="text" placeholder="Seçim dəyəri" value={newOption.value} onChange={(e) => setNewOption(prev => ({ ...prev, value: e.target.value }))} className="flex-1 px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        <button type="button" onClick={addOption} className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold transition-colors">Əlavə et</button>
                       </div>
                     )}
 
@@ -331,11 +331,11 @@ const FilterUi = () => {
 
                   {modalMode !== 'view' && (
                     <div className="flex justify-end gap-4 pt-6 border-t border-gray-600">
-                      <button type="button" onClick={closeModal} className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 font-semibold transition-colors">Cancel</button>
+                      <button type="button" onClick={closeModal} className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 font-semibold transition-colors">Ləğv et</button>
                       <button type="button" onClick={handleSubmit} disabled={loading} className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 disabled:opacity-50 font-semibold transition-colors">
                         {loading && <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>}
                         <Save className="w-4 h-4" />
-                        {modalMode === 'add' ? 'Create Filter' : 'Save Changes'}
+                        {modalMode === 'add' ? 'Filter yarat' : 'Dəyişiklikləri yadda saxla'}
                       </button>
                     </div>
                   )}

@@ -193,7 +193,6 @@ const BannersUI = () => {
               onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
               className="w-full px-4 py-3 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Enter banner title"
-              required
             />
           </div>
 
@@ -319,7 +318,6 @@ const BannersUI = () => {
                         className="sr-only"
                         accept="image/*"
                         onChange={handleImageChange}
-                        required
                       />
                     </label>
                     <p className="pl-1">or drag and drop</p>
@@ -492,7 +490,6 @@ const BannersUI = () => {
               onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
               className="w-full px-4 py-3 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Enter banner title"
-              required
             />
           </div>
 
@@ -689,7 +686,7 @@ const BannersUI = () => {
                       <div className="md:w-1/3 relative min-h-[180px] h-64 md:h-auto bg-gray-700">
                         <img
                           className="w-full h-full object-cover"
-                          src={`https://smartteamaz-001-site1.qtempurl.com/${banner.imageUrl}`}
+                          src={`https://smartteamaz2-001-site1.ntempurl.com/${banner.imageUrl}`}
                           alt={banner.title}
                           onError={(e) => {
                             e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200' viewBox='0 0 400 200'%3E%3Crect width='400' height='200' fill='%23374151'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%239CA3AF' font-size='16'%3ENo Image%3C/text%3E%3C/svg%3E";

@@ -1,12 +1,12 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react'
-import SearchUI from '../../components/UI/SearchUI'
-import { Breadcrumb } from '../../products/Breadcrumb'
-import { ArrowLeft, Minus, Plus, ShoppingCart, Trash2 } from 'lucide-react';
-import { Link, useParams } from 'react-router';
+import { ArrowLeft, Minus, Plus, ShoppingCart, Trash2, X, Loader2, Check, ShoppingBag } from 'lucide-react';
+import { Link } from 'react-router';
 import { useGetCartItemsQuery, useUpdateCartItemQuantityMutation, useRemoveCartItemMutation, useRemoveCartMutation, useGetMeQuery, useCreateWhatsappOrderMutation } from '../../store/API';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import { translateDynamicField } from '../../i18n';
+import SearchUI from '../../components/UI/SearchUI'
+import { Breadcrumb } from '../../products/Breadcrumb'
 
 const AuthUtils = {
   isAuthenticated() {
@@ -121,7 +121,6 @@ const CartUtils = {
   }
 };
 
-// Debounce utility function
 const debounce = (func, delay) => {
   let timeoutId;
   return (...args) => {
@@ -214,6 +213,215 @@ const EmptyCartSkeleton = () => (
   </div>
 );
 
+// Checkout Modal Component
+const CheckoutModal = ({ isOpen, onClose, cartItems, onSubmit, isSubmitting, isSuccess }) => {
+  const { t } = useTranslation();
+  const [formData, setFormData] = useState({
+    customerName: '',
+    customerPhone: ''
+  });
+  const [error, setError] = useState('');
+
+  if (!isOpen) return null;
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    setError('');
+  };
+
+  const validateForm = () => {
+    if (!formData.customerName.trim()) {
+      setError('Please enter your full name');
+      return false;
+    }
+    if (!formData.customerPhone.trim()) {
+      setError('Please enter your phone number');
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    if (!validateForm()) return;
+    
+    onSubmit(formData);
+  };
+
+  const handleClose = () => {
+    if (!isSubmitting) {
+      setFormData({
+        customerName: '',
+        customerPhone: ''
+      });
+      setError('');
+      onClose();
+    }
+  };
+
+  return (
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 z-[9999] flex items-center justify-center p-4"
+      onClick={handleClose}
+    >
+      <div 
+        className="bg-white rounded-lg max-w-md w-full shadow-xl max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 sticky top-0 bg-white">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-red-100 rounded-lg">
+              <ShoppingBag className="w-5 h-5 text-red-600" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900">{t('checkout') || 'Checkout'}</h3>
+          </div>
+          <button
+            onClick={handleClose}
+            disabled={isSubmitting}
+            className="text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Cart Items Preview */}
+        <div className="px-6 py-4 bg-gray-50 border-b border-gray-200 max-h-60 overflow-y-auto">
+          <h4 className="text-sm font-medium text-gray-700 mb-3">
+            {t('orderSummary') || 'Order Summary'} ({cartItems?.items?.length || 0} items)
+          </h4>
+          <div className="space-y-2">
+            {cartItems?.items?.slice(0, 3).map((item) => (
+              <div key={item.id} className="flex items-center gap-3 bg-white p-2 rounded-lg">
+                <img 
+                  src={`https://smartteamaz2-001-site1.ntempurl.com${item?.productImageUrl}`}
+                  alt={item?.productName}
+                  className="w-12 h-12 object-contain rounded bg-gray-50 p-1"
+                  onError={(e) => {
+                    e.target.src = "/Icons/logo.svg"
+                  }}
+                />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-900 truncate">{item.productName}</p>
+                  <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
+                </div>
+                <span className="text-sm font-semibold text-gray-900">
+                  {(item.unitPrice * item.quantity).toFixed(2)} AZN
+                </span>
+              </div>
+            ))}
+            {cartItems?.items?.length > 3 && (
+              <p className="text-sm text-gray-500 text-center py-1">
+                +{cartItems.items.length - 3} more items
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="p-6">
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="customerName" className="block text-sm font-medium text-gray-700 mb-1">
+                {t('fullName') || 'Full Name'} <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                id="customerName"
+                name="customerName"
+                value={formData.customerName}
+                onChange={handleInputChange}
+                disabled={isSubmitting || isSuccess}
+                placeholder="Enter your full name"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="customerPhone" className="block text-sm font-medium text-gray-700 mb-1">
+                {t('phoneNumber') || 'Phone Number'} <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="tel"
+                id="customerPhone"
+                name="customerPhone"
+                value={formData.customerPhone}
+                onChange={handleInputChange}
+                disabled={isSubmitting || isSuccess}
+                placeholder="+994 XX XXX XX XX"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
+              />
+            </div>
+
+            {error && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-sm text-red-600">{error}</p>
+              </div>
+            )}
+          </div>
+
+          {/* Total */}
+          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-sm text-gray-600">
+                <span>{t('subtotal') || 'Subtotal'}:</span>
+                <span>{(cartItems?.totalPriceBeforeDiscount || 0).toFixed(2)} AZN</span>
+              </div>
+              {(cartItems?.totalDiscount || 0) > 0 && (
+                <div className="flex items-center justify-between text-sm text-red-500">
+                  <span>{t('discount') || 'Discount'}:</span>
+                  <span>- {(cartItems?.totalDiscount || 0).toFixed(2)} AZN</span>
+                </div>
+              )}
+              <div className="flex items-center justify-between pt-2 border-t border-gray-200">
+                <span className="font-medium text-gray-900">{t('total') || 'Total Amount'}:</span>
+                <span className="text-2xl font-bold text-gray-900">
+                  {(cartItems?.totalAmount || 0).toFixed(2)} AZN
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={isSubmitting || isSuccess}
+            className={`w-full mt-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+              isSuccess
+                ? 'bg-green-500 text-white cursor-default'
+                : isSubmitting
+                ? 'bg-red-400 text-white cursor-not-allowed'
+                : 'bg-red-500 hover:bg-red-600 text-white cursor-pointer'
+            }`}
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                {t('processing') || 'Processing...'}
+              </>
+            ) : isSuccess ? (
+              <>
+                <Check className="w-5 h-5" />
+                {t('orderPlaced') || 'Order Placed Successfully!'}
+              </>
+            ) : (
+              <>
+                <ShoppingCart className="w-5 h-5" />
+                {t('placeOrder') || 'Place Order'}
+              </>
+            )}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
 const Cart = () => {
   const { t, i18n } = useTranslation();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -225,16 +433,20 @@ const Cart = () => {
   });
   
   const [translatedCartItems, setTranslatedCartItems] = useState(null);
+  const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
+  const [isOrderSubmitting, setIsOrderSubmitting] = useState(false);
+  const [isOrderSuccess, setIsOrderSuccess] = useState(false);
   
   const { data: cartItemsD, isLoading: apiLoading, isError } = useGetCartItemsQuery(undefined, {
     skip: !isAuthenticated
   });
   
   const { data: me } = useGetMeQuery();
+  console.log(me)
   const [updateCartItemQuantity] = useUpdateCartItemQuantityMutation();
   const [removeCartItem] = useRemoveCartItemMutation();
   const [removeCart] = useRemoveCartMutation();
-  const [createWPOrder, { isLoading: isOrderLoading }] = useCreateWhatsappOrderMutation();
+  const [createWPOrder] = useCreateWhatsappOrderMutation();
 
   const [removingItems, setRemovingItems] = useState(new Set());
   const [isRemovingCart, setIsRemovingCart] = useState(false);
@@ -264,38 +476,41 @@ const Cart = () => {
   const cartItems = isAuthenticated ? cartItemsD : localCart;
   const isLoading = isAuthenticated ? apiLoading : false;
 
-  useEffect(() => {
-    async function translateCartItems() {
-      if (!cartItems?.items || cartItems.items.length === 0) return;
-      
-      const targetLang = i18n.language;
-      if (targetLang === 'en') {
-        const translated = {
-          ...cartItems,
-          items: await Promise.all(
-            cartItems.items.map(async (item) => ({
-              ...item,
-              productName: await translateDynamicField(item.productName, targetLang),
-              productDescription: item.productDescription ? 
-                await translateDynamicField(item.productDescription, targetLang) : 
-                item.productDescription
-            }))
-          )
-        };
-        setTranslatedCartItems(translated);
-      } else {
-        setTranslatedCartItems(cartItems);
-      }
+useEffect(() => {
+  async function translateCartItems() {
+    if (!cartItems?.items || cartItems.items.length === 0) {
+      setTranslatedCartItems({ items: [], totalPriceBeforeDiscount: 0, totalDiscount: 0, totalAmount: 0 });
+      return;
     }
-    translateCartItems();
-  }, [i18n.language, cartItems]);
 
-  const createOrder = async () => {
+    const targetLang = i18n.language;
+    if (targetLang === 'en') {
+      const translated = {
+        ...cartItems,
+        items: await Promise.all(
+          cartItems.items.map(async (item) => ({
+            ...item,
+            productName: await translateDynamicField(item.productName, targetLang),
+            productDescription: item.productDescription ? await translateDynamicField(item.productDescription, targetLang) : item.productDescription
+          }))
+        )
+      };
+      setTranslatedCartItems(translated);
+    } else {
+      setTranslatedCartItems(cartItems);
+    }
+  }
+  translateCartItems();
+}, [i18n.language, cartItems]);
+
+  const handleCheckoutSubmit = async (formData) => {
+    setIsOrderSubmitting(true);
+    
     try {
       const orderPayload = {
         phoneNumber: "0506740649",
-        customerName: me?.fullName || "",
-        customerPhone: me?.phoneNumber?.replace(/\D/g, '') || "0000000",
+        customerName: formData?.customerName || me?.fullName,
+        customerPhone: formData?.customerPhone.replace(/\D/g, '') || me?.phoneNumber,
         items: cartItems?.items?.map(item => ({
           id: item.id,
           cartId: item.cartId,
@@ -316,26 +531,30 @@ const Cart = () => {
       const response = await createWPOrder(orderPayload).unwrap();
 
       if (response.whatsAppUrl) {
-        window.open(response.whatsAppUrl, "_blank");
+        setIsOrderSuccess(true);
         
-        if (isAuthenticated) {
-          await removeCart().unwrap();
-        } else {
-          CartUtils.clearCart();
-          setLocalCart({ 
-            items: [], 
-            totalPriceBeforeDiscount: 0,
-            totalDiscount: 0,
-            totalAmount: 0 
-          });
-        }
-        
-        toast.success(t('cartCleared'));
+        setTimeout(async () => {
+          window.open(response.whatsAppUrl, "_blank");
+          
+          if (isAuthenticated) {
+            await removeCart().unwrap();
+          } else {
+            CartUtils.clearCart();
+            setLocalCart({ 
+              items: [], 
+              totalPriceBeforeDiscount: 0,
+              totalDiscount: 0,
+              totalAmount: 0 
+            });
+          }
+          
+          setIsCheckoutModalOpen(false);
+          setIsOrderSuccess(false);
+        }, 1500);
       }
     } catch (error) {
-      console.error(error?.data);
-      console.error("Error details:", JSON.stringify(error, null, 2));
-      toast.error(error?.data || "Error creating order");
+      console.error('Order creation error:', error);
+      setIsOrderSubmitting(false);
     }
   };
 
@@ -424,10 +643,8 @@ const Cart = () => {
         setLocalCart(updatedCart);
       }
       
-      toast.success(t('itemRemoved'));
     } catch (error) {
       console.error('Failed to remove cart item:', error);
-      toast.error('Failed to remove item');
     } finally {
       setRemovingItems(prev => {
         const newSet = new Set(prev);
@@ -453,10 +670,8 @@ const Cart = () => {
         });
       }
       
-      toast.success(t('cartCleared'));
     } catch (error) {
       console.error('Failed to remove cart:', error);
-      toast.error('Failed to clear cart');
     } finally {
       setIsRemovingCart(false);
     }
@@ -523,7 +738,7 @@ const Cart = () => {
                             <div className="w-30 h-30 rounded-lg flex items-center justify-center mr-4 overflow-hidden">
                               <img
                                 className='w-full rounded-lg p-3 aspect-square'
-                                src={`https://smartteamaz-001-site1.qtempurl.com${item?.productImageUrl}`}
+                                src={`https://smartteamaz2-001-site1.ntempurl.com${item?.productImageUrl}`}
                                 alt={item?.productName || 'Product'}
                                 onError={(e) => {
                                   e.target.src = "/Icons/logo.svg"
@@ -579,7 +794,7 @@ const Cart = () => {
                             <div className="w-30 h-30 rounded-lg flex items-center justify-center mr-4 overflow-hidden">
                               <img
                                 className="w-full rounded-lg p-3 aspect-square"
-                                src={`https://smartteamaz-001-site1.qtempurl.com${item?.productImageUrl}`}
+                                src={`https://smartteamaz2-001-site1.ntempurl.com${item?.productImageUrl}`}
                                 alt={item?.productName || "Product"}
                                 onError={(e) => {
                                   e.currentTarget.src = "/Icons/logo.svg";
@@ -676,18 +891,32 @@ const Cart = () => {
                 </div>
 
                 <button
-                  onClick={() => createOrder()}
+                  onClick={() => !me ? setIsCheckoutModalOpen(true) : handleCheckoutSubmit()}
                   className="w-full cursor-pointer bg-red-500 hover:bg-red-600 text-white font-semibold py-4 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled={isOrderLoading || !(translatedCartItems || cartItems)?.items?.length}
+                  disabled={!(translatedCartItems || cartItems)?.items?.length}
                 >
                   <ShoppingCart size={20} />
-                  <span>{isOrderLoading ? 'Processing...' : t('buyNow')}</span>
+                  <span>{t('buyNow')}</span>
                 </button>
               </div>
             </>
           )}
         </div>
       </div>
+
+      {/* Checkout Modal */}
+      <CheckoutModal
+        isOpen={isCheckoutModalOpen}
+        onClose={() => {
+          if (!isOrderSubmitting) {
+            setIsCheckoutModalOpen(false);
+          }
+        }}
+        cartItems={translatedCartItems || cartItems}
+        onSubmit={handleCheckoutSubmit}
+        isSubmitting={isOrderSubmitting}
+        isSuccess={isOrderSuccess}
+      />
     </section>
   );
 };

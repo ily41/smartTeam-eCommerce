@@ -373,7 +373,7 @@ export function MobileFilterButtons({ onFilterResults, onLoadingChange, currentS
   return (
     <>
       {/* Mobile Filter Modal */}
-      <div className={`fixed inset-0 bg-white z-50 flex flex-col ${isFilter ? 'block' : 'hidden'}`}>
+      <div className={`fixed inset-0 bg-white z-5000 flex flex-col ${isFilter ? 'block' : 'hidden'}`}>
         <div className="flex justify-between items-center p-4 border-b border-gray-200">
           <h1 className="text-xl font-medium text-gray-900">{t('filters.filters')}</h1>
           <button onClick={() => setIsFilter(false)} className="p-1">

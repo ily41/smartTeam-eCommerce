@@ -27,8 +27,9 @@ const AdminLayout = () => {
               </h1>
               <div className="flex items-center space-x-4">
                 <span className="hidden sm:block text-sm text-gray-100">
-                  Welcome back Bextiyar
+                  Xoş gəlmisən, Bəxtiyar
                 </span>
+
                 <div className="w-8 h-8 flex justify-center items-center bg-gray-300 rounded-full">
                   <FaRegUser />
                 </div>

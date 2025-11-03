@@ -131,7 +131,7 @@ const ProductDetailPage = () => {
     );
 
     if (!isValid) {
-      toast.error('Please fill in all required fields');
+      toast.error('Zəhmət olmasa bütün sahələri doldurun');
       return;
     }
 
@@ -142,7 +142,7 @@ const ProductDetailPage = () => {
           id: id,
           specificationGroups: specificationGroups
         }).unwrap();
-        toast.success('Specifications updated successfully!');
+        toast.success('Spesifikasiyalar uğurla yeniləndi!');
       } else {
         // Add new specifications
         await addSpecs({
@@ -150,24 +150,24 @@ const ProductDetailPage = () => {
           productId: id,
           specificationGroups: specificationGroups
         }).unwrap();
-        toast.success('Specifications added successfully!');
+        toast.success('Spesifikasiyalar uğurla əlavə olundu!');
       }
       
       setEditingSpecs(false);
       refetchSpecs();
     } catch (error) {
-      toast.error(error?.data?.message || 'Failed to save specifications');
+      toast.error(error?.data?.message || 'Spesifikasiyalar saxlanılmadı');
     }
   };
 
   const handleDeleteSpecs = async () => {
       try {
         await deleteSpecs({ id }).unwrap();
-        toast.success('Specifications deleted successfully');
+        toast.success('Spesifikasiyalar silindi');
         setEditingSpecs(false);
         refetchSpecs();
       } catch (error) {
-        toast.error('Failed to delete specifications');
+        toast.error('Spesifikasiyaları silmək mümkün olmadı');
       }
   };
 
@@ -175,17 +175,17 @@ const ProductDetailPage = () => {
   const handleDeletePdf = async (pdfId) => {
       try {
         await deleteProductPdf({ id: pdfId }).unwrap();
-        toast.success('PDF deleted successfully');
+        toast.success('PDF uğurla silindi');
         refetchPdfs();
       } catch (error) {
-        toast.error(error?.data?.message || 'Failed to delete PDF');
+        toast.error(error?.data?.message || 'PDF silinmədi');
       }
   };
 
   if (productLoading) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-white">Loading...</div>
+        <div className="text-white">Yüklənir...</div>
       </div>
     );
   }
@@ -193,7 +193,7 @@ const ProductDetailPage = () => {
   if (!product) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-white">Product not found</div>
+        <div className="text-white">Məhsul tapılmadı</div>
       </div>
     );
   }
@@ -208,11 +208,11 @@ const ProductDetailPage = () => {
             className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
-            Back to Products
+            Məhsullara qayıt
           </button>
           
           <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-400">Product ID: {product.id}</span>
+            <span className="text-sm text-gray-400">Məhsul ID: {product.id}</span>
           </div>
         </div>
       </div>
@@ -223,7 +223,7 @@ const ProductDetailPage = () => {
           {/* Product Image */}
           <div className="bg-white rounded-xl overflow-hidden">
             <img
-              src={`https://smartteamaz-001-site1.qtempurl.com/${product.imageUrl}`}
+              src={`https://smartteamaz2-001-site1.ntempurl.com/${product.imageUrl}`}
               alt={product.name}
               className="w-full object-contain h-full max-h-[500px]"
               onError={(e) => {
@@ -252,14 +252,14 @@ const ProductDetailPage = () => {
                   <XCircle className="w-5 h-5 text-red-400" />
                 )}
                 <span className={`font-medium ${product.isActive ? 'text-green-400' : 'text-red-400'}`}>
-                  {product.isActive ? 'Active' : 'Inactive'}
+                  {product.isActive ? 'Aktiv' : 'Deaktiv'}
                 </span>
               </div>
               
               {product.isHotDeal && (
                 <div className="flex items-center gap-2">
                   <AlertCircle className="w-5 h-5 text-orange-400" />
-                  <span className="text-orange-400 font-medium">Hot Deal</span>
+                  <span className="text-orange-400 font-medium">Xüsusi təklif</span>
                 </div>
               )}
             </div>
@@ -268,25 +268,25 @@ const ProductDetailPage = () => {
             <div className="bg-gray-800 rounded-lg p-4">
               <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
                 <DollarSign className="w-5 h-5" />
-                Pricing
+                Qiymətlər
               </h3>
               <div className="grid grid-cols-2 gap-4">
                 
                 <div className='flex flex-col justify-between'>
-                  <p className="text-gray-400 text-sm">Original Price</p>
-                  <p className="text-2xl font-bold text-green-400">${product?.prices[0].discountedPrice}</p>
+                  <p className="text-gray-400 text-sm">Orjinal qiymət</p>
+                  <p className="text-2xl font-bold text-green-400">{product?.prices[0].discountedPrice} AZN</p>
                 </div>
                 <div className='flex flex-col justify-between'>
-                  <p className="text-gray-400 text-sm">Retail Price</p>
-                  <p className="text-2xl font-bold text-green-400">${product?.prices[1]?.discountedPrice}</p>
+                  <p className="text-gray-400 text-sm">Topdan Price</p>
+                  <p className="text-2xl font-bold text-green-400">{product?.prices[1]?.discountedPrice} AZN</p>
                 </div>
                 <div className='flex flex-col justify-between'>
-                  <p className="text-gray-400 text-sm">WholeSale Price</p>
-                  <p className="text-2xl font-bold text-green-400">${product.prices[2]?.discountedPrice}</p>
+                  <p className="text-gray-400 text-sm">Diller Price</p>
+                  <p className="text-2xl font-bold text-green-400">{product.prices[2]?.discountedPrice} AZN</p>
                 </div>
                 <div className='flex flex-col justify-between'>
-                  <p className="text-gray-400 text-sm">Vip Price</p>
-                  <p className="text-2xl font-bold text-green-400">${product.prices[3]?.discountedPrice}</p>
+                  <p className="text-gray-400 text-sm">Ekslüziv Price</p>
+                  <p className="text-2xl font-bold text-green-400">{product.prices[3]?.discountedPrice} AZN</p>
                 </div>
               </div>
             </div>
@@ -295,21 +295,21 @@ const ProductDetailPage = () => {
             <div className="bg-gray-800 rounded-lg p-4">
               <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
                 <Package className="w-5 h-5" />
-                Inventory
+                Anbar məlumatı
               </h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-gray-400 text-sm">Stock Quantity</p>
+                  <p className="text-gray-400 text-sm">Stok miqdarı</p>
                   <p className="text-xl font-bold text-white">{product.stockQuantity}</p>
                 </div>
                 <div>
-                  <p className="text-gray-400 text-sm">Status</p>
+                  <p className="text-gray-400 text-sm">Vəziyyət</p>
                   <p className={`font-medium ${
                     product.stockQuantity === 0 ? 'text-red-400' :
                     product.stockQuantity <= 10 ? 'text-orange-400' : 'text-green-400'
                   }`}>
-                    {product.stockQuantity === 0 ? 'Out of Stock' :
-                     product.stockQuantity <= 10 ? 'Low Stock' : 'In Stock'}
+                    {product.stockQuantity === 0 ? 'Stokda yoxdur' :
+                     product.stockQuantity <= 10 ? 'Az stok' : 'Stokda var'}
                   </p>
                 </div>
               </div>
@@ -322,19 +322,19 @@ const ProductDetailPage = () => {
           
           {/* Product Details */}
           <div className="bg-gray-800 col-span-2 rounded-lg p-4">
-            <h3 className="text-lg font-semibold mb-3">Product Details</h3>
+            <h3 className="text-lg font-semibold mb-3">Məhsul Məlumatları</h3>
             <div className="space-y-3">
               <div>
-                <p className="text-gray-400 text-sm">Category</p>
+                <p className="text-gray-400 text-sm">Kateqoriya</p>
                 <p className="text-white">{product.categoryName || 'Uncategorized'}</p>
               </div>
               <div>
-                <p className="text-gray-400 text-sm">Description</p>
+                <p className="text-gray-400 text-sm">Açıqlama</p>
                 <p className="text-gray-300">{product.description}</p>
               </div>
               {product.shortDescription && (
                 <div>
-                  <p className="text-gray-400 text-sm">Short Description</p>
+                  <p className="text-gray-400 text-sm">Qısa açıqlama</p>
                   <p className="text-gray-300">{product.shortDescription}</p>
                 </div>
               )}
@@ -346,14 +346,14 @@ const ProductDetailPage = () => {
             <div className="bg-gray-800 col-span-2 rounded-lg p-6">
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <Package className="w-5 h-5" />
-                Product Images ({product.images.length})
+                Məhsul şəkilləri ({product.images.length})
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {product.images.map((image, index) => (
                   <div key={image.id} className="relative group">
                     <div className="aspect-square bg-gray-700 rounded-lg overflow-hidden">
                       <img
-                        src={`https://smartteamaz-001-site1.qtempurl.com/${image.imageUrl}`}
+                        src={`https://smartteamaz2-001-site1.ntempurl.com/${image.imageUrl}`}
                         alt={image.altText || `Product image ${index + 1}`}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                         onError={(e) => {
@@ -363,7 +363,7 @@ const ProductDetailPage = () => {
                     </div>
                     {image.isPrimary && (
                       <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded-md font-semibold">
-                        Primary
+                        Əsas
                       </div>
                     )}
                     <div className="absolute bottom-2 right-2 bg-gray-900/80 text-white text-xs px-2 py-1 rounded">
@@ -381,13 +381,13 @@ const ProductDetailPage = () => {
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold flex items-center gap-2">
               <FileText className="w-6 h-6" />
-              Product Documents
+              Məhsul faylları
             </h2>
           </div>
 
           {pdfsLoading ? (
             <div className="text-center py-8">
-              <div className="text-gray-400">Loading documents...</div>
+              <div className="text-gray-400">Fayllar yüklənir</div>
             </div>
           ) : productPdfs.length > 0 ? (
             <div className="space-y-4">
@@ -408,18 +408,18 @@ const ProductDetailPage = () => {
                       )}
                       <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
                         <span>{(pdf.fileSize / 1024 / 1024).toFixed(2)} MB</span>
-                        <span>Downloads: {pdf.downloadCount}</span>
+                        <span>Yüklənmə sayı: {pdf.downloadCount}</span>
                         {pdf.isActive ? (
-                          <span className="text-green-400">Active</span>
+                          <span className="text-green-400">Aktiv</span>
                         ) : (
-                          <span className="text-red-400">Inactive</span>
+                          <span className="text-red-400">Deaktiv</span>
                         )}
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <a
-                      href={`https://smartteamaz-001-site1.qtempurl.com/${pdf.filePath}`}
+                      href={`https://smartteamaz2-001-site1.ntempurl.com/${pdf.filePath}`}
                       download
                       className="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
                       title="Download PDF"
@@ -441,8 +441,8 @@ const ProductDetailPage = () => {
           ) : (
             <div className="text-center py-12">
               <FileText className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-400 mb-2">No documents uploaded</h3>
-              <p className="text-gray-500">Product documents will appear here once uploaded</p>
+              <h3 className="text-xl font-semibold text-gray-400 mb-2">Heç bir sənəd yüklənməyib</h3>
+              <p className="text-gray-500">Məhsul sənədləri yükləndikdən sonra burada görünəcək</p>
             </div>
           )}
         </div>
@@ -452,7 +452,7 @@ const ProductDetailPage = () => {
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold flex items-center gap-2">
               <Settings className="w-6 h-6" />
-              Product Specifications
+              Məhsul Spesifikasiyaları
             </h2>
             
             <div className="flex items-center gap-3">
@@ -464,7 +464,7 @@ const ProductDetailPage = () => {
                       className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg flex items-center gap-2 transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
-                      Delete All
+                      Hamısını sil
                     </button>
                   )}
                   <button
@@ -472,7 +472,7 @@ const ProductDetailPage = () => {
                     className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2 transition-colors"
                   >
                     {specifications?.specificationGroups ? <Edit className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-                    {specifications?.specificationGroups ? 'Edit' : 'Add'} Specifications
+                    {specifications?.specificationGroups ? 'Edit' : 'Add'} Spesifikasiyalar
                   </button>
                 </>
               ) : (
@@ -486,14 +486,14 @@ const ProductDetailPage = () => {
                     }}
                     className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
                   >
-                    Cancel
+                    Ləğv et
                   </button>
                   <button
                     onClick={handleSaveSpecs}
                     disabled={adding || updating}
                     className="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-green-800 text-white rounded-lg transition-colors"
                   >
-                    {(adding || updating) ? 'Saving...' : 'Save Specifications'}
+                    {(adding || updating) ? 'Yadda saxlanılır...' : 'Spesifikasiyaları yadda saxla'}
                   </button>
                 </div>
               )}
@@ -503,7 +503,7 @@ const ProductDetailPage = () => {
           {/* Specifications Content */}
           {specsLoading ? (
             <div className="text-center py-8">
-              <div className="text-gray-400">Loading specifications...</div>
+              <div className="text-gray-400">Spesifikasiyalar yüklənir...</div>
             </div>
           ) : !editingSpecs && specifications?.specificationGroups ? (
             // Display Mode
@@ -535,7 +535,7 @@ const ProductDetailPage = () => {
                         type="text"
                         value={group.groupName}
                         onChange={(e) => updateGroupName(groupIndex, e.target.value)}
-                        placeholder="Group name (e.g., Technical Specifications)"
+                        placeholder="Qrup adı (məs: Texniki xüsusiyyətlər)"
                         className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                         required
                       />
@@ -557,7 +557,7 @@ const ProductDetailPage = () => {
                           type="text"
                           value={item.name}
                           onChange={(e) => updateItem(groupIndex, itemIndex, 'name', e.target.value)}
-                          placeholder="Specification name"
+                          placeholder="Xüsusiyyət adı"
                           className="px-2 py-1.5 bg-gray-500 border border-gray-400 rounded text-white text-sm placeholder-gray-400 focus:outline-none focus:border-blue-500"
                           required
                         />
@@ -565,7 +565,7 @@ const ProductDetailPage = () => {
                           type="text"
                           value={item.value}
                           onChange={(e) => updateItem(groupIndex, itemIndex, 'value', e.target.value)}
-                          placeholder="Value"
+                          placeholder="Dəyər"
                           className="px-2 py-1.5 bg-gray-500 border border-gray-400 rounded text-white text-sm placeholder-gray-400 focus:outline-none focus:border-blue-500"
                           required
                         />
@@ -573,7 +573,7 @@ const ProductDetailPage = () => {
                           type="text"
                           value={item.unit}
                           onChange={(e) => updateItem(groupIndex, itemIndex, 'unit', e.target.value)}
-                          placeholder="Unit (optional)"
+                          placeholder="Vahid (ixtiyari)"
                           className="px-2 py-1.5 bg-gray-500 border border-gray-400 rounded text-white text-sm placeholder-gray-400 focus:outline-none focus:border-blue-500"
                         />
                         <div className="flex items-center">
@@ -595,7 +595,7 @@ const ProductDetailPage = () => {
                     className="mt-3 flex items-center gap-2 px-3 py-2 text-blue-400 hover:text-blue-300 hover:bg-blue-900/20 rounded transition-colors text-sm"
                   >
                     <Plus className="w-4 h-4" />
-                    Add Specification Item
+                    Yeni xüsusiyyət əlavə et
                   </button>
                 </div>
               ))}
@@ -605,15 +605,15 @@ const ProductDetailPage = () => {
                 className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-gray-600 hover:border-gray-500 rounded-lg text-gray-400 hover:text-gray-300 transition-colors"
               >
                 <Plus className="w-5 h-5" />
-                Add Specification Group
+                Yeni xüsusiyyət qrupu əlavə et
               </button>
             </div>
           ) : (
             // No Specifications State
             <div className="text-center py-12">
               <Settings className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-400 mb-2">No specifications configured</h3>
-              <p className="text-gray-500 mb-6">Add detailed product specifications for better product management and customer information</p>
+              <h3 className="text-xl font-semibold text-gray-400 mb-2">Spesifikasiyalar əlavə edilməyib</h3>
+              <p className="text-gray-500 mb-6">Məhsul idarəetməsini və müştəri məlumatını yaxşılaşdırmaq üçün ətraflı spesifikasiyalar əlavə edin</p>
             </div>
           )}
         </div>

@@ -184,7 +184,7 @@ const HomePageUI = ({
         <Link to={`/details/${product.id}`} className='bg-white p-1 border-1 flex flex-col justify-between border-gray-300 cursor-pointer rounded-lg relative transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-gray-400 '>
           <img 
             className='w-full rounded-lg p-3 aspect-square' 
-            src={`https://smartteamaz-001-site1.qtempurl.com${url}`} 
+            src={`https://smartteamaz2-001-site1.ntempurl.com${url}`} 
             alt={product.name}
             onError={(e) => {
               e.target.src = '/Icons/logo.svg';
@@ -239,7 +239,7 @@ const HomePageUI = ({
       >
         <img
           className="w-full rounded-lg p-3 aspect-square"
-          src={`https://smartteamaz-001-site1.qtempurl.com${url}`}
+          src={`https://smartteamaz2-001-site1.ntempurl.com${url}`}
           alt={product.name}
           onError={(e) => {
             e.target.src = '/Icons/logo.svg';

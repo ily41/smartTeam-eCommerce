@@ -12,16 +12,17 @@ const SideBar = () => {
   const [logout, { isLoading: isLoading }] = useLogoutMutation(); 
   
 
-  const menuItems = [
-    { icon: User, label: 'Users', active: false, to:'/admin' },
-    { icon: Package, label: 'Products', active: true , to:'products'},
-    { icon: Grid3X3, label: 'Categories', active: false, to:'category' },
-    { icon: PiFlagBanner, label: 'Banners', active: false, to:'banners' },
-    { icon: Filter, label: 'Filters', active: false, to:'filters' },
-    { icon: Tags, label: 'Assign Filter', active: false, to:'product-filters'  },
-    { icon: File, label: 'Assign Files', active: false, to:'file-management'  },
-    { icon: Store, label: 'Brands', active: false, to:'brands'  },
-  ];
+const menuItems = [
+  { icon: User, label: 'İstifadəçilər', active: false, to: '/admin' },
+  { icon: Package, label: 'Məhsullar', active: true, to: 'products' },
+  { icon: Grid3X3, label: 'Kateqoriyalar', active: false, to: 'category' },
+  { icon: PiFlagBanner, label: 'Bannerlər', active: false, to: 'banners' },
+  { icon: Filter, label: 'Filterlər', active: false, to: 'filters' },
+  { icon: Tags, label: 'Filter Təyinatı', active: false, to: 'product-filters' },
+  { icon: File, label: 'Fayl Təyinatı', active: false, to: 'file-management' },
+  { icon: Store, label: 'Brendlər', active: false, to: 'brands' },
+];
+
 
   const navHome = () => {
     navigate('/')
@@ -34,7 +35,7 @@ const SideBar = () => {
       const result = await logout().unwrap()
       console.log(result)
     }catch {
-      toast.error(error?.data?.slice(1,100) || "Editin category failed");
+        toast.error(error?.data?.slice(1,100) || "Kateqoriyanın redaktəsi uğursuz oldu");
 
     }
      document.cookie.split(";").forEach(cookie => {
@@ -120,7 +121,7 @@ const SideBar = () => {
             ${isCollapsed ? 'justify-center' : ''}
           `}>
             <LogOut size={20} className="flex-shrink-0" />
-            {!isCollapsed && <span className="font-medium">Sign Out</span>}
+            {!isCollapsed && <span className="font-medium">Çıxış et</span>}
           </button>
 
           <button onClick={navHome} className={`
@@ -128,7 +129,7 @@ const SideBar = () => {
             ${isCollapsed ? 'justify-center' : ''}
           `}>
             <Navigation size={20} className="flex-shrink-0" />
-            {!isCollapsed && <span className="font-medium">Home</span>}
+            {!isCollapsed && <span className="font-medium">Əsas səhifə</span>}
           </button>
         </div>
       </aside>
