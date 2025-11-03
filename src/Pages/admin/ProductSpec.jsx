@@ -223,7 +223,7 @@ const ProductDetailPage = () => {
           {/* Product Image */}
           <div className="bg-white rounded-xl overflow-hidden">
             <img
-              src={`https://smartteamaz-001-site1.qtempurl.com/${product.imageUrl}`}
+              src={`https://smartteamaz2-001-site1.ntempurl.com/${product.imageUrl}`}
               alt={product.name}
               className="w-full object-contain h-full max-h-[500px]"
               onError={(e) => {
@@ -274,19 +274,19 @@ const ProductDetailPage = () => {
                 
                 <div className='flex flex-col justify-between'>
                   <p className="text-gray-400 text-sm">Orjinal qiymət</p>
-                  <p className="text-2xl font-bold text-green-400">${product?.prices[0].discountedPrice}</p>
+                  <p className="text-2xl font-bold text-green-400">{product?.prices[0].discountedPrice} AZN</p>
                 </div>
                 <div className='flex flex-col justify-between'>
                   <p className="text-gray-400 text-sm">Topdan Price</p>
-                  <p className="text-2xl font-bold text-green-400">${product?.prices[1]?.discountedPrice}</p>
+                  <p className="text-2xl font-bold text-green-400">{product?.prices[1]?.discountedPrice} AZN</p>
                 </div>
                 <div className='flex flex-col justify-between'>
                   <p className="text-gray-400 text-sm">Diller Price</p>
-                  <p className="text-2xl font-bold text-green-400">${product.prices[2]?.discountedPrice}</p>
+                  <p className="text-2xl font-bold text-green-400">{product.prices[2]?.discountedPrice} AZN</p>
                 </div>
                 <div className='flex flex-col justify-between'>
                   <p className="text-gray-400 text-sm">Ekslüziv Price</p>
-                  <p className="text-2xl font-bold text-green-400">${product.prices[3]?.discountedPrice}</p>
+                  <p className="text-2xl font-bold text-green-400">{product.prices[3]?.discountedPrice} AZN</p>
                 </div>
               </div>
             </div>
@@ -353,7 +353,7 @@ const ProductDetailPage = () => {
                   <div key={image.id} className="relative group">
                     <div className="aspect-square bg-gray-700 rounded-lg overflow-hidden">
                       <img
-                        src={`https://smartteamaz-001-site1.qtempurl.com/${image.imageUrl}`}
+                        src={`https://smartteamaz2-001-site1.ntempurl.com/${image.imageUrl}`}
                         alt={image.altText || `Product image ${index + 1}`}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                         onError={(e) => {
@@ -419,7 +419,7 @@ const ProductDetailPage = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <a
-                      href={`https://smartteamaz-001-site1.qtempurl.com/${pdf.filePath}`}
+                      href={`https://smartteamaz2-001-site1.ntempurl.com/${pdf.filePath}`}
                       download
                       className="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
                       title="Download PDF"

@@ -109,7 +109,7 @@ const Brands = () => {
   const brands = currentBrands?.map(brand => ({
     name: brand?.name || "Brand",
     logo: brand?.logoUrl 
-      ? `https://smartteamaz-001-site1.qtempurl.com${brand.logoUrl}` 
+      ? `https://smartteamaz2-001-site1.ntempurl.com${brand.logoUrl}` 
       : './Icons/banner-commercial.svg',
     products: brand?.productCount || 0,
     slug: brand?.slug

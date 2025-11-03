@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { useEditProductWithImageMutation, useGetCategoriesQuery, useGetBrandsQuery, useGetProductQuery, useGetUserRolesQuery, useDeleteDetailImageMutation } from '../../../store/API';
+import { useEditProductWithImageMutation, useGetCategoriesQuery, useGetBrandsQuery, useGetProductQuery, useGetUserRolesQuery, useDeleteDetailImageMutation, useDeleteProductImageMutation } from '../../../store/API';
 import { toast } from 'react-toastify';
 import { ClockFading } from 'lucide-react';
 
 const EditProduct = ({ setOpen, idPr }) => {
+  console.log(idPr)
   const { data: edit, isLoading: loading } = useGetProductQuery(idPr, { skip: !idPr });
-  // console.log(edit)
   const [editProductWithImage, { isLoading: isEditLoading }] = useEditProductWithImageMutation();
-  const [deleteDetailImage] = useDeleteDetailImageMutation();
+  const [deleteDetailImage] = useDeleteProductImageMutation();
   const { data: categories } = useGetCategoriesQuery();
   const { data: brands } = useGetBrandsQuery();
   const { data: userRoles } = useGetUserRolesQuery();
 
-  // File states
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [pdfFile, setPdfFile] = useState(null);
@@ -170,9 +169,12 @@ const EditProduct = ({ setOpen, idPr }) => {
   };
 
   const removeExistingGalleryImage = (index) => {
+    console.log(index)
     const imageToRemove = existingGalleryImages[index];
     setImagesToDelete(prev => [...prev, imageToRemove]);
+    console.log(imagesToDelete)
     setExistingGalleryImages(prev => prev.filter((_, i) => i !== index));
+    console.log(existingGalleryImages)
   };
 
   const removeNewGalleryFile = (index) => {
@@ -185,10 +187,11 @@ const EditProduct = ({ setOpen, idPr }) => {
   try {
     if (imagesToDelete.length > 0) {
       for (const image of imagesToDelete) {
+        console.log(idPr)
+        console.log(image.imageUrl)
         try {
           await deleteDetailImage({
-            id: idPr,
-            imageUrl: image.imageUrl,
+            id: image.id,
           }).unwrap();
         } catch (error) {
           console.error('Error deleting image:', error);
@@ -267,7 +270,7 @@ const EditProduct = ({ setOpen, idPr }) => {
             {imagePreview ? (
               <div className="relative">
                 <img
-                  src={imageFile ? imagePreview : `https://smartteamaz-001-site1.qtempurl.com${imagePreview}`}
+                  src={imageFile ? imagePreview : `https://smartteamaz2-001-site1.ntempurl.com${imagePreview}`}
                   alt="Product preview"
                   className="w-32 h-32 object-cover rounded-md border border-gray-600"
                 />
@@ -309,7 +312,7 @@ const EditProduct = ({ setOpen, idPr }) => {
           <div className="flex items-center gap-4">
             {edit?.pdfUrl && !pdfFile && (
               <a
-                href={`https://smartteamaz-001-site1.qtempurl.com${edit.pdfUrl}`}
+                href={`https://smartteamaz2-001-site1.ntempurl.com${edit.pdfUrl}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-indigo-400 hover:text-indigo-300 text-sm underline"
@@ -354,25 +357,29 @@ const EditProduct = ({ setOpen, idPr }) => {
               <p className="text-xs text-gray-400 mb-2">Current Images</p>
               <div className="grid grid-cols-4 gap-4">
                 {existingGalleryImages.map((image, index) => (
+                   !image.isPrimary && (
                   <div key={image.id} className="relative">
-                    <img
-                      src={`https://smartteamaz-001-site1.qtempurl.com${image.imageUrl}`}
-                      alt={`Detail ${index + 1}`}
-                      className="w-full h-32 object-cover rounded-md border border-gray-600"
-                    />
-                    {image.isPrimary && (
-                      <span className="absolute top-1 left-1 bg-indigo-600 text-white text-xs px-2 py-1 rounded">
-                        Primary
-                      </span>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => removeExistingGalleryImage(index)}
-                      className="absolute -top-2 -right-2 bg-red-600 hover:bg-red-700 text-white rounded-full w-6 h-6 flex items-center justify-center"
-                    >
-                      ×
-                    </button>
+                    
+                   
+                      <>
+                      <img
+                      src={`https://smartteamaz2-001-site1.ntempurl.com${image.imageUrl}`}
+                        alt={`Detail ${index + 1}`}
+                        className="w-full h-32 object-cover rounded-md border border-gray-600"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeExistingGalleryImage(index)}
+                        className="absolute -top-2 -right-2 bg-red-600 hover:bg-red-700 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                      >
+                        ×
+                      </button>
+                      </>
+                    
+                    
                   </div>
+
+                  )
                 ))}
               </div>
             </div>

@@ -9,7 +9,7 @@ const InfiniteBrandSlider = () => {
     // const brandsImg = [
     //   brands?.map(brand => {
     //     console.log(brand)
-    //     return { src: `https://smartteamaz-001-site1.qtempurl.com${brand?.logoUrl}`, alt: 'Hem', slug: brand?.slug }
+    //     return { src: `https://smartteamaz2-001-site1.ntempurl.com${brand?.logoUrl}`, alt: 'Hem', slug: brand?.slug }
     //   })
     //   // ,
     //   // { src: './slider/slider2.svg', alt: 'Hp', slug: 'hp' },
@@ -26,7 +26,7 @@ const InfiniteBrandSlider = () => {
     // ];
 
     const brandsImg = brands?.map(brand => ({
-      src: `https://smartteamaz-001-site1.qtempurl.com${brand?.logoUrl}`,
+      src: `https://smartteamaz2-001-site1.ntempurl.com${brand?.logoUrl}`,
       alt: brand?.name || "Brand",
       slug: brand?.slug
     })) || [];

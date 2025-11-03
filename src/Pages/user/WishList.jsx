@@ -202,7 +202,7 @@ const WishList = () => {
                   >
                     <img
                       className="w-full rounded-lg p-3 aspect-square"
-                      src={`https://smartteamaz-001-site1.qtempurl.com${item.product.primaryImageUrl}`}
+                      src={`https://smartteamaz2-001-site1.ntempurl.com${item.product.primaryImageUrl}`}
                       alt={item.product.name || 'Product'}
                       onError={(e) => {
                         e.target.src = '/Icons/logo.svg';

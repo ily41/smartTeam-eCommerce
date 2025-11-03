@@ -6,7 +6,7 @@ const Software = () => {
     
 
     const contactWp = () => {
-      const phoneNumber = "994703569121"
+      const phoneNumber = "994556740649"
       const message = "Hello, I want to know more about your service."; // optional predefined message
       const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     

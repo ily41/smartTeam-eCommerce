@@ -128,7 +128,7 @@ const EditCategoryUI = ({item, setOpen, categories}) => {
       } 
       // If it's an existing image URL from the server
       else if (imagePreview) {
-        return `https://smartteamaz-001-site1.qtempurl.com/${imagePreview}`;
+        return `https://smartteamaz2-001-site1.ntempurl.com/${imagePreview}`;
       }
       
       return null;

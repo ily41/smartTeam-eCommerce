@@ -169,7 +169,7 @@ const ProductsUI = () => {
                   <div className="relative h-48 bg-gray-700">
                     <img
                       className="w-full h-full object-cover cursor-pointer"
-                      src={`https://smartteamaz-001-site1.qtempurl.com${product.primaryImageUrl}`}
+                      src={`https://smartteamaz2-001-site1.ntempurl.com${product.primaryImageUrl}`}
                       alt={product.name}
                       onClick={() => handleViewProduct(product)}
                       onError={(e) => {
@@ -242,7 +242,7 @@ const ProductsUI = () => {
                     {/* Price */}
                     <div className="mb-4">
                       <span className="text-2xl font-bold text-green-400">
-                        ${product.currentPrice}
+                        {product.currentPrice} AZN
                       </span>
                     </div>
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, ShoppingBag, Loader2, Check } from 'lucide-react';
-import { useQuickOrderMutation } from '../../store/API';
+import { useGetMeQuery, useQuickOrderMutation } from '../../store/API';
 import { useTranslation } from 'react-i18next';
 
 const QuickOrderModal = ({ isOpen, onClose, product, quantity }) => {
@@ -15,6 +15,8 @@ const QuickOrderModal = ({ isOpen, onClose, product, quantity }) => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState('');
   const [createWPOrder, { isLoading: isOrderLoading }] = useQuickOrderMutation();
+  const {data: me} = useGetMeQuery()
+  console.log(me)
   
 
   if (!isOpen) return null;
@@ -99,7 +101,7 @@ const QuickOrderModal = ({ isOpen, onClose, product, quantity }) => {
   return (
     <>
       <div 
-        className="fixed inset-0 bg-black bg-opacity-50 z-5000 flex items-center justify-center p-4"
+        className="fixed inset-0 bg-black/30 backdrop-blur-sm bg-opacity-50 z-5000 flex items-center justify-center p-4"
         onClick={handleClose}
       >
         <div 
@@ -127,7 +129,7 @@ const QuickOrderModal = ({ isOpen, onClose, product, quantity }) => {
           <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
             <div className="flex items-center gap-4">
               <img 
-                src={`https://smartteamaz-001-site1.qtempurl.com${product?.imageUrl}`}
+                src={`https://smartteamaz2-001-site1.ntempurl.com${product?.imageUrl}`}
                 alt={product?.name}
                 className="w-16 h-16 object-contain rounded-lg bg-white p-2"
                 onError={(e) => {
@@ -137,7 +139,7 @@ const QuickOrderModal = ({ isOpen, onClose, product, quantity }) => {
               <div className="flex-1">
                 <h4 className="font-medium text-gray-900 line-clamp-2">{product?.name}</h4>
                 <div className="flex items-center gap-2 mt-1">
-                  <span className="text-red-600 font-semibold">{product?.prices[0]?.discountedPrice} AZN</span>
+                  <span className="text-red-600 font-semibold">{product?.prices[me ? me?.role -1 : 0]?.discountedPrice} AZN</span>
                   <span className="text-gray-500 text-sm">× {quantity}</span>
                 </div>
               </div>
@@ -193,7 +195,7 @@ const QuickOrderModal = ({ isOpen, onClose, product, quantity }) => {
               <div className="flex items-center justify-between">
                 <span className="text-gray-600 font-medium">Total Amount:</span>
                 <span className="text-2xl font-bold text-gray-900">
-                  {(product?.prices[0]?.discountedPrice * quantity).toFixed(2)} AZN
+                  {(product?.prices[me ? me?.role -1 : 0]?.discountedPrice * quantity).toFixed(2)} AZN
                 </span>
               </div>
             </div>

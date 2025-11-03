@@ -6,7 +6,7 @@ import {
 export const API = createApi({
   reducerPath: 'API',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'https://smartteamaz-001-site1.qtempurl.com',
+    baseUrl: 'https://smartteamaz2-001-site1.ntempurl.com',
     prepareHeaders: (headers, {
       endpoint,
       body
@@ -19,9 +19,9 @@ export const API = createApi({
         endpoint === 'uploadFile' ||
         endpoint === 'addProductPdf' ||
         endpoint === 'editProductWithImage' ||
-        endpoint === 'addBrandImage' || 
-        endpoint === 'editCategoryWithImage' || 
-        endpoint === 'editBrandWithImage' || 
+        endpoint === 'addBrandImage' ||
+        endpoint === 'editCategoryWithImage' ||
+        endpoint === 'editBrandWithImage' ||
         body instanceof FormData;
 
       if (!isFormDataRequest) {
@@ -55,7 +55,7 @@ export const API = createApi({
           password
         },
       }),
-      invalidatesTags: ['Auth','Products'],
+      invalidatesTags: ['Auth', 'Products'],
     }),
 
     signup: builder.mutation({
@@ -151,15 +151,18 @@ export const API = createApi({
     }),
 
     editCategoryWithImage: builder.mutation({
-          query: ({ id, formData }) => ({
-            url: `/api/v1/Categories/${id}/with-image`,
-            method: 'PUT',
-            body: formData,
-            // Important: Don't set Content-Type header
-            // RTK Query will automatically set it to multipart/form-data
-          }),
-          invalidatesTags: ['Category'], // Adjust based on your tag system
-        }),
+      query: ({
+        id,
+        formData
+      }) => ({
+        url: `/api/v1/Categories/${id}/with-image`,
+        method: 'PUT',
+        body: formData,
+        // Important: Don't set Content-Type header
+        // RTK Query will automatically set it to multipart/form-data
+      }),
+      invalidatesTags: ['Category'], // Adjust based on your tag system
+    }),
 
     deleteCategory: builder.mutation({
       query: ({
@@ -326,7 +329,10 @@ export const API = createApi({
     }),
 
     getProductsPaginated: builder.query({
-      query: ({ page, pageSize }) => ({
+      query: ({
+        page,
+        pageSize
+      }) => ({
         url: '/api/v1/Products/paginated',
         method: 'GET',
         params: {
@@ -334,12 +340,16 @@ export const API = createApi({
           PageSize: pageSize,
         },
       }),
-      
+
       providesTags: ['Products'],
     }),
 
     getProductsCategoryIdPage: builder.query({
-      query: ({ categoryId, page, pageSize }) => ({
+      query: ({
+        categoryId,
+        page,
+        pageSize
+      }) => ({
         url: `/api/v1/Products/category/${categoryId}/paginated`,
         method: 'GET',
         params: {
@@ -352,7 +362,11 @@ export const API = createApi({
 
     // Get products by category slug
     getProductsCategorySlugPage: builder.query({
-      query: ({ categorySlug, page, pageSize }) => ({
+      query: ({
+        categorySlug,
+        page,
+        pageSize
+      }) => ({
         url: `/api/v1/Products/category/slug/${categorySlug}/paginated`,
         method: 'GET',
         params: {
@@ -365,7 +379,11 @@ export const API = createApi({
 
     // Get products by brand
     getProductsBrandPage: builder.query({
-      query: ({ brandSlug, page, pageSize }) => ({
+      query: ({
+        brandSlug,
+        page,
+        pageSize
+      }) => ({
         url: `/api/v1/Products/brand/${brandSlug}/paginated`,
         method: 'GET',
         params: {
@@ -378,7 +396,10 @@ export const API = createApi({
 
     // Get hot deals
     getHotDealsPage: builder.query({
-      query: ({ page, pageSize }) => ({
+      query: ({
+        page,
+        pageSize
+      }) => ({
         url: '/api/v1/Products/hot-deals/paginated',
         method: 'GET',
         params: {
@@ -391,7 +412,11 @@ export const API = createApi({
 
     // Search products
     searchProductsPage: builder.query({
-      query: ({ searchTerm, page, pageSize }) => ({
+      query: ({
+        searchTerm,
+        page,
+        pageSize
+      }) => ({
         url: '/api/v1/Products/search/paginated',
         method: 'GET',
         params: {
@@ -405,7 +430,13 @@ export const API = createApi({
 
     // Get recommended products
     getRecommendedPage: builder.query({
-      query: ({ productId, categoryId, limit, page, pageSize }) => ({
+      query: ({
+        productId,
+        categoryId,
+        limit,
+        page,
+        pageSize
+      }) => ({
         url: '/api/v1/Products/recommendations/paginated',
         method: 'GET',
         params: {
@@ -419,7 +450,7 @@ export const API = createApi({
       providesTags: ['Products'],
     }),
 
-    
+
 
     getProduct: builder.query({
       query: (id) => ({
@@ -433,7 +464,9 @@ export const API = createApi({
     }),
 
     getProductsBrand: builder.query({
-      query: ({brandSlug}) => ({
+      query: ({
+        brandSlug
+      }) => ({
         url: `/api/v1/Products/brand/${brandSlug}`,
         method: 'GET',
       }),
@@ -447,14 +480,18 @@ export const API = createApi({
     }),
 
     getBrand: builder.query({
-      query: ({id}) => ({
+      query: ({
+        id
+      }) => ({
         url: `/api/v1/Admin/brands${id}`,
         method: 'GET',
       }),
     }),
 
     getHotDeals: builder.query({
-      query: ({limit}) => ({
+      query: ({
+        limit
+      }) => ({
         url: '/api/v1/Products/hot-deals',
         method: 'GET',
         params: {
@@ -572,7 +609,10 @@ export const API = createApi({
     }),
 
     editProductWithImage: builder.mutation({
-      query: ({ id, formData }) => ({
+      query: ({
+        id,
+        formData
+      }) => ({
         url: `/api/v1/Products/${id}/with-files`,
         method: 'PUT',
         body: formData,
@@ -587,15 +627,30 @@ export const API = createApi({
 
 
     deleteDetailImage: builder.mutation({
-      query: ({ id, imageUrl }) => ({
+      query: ({
+        id,
+        imageUrl
+      }) => ({
         url: `/api/v1/Products/${id}/delete-detail-image?imageUrl=${encodeURIComponent(imageUrl)}`,
         method: 'DELETE',
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'Product', id }],
+      invalidatesTags: (result, error, {
+        id
+      }) => [{
+        type: 'Product',
+        id
+      }],
+    }),
+
+    deleteProductImage: builder.mutation({
+      query: ({id}) => ({
+        url: `/api/v1/Products/images/${id}`,
+        method: 'DELETE',
+      })
     }),
 
     searchProducts: builder.query({
-      query: ({ 
+      query: ({
         q
       }) => ({
         url: '/api/v1/Products/global-search',
@@ -607,7 +662,7 @@ export const API = createApi({
       }),
       providesTags: ['Products'],
     }),
-    
+
 
     // *PRODUCT SPECIFICATIONS*
     getProductSpecifications: builder.query({
@@ -806,16 +861,23 @@ export const API = createApi({
     }),
 
     updateFilter: builder.mutation({
-      query: ({ id, ...data }) => ({
+      query: ({
+        id,
+        ...data
+      }) => ({
         url: `/api/v1/Admin/filters/${id}`,
         method: 'PUT',
         body: data,
       }),
       invalidatesTags: ['Filters'],
     }),
-    
+
     updateFilterOption: builder.mutation({
-      query: ({ filterId, optionId, ...data }) => ({
+      query: ({
+        filterId,
+        optionId,
+        ...data
+      }) => ({
         url: `/api/v1/Admin/filters/${filterId}/options/${optionId}`,
         method: 'PUT',
         body: data,
@@ -1159,7 +1221,7 @@ export const API = createApi({
 
           // Make the request
           const response = await fetch(
-            `https://smartteamaz-001-site1.qtempurl.com/api/v1/Files/download/${id}`, {
+            `https://smartteamaz2-001-site1.ntempurl.com/api/v1/Files/download/${id}`, {
               method: 'GET',
               headers: {
                 'Authorization': token ? `Bearer ${token}` : '',
@@ -1218,7 +1280,10 @@ export const API = createApi({
     }),
 
     updateFilter: builder.mutation({
-      query: ({ id, ...data }) => ({
+      query: ({
+        id,
+        ...data
+      }) => ({
         url: `/api/v1/Admin/filters/${id}`,
         method: 'PUT',
         body: data,
@@ -1227,7 +1292,11 @@ export const API = createApi({
     }),
 
     updateFilterOption: builder.mutation({
-      query: ({ filterId, optionId, ...data }) => ({
+      query: ({
+        filterId,
+        optionId,
+        ...data
+      }) => ({
         url: `/api/v1/Admin/filters/${filterId}/options/${optionId}`,
         method: 'PUT',
         body: data,
@@ -1247,21 +1316,31 @@ export const API = createApi({
     // GET brand by ID
     getBrandById: builder.query({
       query: (id) => `/api/v1/Brands/${id}`,
-      providesTags: (result, error, id) => [{ type: 'Brands', id }],
+      providesTags: (result, error, id) => [{
+        type: 'Brands',
+        id
+      }],
     }),
 
     // GET brand by slug
     getBrandBySlug: builder.query({
       query: (slug) => `/api/v1/Brands/slug/${slug}`,
-      providesTags: (result, error, slug) => [{ type: 'Brands', slug }],
+      providesTags: (result, error, slug) => [{
+        type: 'Brands',
+        slug
+      }],
     }),
 
     // POST create brand with image
     addBrandImage: builder.mutation({
-      query: ({ name, sortOrder, file }) => {
+      query: ({
+        name,
+        sortOrder,
+        file
+      }) => {
         const formData = new FormData();
         formData.append("imageFile", file, file.name);
-      
+
         return {
           url: `/api/v1/Brands/with-image?name=${encodeURIComponent(name)}&sortOrder=${sortOrder}`,
           method: 'POST',
@@ -1277,7 +1356,10 @@ export const API = createApi({
 
     // PUT update brand
     editBrand: builder.mutation({
-      query: ({ id, ...data }) => ({
+      query: ({
+        id,
+        ...data
+      }) => ({
         url: `/api/v1/Brands/${id}`,
         method: 'PUT',
         body: data,
@@ -1286,25 +1368,31 @@ export const API = createApi({
     }),
 
     editBrandWithImage: builder.mutation({
-          query: ({ id, brandData, imageFile }) => {
-            const formData = new FormData();
-            formData.append('brandData', JSON.stringify(brandData));
-            if (imageFile) {
-              formData.append('imageFile', imageFile);
-            }
+      query: ({
+        id,
+        brandData,
+        imageFile
+      }) => {
+        const formData = new FormData();
+        formData.append('brandData', JSON.stringify(brandData));
+        if (imageFile) {
+          formData.append('imageFile', imageFile);
+        }
 
-            return {
-              url: `/api/v1/Brands/${id}/with-image`,
-              method: 'PUT',
-              body: formData,
-            };
-          },
-          invalidatesTags: ['Brands'],
-        }),
+        return {
+          url: `/api/v1/Brands/${id}/with-image`,
+          method: 'PUT',
+          body: formData,
+        };
+      },
+      invalidatesTags: ['Brands'],
+    }),
 
     // DELETE brand
     deleteBrand: builder.mutation({
-      query: ({ id }) => ({
+      query: ({
+        id
+      }) => ({
         url: `/api/v1/Brands/${id}`,
         method: 'DELETE',
       }),
@@ -1319,7 +1407,7 @@ export const {
   useGetBrandsAdminQuery,
   useDeleteBrandMutation,
   useEditBrandMutation,
-  useEditBrandWithImageMutation ,
+  useEditBrandWithImageMutation,
   useAddBrandImageMutation,
 
   useGetProductPdfByIdQuery,
@@ -1395,7 +1483,7 @@ export const {
   useGetProductsBrandQuery,
   useEditProductWithImageMutation,
   useDeleteDetailImageMutation,
-  
+
 
   useLogoutMutation,
   useEditUserRoleMutation,
@@ -1425,5 +1513,6 @@ export const {
   useGetFileByIdQuery,
   useRemoveFileMutation,
   useUploadFileMutation,
-  useDownloadFileMutation
+  useDownloadFileMutation,
+  useDeleteProductImageMutation
 } = API;

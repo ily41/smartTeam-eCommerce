@@ -7,19 +7,20 @@ const BranchesSection = () => {
   const [selectedBranch, setSelectedBranch] = useState(0);
 
   // Mock translation function for demo
-  const t = (key) => {
-    const translations = {
-      'footer.contactUs': 'Contact Us',
-      'sederek': 'Sederek Branch',
-      'bayil': 'Bayil Branch',
-      'footer.address1': 'Baku',
-      'footer.address2': 'Azerbaijan',
-      'footer.address3': ' - Main Store',
-      'workTime1': 'Mon-Fri: 9:00 AM - 6:00 PM',
-      'workTime2': 'Mon-Sat: 10:00 AM - 8:00 PM',
-    };
-    return translations[key] || key;
-  };
+  const {t} = useTranslation()
+  // const t = (key) => {
+  //   const translations = {
+  //     'footer.contactUs': 'Contact Us',
+  //     'sederek': 'Sederek Branch',
+  //     'bayil': 'Bayil Branch',
+  //     'footer.address1': 'Baku',
+  //     'footer.address2': 'Azerbaijan',
+  //     'footer.address3': ' - Main Store',
+  //     'workTime1': 'Mon-Fri: 9:00 AM - 6:00 PM',
+  //     'workTime2': 'Mon-Sat: 10:00 AM - 8:00 PM',
+  //   };
+  //   return translations[key] || key;
+  // };
 
   const branches = [
     {
@@ -36,8 +37,8 @@ const BranchesSection = () => {
       id: 1,
       name: 'bayil',
       location: 'footer.address1',
-      locationDetails: 'footer.address2',
-      locationStore: 'footer.address3',
+      locationDetails: null,
+      locationStore: null,
       workTime: 'workTime2',
       image: '/contact/field2.jpg',
       coordinates: { lat: 40.329590, lng: 49.781784 }
@@ -45,7 +46,13 @@ const BranchesSection = () => {
   ];
 
   const getFullAddress = (branch) => {
-    return `${t(branch.location)}, ${t(branch.locationDetails)}${t(branch.locationStore)}`;
+    if(branch.locationDetails) {
+      return `${t(branch.locationDetails)} ${t(branch.locationStore)}`;
+
+    }else {
+    return `${t(branch.location)}`;
+      
+    }
   };
 
   return (
