@@ -277,15 +277,15 @@ const ProductDetailPage = () => {
                   <p className="text-2xl font-bold text-green-400">{product?.prices[0].discountedPrice} AZN</p>
                 </div>
                 <div className='flex flex-col justify-between'>
-                  <p className="text-gray-400 text-sm">Topdan Price</p>
+                  <p className="text-gray-400 text-sm">Topdan qiyməti</p>
                   <p className="text-2xl font-bold text-green-400">{product?.prices[1]?.discountedPrice} AZN</p>
                 </div>
                 <div className='flex flex-col justify-between'>
-                  <p className="text-gray-400 text-sm">Diller Price</p>
+                  <p className="text-gray-400 text-sm">Diller qiyməti</p>
                   <p className="text-2xl font-bold text-green-400">{product.prices[2]?.discountedPrice} AZN</p>
                 </div>
                 <div className='flex flex-col justify-between'>
-                  <p className="text-gray-400 text-sm">Ekslüziv Price</p>
+                  <p className="text-gray-400 text-sm">Eksklüziv qiyməti</p>
                   <p className="text-2xl font-bold text-green-400">{product.prices[3]?.discountedPrice} AZN</p>
                 </div>
               </div>
@@ -326,7 +326,7 @@ const ProductDetailPage = () => {
             <div className="space-y-3">
               <div>
                 <p className="text-gray-400 text-sm">Kateqoriya</p>
-                <p className="text-white">{product.categoryName || 'Uncategorized'}</p>
+                <p className="text-white">{product.categoryName || 'Kateqoriyasız'}</p>
               </div>
               <div>
                 <p className="text-gray-400 text-sm">Açıqlama</p>
@@ -422,7 +422,7 @@ const ProductDetailPage = () => {
                       href={`https://smartteamaz2-001-site1.ntempurl.com/${pdf.filePath}`}
                       download
                       className="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-                      title="Download PDF"
+                      title="PDF yüklə"
                     >
                       <Download className="w-4 h-4" />
                     </a>
@@ -430,7 +430,7 @@ const ProductDetailPage = () => {
                       onClick={() => handleDeletePdf(pdf.id)}
                       disabled={deletingPdf}
                       className="p-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors disabled:opacity-50"
-                      title="Delete PDF"
+                      title="PDF sil"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -472,7 +472,7 @@ const ProductDetailPage = () => {
                     className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2 transition-colors"
                   >
                     {specifications?.specificationGroups ? <Edit className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-                    {specifications?.specificationGroups ? 'Edit' : 'Add'} Spesifikasiyalar
+                    {specifications?.specificationGroups ? 'Redaktə et' : 'Əlavə et'} Spesifikasiyalar
                   </button>
                 </>
               ) : (

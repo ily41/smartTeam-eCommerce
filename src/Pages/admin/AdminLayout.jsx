@@ -23,7 +23,7 @@ const AdminLayout = () => {
           <div className="px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <h1 className="text-xl font-semibold text-gray-100">
-                Admin Dashboard
+                Admin Paneli
               </h1>
               <div className="flex items-center space-x-4">
                 <span className="hidden sm:block text-sm text-gray-100">

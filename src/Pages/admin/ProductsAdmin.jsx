@@ -318,7 +318,7 @@ const ProductsUI = () => {
                           ))}
                           {product.sizes.length > 4 && (
                             <span className="text-gray-400 text-xs self-center">
-                              +{product.sizes.length - 4} more
+                              +{product.sizes.length - 4} daha çox
                             </span>
                           )}
                         </div>

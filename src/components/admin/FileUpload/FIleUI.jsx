@@ -58,7 +58,7 @@ const FileManagementPanel = () => {
 
   const handleSubmit = async () => {
     if (!selectedFile) {
-      toast.error('Please select a file to upload');
+      toast.error('Zəhmət olmasa yüklənəcək faylı seçin');
       return;
     }
 
@@ -70,12 +70,12 @@ const FileManagementPanel = () => {
 
     try {
       await uploadFile(formDataToSend).unwrap();
-      toast.success('File uploaded successfully!');
+      toast.success('Fayl uğurla yükləndi!');
       refetch();
       closeModal();
     } catch (error) {
       console.error('Upload error:', error);
-      toast.error(error?.data?.message || 'File upload failed');
+      toast.error(error?.data?.message || 'Fayl yükləməsi uğursuz oldu');
     }
   };
 
@@ -83,11 +83,11 @@ const FileManagementPanel = () => {
 
     try {
       await removeFile(fileId).unwrap();
-      toast.success('File deleted successfully');
+      toast.success('Fayl uğurla silindi');
       refetch();
     } catch (error) {
       console.error('Delete error:', error);
-      toast.error(error?.data?.message || 'Failed to delete file');
+      toast.error(error?.data?.message || 'Faylı silmək uğursuz oldu');
     }
   };
 
@@ -121,14 +121,14 @@ const FileManagementPanel = () => {
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
           <div>
-            <h1 className="text-4xl font-bold text-white mb-2">File Management</h1>
-            <p className="text-gray-400 mt-1">Manage downloadable files for your application</p>
+            <h1 className="text-4xl font-bold text-white mb-2">Fayl idarəetməsi</h1>
+            <p className="text-gray-400 mt-1">Tətbiqiniz üçün yüklənə bilən faylları idarə edin</p>
           </div>
           <button 
             onClick={openModal}
             className="px-6 py-3 bg-white text-gray-900 font-semibold rounded-lg shadow-lg flex items-center gap-2 hover:bg-gray-100 transition-all duration-200"
           >
-            <Plus className="w-5 h-5" /> Upload File
+            <Plus className="w-5 h-5" /> Fayl yüklə
           </button>
         </div>
 
@@ -141,8 +141,8 @@ const FileManagementPanel = () => {
           ) : files?.length === 0 ? (
             <div className="p-12 text-center text-gray-400">
               <File className="w-16 h-16 mx-auto mb-4 opacity-50" />
-              <p className="text-xl">No files uploaded yet</p>
-              <p className="text-sm mt-2">Click "Upload File" to add your first file</p>
+              <p className="text-xl">Hələ fayl yüklənməyib</p>
+              <p className="text-sm mt-2">İlk faylınızı əlavə etmək üçün "Fayl yüklə" düyməsinə klik edin</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
@@ -219,7 +219,7 @@ const FileManagementPanel = () => {
             <div className="bg-gray-800 rounded-xl max-w-2xl w-full border border-gray-700">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-white">Upload New File</h2>
+                  <h2 className="text-2xl font-bold text-white">Yeni fayl yüklə</h2>
                   <button 
                     onClick={closeModal}
                     className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
@@ -256,8 +256,8 @@ const FileManagementPanel = () => {
                         </div>
                       ) : (
                         <div>
-                          <p className="text-white font-medium mb-2">Click to upload file</p>
-                          <p className="text-sm text-gray-400">or drag and drop</p>
+                          <p className="text-white font-medium mb-2">Fayl yükləmək üçün klik edin</p>
+                          <p className="text-sm text-gray-400">və ya sürükləyin</p>
                         </div>
                       )}
                     </label>
@@ -266,27 +266,27 @@ const FileManagementPanel = () => {
                   {/* Form Fields */}
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Custom File Name
+                      Xüsusi fayl adı
                     </label>
                     <input
                       type="text"
                       name="customFileName"
                       value={formData.customFileName}
                       onChange={handleInputChange}
-                      placeholder="Leave empty to use original name"
+                      placeholder="Orijinal adı istifadə etmək üçün boş buraxın"
                       className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Description
+                      Açıqlama
                     </label>
                     <textarea
                       name="description"
                       value={formData.description}
                       onChange={handleInputChange}
-                      placeholder="Enter file description"
+                      placeholder="Fayl açıqlamasını daxil edin"
                       rows="3"
                       className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                     />
@@ -294,14 +294,14 @@ const FileManagementPanel = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Category
+                      Kateqoriya
                     </label>
                     <input
                       type="text"
                       name="category"
                       value={formData.category}
                       onChange={handleInputChange}
-                      placeholder="e.g., Windows, Mac, Linux"
+                      placeholder="məs: Windows, Mac, Linux"
                       className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
@@ -312,7 +312,7 @@ const FileManagementPanel = () => {
                       onClick={closeModal}
                       className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 font-semibold transition-colors"
                     >
-                      Cancel
+                      Ləğv et
                     </button>
                     <button
                       onClick={handleSubmit}
@@ -323,7 +323,7 @@ const FileManagementPanel = () => {
                         <Loader2 className="w-4 h-4 animate-spin" />
                       )}
                       <Upload className="w-4 h-4" />
-                      Upload File
+                      Fayl yüklə
                     </button>
                   </div>
                 </div>

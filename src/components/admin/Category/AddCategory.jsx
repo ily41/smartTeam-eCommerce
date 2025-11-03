@@ -82,7 +82,7 @@ const AddCategoryUIStatic = ({setOpen, categories}) => {
   e.preventDefault();
 
   if (!file) {
-    toast.error("Please upload an image first");
+      toast.error("Zəhmət olmasa əvvəlcə şəkil yükləyin");
     return;
   }
 
@@ -104,7 +104,7 @@ const AddCategoryUIStatic = ({setOpen, categories}) => {
     const result = await addCategoryImage(formDataToSend).unwrap();
 
     // Success message
-    toast.success("Category added successfully");
+    toast.success("Kateqoriya uğurla əlavə edildi");
 
     // Reset form
     setFormData({
@@ -115,7 +115,7 @@ const AddCategoryUIStatic = ({setOpen, categories}) => {
     setOpen();
 
   } catch (error) {
-    toast.error(error?.data || "Something went wrong");
+    toast.error(error?.data || "Nəsə səhv getdi");
     console.log("Full error:", error);
   }
 };
@@ -134,7 +134,7 @@ const AddCategoryUIStatic = ({setOpen, categories}) => {
       {/* Name Field */}
       <div className="flex flex-col">
         <label className="text-white text-sm mb-1" htmlFor="name">
-          Name <span className="text-red-500">*</span>
+          Ad <span className="text-red-500">*</span>
         </label>
         <input
           id="name"
@@ -142,7 +142,7 @@ const AddCategoryUIStatic = ({setOpen, categories}) => {
           name="name"
           type="text"
           required
-          placeholder="Enter category name"
+          placeholder="Kateqoriya adını daxil edin"
           className="w-full px-4 py-3 rounded-lg bg-[#2a2a2a] text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-white placeholder:text-gray-400"
         />
       </div>
@@ -151,13 +151,13 @@ const AddCategoryUIStatic = ({setOpen, categories}) => {
   
 
       <div>
-        <label className="block text-sm font-medium mb-2">Category *</label>
+        <label className="block text-sm font-medium mb-2">Kateqoriya *</label>
         <select
           name="categoryId"
           onChange={(e) => setParent(e.target.value)}
           className="w-full px-3 py-2 bg-[#2c2c2c] border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
         >
-          <option value="">No Parent</option>
+          <option value="">Ana kateqoriya yoxdur</option>
           {categories?.map((category) => (
             <option key={category.id} value={category.id}>
               {category.name}
@@ -167,7 +167,7 @@ const AddCategoryUIStatic = ({setOpen, categories}) => {
       </div>
 
       <div>
-          <label className="block text-sm font-medium mb-2">Product Images</label>
+          <label className="block text-sm font-medium mb-2">Məhsul şəkilləri</label>
           <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center">
              <input
                 type="file"
@@ -182,7 +182,7 @@ const AddCategoryUIStatic = ({setOpen, categories}) => {
             >
               <Upload className="w-8 h-8 text-gray-400" />
               <span className="text-gray-400">
-                Click to upload images or drag and drop
+                Şəkil yükləmək üçün klik edin və ya sürükləyin
               </span>
               <span className="text-sm text-gray-500">
                 PNG, JPG, GIF up to 10MB each
@@ -223,7 +223,7 @@ const AddCategoryUIStatic = ({setOpen, categories}) => {
           disabled={isCategoryLoading}
           className="px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-gray-200 transition-all"
         >
-          {isCategoryLoading ? <Loader2 className="w-12 h-12 text-white animate-spin" /> : "Save"}
+          {isCategoryLoading ? <Loader2 className="w-12 h-12 text-white animate-spin" /> : "Yadda saxla"}
           
         </button>
       </div>

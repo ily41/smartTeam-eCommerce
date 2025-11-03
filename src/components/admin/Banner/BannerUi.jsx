@@ -103,7 +103,7 @@ const BannersUI = () => {
       e.preventDefault();
 
       if (!file) {
-        toast.error("Please select an image file");
+        toast.error("Zəhmət olmasa şəkil faylı seçin");
         return;
       }
 
@@ -122,7 +122,7 @@ const BannersUI = () => {
 
       try {
         const result = await addBanner(formDataToSend).unwrap();
-        toast.success("Banner added successfully!");
+        toast.success("Banner uğurla əlavə edildi!");
         refetch();
         onClose();
 
@@ -142,7 +142,7 @@ const BannersUI = () => {
         setSelectedCategoryId("");
       } catch (error) {
         console.error("Error adding banner:", error);
-        toast.error("Failed to add banner: " + (error.data?.message || error.message));
+        toast.error("Banner əlavə etmək uğursuz oldu: " + (error.data?.message || error.message));
       }
     };
 
@@ -150,12 +150,12 @@ const BannersUI = () => {
       const selectedFile = e.target.files[0];
       if (selectedFile) {
         if (selectedFile.size > 10 * 1024 * 1024) {
-          toast.error("File size must be less than 10MB");
+          toast.error("Fayl ölçüsü 10MB-dan az olmalıdır");
           return;
         }
 
         if (!selectedFile.type.startsWith('image/')) {
-          toast.error("Please select a valid image file");
+          toast.error("Zəhmət olmasa düzgün şəkil faylı seçin");
           return;
         }
 
@@ -180,32 +180,32 @@ const BannersUI = () => {
 
     return (
       <div className=" rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <h2 className="text-2xl font-bold text-white mb-6">Add New Banner</h2>
+        <h2 className="text-2xl font-bold text-white mb-6">Yeni banner əlavə et</h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              Banner Title *
+              Banner başlığı *
             </label>
             <input
               type="text"
               value={formData.title}
               onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
               className="w-full px-4 py-3 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Enter banner title"
+              placeholder="Banner başlığını daxil edin"
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              Button Text
+              Düymə mətni
             </label>
             <input
               type="text"
               value={formData.buttonText}
               onChange={(e) => setFormData(prev => ({ ...prev, buttonText: e.target.value }))}
               className="w-full px-4 py-3 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="e.g., Shop Now, Learn More"
+              placeholder="məs: İndi alış veriş et, Ətraflı öyrən"
             />
           </div>
 
@@ -222,7 +222,7 @@ const BannersUI = () => {
                   className="w-full px-4 py-3 border border-gray-600 rounded-lg text-white text-left focus:ring-2 focus:ring-blue-500 focus:border-transparent flex items-center justify-between"
                 >
                   <span className={getSelectedCategoryName() ? "text-white" : "text-gray-400"}>
-                    {getSelectedCategoryName() || "Select a category..."}
+                    {getSelectedCategoryName() || "Kateqoriya seçin..."}
                   </span>
                   <svg
                     className={`w-5 h-5 text-gray-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
@@ -237,9 +237,9 @@ const BannersUI = () => {
                 {isDropdownOpen && ( 
                   <div className="absolute bg-gray-800 z-10 w-full mt-1 border border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
                     {isCatsLoading ? (
-                      <div className="px-4 py-3 text-gray-400 text-center">Loading categories...</div>
+                      <div className="px-4 py-3 text-gray-400 text-center">Kateqoriyalar yüklənir...</div>
                     ) : categoryOptions.length === 0 ? (
-                      <div className="px-4 py-3 text-gray-400 text-center">No categories available</div>
+                      <div className="px-4 py-3 text-gray-400 text-center">Kateqoriya mövcud deyil</div>
                     ) : (
                       categoryOptions.map(option => (
                         <button
@@ -268,7 +268,7 @@ const BannersUI = () => {
 
               <div className="flex items-center gap-2">
                 <div className="flex-1 h-px bg-gray-600"></div>
-                <span className="text-xs text-gray-500">or enter manually</span>
+                <span className="text-xs text-gray-500">və ya əl ilə daxil edin</span>
                 <div className="flex-1 h-px bg-gray-600"></div>
               </div>
 
@@ -280,7 +280,7 @@ const BannersUI = () => {
                   setSelectedCategoryId("");
                 }}
                 className="w-full px-4 py-3 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="https://example.com/page or /custom-path"
+                placeholder="https://misal.com/səhifə və ya /xüsusi-yol"
               />
             </div>
           </div>
@@ -296,13 +296,13 @@ const BannersUI = () => {
               }
               className="w-full px-4 py-3 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               rows={4}
-              placeholder="Enter a description..."
+              placeholder="Açıqlama daxil edin..."
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              Banner Image *
+              Banner şəkli *
             </label>
 
             {!imagePreview ? (
@@ -311,7 +311,7 @@ const BannersUI = () => {
                   <Image className="mx-auto h-12 w-12 text-gray-400" />
                   <div className="flex text-sm text-gray-400">
                     <label className="relative cursor-pointer rounded-md font-medium text-blue-400 hover:text-blue-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500 px-2 py-1">
-                      <span>Upload a file</span>
+                      <span>Fayl yüklə</span>
                       <input
                         id="banner-image-input"
                         type="file"
@@ -320,7 +320,7 @@ const BannersUI = () => {
                         onChange={handleImageChange}
                       />
                     </label>
-                    <p className="pl-1">or drag and drop</p>
+                    <p className="pl-1">və ya sürükləyin</p>
                   </div>
                   <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
                 </div>
@@ -365,7 +365,7 @@ const BannersUI = () => {
 
                 <div className="mt-2">
                   <label className="relative cursor-pointer rounded-md font-medium text-blue-400 hover:text-blue-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500 px-3 py-2 text-sm inline-block">
-                    <span>Change Image</span>
+                    <span>Şəkli dəyişdir</span>
                     <input
                       type="file"
                       className="sr-only"
@@ -387,7 +387,7 @@ const BannersUI = () => {
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 rounded bg-gray-700"
             />
             <label htmlFor="isActive" className="ml-2 block text-sm text-gray-300">
-              Active (visible on website)
+              Aktiv (vebsaytda görünür)
             </label>
           </div>
 
@@ -400,10 +400,10 @@ const BannersUI = () => {
               {isBannerLoading ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  Creating...
+                  Yaradılır...
                 </>
               ) : (
-                "Create Banner"
+                "Banner yarat"
               )}
             </button>
             <button
@@ -411,7 +411,7 @@ const BannersUI = () => {
               onClick={onClose}
               className="flex-1 bg-gray-600 hover:text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
             >
-              Cancel
+              Ləğv et
             </button>
           </div>
         </form>
@@ -464,12 +464,12 @@ const BannersUI = () => {
           ...cleanFormData  // Spread the data at the same level as id
         }).unwrap();
 
-        toast.success("Banner updated successfully!");
+        toast.success("Banner uğurla yeniləndi!");
         refetch();
         onClose();
       } catch (error) {
         console.error("Error updating banner:", error);
-        toast.error("Failed to update banner: " + (error.data?.message || error.message));
+        toast.error("Banneri yeniləmək uğursuz oldu: " + (error.data?.message || error.message));
       }
     };
 
@@ -477,32 +477,32 @@ const BannersUI = () => {
 
     return (
       <div className=" rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <h2 className="text-2xl font-bold text-white mb-6">Edit Banner</h2>
+        <h2 className="text-2xl font-bold text-white mb-6">Banneri redaktə et</h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              Banner Title *
+              Banner başlığı *
             </label>
             <input
               type="text"
               value={formData.title}
               onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
               className="w-full px-4 py-3 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Enter banner title"
+              placeholder="Banner başlığını daxil edin"
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              Button Text
+              Düymə mətni
             </label>
             <input
               type="text"
               value={formData.buttonText}
               onChange={(e) => setFormData(prev => ({ ...prev, buttonText: e.target.value }))}
               className="w-full px-4 py-3 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="e.g., Shop Now, Learn More"
+              placeholder="məs: İndi alış veriş et, Ətraflı öyrən"
             />
           </div>
 
@@ -515,20 +515,20 @@ const BannersUI = () => {
               value={formData.linkUrl}
               onChange={(e) => setFormData(prev => ({ ...prev, linkUrl: e.target.value }))}
               className="w-full px-4 py-3 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="https://example.com/page or /custom-path"
+              placeholder="https://misal.com/səhifə və ya /xüsusi-yol"
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              Description
+              Açıqlama
             </label>
             <textarea
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
               rows={4}
               className="w-full px-4 py-3 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Enter banner description"
+              placeholder="Banner açıqlamasını daxil edin"
             />
           </div>
 
@@ -542,7 +542,7 @@ const BannersUI = () => {
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 rounded bg-gray-700"
             />
             <label htmlFor="editIsActive" className="ml-2 block text-sm text-gray-300">
-              Banner visibility
+              Banner görünürlüyü
             </label>
             </div>
             <div className="flex items-center">
@@ -554,7 +554,7 @@ const BannersUI = () => {
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 rounded bg-gray-700"
             />
             <label htmlFor="editIsActive" className="ml-2 block text-sm text-gray-300">
-              Button  visibility
+              Düymə görünürlüyü
             </label>
             </div>
             <div className="flex items-center">
@@ -566,7 +566,7 @@ const BannersUI = () => {
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 rounded bg-gray-700"
             />
             <label htmlFor="editIsActive" className="ml-2 block text-sm text-gray-300">
-              Title visibility
+              Başlıq görünürlüyü
             </label>
             </div>
             <div className="flex items-center">
@@ -578,7 +578,7 @@ const BannersUI = () => {
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 rounded bg-gray-700"
             />
             <label htmlFor="editIsActive" className="ml-2 block text-sm text-gray-300">
-              Description visibility
+              Açıqlama görünürlüyü
             </label>
             </div>
 
@@ -595,10 +595,10 @@ const BannersUI = () => {
               {isUpdateLoading ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  Updating...
+                  Yenilənir...
                 </>
               ) : (
-                "Update Banner"
+                "Banneri yenilə"
               )}
             </button>
             <button
@@ -606,7 +606,7 @@ const BannersUI = () => {
               onClick={onClose}
               className="flex-1 bg-gray-600 hover:text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
             >
-              Cancel
+              Ləğv et
             </button>
           </div>
         </form>
@@ -618,11 +618,11 @@ const BannersUI = () => {
     try {
       await deleteBanner({ id }).unwrap();
       console.log('Deleting banner with id:', id);
-      toast.success("Banner deleted successfully");
+      toast.success("Banner uğurla silindi");
       refetch();
     } catch (error) {
       console.log(error);
-      toast.error(error?.data || "Deleting Banner Failed");
+      toast.error(error?.data || "Banneri silmək uğursuz oldu");
     }
   };
 
@@ -656,15 +656,15 @@ const BannersUI = () => {
       <div className="container mx-auto">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h2 className="text-4xl font-bold text-white mb-2">Banners</h2>
-            <p className="text-gray-400">Manage your website banners</p>
+            <h2 className="text-4xl font-bold text-white mb-2">Bannerlər</h2>
+            <p className="text-gray-400">Vebsayt bannerlərini idarə et</p>
           </div>
           <button
             onClick={() => setModalType("add")}
             className="md:px-6 md:py-3 px-4 py-2 bg-white text-sm md:text-base transition-all duration-300 rounded-lg font-semibold text-gray-900 shadow-lg transform hover:bg-gray-100 hover:scale-105 flex items-center gap-2"
           >
             <Plus className="w-5 h-5" />
-            Add Banner
+            Banner əlavə et
           </button>
         </div>
 
@@ -695,7 +695,7 @@ const BannersUI = () => {
 
                         <div className="absolute top-3 left-3">
                           <span className={`${banner.isActive ? 'bg-green-600' : 'bg-red-600'} text-white px-3 py-1 rounded-full text-sm font-semibold`}>
-                            {banner.isActive ? 'Active' : 'Inactive'}
+                            {banner.isActive ? 'Aktiv' : 'Deaktiv'}
                           </span>
                         </div>
                       </div>
@@ -747,7 +747,7 @@ const BannersUI = () => {
                             )}
 
                             <div className="flex items-center text-sm">
-                              <span className="text-gray-400 w-20">Created:</span>
+                              <span className="text-gray-400 w-20">Yaradılıb:</span>
                               <span className="text-gray-300">
                                 {formatDate(banner.createdAt)}
                               </span>
@@ -764,13 +764,13 @@ const BannersUI = () => {
             {bannersD && bannersD.length === 0 && (
               <div className="text-center py-20">
                 <Image className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-400 mb-2">No banners found</h3>
-                <p className="text-gray-500 mb-6">Get started by creating your first banner</p>
+                <h3 className="text-xl font-semibold text-gray-400 mb-2">Banner tapılmadı</h3>
+                <p className="text-gray-500 mb-6">İlk bannerinizi yaradaraq başlayın</p>
                 <button
                   onClick={() => setModalType("add")}
                   className="px-6 py-3 bg-white transition rounded-lg font-semibold text-gray-900 hover:bg-gray-100"
                 >
-                  Add Banner
+                  Banner əlavə et
                 </button>
               </div>
             )}

@@ -91,7 +91,7 @@ const AddProductSpecifications = ({ setOpen, productId, productName }) => {
     );
 
     if (!isValid) {
-      toast.error('Please fill in all required fields');
+      toast.error('Zəhmət olmasa bütün tələb olunan sahələri doldurun');
       return;
     }
 
@@ -102,11 +102,11 @@ const AddProductSpecifications = ({ setOpen, productId, productName }) => {
         specificationGroups: specificationGroups
       }).unwrap();
       
-      toast.success('Product specifications added successfully!');
+      toast.success('Məhsul spesifikasiyaları uğurla əlavə edildi!');
       setOpen();
     } catch (error) {
       console.error('Error adding specifications:', error);
-      toast.error(error?.data?.message || 'Failed to add specifications');
+      toast.error(error?.data?.message || 'Spesifikasiyaları əlavə etmək uğursuz oldu');
     }
   };
 
@@ -118,7 +118,7 @@ const AddProductSpecifications = ({ setOpen, productId, productName }) => {
           <div className="flex items-center gap-3">
             <Settings className="w-6 h-6 text-blue-400" />
             <div>
-              <h2 className="text-xl font-bold text-white">Add Product Specifications</h2>
+              <h2 className="text-xl font-bold text-white">Məhsul spesifikasiyaları əlavə et</h2>
               <p className="text-gray-400 text-sm">{productName}</p>
             </div>
           </div>
@@ -139,13 +139,13 @@ const AddProductSpecifications = ({ setOpen, productId, productName }) => {
                 <div className="flex items-center gap-3 mb-4">
                   <div className="flex-1">
                     <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Group Name *
+                      Qrup adı *
                     </label>
                     <input
                       type="text"
                       value={group.groupName}
                       onChange={(e) => updateGroupName(groupIndex, e.target.value)}
-                      placeholder="e.g., Technical Specifications, Dimensions"
+                      placeholder="məs: Texniki xüsusiyyətlər, Ölçülər"
                       className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                       required
                     />
@@ -168,39 +168,39 @@ const AddProductSpecifications = ({ setOpen, productId, productName }) => {
                       <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                         <div>
                           <label className="block text-xs font-medium text-gray-300 mb-1">
-                            Specification Name *
+                            Xüsusiyyət adı *
                           </label>
                           <input
                             type="text"
                             value={item.name}
                             onChange={(e) => updateItem(groupIndex, itemIndex, 'name', e.target.value)}
-                            placeholder="e.g., Weight, Color"
+                            placeholder="məs: Çəki, Rəng"
                             className="w-full px-2 py-1.5 bg-gray-500 border border-gray-400 rounded text-white text-sm placeholder-gray-400 focus:outline-none focus:border-blue-500"
                             required
                           />
                         </div>
                         <div>
                           <label className="block text-xs font-medium text-gray-300 mb-1">
-                            Value *
+                            Dəyər *
                           </label>
                           <input
                             type="text"
                             value={item.value}
                             onChange={(e) => updateItem(groupIndex, itemIndex, 'value', e.target.value)}
-                            placeholder="e.g., 2.5, Black"
+                            placeholder="məs: 2.5, Qara"
                             className="w-full px-2 py-1.5 bg-gray-500 border border-gray-400 rounded text-white text-sm placeholder-gray-400 focus:outline-none focus:border-blue-500"
                             required
                           />
                         </div>
                         <div>
                           <label className="block text-xs font-medium text-gray-300 mb-1">
-                            Unit
+                            Vahid
                           </label>
                           <input
                             type="text"
                             value={item.unit}
                             onChange={(e) => updateItem(groupIndex, itemIndex, 'unit', e.target.value)}
-                            placeholder="e.g., kg, cm, inches"
+                            placeholder="məs: kq, sm, düym"
                             className="w-full px-2 py-1.5 bg-gray-500 border border-gray-400 rounded text-white text-sm placeholder-gray-400 focus:outline-none focus:border-blue-500"
                           />
                         </div>
@@ -227,7 +227,7 @@ const AddProductSpecifications = ({ setOpen, productId, productName }) => {
                   className="mt-3 flex items-center gap-2 px-3 py-2 text-blue-400 hover:text-blue-300 hover:bg-blue-900/20 rounded-lg transition-colors text-sm"
                 >
                   <Plus className="w-4 h-4" />
-                  Add Specification Item
+                  Xüsusiyyət elementi əlavə et
                 </button>
               </div>
             ))}
@@ -239,7 +239,7 @@ const AddProductSpecifications = ({ setOpen, productId, productName }) => {
               className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-gray-600 hover:border-gray-500 rounded-lg text-gray-400 hover:text-gray-300 transition-colors"
             >
               <Plus className="w-5 h-5" />
-              Add Specification Group
+              Xüsusiyyət qrupu əlavə et
             </button>
           </div>
 
@@ -250,7 +250,7 @@ const AddProductSpecifications = ({ setOpen, productId, productName }) => {
               onClick={setOpen}
               className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
             >
-              Cancel
+              Ləğv et
             </button>
             <button
               type="submit"
@@ -260,7 +260,7 @@ const AddProductSpecifications = ({ setOpen, productId, productName }) => {
               {isLoading && (
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               )}
-              {isLoading ? 'Adding...' : 'Add Specifications'}
+              {isLoading ? 'Əlavə edilir...' : 'Spesifikasiyaları əlavə et'}
             </button>
           </div>
         </form>

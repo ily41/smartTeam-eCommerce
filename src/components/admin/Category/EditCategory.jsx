@@ -105,12 +105,12 @@ const EditCategoryUI = ({item, setOpen, categories}) => {
         }).unwrap();
         console.log(result)
         
-        toast.success("Category updated successfully");
+        toast.success("Kateqoriya uğurla yeniləndi");
         setIsCategoryLoading(false);
         if (setOpen) setOpen();
       } catch (error) {
         console.log(error);
-        toast.error(error?.data?.message || "Updating category failed");
+        toast.error(error?.data?.message || "Kateqoriyanı yeniləmək uğursuz oldu");
         setIsCategoryLoading(false);
       }
     };
@@ -141,7 +141,7 @@ const EditCategoryUI = ({item, setOpen, categories}) => {
     >
       <div className="flex flex-col">
         <label className="text-white text-sm mb-1" htmlFor="name">
-          Name <span className="text-red-500">*</span>
+          Ad <span className="text-red-500">*</span>
         </label>
         <input
           id="name"
@@ -156,7 +156,7 @@ const EditCategoryUI = ({item, setOpen, categories}) => {
 
       <div className="flex flex-col">
         <label className="text-white text-sm mb-1" htmlFor="description">
-          Description
+          Açıqlama
         </label>
         <textarea
           id="description"
@@ -165,13 +165,13 @@ const EditCategoryUI = ({item, setOpen, categories}) => {
           rows="3"
           value={formData.description} 
           className="w-full px-4 py-3 rounded-lg bg-[#2a2a2a] text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-white placeholder:text-gray-400 resize-none"
-          placeholder="Enter category description"
+          placeholder="Kateqoriya açıqlamasını daxil edin"
         />
       </div>
 
       <div className="flex flex-col">
         <label className="text-white text-sm mb-2">
-          Category Image
+          Kateqoriya şəkli
         </label>
         
         {imagePreview && (
@@ -189,7 +189,7 @@ const EditCategoryUI = ({item, setOpen, categories}) => {
           className="flex items-center justify-center gap-2 px-4 py-3 bg-[#2a2a2a] text-white border border-gray-700 rounded-lg cursor-pointer hover:bg-[#333333] transition-colors"
         >
           <Upload className="w-5 h-5" />
-          <span>{imageFile ? 'Change Image' : 'Upload Image'}</span>
+          <span>{imageFile ? 'Şəkli dəyişdir' : 'Şəkil yüklə'}</span>
         </label>
 
         <input
@@ -209,12 +209,12 @@ const EditCategoryUI = ({item, setOpen, categories}) => {
 
       {imageFile && (
         <div className="text-xs text-gray-400 p-3 bg-[#2a2a2a] rounded border border-gray-700">
-          <p className="font-semibold text-white mb-1">Debug Info:</p>
-          <p>Selected file: {imageFile.name}</p>
-          <p>Size: {(imageFile.size / 1024).toFixed(2)} KB</p>
-          <p>Type: {imageFile.type}</p>
-          <p>Is new image: {isNewImage ? 'Yes' : 'No'}</p>
-          <p>Has preview: {imagePreview ? 'Yes' : 'No'}</p>
+          <p className="font-semibold text-white mb-1">Debug Məlumatı:</p>
+          <p>Seçilmiş fayl: {imageFile.name}</p>
+          <p>Ölçü: {(imageFile.size / 1024).toFixed(2)} KB</p>
+          <p>Tip: {imageFile.type}</p>
+          <p>Yeni şəkil: {isNewImage ? 'Bəli' : 'Xeyr'}</p>
+          <p>Önizləmə var: {imagePreview ? 'Bəli' : 'Xeyr'}</p>
         </div>
       )}
 
@@ -224,7 +224,7 @@ const EditCategoryUI = ({item, setOpen, categories}) => {
           onClick={() => setOpen && setOpen()}
           className="px-6 py-3 bg-[#2a2a2a] text-white font-semibold rounded-lg hover:bg-[#333333] transition-all"
         >
-          Cancel
+          Ləğv et
         </button>
         <button
           type="submit"
@@ -234,10 +234,10 @@ const EditCategoryUI = ({item, setOpen, categories}) => {
           {isCategoryLoading ? (
             <>
               <Loader2 className="w-5 h-5 animate-spin" />
-              <span>Saving...</span>
+              <span>Yadda saxlanılır...</span>
             </>
           ) : (
-            "Save Changes"
+            "Dəyişiklikləri yadda saxla"
           )}
         </button>
       </div>

@@ -7,6 +7,17 @@ import { WiRefresh } from "react-icons/wi";
 const ProductFormUI = ({setOpen}) => {
 
   const { data: userRoles, error, isRolesLoading, refetch } = useGetUserRolesQuery();
+
+  // Map user role IDs to Azerbaijani names
+  const getRoleName = (roleId) => {
+    const roleNames = {
+      1: "ümumi",
+      2: "topdan",
+      3: "diller",
+      4: "eksklüziv diller"
+    };
+    return roleNames[roleId] || userRoles?.[roleId]?.name || `Role ${roleId}`;
+  };
   const { data: categories, isLoading, errorC } = useGetCategoriesQuery();
   const { data: brands, isLoading: isBrandsLoading } = useGetBrandsQuery();
   const { data: brand, isLoading: isBrandLoading } = useGetBrandQuery("1cd62de1-35cd-4d90-b767-dc1a443bdb3f");
@@ -98,7 +109,7 @@ const ProductFormUI = ({setOpen}) => {
     if (!selectedFile) return;
 
     if (selectedFile.type !== 'application/pdf') {
-      toast.error("Please upload only PDF files");
+      toast.error("Zəhmət olmasa yalnız PDF faylları yükləyin");
       return;
     }
 
@@ -165,7 +176,7 @@ const ProductFormUI = ({setOpen}) => {
     e.preventDefault();
 
     if (!file) {
-      toast.error("Please upload an image first");
+      toast.error("Zəhmət olmasa əvvəlcə şəkil yükləyin");
       return;
     }
 
@@ -215,10 +226,10 @@ const ProductFormUI = ({setOpen}) => {
         }).unwrap();
       }
 
-      toast.success("Product added successfully");
+      toast.success("Məhsul uğurla əlavə edildi");
       close();
     } catch (error) {
-      toast.error(error?.data || error?.message || "Something went wrong");
+      toast.error(error?.data || error?.message || "Nəsə səhv getdi");
     }
   };
 
@@ -255,7 +266,7 @@ const ProductFormUI = ({setOpen}) => {
   return (
     <div className="bg-[#1f1f1f] text-white p-6 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto dark-scrollbar">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Add New Product</h2>
+        <h2 className="text-2xl font-bold">Yeni məhsul əlavə et</h2>
       </div>
 
       <div className="space-y-6">
@@ -264,7 +275,7 @@ const ProductFormUI = ({setOpen}) => {
           {/* Product Name */}
           <div>
             <label className="block text-sm font-medium mb-2">
-              Product Name *
+              Məhsul adı *
             </label>
             <input
               type="text"
@@ -273,7 +284,7 @@ const ProductFormUI = ({setOpen}) => {
               onChange={handleInputChange}
               required
               className="w-full px-3 py-2 bg-[#2c2c2c] border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Enter product name"
+              placeholder="Məhsul adını daxil edin"
             />
           </div>
 
@@ -287,13 +298,13 @@ const ProductFormUI = ({setOpen}) => {
               onChange={handleInputChange}
               required
               className="w-full px-3 py-2 bg-[#2c2c2c] border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Enter SKU"
+              placeholder="SKU daxil edin"
             />
           </div>
 
           {/* Stock Quantity */}
           <div>
-            <label className="block text-sm font-medium mb-2">Stock Quantity *</label>
+            <label className="block text-sm font-medium mb-2">Stok miqdarı *</label>
             <input
               type="number"
               name="stockQuantity"
@@ -307,7 +318,7 @@ const ProductFormUI = ({setOpen}) => {
 
           {/* Category */}
           <div>
-            <label className="block text-sm font-medium mb-2">Category *</label>
+            <label className="block text-sm font-medium mb-2">Kateqoriya *</label>
             <select
               name="categoryId"
               value={formData.categoryId}
@@ -315,7 +326,7 @@ const ProductFormUI = ({setOpen}) => {
               required
               className="w-full px-3 py-2 bg-[#2c2c2c] border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
-              <option value="">Select Category</option>
+              <option value="">Kateqoriya seçin</option>
               {categories?.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}
@@ -326,7 +337,7 @@ const ProductFormUI = ({setOpen}) => {
 
           {/* Brand */}
           <div>
-            <label className="block text-sm font-medium mb-2">Brand *</label>
+            <label className="block text-sm font-medium mb-2">Brend *</label>
             <select
               name="brandId"
               value={formData.brandId}
@@ -334,7 +345,7 @@ const ProductFormUI = ({setOpen}) => {
               required
               className="w-full px-3 py-2 bg-[#2c2c2c] border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
-              <option value="">Select Brand</option>
+              <option value="">Brend seçin</option>
               {brands?.map((brand) => (
                 <option key={brand.id} value={brand.id}>
                   {brand.name}
@@ -355,40 +366,40 @@ const ProductFormUI = ({setOpen}) => {
             className="w-4 h-4 text-indigo-600 bg-[#2c2c2c] border-gray-600 rounded focus:ring-indigo-500 focus:ring-2"
           />
           <label htmlFor="isHotDeal" className="text-sm font-medium">
-            Mark as Hot Deal
+            Xüsusi təklif kimi işarələ
           </label>
         </div>
 
         {/* Description */}
         <div>
-          <label className="block text-sm font-medium mb-2">Description</label>
+          <label className="block text-sm font-medium mb-2">Açıqlama</label>
           <textarea
             name="description"
             value={formData.description}
             onChange={handleInputChange}
             rows="4"
             className="w-full px-3 py-2 bg-[#2c2c2c] border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            placeholder="Enter product description"
+            placeholder="Məhsul açıqlamasını daxil edin"
           />
         </div>
 
         {/* Short Description */}
         <div>
-          <label className="block text-sm font-medium mb-2">Short Description</label>
+          <label className="block text-sm font-medium mb-2">Qısa açıqlama</label>
           <textarea
             name="shortDescription"
             value={formData.shortDescription}
             onChange={handleInputChange}
             rows="2"
             className="w-full px-3 py-2 bg-[#2c2c2c] border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            placeholder="Enter short description"
+            placeholder="Qısa açıqlama daxil edin"
           />
         </div>
 
         {/* Pricing Section */}
         <div>
           <div className="flex justify-between items-center mb-4">
-            <label className="block text-sm font-medium">Pricing by User Role</label>
+            <label className="block text-sm font-medium">İstifadəçi roluna görə qiymətlər</label>
           </div>
           <div className="border border-gray-600 rounded-md">
             {formData.prices.map((item, index) => (
@@ -396,12 +407,12 @@ const ProductFormUI = ({setOpen}) => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-10 p-4 bg-[#2c2c2c] rounded-t-md">
                   {/* User Role */}
                   <div className="flex items-center">
-                    <label className="block text-md font-medium mb-1">{userRoles && userRoles[index+1].name}</label>
+                    <label className="block text-md font-medium mb-1">{getRoleName(index + 1)}</label>
                   </div>
 
                   {/* Price */}
                   <div>
-                    <label className="block text-xs font-medium mb-1">Price</label>
+                    <label className="block text-xs font-medium mb-1">Qiymət</label>
                     <input
                       type="number"
                       value={item.price === 0 ? '' : item.price}
@@ -415,7 +426,7 @@ const ProductFormUI = ({setOpen}) => {
 
                   {/* Discounted Price */}
                   <div>
-                    <label className="block text-xs font-medium mb-1 whitespace-nowrap">Discounted Price</label>
+                    <label className="block text-xs font-medium mb-1 whitespace-nowrap">Endirimli qiymət</label>
                     <input
                       type="number"
                       min="0"
@@ -434,7 +445,7 @@ const ProductFormUI = ({setOpen}) => {
 
         {/* Images */}
         <div>
-          <label className="block text-sm font-medium mb-2">Product Images</label>
+          <label className="block text-sm font-medium mb-2">Məhsul şəkilləri</label>
           <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center">
             <input
               type="file"
@@ -449,7 +460,7 @@ const ProductFormUI = ({setOpen}) => {
             >
               <Upload className="w-8 h-8 text-gray-400" />
               <span className="text-gray-400">
-                Click to upload images or drag and drop
+                Şəkil yükləmək üçün klik edin və ya sürükləyin
               </span>
               <span className="text-sm text-gray-500">
                 PNG, JPG, GIF up to 10MB each
@@ -480,7 +491,7 @@ const ProductFormUI = ({setOpen}) => {
 
         {/* Detailed Images */}
         <div>
-          <label className="block text-sm font-medium mb-2">Detail Images</label>
+          <label className="block text-sm font-medium mb-2">Ətraflı şəkillər</label>
           <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center">
             <input
               type="file"
@@ -496,7 +507,7 @@ const ProductFormUI = ({setOpen}) => {
             >
               <Upload className="w-8 h-8 text-gray-400" />
               <span className="text-gray-400">
-                Click to upload images or drag and drop
+                Şəkil yükləmək üçün klik edin və ya sürükləyin
               </span>
               <span className="text-sm text-gray-500">
                 PNG, JPG, GIF up to 10MB each
@@ -529,7 +540,7 @@ const ProductFormUI = ({setOpen}) => {
 
         {/* PDF Upload Section */}
         <div>
-          <label className="block text-sm font-medium mb-2">Product Specification (PDF)</label>
+          <label className="block text-sm font-medium mb-2">Məhsul spesifikasiyası (PDF)</label>
           <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center">
             <input
               type="file"
@@ -544,7 +555,7 @@ const ProductFormUI = ({setOpen}) => {
             >
               <FileText className="w-8 h-8 text-gray-400" />
               <span className="text-gray-400">
-                Click to upload PDF specification
+                PDF spesifikasiya yükləmək üçün klik edin
               </span>
               <span className="text-sm text-gray-500">
                 PDF up to 10MB
@@ -575,28 +586,28 @@ const ProductFormUI = ({setOpen}) => {
               {/* PDF Custom Name */}
               <div>
                 <label className="block text-sm font-medium mb-2">
-                  Custom File Name (Optional)
+                  Xüsusi fayl adı (İxtiyari)
                 </label>
                 <input
                   type="text"
                   value={pdfCustomName}
                   onChange={(e) => setPdfCustomName(e.target.value)}
                   className="w-full px-3 py-2 bg-[#2c2c2c] border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  placeholder="Enter custom name for the PDF"
+                  placeholder="PDF üçün xüsusi ad daxil edin"
                 />
               </div>
 
               {/* PDF Description */}
               <div>
                 <label className="block text-sm font-medium mb-2">
-                  PDF Description (Optional)
+                  PDF açıqlaması (İxtiyari)
                 </label>
                 <textarea
                   value={pdfDescription}
                   onChange={(e) => setPdfDescription(e.target.value)}
                   rows="2"
                   className="w-full px-3 py-2 bg-[#2c2c2c] border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  placeholder="Enter description for the PDF"
+                  placeholder="PDF üçün açıqlama daxil edin"
                 />
               </div>
             </div>
@@ -611,7 +622,7 @@ const ProductFormUI = ({setOpen}) => {
             className="px-6 py-2 bg-gray-600 hover:bg-gray-700 rounded-md font-semibold"
             disabled={isProductLoading || isDetailLoading || isPdfLoading}
           >
-            Cancel
+            Ləğv et
           </button>
           <button
             type="button"
@@ -619,7 +630,7 @@ const ProductFormUI = ({setOpen}) => {
             disabled={isProductLoading || isDetailLoading || isPdfLoading}
             className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isProductLoading || isDetailLoading || isPdfLoading ? "Adding..." : "Add Product"}
+            {isProductLoading || isDetailLoading || isPdfLoading ? "Əlavə edilir..." : "Məhsul əlavə et"}
           </button>
         </div>
       </div>

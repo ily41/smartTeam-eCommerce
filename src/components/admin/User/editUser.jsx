@@ -63,11 +63,11 @@ const EditUserUi = ({ setOpen, edit }) => {
     e.preventDefault();
     try {
       await editUser(formData).unwrap();
-      toast.success("User updated successfully!");
+      toast.success("İstifadəçi uğurla yeniləndi!");
       setOpen();
     } catch (error) {
       console.log(error);
-      toast.error("Updating user failed");
+      toast.error("İstifadəçini yeniləmək uğursuz oldu");
     }
   };
 
@@ -80,7 +80,7 @@ const EditUserUi = ({ setOpen, edit }) => {
       {/* First Name */}
       <div className="flex flex-col">
         <label className="text-white text-sm mb-1" htmlFor="firstName">
-          First Name <span className="text-red-500">*</span>
+          Ad <span className="text-red-500">*</span>
         </label>
         <input
           name="firstName"
@@ -95,7 +95,7 @@ const EditUserUi = ({ setOpen, edit }) => {
       {/* Last Name */}
       <div className="flex flex-col">
         <label className="text-white text-sm mb-1" htmlFor="lastName">
-          Last Name <span className="text-red-500">*</span>
+          Soyad <span className="text-red-500">*</span>
         </label>
         <input
           name="lastName"
@@ -110,7 +110,7 @@ const EditUserUi = ({ setOpen, edit }) => {
       {/* Phone Number */}
       <div className="flex flex-col">
         <label className="text-white text-sm mb-1" htmlFor="phoneNumber">
-          Phone Number <span className="text-red-500">*</span>
+          Telefon nömrəsi <span className="text-red-500">*</span>
         </label>
         <input
           name="phoneNumber"
@@ -127,7 +127,7 @@ const EditUserUi = ({ setOpen, edit }) => {
       {/* User Role */}
       <div className="flex flex-col">
         <label className="text-white text-sm mb-1" htmlFor="parent">
-          User Role (required)
+          İstifadəçi rolu (tələb olunur)
         </label>
         <select
           value={formData.role}
@@ -160,7 +160,7 @@ const EditUserUi = ({ setOpen, edit }) => {
           className="w-5 h-5 rounded border-gray-600 bg-[#2a2a2a] text-blue-500 focus:outline-none cursor-pointer"
         />
         <label htmlFor="customCheckbox" className="text-white text-sm select-none">
-          {checked ? "Active" : "Deactive"}
+          {checked ? "Aktiv" : "Deaktiv"}
         </label>
       </div>
 
@@ -171,7 +171,7 @@ const EditUserUi = ({ setOpen, edit }) => {
           disabled={isLoading}
           className="px-6 py-3 bg-white cursor-pointer text-black font-semibold rounded-lg hover:bg-gray-200 transition-all flex items-center justify-center"
         >
-          {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : "Save"}
+          {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : "Yadda saxla"}
         </button>
       </div>
     </form>

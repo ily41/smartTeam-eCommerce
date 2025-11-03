@@ -47,7 +47,7 @@ const AddBrandUI = ({setOpen}) => {
     e.preventDefault();
 
     if (!file) {
-      toast.error("Please upload an image first");
+      toast.error("Zəhmət olmasa əvvəlcə şəkil yükləyin");
       return;
     }
 
@@ -76,7 +76,7 @@ const AddBrandUI = ({setOpen}) => {
         }).unwrap();
       console.log(result)
 
-      toast.success("Brand added successfully");
+      toast.success("Brend uğurla əlavə edildi");
 
       setFormData({
         name: "",
@@ -86,7 +86,7 @@ const AddBrandUI = ({setOpen}) => {
       setOpen();
 
     } catch (error) {
-      toast.error(error?.data || "Something went wrong");
+      toast.error(error?.data || "Nəsə səhv getdi");
       console.log("Full error:", error);
     }
   };
@@ -104,7 +104,7 @@ const AddBrandUI = ({setOpen}) => {
       {/* Name Field */}
       <div className="flex flex-col">
         <label className="text-white text-sm mb-1" htmlFor="name">
-          Name <span className="text-red-500">*</span>
+          Ad <span className="text-red-500">*</span>
         </label>
         <input
           id="name"
@@ -112,7 +112,7 @@ const AddBrandUI = ({setOpen}) => {
           name="name"
           type="text"
           required
-          placeholder="Enter brand name"
+          placeholder="Brend adını daxil edin"
           className="w-full px-4 py-3 rounded-lg bg-[#2a2a2a] text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-white placeholder:text-gray-400"
         />
       </div>
@@ -120,7 +120,7 @@ const AddBrandUI = ({setOpen}) => {
       {/* Sort Order Field */}
       <div className="flex flex-col">
         <label className="text-white text-sm mb-1" htmlFor="sortOrder">
-          Sort Order
+          Sıra nömrəsi
         </label>
         <input
           id="sortOrder"
@@ -134,7 +134,7 @@ const AddBrandUI = ({setOpen}) => {
 
       {/* Image Upload */}
       <div>
-        <label className="block text-sm font-medium mb-2 text-white">Brand Logo</label>
+        <label className="block text-sm font-medium mb-2 text-white">Brend loqosu</label>
         <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center">
           <input
             type="file"
@@ -149,7 +149,7 @@ const AddBrandUI = ({setOpen}) => {
           >
             <Upload className="w-8 h-8 text-gray-400" />
             <span className="text-gray-400">
-              Click to upload image or drag and drop
+              Şəkil yükləmək üçün klik edin və ya sürükləyin
             </span>
             <span className="text-sm text-gray-500">
               PNG, JPG, GIF up to 10MB
@@ -185,7 +185,7 @@ const AddBrandUI = ({setOpen}) => {
           disabled={isBrandImageLoading}
           className="px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-gray-200 transition-all"
         >
-          {isBrandImageLoading ? <Loader2 className="w-12 h-12 text-white animate-spin" /> : "Save"}
+          {isBrandImageLoading ? <Loader2 className="w-12 h-12 text-white animate-spin" /> : "Yadda saxla"}
         </button>
       </div>
     </form>

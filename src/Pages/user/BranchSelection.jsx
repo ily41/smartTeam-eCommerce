@@ -18,7 +18,7 @@ const BranchesSection = () => {
       phone: '+994707513111',
       phoneDisplay: '070-751-31-11',
       image: '/contact/field1.jpg',
-      coordinates: { lat: 40.3419741, lng: 49.8399698 }
+      coordinates: { lat: 40.329590, lng: 49.781784 }
     },
     {
       id: 1,
@@ -30,7 +30,7 @@ const BranchesSection = () => {
       phone: '+994706740649',
       phoneDisplay: '070-674-06-49',
       image: '/contact/field2.jpg',
-      coordinates: { lat: 40.329590, lng: 49.781784 }
+      coordinates: { lat: 40.3419741, lng: 49.8399698 }
     }
   ];
 
@@ -88,7 +88,7 @@ const BranchesSection = () => {
                 onClick={() => setSelectedBranch(branch.id)}
                 className='text-[#E60C03] font-semibold flex items-center gap-2 text-sm sm:text-base hover:gap-3 transition-all'
               >
-                View on Map <ChevronRight className='w-4 h-4 sm:w-5 sm:h-5' />
+                Xəritədə göstər <ChevronRight className='w-4 h-4 sm:w-5 sm:h-5' />
               </button>
             </div>
           </div>
@@ -96,7 +96,7 @@ const BranchesSection = () => {
 
         {/* Mobile Map View */}
         <div className='h-[400px] bg-gray-900 rounded-lg overflow-hidden'>
-          <MyMap markerIndex={selectedBranch} />
+          <MyMap markerIndex={selectedBranch} branches={branches} />
         </div>
       </div>
 
@@ -181,7 +181,7 @@ const BranchesSection = () => {
 
           {/* Map Container */}
           <div className='flex-1 min-h-[300px] xl:min-h-[350px] bg-gray-900 rounded-lg overflow-hidden'>
-            <MyMap markerIndex={selectedBranch} />
+            <MyMap markerIndex={selectedBranch} branches={branches} />
           </div>
         </div>
       </div>

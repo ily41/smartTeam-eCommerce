@@ -41,12 +41,12 @@ const EditBrandUI = ({item, setOpen}) => {
         imageFile: imageFile,
       }).unwrap();
 
-      toast.success("Brand updated successfully");
+      toast.success("Brend uğurla yeniləndi");
       setOpen();
 
     } catch (error) {
       console.log(error);
-      toast.error(error?.data?.message || "Updating brand failed");
+      toast.error(error?.data?.message || "Brendi yeniləmək uğursuz oldu");
     }
   }
 
@@ -82,7 +82,7 @@ const EditBrandUI = ({item, setOpen}) => {
       {/* Name Field */}
       <div className="flex flex-col">
         <label className="text-white text-sm mb-1" htmlFor="name">
-          Name <span className="text-red-500">*</span>
+          Ad <span className="text-red-500">*</span>
         </label>
         <input
           id="name"
@@ -98,7 +98,7 @@ const EditBrandUI = ({item, setOpen}) => {
       {/* Image Upload Field */}
       <div className="flex flex-col">
         <label className="text-white text-sm mb-2">
-          Brand Logo
+          Brend loqosu
         </label>
         
         {/* Image Preview */}
@@ -126,7 +126,7 @@ const EditBrandUI = ({item, setOpen}) => {
           className="flex items-center justify-center gap-2 px-4 py-3 bg-[#2a2a2a] text-white rounded-lg border border-gray-700 hover:bg-[#333] cursor-pointer transition"
         >
           <Upload className="w-5 h-5" />
-          <span>{imageFile ? "Change Image" : "Upload Image"}</span>
+          <span>{imageFile ? "Şəkli dəyişdir" : "Şəkil yüklə"}</span>
         </label>
         <input
           id="imageFile"
@@ -137,7 +137,7 @@ const EditBrandUI = ({item, setOpen}) => {
         />
         {imageFile && (
           <p className="text-sm text-gray-400 mt-2">
-            Selected: {imageFile.name}
+            Seçildi: {imageFile.name}
           </p>
         )}
       </div>
@@ -149,7 +149,7 @@ const EditBrandUI = ({item, setOpen}) => {
           onClick={setOpen}
           className="px-6 py-3 bg-gray-700 text-white font-semibold rounded-lg hover:bg-gray-600 transition-all"
         >
-          Cancel
+          Ləğv et
         </button>
         <button
           type="submit"
@@ -159,7 +159,7 @@ const EditBrandUI = ({item, setOpen}) => {
           {isBrandLoading ? (
             <Loader2 className="w-6 h-6 text-black animate-spin" />
           ) : (
-            "Save"
+            "Yadda saxla"
           )}
         </button>
       </div>

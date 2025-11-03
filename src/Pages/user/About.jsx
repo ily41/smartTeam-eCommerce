@@ -127,7 +127,7 @@ const About = () => {
             className="flex-1 bg-white rounded-lg border-2 mt-4 md:mt-0 border-gray-200 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-gray-400"
           >
             <img
-              className="w-full rounded-t-md h-[190px] lg:h-[220px] object-cover"
+              className="w-full rounded-t-md h-[190px] lg:h-[220px] object-contain p-4"
               src="./deals/hem.png"
               alt=""
             />

@@ -275,7 +275,7 @@ const FilterUi = () => {
             <div className="bg-gray-800 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-gray-700">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-white">{modalMode === 'add' ? 'Add New Filter' : modalMode === 'edit' ? 'Redaktə et' : 'Filter detalları'}</h2>
+                  <h2 className="text-2xl font-bold text-white">{modalMode === 'add' ? 'Yeni filtr əlavə et' : modalMode === 'edit' ? 'Filtri redaktə et' : 'Filter detalları'}</h2>
                   <button onClick={closeModal} className="p-2 hover:bg-gray-700 rounded-lg transition-colors"><X className="w-5 h-5 text-gray-400" /></button>
                 </div>
 
@@ -283,7 +283,7 @@ const FilterUi = () => {
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Filterin adı</label>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Filter adı</label>
                       <input type="text" name="name" value={formData.name} onChange={handleInputChange} disabled={modalMode === 'view'} className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-600" />
                     </div>
 
@@ -301,7 +301,7 @@ const FilterUi = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-4">Options</label>
+                    <label className="block text-sm font-medium text-gray-300 mb-4">Seçimlər</label>
                     {modalMode !== 'view' && (
                       <div className="flex gap-2 mb-4">
                         <input type="text" placeholder="Seçim etiketi" value={newOption.displayName} onChange={(e) => setNewOption(prev => ({ ...prev, displayName: e.target.value }))} className="flex-1 px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
@@ -331,11 +331,11 @@ const FilterUi = () => {
 
                   {modalMode !== 'view' && (
                     <div className="flex justify-end gap-4 pt-6 border-t border-gray-600">
-                      <button type="button" onClick={closeModal} className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 font-semibold transition-colors">Ləğv et</button>
+                        <button type="button" onClick={closeModal} className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 font-semibold transition-colors">Ləğv et</button>
                       <button type="button" onClick={handleSubmit} disabled={loading} className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 disabled:opacity-50 font-semibold transition-colors">
                         {loading && <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>}
                         <Save className="w-4 h-4" />
-                        {modalMode === 'add' ? 'Filter yarat' : 'Dəyişiklikləri yadda saxla'}
+                        {modalMode === 'add' ? 'Filtri yarat' : 'Dəyişiklikləri yadda saxla'}
                       </button>
                     </div>
                   )}

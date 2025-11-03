@@ -94,12 +94,12 @@ const ProductFilterAssignment = () => {
 
   const handleAssignment = async () => {
     if (!selectedFilter || selectedProducts.length === 0) {
-      toast.error('Please select at least one product and a filter');
+      toast.error('Zəhmət olmasa ən azı bir məhsul və bir filtr seçin');
       return;
     }
 
     if (!selectedFilterOption && !customValue) {
-      toast.error('Please select a filter option or provide a custom value');
+      toast.error('Zəhmət olmasa filtr seçimi seçin və ya xüsusi dəyər daxil edin');
       return;
     }
 
@@ -117,20 +117,20 @@ const ProductFilterAssignment = () => {
           productId: selectedProducts[0],
           ...assignmentData
         }).unwrap();
-        toast.success('Filter assigned successfully!');
+        toast.success('Filtr uğurla təyin edildi!');
         refetch()
       } else {
         await assignFiltersBulk({
           productIds: selectedProducts,
           ...assignmentData
         }).unwrap();
-        toast.success(`Filter assigned to ${selectedProducts.length} products successfully!`);
+        toast.success(`Filtr ${selectedProducts.length} məhsula uğurla təyin edildi!`);
       }
 
       closeModal();
     } catch (error) {
       console.error('Assignment error:', error);
-      toast.error(error?.data?.message || 'Failed to assign filter');
+      toast.error(error?.data?.message || 'Filtrləri təyin etmək uğursuz oldu');
     } finally {
       setLoading(false);
     }
@@ -140,12 +140,12 @@ const ProductFilterAssignment = () => {
 
     try {
       await removeAllFilters({ productId }).unwrap();
-      toast.success('All filters removed successfully!');
+      toast.success('Bütün filtrlər uğurla silindi!');
       refetch()
 
     } catch (error) {
       console.error('Remove all filters error:', error);
-      toast.error(error?.data?.message || 'Failed to remove filters');
+      toast.error(error?.data?.message || 'Filtrləri silmək uğursuz oldu');
     }
   };
 
@@ -153,22 +153,22 @@ const ProductFilterAssignment = () => {
 
     try {
       await removeCustomFilter({ productId, filterId }).unwrap();
-      toast.success('Filter removed successfully!');
+      toast.success('Filtr uğurla silindi!');
       refetch()
 
     } catch (error) {
       console.error('Remove filter error:', error);
-      toast.error(error?.data?.message || 'Failed to remove filter');
+      toast.error(error?.data?.message || 'Filtrləri silmək uğursuz oldu');
     }
   };
 
   const getSelectedProductsText = () => {
-    if (selectedProducts.length === 0) return 'No products selected';
+    if (selectedProducts.length === 0) return 'Məhsul seçilməyib';
     if (selectedProducts.length === 1) {
       const product = products.find(p => p.id === selectedProducts[0]);
-      return product?.name || 'Unknown product';
+      return product?.name || 'Naməlum məhsul';
     }
-    return `${selectedProducts.length} products selected`;
+    return `${selectedProducts.length} məhsul seçildi`;
   };
 
   return (
@@ -257,9 +257,9 @@ const ProductFilterAssignment = () => {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-gray-700">
-                      <th className="text-left py-4 px-4 font-semibold text-gray-300">Product</th>
-                      <th className="text-left py-4 px-4 font-semibold text-gray-300">Assigned Filters</th>
-                      <th className="text-center py-4 px-4 font-semibold text-gray-300">Actions</th>
+                      <th className="text-left py-4 px-4 font-semibold text-gray-300">Məhsul</th>
+                      <th className="text-left py-4 px-4 font-semibold text-gray-300">Təyin olunmuş filtrlər</th>
+                      <th className="text-center py-4 px-4 font-semibold text-gray-300">Əməliyyatlar</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-700">
@@ -303,14 +303,14 @@ const ProductFilterAssignment = () => {
                                       handleRemoveCustomFilter(product.id, assignment.filterId, assignment.filterName);
                                     }}
                                     className="ml-1 hover:bg-blue-700 cursor-pointer rounded-full p-0.5 transition-colors"
-                                    title="Remove this filter"
+                                    title="Bu filtri sil"
                                   >
                                     <X className="w-3 h-3 cursor-pointer" />
                                   </button>
                                 </span>
                               )})
                             ) : (
-                              <span className="text-gray-500 text-sm italic">No filters assigned</span>
+                              <span className="text-gray-500 text-sm italic">Filtr təyin olunmayıb</span>
                             )}
                           </div>
                         </td>
@@ -331,10 +331,10 @@ const ProductFilterAssignment = () => {
                               <button
                                 onClick={() => handleRemoveAllFilters(product.id, product.name)}
                                 className="px-3 py-1 bg-red-600 whitespace-nowrap cursor-pointer hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-1"
-                                title="Remove all filters"
+                                title="Bütün filtrləri sil"
                               >
                                 <Trash2 className="w-3 h-3" />
-                                Remove All
+                                Hamısını sil
                               </button>
                             )}
                           </div>
@@ -347,7 +347,7 @@ const ProductFilterAssignment = () => {
                 {(!filteredProducts || filteredProducts.length === 0) && (
                   <div className="text-center py-8">
                     <Package className="w-12 h-12 text-gray-500 mx-auto mb-4" />
-                    <p className="text-gray-500">No products found</p>
+                    <p className="text-gray-500">Məhsul tapılmadı</p>
                   </div>
                 )}
               </div>
@@ -361,7 +361,7 @@ const ProductFilterAssignment = () => {
             <div className="bg-gray-800 rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-700">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-white">Assign Filter to Products</h2>
+                  <h2 className="text-2xl font-bold text-white">Filtrləri məhsullara təyin et</h2>
                   <button 
                     onClick={closeModal}
                     className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
@@ -381,7 +381,7 @@ const ProductFilterAssignment = () => {
                           : 'text-gray-400 hover:text-white'
                       }`}
                     >
-                      Single Product
+                      Tək məhsul
                     </button>
                     <button
                       onClick={() => setAssignmentMode('bulk')}
@@ -391,7 +391,7 @@ const ProductFilterAssignment = () => {
                           : 'text-gray-400 hover:text-white'
                       }`}
                     >
-                      Bulk Assignment
+                      Toplu təyinat
                     </button>
                   </div>
                 </div>
@@ -402,7 +402,7 @@ const ProductFilterAssignment = () => {
                     <div className="flex items-center justify-between">
                       <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                         <Package className="w-5 h-5" />
-                        Select Products
+                        Məhsulları seç
                       </h3>
                       <button
                         onClick={() => toggleSection('products')}
@@ -433,13 +433,13 @@ const ProductFilterAssignment = () => {
                         {assignmentMode === 'bulk' && (
                           <div className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
                             <span className="text-sm text-gray-300">
-                              {selectedProducts.length} of {filteredProducts?.length || 0} selected
+                              {selectedProducts.length} / {filteredProducts?.length || 0} seçildi
                             </span>
                             <button
                               onClick={handleBulkSelectAll}
                               className="text-blue-400 hover:text-blue-300 text-sm font-medium"
                             >
-                              {selectedProducts.length === filteredProducts?.length ? 'Deselect All' : 'Select All'}
+                              {selectedProducts.length === filteredProducts?.length ? 'Hamısının seçimini ləğv et' : 'Hamısını seç'}
                             </button>
                           </div>
                         )}
@@ -488,14 +488,14 @@ const ProductFilterAssignment = () => {
                     <div className="flex items-center justify-between">
                       <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                         <Filter className="w-5 h-5" />
-                        Select Filter & Option
+                        Filtr və seçim seç
                       </h3>
                     </div>
 
                     {/* Filter Selection */}
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Filter
+                        Filtr
                       </label>
                       <select
                         value={selectedFilter}
@@ -505,7 +505,7 @@ const ProductFilterAssignment = () => {
                         }}
                         className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500"
                       >
-                        <option value="">Select a filter</option>
+                        <option value="">Filtr seçin</option>
                         {filters?.filter(f => f.isActive).map((filter) => (
                           <option key={filter.id} value={filter.id}>
                             {filter.name} ({filter.typeName || filter.type})
@@ -518,14 +518,14 @@ const ProductFilterAssignment = () => {
                     {selectedFilter && availableOptions.length > 0 && (
                       <div>
                         <label className="block text-sm font-medium text-gray-300 mb-2">
-                          Filter Option
+                          Filtr seçimi
                         </label>
                         <select
                           value={selectedFilterOption}
                           onChange={(e) => setSelectedFilterOption(e.target.value)}
                           className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500"
                         >
-                          <option value="">Select an option</option>
+                          <option value="">Seçim seçin</option>
                           {availableOptions.filter(opt => opt.isActive).map((option) => (
                             <option key={option.id} value={option.id}>
                               {option.displayName || option.label} ({option.value})
@@ -538,40 +538,40 @@ const ProductFilterAssignment = () => {
                     {/* Custom Value */}
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Custom Value (optional)
+                        Xüsusi dəyər (ixtiyari)
                       </label>
                       <input
                         type="text"
                         value={customValue}
                         onChange={(e) => setCustomValue(e.target.value)}
-                        placeholder="Enter custom value..."
+                        placeholder="Xüsusi dəyər daxil edin..."
                         className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500"
                       />
                       <p className="text-xs text-gray-400 mt-1">
-                        Leave empty to use the selected filter option
+                        Seçilmiş filtr seçimini istifadə etmək üçün boş buraxın
                       </p>
                     </div>
 
                     {/* Assignment Summary */}
                     <div className="bg-gray-700 rounded-lg p-4 border border-gray-600">
-                      <h4 className="text-sm font-medium text-gray-300 mb-2">Assignment Summary</h4>
+                      <h4 className="text-sm font-medium text-gray-300 mb-2">Təyinat xülasəsi</h4>
                       <div className="space-y-1 text-sm">
                         <p className="text-white">
                           <span className="text-gray-400">Məhsullar:</span> {getSelectedProductsText()}
                         </p>
                         <p className="text-white">
-                          <span className="text-gray-400">Filter:</span> {
+                          <span className="text-gray-400">Filtr:</span> {
                             selectedFilter ? 
-                            filters?.find(f => f.id === selectedFilter)?.name || 'Unknown' : 
-                            'Not selected'
+                            filters?.find(f => f.id === selectedFilter)?.name || 'Naməlum' : 
+                            'Seçilməyib'
                           }
                         </p>
                         <p className="text-white">
-                          <span className="text-gray-400">Value:</span> {
+                          <span className="text-gray-400">Dəyər:</span> {
                             customValue || 
                             (selectedFilterOption ? 
-                              availableOptions.find(opt => opt.id === selectedFilterOption)?.displayName || 'Unknown' : 
-                              'Not set'
+                              availableOptions.find(opt => opt.id === selectedFilterOption)?.displayName || 'Naməlum' : 
+                              'Təyin edilməyib'
                             )
                           }
                         </p>
@@ -586,7 +586,7 @@ const ProductFilterAssignment = () => {
                     onClick={closeModal}
                     className="px-6 py-3 bg-gray-600 text-white cursor-pointer rounded-lg hover:bg-gray-700 font-semibold transition-colors"
                   >
-                    Cancel
+                    Ləğv et
                   </button>
                   <button
                     onClick={handleAssignment}
@@ -595,7 +595,7 @@ const ProductFilterAssignment = () => {
                   >
                     {loading && <Loader2 className="w-4 h-4 animate-spin" />}
                     <Save className="w-4 h-4" />
-                    {assignmentMode === 'single' ? 'Assign Filter' : `Assign to ${selectedProducts.length} Məhsullar`}
+                    {assignmentMode === 'single' ? 'Filtrləri təyin et' : `${selectedProducts.length} məhsula təyin et`}
                   </button>
                 </div>
               </div>

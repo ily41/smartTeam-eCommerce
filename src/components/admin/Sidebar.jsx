@@ -74,7 +74,7 @@ const menuItems = [
               <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
                 <img className=' w-6 h-6 ' src="/Icons/logo2.png" alt="" />
               </div>
-              <h1 className="text-xl font-bold">Admin Panel</h1>
+              <h1 className="text-xl font-bold">Admin Paneli</h1>
             </div>
           )}
           

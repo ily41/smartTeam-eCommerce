@@ -12,6 +12,17 @@ const EditProduct = ({ setOpen, idPr }) => {
   const { data: brands } = useGetBrandsQuery();
   const { data: userRoles } = useGetUserRolesQuery();
 
+  // Map user role IDs to Azerbaijani names
+  const getRoleName = (roleId) => {
+    const roleNames = {
+      0: "ümumi",
+      1: "topdan",
+      2: "diller",
+      3: "eksklüziv diller"
+    };
+    return roleNames[roleId] !== undefined ? roleNames[roleId] : (userRoles?.[roleId]?.name || `Role ${roleId}`);
+  };
+
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [pdfFile, setPdfFile] = useState(null);
@@ -107,11 +118,11 @@ const EditProduct = ({ setOpen, idPr }) => {
     const file = e.target.files[0];
     if (file) {
       if (!file.type.startsWith('image/')) {
-        toast.error('Please select a valid image file');
+        toast.error('Zəhmət olmasa düzgün şəkil faylı seçin');
         return;
       }
       if (file.size > 5 * 1024 * 1024) {
-        toast.error('Image size should be less than 5MB');
+        toast.error('Şəkil ölçüsü 5MB-dan az olmalıdır');
         return;
       }
       setImageFile(file);
@@ -129,11 +140,11 @@ const EditProduct = ({ setOpen, idPr }) => {
     const file = e.target.files[0];
     if (file) {
       if (file.type !== 'application/pdf') {
-        toast.error('Please select a valid PDF file');
+        toast.error('Zəhmət olmasa düzgün PDF faylı seçin');
         return;
       }
       if (file.size > 10 * 1024 * 1024) {
-        toast.error('PDF size should be less than 10MB');
+        toast.error('PDF ölçüsü 10MB-dan az olmalıdır');
         return;
       }
       setPdfFile(file);
@@ -153,11 +164,11 @@ const EditProduct = ({ setOpen, idPr }) => {
 
     for (const file of files) {
       if (!file.type.startsWith('image/')) {
-        toast.error(`${file.name} is not a valid image file`);
+        toast.error(`${file.name} düzgün şəkil faylı deyil`);
         continue;
       }
       if (file.size > 5 * 1024 * 1024) {
-        toast.error(`${file.name} is larger than 5MB`);
+        toast.error(`${file.name} 5MB-dan böyükdür`);
         continue;
       }
       validFiles.push(file);
@@ -240,7 +251,7 @@ const EditProduct = ({ setOpen, idPr }) => {
     setNewGalleryFiles([]);
     setImagesToDelete([]);
 
-    toast.success('Product updated successfully');
+    toast.success('Məhsul uğurla yeniləndi');
     setOpen();
   } catch (error) {
     console.error('Edit error:', error);
@@ -251,7 +262,7 @@ const EditProduct = ({ setOpen, idPr }) => {
   if (loading) {
     return (
       <div className="bg-[#1f1f1f] text-white p-6 rounded-lg max-w-4xl w-full flex items-center justify-center">
-        <p>Loading product...</p>
+        <p>Məhsul yüklənir...</p>
       </div>
     );
   }
@@ -259,13 +270,13 @@ const EditProduct = ({ setOpen, idPr }) => {
   return (
     <div className="bg-[#1f1f1f] text-white p-6 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto dark-scrollbar">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Edit Product</h2>
+        <h2 className="text-2xl font-bold">Məhsulu redaktə et</h2>
       </div>
 
       <div className="space-y-6">
         {/* Main Product Image */}
         <div>
-          <label className="block text-sm font-medium mb-2">Product Image</label>
+          <label className="block text-sm font-medium mb-2">Məhsul şəkli</label>
           <div className="flex items-center gap-4">
             {imagePreview ? (
               <div className="relative">
@@ -284,7 +295,7 @@ const EditProduct = ({ setOpen, idPr }) => {
               </div>
             ) : (
               <div className="w-32 h-32 bg-[#2c2c2c] border-2 border-dashed border-gray-600 rounded-md flex items-center justify-center">
-                <span className="text-gray-500 text-sm">No image</span>
+                <span className="text-gray-500 text-sm">Şəkil yoxdur</span>
               </div>
             )}
             <div className="flex-1">
@@ -299,16 +310,16 @@ const EditProduct = ({ setOpen, idPr }) => {
                 htmlFor="imageFile"
                 className="inline-block px-4 py-2 bg-[#2c2c2c] hover:bg-[#3c3c3c] border border-gray-600 rounded-md cursor-pointer transition-colors"
               >
-                {imageFile ? 'Change Image' : 'Upload Image'}
+                {imageFile ? 'Şəkli dəyişdir' : 'Şəkil yüklə'}
               </label>
-              <p className="text-xs text-gray-400 mt-2">Supported: JPG, PNG, GIF (max 5MB)</p>
+              <p className="text-xs text-gray-400 mt-2">Dəstəklənir: JPG, PNG, GIF (maksimum 5MB)</p>
             </div>
           </div>
         </div>
 
         {/* PDF Upload */}
         <div>
-          <label className="block text-sm font-medium mb-2">Product PDF</label>
+          <label className="block text-sm font-medium mb-2">Məhsul PDF</label>
           <div className="flex items-center gap-4">
             {edit?.pdfUrl && !pdfFile && (
               <a
@@ -317,7 +328,7 @@ const EditProduct = ({ setOpen, idPr }) => {
                 rel="noopener noreferrer"
                 className="text-indigo-400 hover:text-indigo-300 text-sm underline"
               >
-                View Current PDF
+                Hazırkı PDF-ə bax
               </a>
             )}
             <div className="flex-1">
@@ -332,7 +343,7 @@ const EditProduct = ({ setOpen, idPr }) => {
                 htmlFor="pdfFile"
                 className="inline-block px-4 py-2 bg-[#2c2c2c] hover:bg-[#3c3c3c] border border-gray-600 rounded-md cursor-pointer transition-colors"
               >
-                {pdfFile ? `Selected: ${pdfFile.name}` : edit?.pdfUrl ? 'Replace PDF' : 'Upload PDF'}
+                {pdfFile ? `Seçildi: ${pdfFile.name}` : edit?.pdfUrl ? 'PDF-i dəyişdir' : 'PDF yüklə'}
               </label>
               {pdfFile && (
                 <button
@@ -340,21 +351,21 @@ const EditProduct = ({ setOpen, idPr }) => {
                   onClick={removePdf}
                   className="ml-2 px-3 py-2 bg-red-600 hover:bg-red-700 rounded-md text-sm"
                 >
-                  Remove
+                  Sil
                 </button>
               )}
-              <p className="text-xs text-gray-400 mt-2">Supported: PDF (max 10MB)</p>
+              <p className="text-xs text-gray-400 mt-2">Dəstəklənir: PDF (maksimum 10MB)</p>
             </div>
           </div>
         </div>
 
         {/* Detail Images (Gallery) */}
         <div>
-          <label className="block text-sm font-medium mb-2">Detail Images</label>
+          <label className="block text-sm font-medium mb-2">Ətraflı şəkillər</label>
 
           {existingGalleryImages.length > 0 && (
             <div className="mb-4">
-              <p className="text-xs text-gray-400 mb-2">Current Images</p>
+              <p className="text-xs text-gray-400 mb-2">Hazırkı şəkillər</p>
               <div className="grid grid-cols-4 gap-4">
                 {existingGalleryImages.map((image, index) => (
                    !image.isPrimary && (
@@ -387,7 +398,7 @@ const EditProduct = ({ setOpen, idPr }) => {
 
           {newGalleryFiles.length > 0 && (
             <div className="mb-4">
-              <p className="text-xs text-gray-400 mb-2">New Images (to be uploaded)</p>
+              <p className="text-xs text-gray-400 mb-2">Yeni şəkillər (yüklənəcək)</p>
               <div className="grid grid-cols-4 gap-4">
                 {newGalleryFiles.map((file, index) => (
                   <div key={index} className="relative">
@@ -422,16 +433,16 @@ const EditProduct = ({ setOpen, idPr }) => {
               htmlFor="galleryImages"
               className="inline-block px-4 py-2 bg-[#2c2c2c] hover:bg-[#3c3c3c] border border-gray-600 rounded-md cursor-pointer transition-colors"
             >
-              Add Detail Images
+              Ətraflı şəkillər əlavə et
             </label>
-            <p className="text-xs text-gray-400 mt-2">Select multiple images. JPG, PNG, GIF (max 5MB each)</p>
+            <p className="text-xs text-gray-400 mt-2">Bir neçə şəkil seçin. JPG, PNG, GIF (hər biri maksimum 5MB)</p>
           </div>
         </div>
 
         {/* Basic Product Info */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium mb-2">Product Name *</label>
+            <label className="block text-sm font-medium mb-2">Məhsul adı *</label>
             <input
               type="text"
               name="name"
@@ -439,7 +450,7 @@ const EditProduct = ({ setOpen, idPr }) => {
               onChange={handleInputChange}
               required
               className="w-full px-3 py-2 bg-[#2c2c2c] border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Enter product name"
+              placeholder="Məhsul adını daxil edin"
             />
           </div>
 
@@ -451,12 +462,12 @@ const EditProduct = ({ setOpen, idPr }) => {
               value={formData.sku}
               onChange={handleInputChange}
               className="w-full px-3 py-2 bg-[#2c2c2c] border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Enter SKU"
+              placeholder="SKU daxil edin"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Category *</label>
+            <label className="block text-sm font-medium mb-2">Kateqoriya *</label>
             <select
               name="categoryId"
               value={formData.categoryId}
@@ -464,7 +475,7 @@ const EditProduct = ({ setOpen, idPr }) => {
               required
               className="w-full px-3 py-2 bg-[#2c2c2c] border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
-              <option value="">Select Category</option>
+              <option value="">Kateqoriya seçin</option>
               {categories?.map(category => (
                 <option key={category.id} value={category.id}>
                   {category.name}
@@ -474,7 +485,7 @@ const EditProduct = ({ setOpen, idPr }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Brand *</label>
+            <label className="block text-sm font-medium mb-2">Brend *</label>
             <select
               name="brandId"
               value={formData.brandId}
@@ -482,7 +493,7 @@ const EditProduct = ({ setOpen, idPr }) => {
               required
               className="w-full px-3 py-2 bg-[#2c2c2c] border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
-              <option value="">Select Brand</option>
+              <option value="">Brend seçin</option>
               {brands?.map(brand => (
                 <option key={brand.id} value={brand.id}>
                   {brand.name}
@@ -492,7 +503,7 @@ const EditProduct = ({ setOpen, idPr }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Stock Quantity *</label>
+            <label className="block text-sm font-medium mb-2">Stok miqdarı *</label>
             <input
               type="number"
               name="stockQuantity"
@@ -517,7 +528,7 @@ const EditProduct = ({ setOpen, idPr }) => {
               className="w-4 h-4 text-indigo-600 bg-[#2c2c2c] border-gray-600 rounded focus:ring-indigo-500 focus:ring-2"
             />
             <label htmlFor="isHotDeal" className="text-sm font-medium">
-              Mark as Hot Deal
+              Xüsusi təklif kimi işarələ
             </label>
           </div>
 
@@ -525,44 +536,44 @@ const EditProduct = ({ setOpen, idPr }) => {
 
         {/* Descriptions */}
         <div>
-          <label className="block text-sm font-medium mb-2">Description</label>
+          <label className="block text-sm font-medium mb-2">Açıqlama</label>
           <textarea
             name="description"
             value={formData.description}
             onChange={handleInputChange}
             rows="4"
             className="w-full px-3 py-2 bg-[#2c2c2c] border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            placeholder="Enter product description"
+            placeholder="Məhsul açıqlamasını daxil edin"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2">Short Description</label>
+          <label className="block text-sm font-medium mb-2">Qısa açıqlama</label>
           <textarea
             name="shortDescription"
             value={formData.shortDescription}
             onChange={handleInputChange}
             rows="2"
             className="w-full px-3 py-2 bg-[#2c2c2c] border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            placeholder="Enter short description"
+            placeholder="Qısa açıqlama daxil edin"
           />
         </div>
 
         {/* Pricing Section */}
         <div>
-          <label className="block text-sm font-medium mb-4">Pricing by User Role</label>
+          <label className="block text-sm font-medium mb-4">İstifadəçi roluna görə qiymətlər</label>
           <div className="border border-gray-600 rounded-md">
             {formData.prices.length > 0 && userRoles ? (
               formData.prices.map((item, index) => (
                 <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-[#2c2c2c] border-b border-gray-600 last:border-b-0">
                   <div className="flex items-center">
                     <label className="block text-md font-medium">
-                      {userRoles[item.userRole]?.name || `Role ${item.userRole}`}
+                      {getRoleName(item.userRole)}
                     </label>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium mb-1">Price</label>
+                    <label className="block text-xs font-medium mb-1">Qiymət</label>
                     <input
                       type="number"
                       value={item.price}
@@ -575,7 +586,7 @@ const EditProduct = ({ setOpen, idPr }) => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium mb-1">Discounted Price</label>
+                    <label className="block text-xs font-medium mb-1">Endirimli qiymət</label>
                     <input
                       type="number"
                       value={item.discountedPrice}
@@ -588,7 +599,7 @@ const EditProduct = ({ setOpen, idPr }) => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium mb-1">Discount %</label>
+                    <label className="block text-xs font-medium mb-1">Endirim %</label>
                     <input
                       type="number"
                       value={item.discountPercentage}
@@ -599,7 +610,7 @@ const EditProduct = ({ setOpen, idPr }) => {
                 </div>
               ))
             ) : (
-              <div className="p-4 text-center text-gray-400">Loading prices...</div>
+              <div className="p-4 text-center text-gray-400">Qiymətlər yüklənir...</div>
             )}
           </div>
         </div>
@@ -611,7 +622,7 @@ const EditProduct = ({ setOpen, idPr }) => {
             onClick={setOpen}
             className="px-6 py-2 bg-gray-600 hover:bg-gray-700 rounded-md font-semibold transition-colors"
           >
-            Cancel
+            Ləğv et
           </button>
           <button
             type="button"
@@ -619,7 +630,7 @@ const EditProduct = ({ setOpen, idPr }) => {
             disabled={isEditLoading}
             className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            {isEditLoading ? 'Updating...' : 'Update Product'}
+            {isEditLoading ? 'Yenilənir...' : 'Məhsulu yenilə'}
           </button>
         </div>
       </div>

@@ -4,10 +4,15 @@ import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 
 // Calculate center between both markers
 
-const MyMap = ({ markerIndex }) => {
-  const markers = [
+const MyMap = ({ markerIndex, branches }) => {
+  // Use branches data if provided, otherwise fallback to default markers
+  const markers = branches ? branches.map(branch => ({
+    lat: branch.coordinates.lat,
+    lng: branch.coordinates.lng,
+    title: branch.name || `Branch ${branch.id + 1}`
+  })) : [
     { lat: 40.3419741, lng: 49.8399698, title: "Branch 1 - Sederek" },
-    { lat: 40.329590, lng: 49.781784, title: "Branch 2 - Bayil" },
+    { lat: 40.329590, lng: 49.781784, title: "Branch 2 - Bayıl" },
   ];
 
   // Calculate center between both markers
