@@ -648,7 +648,7 @@ function Details() {
               ) : (
                 <>
                   <X className='w-[20px] text-red-500' />
-                  <span className="text-red-500">No stock</span>
+                  <span className="text-red-500">Out of stock</span>
                 </>
               )}
             </div>
@@ -913,12 +913,12 @@ function Details() {
                 {isInStock ? (
                   <>
                     <Check className='w-[20px] text-green-500' />
-                    <span className="text-green-500">In stock ({product.stockQuantity} available)</span>
+                    <span className="text-green-500">In stock</span>
                   </>
                 ) : (
                   <>
                     <X className='w-[20px] text-red-500' />
-                    <span className="text-red-500">No stock</span>
+                    <span className="text-red-500">Out of stock</span>
                   </>
                 )}
               </div>
