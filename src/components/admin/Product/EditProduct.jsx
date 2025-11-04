@@ -16,10 +16,10 @@ const EditProduct = ({ setOpen, idPr }) => {
   // Map user role IDs to Azerbaijani names
   const getRoleName = (roleId) => {
     const roleNames = {
-      0: "ümumi",
-      1: "topdan",
-      2: "diller",
-      3: "eksklüziv diller"
+      1: "ümumi",
+      2: "topdan",
+      3: "diller",
+      4: "eksklüziv diller"
     };
     return roleNames[roleId] !== undefined ? roleNames[roleId] : (userRoles?.[roleId]?.name || `Role ${roleId}`);
   };
