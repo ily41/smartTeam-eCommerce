@@ -583,7 +583,7 @@ const Home = () => {
                 hotDeals?.map(item => (
                   <HomePageUI
                     key={item.id}
-                    deal={false}
+                    deal={true}
                     product={item}
                     url={item.primaryImageUrl}
                     handleAddToCart={handleAddToCart}

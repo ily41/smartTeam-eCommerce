@@ -402,7 +402,7 @@ function Details() {
             quantity: quantity
           }).unwrap();
         } else {
-          CartUtils.addItem(product, 1);
+          CartUtils.addItem(product, quantity);
           window.dispatchEvent(new Event("cartUpdated"));
         }
         

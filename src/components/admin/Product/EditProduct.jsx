@@ -6,6 +6,7 @@ import { ClockFading } from 'lucide-react';
 const EditProduct = ({ setOpen, idPr }) => {
   console.log(idPr)
   const { data: edit, isLoading: loading } = useGetProductQuery(idPr, { skip: !idPr });
+  console.log(edit)
   const [editProductWithImage, { isLoading: isEditLoading }] = useEditProductWithImageMutation();
   const [deleteDetailImage] = useDeleteProductImageMutation();
   const { data: categories } = useGetCategoriesQuery();
@@ -367,14 +368,12 @@ const EditProduct = ({ setOpen, idPr }) => {
             <div className="mb-4">
               <p className="text-xs text-gray-400 mb-2">Hazırkı şəkillər</p>
               <div className="grid grid-cols-4 gap-4">
-                {existingGalleryImages.map((image, index) => (
-                   !image.isPrimary && (
-                  <div key={image.id} className="relative">
-                    
-                   
-                      <>
+                {existingGalleryImages.map((image, index) => {
+                  console.log(image)
+                  return (
+                    <div key={image.id} className="relative">
                       <img
-                      src={`https://smartteamaz2-001-site1.ntempurl.com${image.imageUrl}`}
+                        src={`https://smartteamaz2-001-site1.ntempurl.com${image.imageUrl}`}
                         alt={`Detail ${index + 1}`}
                         className="w-full h-32 object-cover rounded-md border border-gray-600"
                       />
@@ -385,13 +384,8 @@ const EditProduct = ({ setOpen, idPr }) => {
                       >
                         ×
                       </button>
-                      </>
-                    
-                    
-                  </div>
-
-                  )
-                ))}
+                    </div>
+                )})}
               </div>
             </div>
           )}

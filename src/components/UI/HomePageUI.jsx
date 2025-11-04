@@ -27,6 +27,7 @@ const HomePageUI = ({
   unauthorizedAction,
   setUnauthorizedAction,
 }) => {
+
   const { t, i18n } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -175,8 +176,8 @@ const HomePageUI = ({
     );
   };
 
-  // ============= RENDER HOT DEAL CARD =============
   if (deal) {
+    console.log("salam")
     return (
       <>
        
