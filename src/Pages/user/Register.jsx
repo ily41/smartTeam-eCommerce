@@ -74,7 +74,18 @@ const Register = () => {
     return (
       <div className="min-h-screen bg-gray-100 p-6">
         <div className="text-center mb-8 mt-4">
-          <img className='mx-auto w-50' src="./Icons/logo.svg" alt="" />
+          <img 
+            className='mx-auto w-50' 
+            src="./Icons/logo.svg" 
+            alt="" 
+            style={{
+              imageRendering: '-webkit-optimize-contrast',
+              WebkitTransform: 'translateZ(0)',
+              transform: 'translateZ(0)',
+              backfaceVisibility: 'hidden',
+              WebkitBackfaceVisibility: 'hidden'
+            }}
+          />
         </div>
 
         <div className="bg-white rounded-lg shadow-lg p-6 mb-4">
@@ -183,7 +194,18 @@ const Register = () => {
       <div className="flex-1 bg-white flex items-center justify-center px-8">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <img className='mx-auto w-50' src="./Icons/logo.svg" alt="" />
+            <img 
+              className='mx-auto w-50' 
+              src="./Icons/logo.svg" 
+              alt="" 
+              style={{
+                imageRendering: '-webkit-optimize-contrast',
+                WebkitTransform: 'translateZ(0)',
+                transform: 'translateZ(0)',
+                backfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden'
+              }}
+            />
           </div>
 
           <div>

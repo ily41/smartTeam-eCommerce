@@ -263,6 +263,13 @@ const Header = () => {
               className='min-h-[35px] min-w-[70px] lg:w-[20vh]'
               src="/Icons/logo.svg"
               alt="Logo"
+              style={{
+                imageRendering: '-webkit-optimize-contrast',
+                WebkitTransform: 'translateZ(0)',
+                transform: 'translateZ(0)',
+                backfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden'
+              }}
             />
           </Link>
 

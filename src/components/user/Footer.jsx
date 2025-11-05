@@ -69,7 +69,18 @@ const Footer = () => {
             <footer className='p-10 inter pb-0 '>
                 <div className='bg-white flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-start'>
                     <div>
-                        <img className='w-[160px]' src="./Icons/logo.svg" alt="" />
+                        <img 
+                          className='w-[160px]' 
+                          src="./Icons/logo.svg" 
+                          alt="" 
+                          style={{
+                            imageRendering: '-webkit-optimize-contrast',
+                            WebkitTransform: 'translateZ(0)',
+                            transform: 'translateZ(0)',
+                            backfaceVisibility: 'hidden',
+                            WebkitBackfaceVisibility: 'hidden'
+                          }}
+                        />
                         <p className='text-lg mt-5 text-gray-600'>{t("footer.desc1")} </p>
                         <p className='text-lg text-gray-600'>{t("footer.desc2")}  </p>
                         <p className='text-lg mb-5 text-gray-600'>{t("footer.desc3")}</p>

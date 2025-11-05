@@ -93,6 +93,13 @@ const Burger = ({ burgerV, setBurgerV }) => {
               src="./Icons/logo.svg"
               alt="SmartTeam Electronics"
               className='h-12 w-auto object-contain'
+              style={{
+                imageRendering: '-webkit-optimize-contrast',
+                WebkitTransform: 'translateZ(0)',
+                transform: 'translateZ(0)',
+                backfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden'
+              }}
             />
             <button onClick={() => setBurgerV(false)} className='p-2 hover:bg-gray-100 rounded-full transition-colors'>
               <X size={24} className='text-gray-600' />
