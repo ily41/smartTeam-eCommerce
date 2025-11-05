@@ -104,11 +104,20 @@ const Burger = ({ burgerV, setBurgerV }) => {
             <ul className='space-y-6'>
               <li>
                 <Link
-                  to='/'
+                  to='/products'
                   onClick={() => setBurgerV(false)}
                   className='block text-xl font-medium text-gray-800 hover:text-blue-600 transition-colors py-4 border-b border-gray-200'
                 >
-                  {t('menu.home')}
+                  {t('products')}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to='/brands'
+                  onClick={() => setBurgerV(false)}
+                  className='block text-xl font-medium text-gray-800 hover:text-blue-600 transition-colors py-4 border-b border-gray-200'
+                >
+                  {t('brands')}
                 </Link>
               </li>
               <li>
@@ -138,6 +147,7 @@ const Burger = ({ burgerV, setBurgerV }) => {
                   {t('menu.contact')}
                 </Link>
               </li>
+              
               {!isLogged && (
                 <li>
                   <Link
@@ -153,7 +163,7 @@ const Burger = ({ burgerV, setBurgerV }) => {
           </nav>
 
           {/* Language Selector - Bottom Left */}
-          <div className='p-6 border-t border-gray-200'>
+          <div className='p-6 mb-10 border-t border-gray-200'>
             <div className='relative' ref={dropdownRef}>
               <div
                 onClick={() => setOpen(prev => !prev)}

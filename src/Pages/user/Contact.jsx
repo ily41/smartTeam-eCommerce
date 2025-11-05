@@ -21,18 +21,18 @@ const Contact = () => {
                 <div className='flex p-9 md:pt-0 gap-3 flex-col text-md whitespace-nowrap font-semibold'>
                     <div className='flex items-center gap-4'>
                         <img className = 'w-8 shrink-0' src="./Icons/phone.svg" alt="" />
-                        <p>{t('contact.phoneNumber')}: +994 055 674 06 49</p>
+                        <p className='text-sm'>{t('contact.phoneNumber')}: +994 055 674 06 49</p>
                     </div>
 
                     <div className='flex items-center gap-4'>
                         <img className = 'w-8' src="./Icons/email-icon.svg" alt="" />
-                        <p>{t('contact.email')}: İnfo@smartteam.az</p>
+                        <p className='text-sm'>{t('contact.email')}: İnfo@smartteam.az</p>
                     </div>
 
                 </div>
                 
                 <div>
-                    <p className='p-9 md:pb-3 pt-0 text-lg font-semibold text-[#808080]'>{t('contact.socialMedia')}</p>
+                    <p className='p-9 md:pb-3 pt-0 text-sm font-semibold text-[#808080]'>{t('contact.socialMedia')}</p>
 
                     <div className='flex gap-3 p-9 pt-0'>
                         <a href="https://www.tiktok.com/@smartteam.az" target="_blank" rel="noopener noreferrer">

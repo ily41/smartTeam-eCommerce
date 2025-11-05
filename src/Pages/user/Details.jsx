@@ -214,14 +214,14 @@ function Details() {
   };
   
   const nextModalSlide = () => {
-    const totalImages = product?.images?.length || 0;
-    setModalSlideIndex((prev) => (prev + 1) % totalImages);
-  };
-  
-  const prevModalSlide = () => {
-    const totalImages = product?.images?.length || 0;
-    setModalSlideIndex((prev) => (prev - 1 + totalImages) % totalImages);
-  };
+  const total = (product?.images?.length || 0) + 1;
+  setModalSlideIndex((prev) => (prev + 1) % total);
+};
+
+const prevModalSlide = () => {
+  const total = (product?.images?.length || 0) + 1;
+  setModalSlideIndex((prev) => (prev - 1 + total) % total);
+};
   
 
   // RTK Query hooks
@@ -583,49 +583,55 @@ function Details() {
     />
 
     {/* Image Detail Modal with Slider */}
-    {showDetailModal && (
-      <section className='fixed w-screen h-screen inset-0 bg-white bg-opacity-95 z-10000'>
-        <X 
-          onClick={closeDetail} 
-          className='absolute top-10 right-10 cursor-pointer hover:opacity-70 transition-opacity w-8 h-8 text-black z-10' 
-        />
-        
-        {/* Previous Arrow */}
-        <button
-          onClick={prevModalSlide}
-          className='absolute left-10 top-1/2 -translate-y-1/2 p-2 md:p-3 bg-gray-200 hover:bg-gray-300 rounded-full cursor-pointer transition-all z-10'
-        >
-          <ChevronLeft className='w-5 h-5 md:w-8 md:h-8 text-black' />
-        </button>
+{showDetailModal && (
+  <section className="fixed inset-0 w-screen h-screen bg-white bg-opacity-95 z-[10000]">
+    {/* Close Button */}
+    <X
+      onClick={closeDetail}
+      className="absolute top-10 right-10 cursor-pointer hover:opacity-70 transition-opacity w-8 h-8 text-black z-10"
+    />
 
-        {/* Next Arrow */}
-        <button
-          onClick={nextModalSlide}
-          className='absolute right-10 top-1/2 -translate-y-1/2 p-2 md:p-3 bg-gray-200 hover:bg-gray-300 rounded-full cursor-pointer transition-all z-10'
-        >
-          <ChevronRight className='w-5 h-5 md:w-8 md:h-8 text-black' />
-        </button>
+    {/* Prev Button */}
+    <button
+      onClick={prevModalSlide}
+      className="absolute left-10 top-1/2 -translate-y-1/2 p-2 md:p-3 bg-gray-200 hover:bg-gray-300 rounded-full cursor-pointer transition-all z-10"
+    >
+      <ChevronLeft className="w-5 h-5 md:w-8 md:h-8 text-black" />
+    </button>
 
-        {/* Image Display */}
-        <div className='w-full h-full flex items-center justify-center p-8'>
-          <img 
-            src={`https://smartteamaz2-001-site1.ntempurl.com${product?.images[modalSlideIndex]?.imageUrl}`}
-            alt={product.name}
-            className="max-w-[200px] max-h-[200px] md:max-w-[500px] md:max-h-[500px] object-contain"
-            onError={(e) => {
-              e.target.src = "/Icons/logo.svg"
-            }}
-          />
-        </div>
+    {/* Next Button */}
+    <button
+      onClick={nextModalSlide}
+      className="absolute right-10 top-1/2 -translate-y-1/2 p-2 md:p-3 bg-gray-200 hover:bg-gray-300 rounded-full cursor-pointer transition-all z-10"
+    >
+      <ChevronRight className="w-5 h-5 md:w-8 md:h-8 text-black" />
+    </button>
 
-        {/* Slide Counter */}
-        <div className='absolute bottom-10 left-1/2 -translate-x-1/2 bg-gray-200 px-4 py-2 rounded-full'>
-          <span className='text-black font-medium'>
-            {modalSlideIndex + 1} / {product?.images?.length}
-          </span>
-        </div>
-      </section>
-    )}
+    {/* Image Display */}
+    <div className="w-full h-full flex items-center justify-center p-8">
+      <img
+        src={`https://smartteamaz2-001-site1.ntempurl.com${
+          modalSlideIndex === 0
+            ? product?.imageUrl
+            : product?.images?.[modalSlideIndex - 1]?.imageUrl
+        }`}
+        alt={product?.name}
+        className="max-w-[200px] max-h-[200px] md:max-w-[500px] md:max-h-[500px] object-contain"
+        onError={(e) => {
+          e.target.src = "/Icons/logo.svg";
+        }}
+      />
+    </div>
+
+    {/* Slide Counter */}
+    <div className="absolute bottom-10 left-1/2 -translate-x-1/2 bg-gray-200 px-4 py-2 rounded-full">
+      <span className="text-black font-medium">
+        {modalSlideIndex + 1} / {(product?.images?.length || 0) + 1}
+      </span>
+    </div>
+  </section>
+)}
+
     
     <div className='p-6 py-4 pt-0  border-y-1 border-[#DEE2E6] sm:hidden flex flex-col gap-5'>
       <SearchUI />
@@ -676,30 +682,29 @@ function Details() {
                 onSlideChange={(swiper) => setActiveSlide(swiper.activeIndex)}
                 onSwiper={setSwiperRef}
               >
-                {product?.images.map((item, index) => (
-                  <SwiperSlide key={index} className='relative h-64 py-5 pt-8 rounded-lg'>
-                    <img 
-                      onClick={() => openDetail(index)}
-                      className='w-full rounded-lg p-3  aspect-square cursor-pointer' 
-                      src={`https://smartteamaz2-001-site1.ntempurl.com${item?.imageUrl}`} 
-                      alt={item?.name || 'Product'}
-                      onError={(e) => {
-                        e.target.src =  "/Icons/logo.svg"
-                      }}
-                    />
-                  </SwiperSlide>
-                ))}
                 <SwiperSlide className='relative h-64 py-5 pt-8 rounded-lg'>
-                   <img 
-                      onClick={() => openDetail(product?.images?.length || 0)}
-                      className='w-full rounded-lg p-3 aspect-square cursor-pointer' 
-                      src={`https://smartteamaz2-001-site1.ntempurl.com${product?.imageUrl}`} 
-                      alt={product?.name || 'Product'}
-                      onError={(e) => {
-                        e.target.src =  "/Icons/logo.svg"
-                      }}
-                    />
-                </SwiperSlide>
+  <img 
+    onClick={() => openDetail(0)} // main image = index 0
+    className='w-full rounded-lg p-3 aspect-square cursor-pointer' 
+    src={`https://smartteamaz2-001-site1.ntempurl.com${product?.imageUrl}`} 
+    alt={product?.name || 'Product'}
+    onError={(e) => { e.target.src = "/Icons/logo.svg" }}
+  />
+</SwiperSlide>
+
+{product?.images.map((item, index) => (
+  <SwiperSlide key={index} className='relative h-64 py-5 pt-8 rounded-lg'>
+    <img 
+      onClick={() => openDetail(index + 1)} // shift by +1 to match modal logic
+      className='w-full rounded-lg p-3 aspect-square cursor-pointer' 
+      src={`https://smartteamaz2-001-site1.ntempurl.com${item?.imageUrl}`} 
+      alt={item?.name || 'Product'}
+      onError={(e) => { e.target.src = "/Icons/logo.svg" }}
+    />
+  </SwiperSlide>
+))}
+
+                
               </Swiper>
             </div>
 
@@ -770,15 +775,28 @@ function Details() {
 
           <div className="px-4 pb-6 bg-white">
             <div className="flex space-x-2 justify-center">
+              <button 
+                  className={`w-16 h-16 rounded-lg border-2 ${activeSlide === 0 ? 'border-red-500' : 'border-gray-200'} overflow-hidden`}
+                  onClick={() => swiperRef?.slideTo(0)}
+                >
+                  <img 
+                    src={`https://smartteamaz2-001-site1.ntempurl.com${product?.imageUrl}`}
+                    alt={`${product.name} ${1}`}
+                    className="w-full aspect-square h-full object-contain"
+                    onError={(e) => {
+                        e.target.src =  "/Icons/logo.svg"
+                      }}
+                  />
+                </button>
               {product?.images.map((item, index) => (
                 <button 
-                  key={index} 
-                  className={`w-16 h-16 rounded-lg border-2 ${activeSlide === index ? 'border-red-500' : 'border-gray-200'} overflow-hidden`}
-                  onClick={() => swiperRef?.slideTo(index)}
+                  key={index + 1} 
+                  className={`w-16 h-16 rounded-lg border-2 ${activeSlide === index + 1 ? 'border-red-500' : 'border-gray-200'} overflow-hidden`}
+                  onClick={() => swiperRef?.slideTo(index + 1)}
                 >
                   <img 
                     src={`https://smartteamaz2-001-site1.ntempurl.com${item?.imageUrl}`}
-                    alt={`${product.name} ${index + 1}`}
+                    alt={`${product.name} ${index + 1 + 1}`}
                     className="w-full aspect-square h-full object-contain"
                     onError={(e) => {
                         e.target.src =  "/Icons/logo.svg"
@@ -870,41 +888,54 @@ function Details() {
         </div>
         <div className="grid grid-cols-2 gap-8">
           <div className="space-y-4 w-full">
-            <div className="bg-white rounded-lg p-4 w-full flex h-full justify-center flex-col items-center py-9 sm:border-1 sm:border-[#DEE2E6]">
-              <div onClick={() => openDetail(product?.images?.findIndex(img => img.imageUrl === hovered) !== -1 ? product?.images?.findIndex(img => img.imageUrl === hovered) : 0)} className='w-fit cursor-pointer hover:opacity-90 transition-opacity'>
-                <img 
-                  src={hovered ? `https://smartteamaz2-001-site1.ntempurl.com${hovered}` : `https://smartteamaz2-001-site1.ntempurl.com${product.imageUrl}`}
-                  alt={product.name}
-                  className="h-80 object-contain rounded-lg transition-opacity duration-300 ease-in-out"
-                  key={hovered || product.imageUrl}
-                  style={{ animation: 'fadeIn 0.3s ease-in-out' }}
-                  onError={(e) => {
-                    e.target.src = "/Icons/logo.svg"
-                  }}
-                />
-              </div>
+         <div className="bg-white rounded-lg p-4 w-full flex h-full justify-center flex-col items-center py-9 sm:border-1 sm:border-[#DEE2E6]">
+  <div
+    onClick={() => {
+      const hoveredIndex = product?.images?.findIndex(img => img.imageUrl === hovered);
+      openDetail(hoveredIndex !== -1 ? hoveredIndex + 1 : 0); // ✅ offset by +1
+    }}
+    className="w-fit cursor-pointer hover:opacity-90 transition-opacity"
+  >
+    <img
+      src={
+        hovered
+          ? `https://smartteamaz2-001-site1.ntempurl.com${hovered}`
+          : `https://smartteamaz2-001-site1.ntempurl.com${product.imageUrl}`
+      }
+      alt={product.name}
+      className="h-80 object-contain rounded-lg transition-opacity duration-300 ease-in-out"
+      key={hovered || product.imageUrl}
+      style={{ animation: "fadeIn 0.3s ease-in-out" }}
+      onError={(e) => {
+        e.target.src = "/Icons/logo.svg";
+      }}
+    />
+  </div>
 
-              <div className="flex space-x-2 mt-4">
-                {product?.images.map((item, index) => (
-                  <div 
-                    key={index} 
-                    onMouseEnter={() => setHovered(item.imageUrl)} 
-                    onMouseLeave={() => setHovered(null)} 
-                    onClick={() => openDetail(index)}
-                    className={`w-16 h-16 rounded-lg border-2 border-gray-200 overflow-hidden cursor-pointer transition-all duration-200 ease-in-out hover:scale-110 hover:shadow-lg ${hovered === item.imageUrl ? 'ring-2 ring-red-500 ring-offset-2' : ''}`}
-                  >
-                    <img 
-                      src={`https://smartteamaz2-001-site1.ntempurl.com${item.imageUrl}`}
-                      alt={`${product.name} ${index + 1}`}
-                      className="w-full h-full object-contain transition-transform duration-200 hover:scale-105"
-                      onError={(e) => {
-                        e.target.src = "/Icons/logo.svg"
-                      }}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
+  <div className="flex space-x-2 mt-4">
+    {product?.images.map((item, index) => (
+      <div
+        key={index}
+        onMouseEnter={() => setHovered(item.imageUrl)}
+        onMouseLeave={() => setHovered(null)}
+        onClick={() => openDetail(index + 1)} // ✅ offset here too
+        className={`w-16 h-16 rounded-lg border-2 border-gray-200 overflow-hidden cursor-pointer transition-all duration-200 ease-in-out hover:scale-110 hover:shadow-lg ${
+          hovered === item.imageUrl ? "ring-2 ring-red-500 ring-offset-2" : ""
+        }`}
+      >
+        <img
+          src={`https://smartteamaz2-001-site1.ntempurl.com${item.imageUrl}`}
+          alt={`${product.name} ${index + 1}`}
+          className="w-full h-full object-contain transition-transform duration-200 hover:scale-105"
+          onError={(e) => {
+            e.target.src = "/Icons/logo.svg";
+          }}
+        />
+      </div>
+    ))}
+  </div>
+</div>
+
           </div>
 
           <div className="space-y-6 h-full">

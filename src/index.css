@@ -242,3 +242,10 @@ input[type=number] {
 .pinterest {
   background-position: -100px 0;
 }
+
+img {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  shape-rendering: geometricPrecision;
+  image-rendering: -webkit-optimize-contrast;
+}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { MapPin, Clock, ChevronRight } from 'lucide-react';
 import MyMap from '../../components/UI/googleMaps';
 import { useTranslation } from 'react-i18next';
@@ -6,22 +6,12 @@ import { useTranslation } from 'react-i18next';
 const BranchesSection = () => {
   const [selectedBranch, setSelectedBranch] = useState(0);
   const { t } = useTranslation();
+  const mobileMapRef = useRef(null);
+  const desktopMapRef = useRef(null);
 
   const branches = [
     {
       id: 0,
-      name: 'sederek',
-      location: 'footer.address1',
-      locationDetails: 'footer.address2',
-      locationStore: 'footer.address3',
-      workTime: 'workTime1',
-      phone: '+994707513111',
-      phoneDisplay: '070-751-31-11',
-      image: '/contact/field1.jpg',
-      coordinates: { lat: 40.329590, lng: 49.781784 }
-    },
-    {
-      id: 1,
       name: 'bayil',
       location: 'footer.address1',
       locationDetails: null,
@@ -31,7 +21,20 @@ const BranchesSection = () => {
       phoneDisplay: '070-674-06-49',
       image: '/contact/field2.jpg',
       coordinates: { lat: 40.3419741, lng: 49.8399698 }
+    },
+    {
+      id: 1,
+      name: 'sederek',
+      location: 'footer.address1',
+      locationDetails: 'footer.address2',
+      locationStore: 'footer.address3',
+      workTime: 'workTime1',
+      phone: '+994707513111',
+      phoneDisplay: '070-751-31-11',
+      image: '/contact/field1.jpg',
+      coordinates: { lat: 40.329590, lng: 49.781784 }
     }
+    
   ];
 
   const getFullAddress = (branch) => {
@@ -40,6 +43,21 @@ const BranchesSection = () => {
     } else {
       return `${t(branch.location)}`;
     }
+  };
+
+  const handleBranchSelect = (branchId, isMobile = false) => {
+    setSelectedBranch(branchId);
+    
+    // Scroll to map after a brief delay to allow state update
+    setTimeout(() => {
+      const mapRef = isMobile ? mobileMapRef : desktopMapRef;
+      if (mapRef.current) {
+        mapRef.current.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center' 
+        });
+      }
+    }, 100);
   };
 
   return (
@@ -51,20 +69,22 @@ const BranchesSection = () => {
         {branches.map((branch) => (
           <div
             key={branch.id}
-            className='bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow'
+            className='bg-white flex rounded-lg overflow-hidden shadow-sm hover:shadow-md transition- max-h-60 min-h-60'
           >
-            <div className='h-32 sm:h-40 bg-gray-200 overflow-hidden'>
-              <img
-                src={branch.image}
-                alt={t(branch.name)}
-                className='w-full h-full object-cover'
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                  e.target.parentElement.style.backgroundColor = '#e5e7eb';
-                }}
-              />
-            </div>
-            <div className='p-4 sm:p-5'>
+          <div className="bg-gray-200 flex flex-5 max-w-[190px] lg:max-w-none items-center justify-center overflow-hidden rounded-t-xl">
+            <img
+              src={branch.image}
+              alt={t(branch.name)}
+              className="w-full h-full object-cover object-top "
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.parentElement.style.backgroundColor = '#e5e7eb';
+              }}
+            />
+          </div>
+
+
+            <div className='p-4 sm:p-5 flex-6'>
               <h2 className='text-lg sm:text-xl font-semibold mb-2'>{t(branch.name)}</h2>
               <div className='flex items-start gap-2 mb-3'>
                 <MapPin className='w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0 mt-0.5' />
@@ -85,7 +105,7 @@ const BranchesSection = () => {
                 </p>
               </div>
               <button
-                onClick={() => setSelectedBranch(branch.id)}
+                onClick={() => handleBranchSelect(branch.id, true)}
                 className='text-[#E60C03] font-semibold flex items-center gap-2 text-sm sm:text-base hover:gap-3 transition-all'
               >
                 Xəritədə göstər <ChevronRight className='w-4 h-4 sm:w-5 sm:h-5' />
@@ -95,7 +115,7 @@ const BranchesSection = () => {
         ))}
 
         {/* Mobile Map View */}
-        <div className='h-[400px] bg-gray-900 rounded-lg overflow-hidden'>
+        <div ref={mobileMapRef} className='h-[400px] bg-gray-900 rounded-lg overflow-hidden'>
           <MyMap markerIndex={selectedBranch} branches={branches} />
         </div>
       </div>
@@ -107,7 +127,7 @@ const BranchesSection = () => {
           {branches.map((branch, index) => (
             <div
               key={branch.id}
-              onClick={() => setSelectedBranch(index)}
+              onClick={() => handleBranchSelect(index, false)}
               className={`rounded-lg cursor-pointer flex transition-all duration-300 hover:shadow-lg ${
                 selectedBranch === index ? 'shadow-md' : ''
               }`}
@@ -116,7 +136,7 @@ const BranchesSection = () => {
                 <img
                   src={branch.image}
                   alt={t(branch.name)}
-                  className='w-full h-full object-cover'
+                  className='w-full h-full object-cover object-top'
                   onError={(e) => {
                     e.target.style.display = 'none';
                     e.target.parentElement.style.backgroundColor = '#e5e7eb';
@@ -180,7 +200,7 @@ const BranchesSection = () => {
           </div>
 
           {/* Map Container */}
-          <div className='flex-1 min-h-[300px] xl:min-h-[350px] bg-gray-900 rounded-lg overflow-hidden'>
+          <div ref={desktopMapRef} className='flex-1 min-h-[300px] xl:min-h-[350px] bg-gray-900 rounded-lg overflow-hidden'>
             <MyMap markerIndex={selectedBranch} branches={branches} />
           </div>
         </div>
