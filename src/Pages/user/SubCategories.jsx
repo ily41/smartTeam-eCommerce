@@ -57,7 +57,7 @@ const CategoryCard = ({ title, imageSrc = null, slug }) => (
     className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200 cursor-pointer group"
   >
     <div className="flex flex-col items-center text-center h-full">
-      <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 bg-gray-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-gray-50 transition-colors">
+      <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-lg flex items-center justify-center mb-4 group-hover:bg-gray-50 transition-colors">
         {imageSrc ? (
           <img
             src={`https://smartteamaz2-001-site1.ntempurl.com/${imageSrc}`}

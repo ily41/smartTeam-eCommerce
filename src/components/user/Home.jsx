@@ -399,7 +399,7 @@ const Home = () => {
                 <Link to='categories/sebeke-avadanliqlari' state={{ name: 'sebeke avadanliqlari' }} className='justify-center md:justify-start flex col-span-3 items-center bg-white lg:hidden rounded-lg border border-[#DEE2E6] p-4'>
                   <div className='flex flex-row gap-4'>
                     <div className='w-full h-full flex-shrink-0 my-auto object-cover max-w-[140px] md:max-w-[160px]'>
-                      <img className='w-full object-contain max-h-[160px]' src="./deals/network.svg" alt="" />
+                      <img className='w-full object-contain max-h-[160px]' src="./deals/network.svg" srcSet="/deals/network@3.png 3x" alt="" />
                     </div>
                     <div className='flex flex-col w-full text-start self-start'>
                       <p className='text-xl inter mb-1 md:text-2xl'>{t('networkEquipmentTitle')}</p>
@@ -410,37 +410,37 @@ const Home = () => {
 
               <Link to='categories/komputerler' state={{ name: 'komputerler' }} className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
-                  <img className='min-h-[120px]' src="./deals/homeComputer.svg" alt="" />
+                  <img className='min-h-[120px] object-contain' src="./deals/homeComputer.svg" srcSet="/deals/homeComputer@3.png 3x" alt="" />
                 </div>
                 <p className='text-center'>{t('computers')}</p>
               </Link>
               <Link to='categories/noutbuklar' state={{ name: 'noutbuklar' }} className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
-                  <img className='min-h-[120px]' src="./deals/homeLaptop.svg" alt="" />
+                  <img className='min-h-[120px] object-contain' src="./deals/homeLaptop.svg" srcSet="/deals/homeLaptop@3.png 3x" alt="" />
                 </div>
                 <p className='text-center'>Laptops</p>
               </Link>
               <Link to='categories/ofis-avadanliqlari' state={{ name: 'ofis avadanliqlari' }} className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
-                  <img className='min-h-[120px]' src="./deals/homePrinter.svg" alt="" />
+                  <img className='min-h-[120px] object-contain' src="./deals/homePrinter.svg" srcSet="/deals/homePrinter@3.png 3x" alt="" />
                 </div>
                 <p className='text-center'>{t('officeEquipment')}</p>
               </Link>
               <Link to='categories/ticaret-avadanliqlari' state={{ name: 'ticaret avadanliqlari' }} className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
-                  <img className='min-h-[120px]' src="./deals/homeBarcode.svg" alt="" />
+                  <img className='min-h-[120px] object-contain' src="./deals/homeBarcode.svg" srcSet="/deals/homeBarcode@3.png 3x" alt="" />
                 </div>
                 <p className='text-center'>{t('commercialEquipment')}</p>
               </Link>
               <Link to='categories/musahide-sistemleri' state={{ name: 'musahide sistemleri' }} className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
-                  <img className='min-h-[120px]' src="./deals/homeSurveillance.svg" alt="" />
+                  <img className='min-h-[120px] object-contain' src="./deals/homeSurveillance.svg" srcSet="/deals/homeSurveillance@3.png 3x" alt="" />
                 </div>
                 <p className='text-center'>{t('surveillanceSystem')}</p>
               </Link>
               <Link to='categories/komputer-avadanliqlari' state={{ name: 'komputer avadanliqlari' }} className='bg-white self-center justify-center items-center flex flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
-                  <img className='min-h-[120px]' src="./deals/homeKeyboard.svg" alt="" />
+                  <img className='min-h-[120px] object-contain' src="./deals/homeKeyboard.svg" srcSet="/deals/homeKeyboard@3.png 3x" alt="" />
                 </div>
                 <p className='text-center'>{t('computerEquipment')}</p>
               </Link>
@@ -537,37 +537,6 @@ const Home = () => {
 
         <section className='mt-12 mx-4 lg:w-[85vw] lg:mx-auto'>
             <div className='flex justify-between text-xl font-semibold'>
-                <h1>{t('recommendedItems')}</h1>
-                <Link to='/products/recommended'><h1 className='text-[#E60C03] cursor-pointer text-lg'>More</h1></Link>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 [@media(min-width:1300px)]:grid-cols-5 [@media(min-width:1500px)]:grid-cols-6 lg:grid-cols-4 gap-2 mt-5 whitespace-nowrap">
-              {isRecommendedLoading ? (
-                <>
-                  {[...Array(8)].map((_, i) => (
-                    <ProductCardSkeleton key={i} />
-                  ))}
-                </>
-              ) : (
-                recommended?.recentlyAdded.map(item => (
-                <HomePageUI
-                    key={item.id}
-                    deal={false}
-                    product={item}
-                    url={item.primaryImageUrl}
-                    handleAddToCart={handleAddToCart}
-                    isAddingToCart={isAddingToCart}
-                    showUnauthorizedModal={showUnauthorizedModal}
-                    setShowUnauthorizedModal={setShowUnauthorizedModal}
-                    unauthorizedAction={unauthorizedAction}
-                    setUnauthorizedAction={setUnauthorizedAction}
-                  />                ))
-              )}
-            </div>
-        </section>
-
-        <section className='mt-12 mx-4 lg:w-[85vw] lg:mx-auto'>
-            <div className='flex justify-between text-xl font-semibold'>
                 <h1>{t('hotDeals')}</h1>
                 <Link to='/products/hot-deals' className='text-[#E60C03] cursor-pointer text-lg'>{t('more')}</Link>
             </div>
@@ -597,6 +566,39 @@ const Home = () => {
               )}
             </div>
         </section>
+
+        <section className='mt-12 mx-4 lg:w-[85vw] lg:mx-auto'>
+            <div className='flex justify-between text-xl font-semibold'>
+                <h1>{t('recommendedItems')}</h1>
+                <Link to='/products/recommended'><h1 className='text-[#E60C03] cursor-pointer text-lg'>More</h1></Link>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 [@media(min-width:1300px)]:grid-cols-5 [@media(min-width:1500px)]:grid-cols-6 lg:grid-cols-4 gap-2 mt-5 whitespace-nowrap">
+              {isRecommendedLoading ? (
+                <>
+                  {[...Array(8)].map((_, i) => (
+                    <ProductCardSkeleton key={i} />
+                  ))}
+                </>
+              ) : (
+                recommended?.recentlyAdded.map(item => (
+                <HomePageUI
+                    key={item.id}
+                    deal={false}
+                    product={item}
+                    url={item.primaryImageUrl}
+                    handleAddToCart={handleAddToCart}
+                    isAddingToCart={isAddingToCart}
+                    showUnauthorizedModal={showUnauthorizedModal}
+                    setShowUnauthorizedModal={setShowUnauthorizedModal}
+                    unauthorizedAction={unauthorizedAction}
+                    setUnauthorizedAction={setUnauthorizedAction}
+                  />                ))
+              )}
+            </div>
+        </section>
+
+        
 
         <section className='py-12 mx-4  lg:w-[85vw] lg:mx-auto'>
             <div className='text-2xl mb-8 font-semibold'>

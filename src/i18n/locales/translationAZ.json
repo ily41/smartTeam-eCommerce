@@ -45,9 +45,9 @@
   "failedAddToCart": "Məhsulu səbətə əlavə etmək alınmadı",
 
   "footer": {
-    "desc1": "Şirkətimiz satış və quraşdırma xidmətləri göstərir",
-    "desc2": "kompüterlər, ofis avadanlıqları və",
-    "desc3": "zəif cərəyan sistemləri üçün.",
+    "desc1": "Şirkətimiz ticarət avadanlıqları, kompüterlər,",
+    "desc2": "ofis avadanlıqları və zəif cərəyan sistemləri",
+    "desc3": "sahəsində satış və texniki xidmətlər təqdim edir.",
     "mainPages": "Əsas Səhifələr",
     "auth": "Autentifikasiya",
     "home": "Ana Səhifə",
@@ -56,7 +56,7 @@
     "contact": "Əlaqə",
     "login": "Daxil ol",
     "contactUs": "Bizimlə Əlaqə",
-    "address1": "35 Qurban Abbasov küçəsi",
+    "address1": " Qurban Abbasov 35",
     "address2": "Sədərək Ticarət Mərkəzi,",
     "address3": "Sıra 5-6, Mağaza 60",
     "langEnglish": "İngilis dili",

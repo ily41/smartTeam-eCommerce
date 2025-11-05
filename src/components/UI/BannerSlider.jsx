@@ -121,6 +121,7 @@ const BannerSlider = () => {
                   ))}
               </p>
               </div>
+              {banner.buttonText && 
 
               <Link 
                 to={`${banner.linkUrl}`}
@@ -128,6 +129,7 @@ const BannerSlider = () => {
               >
                 {banner.buttonText}
               </Link>
+              }
             </div>
           </div>
         )})}

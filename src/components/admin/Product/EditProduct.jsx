@@ -213,6 +213,7 @@ const EditProduct = ({ setOpen, idPr }) => {
 
     const productData = {
       name: formData.name,
+      description: formData.description ,
       shortDescription: formData.shortDescription,
       sku: formData.sku,
       isActive: formData.isActive,

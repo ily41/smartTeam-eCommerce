@@ -89,17 +89,11 @@ const Burger = ({ burgerV, setBurgerV }) => {
       <section className='overflow-x-hidden'>
         <div className='w-screen h-screen bg-white fixed left-0 top-0 z-[1000] flex flex-col'>
           <div className='flex items-center justify-between p-6 border-b border-gray-100'>
-            <img
-              src="./Icons/logo.svg"
-              alt="SmartTeam Electronics"
-              className='h-12 w-auto object-contain'
-              style={{
-                imageRendering: '-webkit-optimize-contrast',
-                WebkitTransform: 'translateZ(0)',
-                transform: 'translateZ(0)',
-                backfaceVisibility: 'hidden',
-                WebkitBackfaceVisibility: 'hidden'
-              }}
+           <img
+              className="min-h-[35px] min-w-[70px] max-h-[50px] max-w-[13r0px] lg:w-[20vh]"
+              src="/Icons/logo.svg"
+              srcSet="/Icons/logo@2x.png 2x, /Icons/logo@3.png 3x"
+              alt="Logo"
             />
             <button onClick={() => setBurgerV(false)} className='p-2 hover:bg-gray-100 rounded-full transition-colors'>
               <X size={24} className='text-gray-600' />

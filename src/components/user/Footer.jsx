@@ -102,6 +102,7 @@ const Footer = () => {
                                 <Link to='/about'>{t("footer.about")}</Link>
                                 <Link to='/download'>{t("footer.download")}</Link>
                                 <Link to='/contact'>{t("footer.contact")}</Link>
+                                <Link to='/brands'>{t("admin.brands")}</Link>
                             </div>
                         </div>
                         <div>
@@ -119,6 +120,7 @@ const Footer = () => {
                             <Link to='/about'>{t("footer.about")}</Link>
                             <Link to='/download'>{t("footer.download")}</Link>
                             <Link to='/contact'>{t("footer.contact")}</Link>
+                            <Link to='/brands'>{t("admin.brands")}</Link>
                         </div>
                     </div>
 

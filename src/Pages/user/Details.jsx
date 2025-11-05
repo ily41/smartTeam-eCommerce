@@ -616,7 +616,7 @@ const prevModalSlide = () => {
             : product?.images?.[modalSlideIndex - 1]?.imageUrl
         }`}
         alt={product?.name}
-        className="max-w-[200px] max-h-[200px] md:max-w-[500px] md:max-h-[500px] object-contain"
+        className="max-w-[200px] max-h-[200px] md:max-w-[600px] md:max-h-[600px] object-contain"
         onError={(e) => {
           e.target.src = "/Icons/logo.svg";
         }}
