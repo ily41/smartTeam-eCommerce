@@ -24,6 +24,7 @@ import AuthUtils from '../../components/UI/AuthUtils';
 import UnauthorizedModal from '../../components/UI/UnauthorizedModal';
 import { useTranslation } from 'react-i18next';
 import { translateDynamicField } from '../../i18n';
+import SEO from '../../components/SEO/SEO';
 
 
 // Unauthorized Modal Component
@@ -561,13 +562,45 @@ const prevModalSlide = () => {
   const currentProduct = translatedProduct || product;
   const specifications = getSpecifications(currentProduct, productSpec);
   const features = getFeatures(currentProduct, productSpec);
-    
-
+  
+  // Prepare product data for SEO
+  const productImageUrl = product?.imageUrl 
+    ? `https://smartteamaz2-001-site1.ntempurl.com${product.imageUrl}`
+    : '/Icons/logo.png';
+  
+  const productImages = product?.images 
+    ? product.images.map(img => `https://smartteamaz2-001-site1.ntempurl.com${img.imageUrl}`)
+    : [];
+  
+  const productForSEO = product ? {
+    ...product,
+    name: currentProduct.name,
+    description: currentProduct.description || currentProduct.shortDescription,
+    imageUrl: productImageUrl,
+    images: productImages,
+    brandName: product.brandName,
+    categoryName: currentProduct.categoryName,
+    categorySlug: product.categorySlug,
+    parentCategoryName: product.parentCategoryName,
+    parentCategorySlug: product.parentCategorySlug,
+    prices: product.prices || [{ price: product.currentPrice || 0, discountedPrice: product.currentPrice || 0 }],
+    currentPrice: product.prices?.[0]?.discountedPrice || product.currentPrice || 0,
+    price: product.prices?.[0]?.price || product.currentPrice || 0,
+  } : null;
 
    
     
     return (
   <>
+    <SEO
+      title={`${currentProduct?.name || 'Product'} - Smart Team Electronics`}
+      description={currentProduct?.description || currentProduct?.shortDescription || `Buy ${currentProduct?.name} at Smart Team Electronics. Best prices and quality guarantee.`}
+      keywords={`${currentProduct?.name}, ${currentProduct?.categoryName}, electronics, smart team, Azerbaijan`}
+      image={productImageUrl}
+      url={typeof window !== 'undefined' ? window.location.href : ''}
+      type="product"
+      product={productForSEO}
+    />
     <UnauthorizedModal
       isOpen={showUnauthorizedModal} 
       onClose={() => setShowUnauthorizedModal(false)}

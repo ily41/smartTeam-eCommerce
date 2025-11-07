@@ -2,6 +2,7 @@ import { ArrowRight } from 'lucide-react'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next';
 import BranchesSection from './BranchSelection';
+import SEO from '../../components/SEO/SEO';
 
 const Contact = () => {
     const { t } = useTranslation();
@@ -11,7 +12,15 @@ const Contact = () => {
       setIsSwapped(!isSwapped);
     };
   return (
-    <section className='bg-[#f7fafc] pt-10 inter min-h-screen'>
+    <>
+      <SEO
+        title="Contact Us - Smart Team Electronics"
+        description="Get in touch with Smart Team Electronics. Visit our branches in Azerbaijan or contact us via phone, email, or social media. We're here to help with all your electronics needs."
+        keywords="contact smart team, electronics store contact, Azerbaijan electronics, smart team phone, smart team email"
+        image="/Icons/logo.png"
+        type="website"
+      />
+      <section className='bg-[#f7fafc] pt-10 inter min-h-screen'>
         <div className='bg-white md:max-w-[80vw] mx-auto md:rounded-lg border-1 border-[#dee2e6]'>
             
             <div className='border-1 border-[#dee2e6] text-2xl font-bold text-center py-5 md:rounded-t-lg md:border-0 md:text-start md:p-9'>
@@ -137,6 +146,7 @@ const Contact = () => {
 
 
     </section>
+    </>
 )
 }
 

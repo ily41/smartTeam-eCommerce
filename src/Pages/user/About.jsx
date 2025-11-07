@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router';
 import InfiniteBrandSlider from '../../components/UI/BrandSlider';
 import { useTranslation } from 'react-i18next';
+import SEO from '../../components/SEO/SEO';
 
 const About = () => {
   const { t } = useTranslation();
@@ -18,7 +19,15 @@ const About = () => {
     }
   }, []);
   return (
-    <section className='bg-[#F7FAFC] pt-5 inter'>
+    <>
+      <SEO
+        title="About Us - Smart Team Electronics"
+        description="Learn about Smart Team Electronics - your trusted partner for premium electronics in Azerbaijan. We offer quality products, excellent service, and innovative solutions including HEMPOS software installation."
+        keywords="about smart team, electronics store Azerbaijan, hempos, smart team electronics, company information"
+        image="/Icons/logo.png"
+        type="website"
+      />
+      <section className='bg-[#F7FAFC] pt-5 inter'>
         <div className='flex flex-col p-12 md:p-7 md:pb-13 bg-white border-1 md:gap-10  md:max-w-[90vw] md:mx-auto md:rounded-lg border-[#dee2e6] md:flex-row'>
 
             <div className="relative md:order-2 md:flex-3">
@@ -151,6 +160,7 @@ const About = () => {
         </div>
 
     </section>
+    </>
   )
 }
 
