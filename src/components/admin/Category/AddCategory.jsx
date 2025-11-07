@@ -53,30 +53,7 @@ const AddCategoryUIStatic = ({setOpen, categories}) => {
     }
   }, [file]);
 
-  // const handleCategory = async (e) =>{
-  //     e.preventDefault(); 
-  //      try {
-  //       const result = await addCategory({
-  //         name: formData.name,
-  //         description: "description",
-  //         imageUrl: formData.imgUrl,
-  //         sortOrder: 1,
-  //         ...(parent ? { parentCategoryId: parent } : {}) 
-  //       }).unwrap();
 
-  //       toast.success("Category added succesfull")
-  //       setFormData({
-  //         name: "",
-  //         imgUrl: ""
-  //       });
-  //       setOpen()
-        
-  
-  //     }catch (error){
-  //         console.log(error)
-  //         toast.error("Adding category failed");
-  //     }
-  //   }  
 
  const handleCategory = async (e) => {
   e.preventDefault();
@@ -116,7 +93,6 @@ const AddCategoryUIStatic = ({setOpen, categories}) => {
 
   } catch (error) {
     toast.error(error?.data || "Nəsə səhv getdi");
-    console.log("Full error:", error);
   }
 };
 

@@ -177,7 +177,6 @@ const HomePageUI = ({
   };
 
   if (deal) {
-    console.log("salam")
     return (
       <>
        

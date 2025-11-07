@@ -9,7 +9,6 @@ const FileManagementPanel = () => {
   const [previewFile, setPreviewFile] = useState(null);
   
   const { data: files, isLoading: isFilesLoading, refetch } = useGetFilesQuery();
-  console.log(files)
   const [removeFile, { isLoading: isRemoving }] = useRemoveFileMutation();
   const [uploadFile, { isLoading: isUploading }] = useUploadFileMutation();
 

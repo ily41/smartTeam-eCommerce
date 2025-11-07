@@ -45,7 +45,6 @@ const EditBrandUI = ({item, setOpen}) => {
       setOpen();
 
     } catch (error) {
-      console.log(error);
       toast.error(error?.data?.message || "Brendi yeniləmək uğursuz oldu");
     }
   }

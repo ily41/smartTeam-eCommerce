@@ -19,7 +19,6 @@ export const FilterSidebar = React.memo(({
   showCategory = false 
 }) => {
   const { i18n } = useTranslation();
-  console.log(forcedCategoryId)
   
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -321,7 +320,6 @@ export const FilterSidebar = React.memo(({
         page: 1,
         pageSize: pageSize || 20
       };
-      console.log(filterPayload)
     
       if (onLoadingChange) {
         onLoadingChange(true); 

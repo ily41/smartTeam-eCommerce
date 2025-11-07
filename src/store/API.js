@@ -6,7 +6,7 @@ import {
 export const API = createApi({
   reducerPath: 'API',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'https://smartteamaz2-001-site1.ntempurl.com',
+    baseUrl: 'https://smartteamazreal-001-site1.ktempurl.com',
     prepareHeaders: (headers, {
       endpoint,
       body

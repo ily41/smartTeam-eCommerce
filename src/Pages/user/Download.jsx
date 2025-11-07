@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 const Download = () => {
   const { t } = useTranslation();
   const { data: files, isLoading, error } = useGetFilesUserQuery();
-  console.log(files)
   const [downloadFile, { isLoading: isDownloading }] = useDownloadFileMutation();
   const [downloadingId, setDownloadingId] = useState(null);
 
@@ -16,7 +15,6 @@ const Download = () => {
 
     // Call the download mutation
     const result = await downloadFile(fileId).unwrap();
-    console.log(result)
 
     // Use backend-provided filename, fallback to original name or default
     const finalFilename = result.originalFileName || fileName || "download.pdf";

@@ -231,7 +231,6 @@ const Header = () => {
   };
 
   const handleViewAllClick = () => {
-    console.log("works")
     const query = encodeURIComponent(searchQuery);
     navigate(`/products?search=${query}`);
     setSearchOpen(false);
@@ -315,7 +314,7 @@ const Header = () => {
           </div>
 
           {/* Profile / Favorites / Cart */}
-          <div className='flex gap-5 lg:gap-5 lg:flex-1 '>
+          <div className='flex gap-5 items-start lg:gap-5 lg:flex-1 '>
             <div className='lg:hidden relative' ref={mobileSearchDropdownRef}>
               <button 
                 className='p-2 hover:bg-gray-100 rounded-lg transition-colors'

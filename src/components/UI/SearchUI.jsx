@@ -107,7 +107,6 @@ const SearchUI = () => {
     setSearchQuery('');
   };
   const handleViewAllClick = () => {
-    console.log("works")
     const query = encodeURIComponent(searchQuery);
     navigate(`/products?search=${query}`);
     setSearchOpen(false);

@@ -14,7 +14,6 @@ const Profile = () => {
   const { data: me, isLoading: isUserLoading, error: userError } = useGetMeQuery();
   const [changePass, { isLoading: isPasswordLoading, error: passwordError }] = useChangePasswordMutation(); 
   const [logout, { isLoading: isLogoutLoading }] = useLogoutMutation();
-  console.log(me)
   
   const [data, setData] = useState({
     name: '',

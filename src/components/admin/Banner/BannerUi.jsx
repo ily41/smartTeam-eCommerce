@@ -13,7 +13,6 @@ import {
 const BannersUI = () => {
   const { data: categories, isCatsLoading } = useGetParentCategoriesQuery();
   const { data: bannersD, isBannersLoading, error, refetch } = useGetBannersQuery();
-  console.log(bannersD)
   const [deleteBanner] = useDeleteBannerMutation();
   const [addBanner, { isLoading: isBannerLoading }] = useAddBannerMutation();
   const [updateBanner, { isLoading: isUpdateLoading }] = useUpdateBannerMutation();
@@ -422,7 +421,6 @@ const BannersUI = () => {
   const EditBannerModal = ({ isOpen, onClose, banner }) => {
     const [file, setFile] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
-    console.log(banner?.buttonVisible)
     const [formData, setFormData] = useState({
       title: banner?.title || '',
       titleVisible: banner?.titleVisible ,
@@ -437,7 +435,6 @@ const BannersUI = () => {
       startDate: banner?.startDate || "2025-09-21T13:38:28.551Z",
       endDate: banner?.endDate || "2025-09-21T13:38:28.551Z"
     });
-    console.log(formData)
     const handleSubmit = async (e) => {
       e.preventDefault();
 
@@ -617,11 +614,9 @@ const BannersUI = () => {
   const handleDeleteBanner = async (id) => {
     try {
       await deleteBanner({ id }).unwrap();
-      console.log('Deleting banner with id:', id);
       toast.success("Banner uğurla silindi");
       refetch();
     } catch (error) {
-      console.log(error);
       toast.error(error?.data || "Banneri silmək uğursuz oldu");
     }
   };
@@ -676,7 +671,6 @@ const BannersUI = () => {
           <>
             <div className="space-y-6">
               {bannersD?.map((banner) => {
-                console.log(banner.imageUrl)
                 return (
                   <div
                     key={banner.id}

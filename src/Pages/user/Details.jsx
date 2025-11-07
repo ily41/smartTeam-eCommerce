@@ -960,10 +960,6 @@ const prevModalSlide = () => {
                   <p className="text-gray-600 mb-4 line-clamp-5 break-all pr-2">{currentProduct.description}</p>
                   
                   <div className="flex items-center gap-3">
-                    {console.log(product.prices)}
-                    {console.log(product)}
-                    {console.log(me?.role )
-                    }
                     <span className="text-3xl font-bold text-red-500">{me ? product?.prices[me?.role - 1]?.discountedPrice : product?.prices[0].discountedPrice} AZN</span> 
                      {/*{product?.prices && me?.role !== undefined && (
                       (() => { 

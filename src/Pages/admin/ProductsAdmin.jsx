@@ -28,7 +28,6 @@ const ProductsUI = () => {
         toast.success(t('admin.productDeletedSuccess'));
         handleCloseModal();
       } catch (error) {
-        console.log(error);
         toast.error(error?.data || t('admin.deletingProductFailed'));
       }
     };

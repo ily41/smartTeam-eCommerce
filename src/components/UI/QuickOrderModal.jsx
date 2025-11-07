@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 
 const QuickOrderModal = ({ isOpen, onClose, product, quantity }) => {
     const { t } = useTranslation();
-    console.log(product)
   const [formData, setFormData] = useState({
     customerName: '',
     phoneNumber: '0703569121',
@@ -16,7 +15,6 @@ const QuickOrderModal = ({ isOpen, onClose, product, quantity }) => {
   const [error, setError] = useState('');
   const [createWPOrder, { isLoading: isOrderLoading }] = useQuickOrderMutation();
   const {data: me} = useGetMeQuery()
-  console.log(me)
   
 
   if (!isOpen) return null;

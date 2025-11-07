@@ -183,9 +183,7 @@ const ProductFormUI = ({setOpen}) => {
     try {
       const formDataToSend = new FormData();
       const productDataString = JSON.stringify(formData);
-      console.log(formData)
       formDataToSend.append("productData", productDataString); 
-      console.log(file)
       formDataToSend.append("imageFile", file, file.name);
 
       
@@ -199,13 +197,11 @@ const ProductFormUI = ({setOpen}) => {
         files.forEach(file => {
           detailImagesFormData.append("imageFiles", file, file.name);
         });
-        console.log(files)
 
         const resultDetail = await addDetailImages({
           id: result.id,
           images: detailImagesFormData  
         }).unwrap();
-        console.log(resultDetail)
       }
 
       // If there is a PDF file, upload it

@@ -210,7 +210,6 @@ const Home = () => {
             productId: id,
             quantity: 1
           }).unwrap();
-          console.log(result)
           
           
         } catch (err) {

@@ -6,24 +6,7 @@ const InfiniteBrandSlider = () => {
     const { t } = useTranslation();
     const { data: brands, isLoading: isBrandsLoading } = useGetBrandsAdminQuery();
 
-    // const brandsImg = [
-    //   brands?.map(brand => {
-    //     console.log(brand)
-    //     return { src: `https://smartteamaz2-001-site1.ntempurl.com${brand?.logoUrl}`, alt: 'Hem', slug: brand?.slug }
-    //   })
-    //   // ,
-    //   // { src: './slider/slider2.svg', alt: 'Hp', slug: 'hp' },
-    //   // { src: './slider/slider3.svg', alt: 'Dell', slug: 'dell' },
-    //   // { src: './slider/slider4.svg', alt: 'Lg', slug: 'lg' },
-    //   // { src: './slider/slider5.svg', alt: 'Xprinter', slug: 'xprinter' },
-    //   // { src: './slider/slider6.svg', alt: 'Lenovo', slug: 'lenovo' },
-    //   // { src: './slider/slider7.svg', alt: 'Western Digital', slug: 'westernDigital' },
-    //   // { src: './slider/slider8.svg', alt: 'Acer', slug: 'acer' },
-    //   // { src: './slider/slider9.svg', alt: 'Hikvision', slug: 'hikvision' },
-    //   // { src: './slider/slider10.svg', alt: 'Unv', slug: 'unv' },
-    //   // { src: './slider/slider11.svg', alt: 'Canon', slug: 'canon' },
-    //   // { src: './slider/slider12.svg', alt: 'Seagate', slug: 'seagate' }
-    // ];
+
 
     const brandsImg = brands?.map(brand => ({
       src: `https://smartteamaz2-001-site1.ntempurl.com${brand?.logoUrl}`,
@@ -151,10 +134,6 @@ const InfiniteBrandSlider = () => {
     if (dragDistance > 5) {
       e.preventDefault();
       return;
-    }
-    
-    if (slug) {
-      console.log('Navigate to:', slug);
     }
   }
 

@@ -33,7 +33,6 @@ const menuItems = [
   const handleClick = async () => {
     try {
       const result = await logout().unwrap()
-      console.log(result)
     }catch {
         toast.error(error?.data?.slice(1,100) || "Kateqoriyanın redaktəsi uğursuz oldu");
 

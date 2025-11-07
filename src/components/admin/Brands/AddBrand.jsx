@@ -64,9 +64,6 @@ const AddBrandUI = ({setOpen}) => {
       formDataToSend.append("name", formData.name);
       formDataToSend.append("sortOrder", formData.sortOrder);
       formDataToSend.append("imageFile", file, file.name);
-      console.log(formData.name)
-      console.log(typeof(formData.sortOrder))
-      console.log(file)
 
 
       const result = await addBrandImage({
@@ -74,7 +71,6 @@ const AddBrandUI = ({setOpen}) => {
           sortOrder: formData.sortOrder,
           file,
         }).unwrap();
-      console.log(result)
 
       toast.success("Brend uğurla əlavə edildi");
 
@@ -87,7 +83,6 @@ const AddBrandUI = ({setOpen}) => {
 
     } catch (error) {
       toast.error(error?.data || "Nəsə səhv getdi");
-      console.log("Full error:", error);
     }
   };
 

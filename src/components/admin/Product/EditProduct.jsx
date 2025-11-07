@@ -4,9 +4,7 @@ import { toast } from 'react-toastify';
 import { ClockFading } from 'lucide-react';
 
 const EditProduct = ({ setOpen, idPr }) => {
-  console.log(idPr)
   const { data: edit, isLoading: loading } = useGetProductQuery(idPr, { skip: !idPr });
-  console.log(edit)
   const [editProductWithImage, { isLoading: isEditLoading }] = useEditProductWithImageMutation();
   const [deleteDetailImage] = useDeleteProductImageMutation();
   const { data: categories } = useGetCategoriesQuery();
@@ -181,12 +179,9 @@ const EditProduct = ({ setOpen, idPr }) => {
   };
 
   const removeExistingGalleryImage = (index) => {
-    console.log(index)
     const imageToRemove = existingGalleryImages[index];
     setImagesToDelete(prev => [...prev, imageToRemove]);
-    console.log(imagesToDelete)
     setExistingGalleryImages(prev => prev.filter((_, i) => i !== index));
-    console.log(existingGalleryImages)
   };
 
   const removeNewGalleryFile = (index) => {
@@ -199,14 +194,11 @@ const EditProduct = ({ setOpen, idPr }) => {
   try {
     if (imagesToDelete.length > 0) {
       for (const image of imagesToDelete) {
-        console.log(idPr)
-        console.log(image.imageUrl)
         try {
           await deleteDetailImage({
             id: image.id,
           }).unwrap();
         } catch (error) {
-          console.error('Error deleting image:', error);
         }
       }
     }
@@ -231,7 +223,6 @@ const EditProduct = ({ setOpen, idPr }) => {
       formDataToSend.append('imageFile', imageFile);
     }
 
-    console.log(pdfFile)
     if (shouldUpdatePdf && pdfFile) {
       formDataToSend.append('pdfFile', pdfFile);
     }
@@ -370,7 +361,6 @@ const EditProduct = ({ setOpen, idPr }) => {
               <p className="text-xs text-gray-400 mb-2">Hazırkı şəkillər</p>
               <div className="grid grid-cols-4 gap-4">
                 {existingGalleryImages.map((image, index) => {
-                  console.log(image)
                   return (
                     <div key={image.id} className="relative">
                       <img

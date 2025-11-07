@@ -442,7 +442,6 @@ const Cart = () => {
   });
   
   const { data: me } = useGetMeQuery();
-  console.log(me)
   const [updateCartItemQuantity] = useUpdateCartItemQuantityMutation();
   const [removeCartItem] = useRemoveCartItemMutation();
   const [removeCart] = useRemoveCartMutation();

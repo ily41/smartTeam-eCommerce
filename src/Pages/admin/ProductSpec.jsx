@@ -35,7 +35,6 @@ const ProductDetailPage = () => {
 
   // API hooks
   const { data: product, isLoading: productLoading } = useGetProductQuery(id);
-  console.log(product)
   
   const { data: specifications, isLoading: specsLoading, refetch: refetchSpecs } = useGetProductSpecificationsQuery(id);
   const [addSpecs, { isLoading: adding }] = useAddProductSpecificationsMutation();
@@ -392,7 +391,6 @@ const ProductDetailPage = () => {
           ) : productPdfs.length > 0 ? (
             <div className="space-y-4">
               {productPdfs.map((pdf) => {
-                console.log(pdf)
                 return (
                 <div key={pdf.id} className="bg-gray-700 rounded-lg p-4 flex items-center justify-between">
                   <div className="flex items-center gap-4">

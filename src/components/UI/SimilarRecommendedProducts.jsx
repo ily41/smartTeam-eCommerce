@@ -233,7 +233,7 @@ const MobileProductCard = ({ product, isAddingToCart, loadingProductId, showSucc
   };
 
   return (
-    <div className="flex flex-col min-w-[70%] p-3 bg-white rounded-lg shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)]">
+    <Link to={`/details/${product?.id}`} className="flex flex-col min-w-[70%] p-3 bg-white rounded-lg shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)]">
       <div className="w-full h-32 mb-3">
         <img 
           src={`https://smartteamaz2-001-site1.ntempurl.com${product.primaryImageUrl}`} 
@@ -262,7 +262,7 @@ const MobileProductCard = ({ product, isAddingToCart, loadingProductId, showSucc
           />
         </button>
       </div>
-    </div>
+    </Link>
   );
 };
 

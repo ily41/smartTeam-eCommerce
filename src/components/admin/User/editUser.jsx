@@ -9,7 +9,6 @@ const EditUserUi = ({ setOpen, edit }) => {
   const [editUser, { isLoading }] = useEditUserMutation();
 
   const { data: optionsData, error, isRolesLoading, refetch } = useGetUserRolesQuery();
-  console.log(optionsData)
   const [options, setOptions] = useState([])
   useEffect(() => {
     setOptions(optionsData)
@@ -37,7 +36,6 @@ const EditUserUi = ({ setOpen, edit }) => {
     }
   }, [edit]);
 
-  console.log(formData)
 
   // Sync dropdown & checkbox with formData
   useEffect(() => setFormData(prev => ({ ...prev, role: selected })), [selected]);
@@ -66,7 +64,6 @@ const EditUserUi = ({ setOpen, edit }) => {
       toast.success("İstifadəçi uğurla yeniləndi!");
       setOpen();
     } catch (error) {
-      console.log(error);
       toast.error("İstifadəçini yeniləmək uğursuz oldu");
     }
   };

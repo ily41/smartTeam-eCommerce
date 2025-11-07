@@ -21,7 +21,6 @@ const Brand = () => {
       toast.success(t('admin.brandDeletedSuccess'));
       handleCloseModal();
     } catch (error) {
-      console.log(error);
       toast.error(error?.data || t('admin.deletingBrandFailed'));
     }
   };

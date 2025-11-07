@@ -49,8 +49,6 @@ const Users = () => {
     const handleRoleChange = async (userId, newRole) => {
         setIsUpdatingRole(userId);
         try {
-            console.log(userId)
-            console.log(newRole)
             const result = await editRole({ id: userId, role: newRole }).unwrap();
             
             const roleLabel = availableRoles.find(r => r.key === newRole)?.label || newRole;
@@ -60,7 +58,6 @@ const Users = () => {
             refetchStatistics();
             setActiveDropdown(null);
         } catch (error) {
-            console.log(error);
             toast.error(error?.data?.message || "Rol dəyişdirilə bilmədi");
         } finally {
             setIsUpdatingRole(null);
@@ -72,7 +69,6 @@ const Users = () => {
             const result = await activateUser({ id }).unwrap();
             refetch()
         } catch (error) {
-            console.log(error)
         }
     }
 
@@ -81,7 +77,6 @@ const Users = () => {
             const result = await deActivateUser({ id }).unwrap();
             refetch()
         } catch (error) {
-            console.log(error)
         }
     }
 
@@ -103,18 +98,15 @@ const Users = () => {
     };
 
     const handleDelete = async (id) => {
-        console.log(id)
         try {
             const result = await deleteUser({
                 id
             }).unwrap()
-            console.log(result)
 
             toast.success("İstifadəçi uğurla silindi");
             handleCloseModal()
 
         } catch (error) {
-            console.log(error)
             toast.error(error?.data || "İstifadəçini silmək uğursuz oldu");
         }
     }
@@ -309,7 +301,6 @@ const Users = () => {
                                                         
                                                        
                                                         const roleConfig = availableRoles.find(r => r.key === role.name);
-                                                        console.log(role)
                                                         const IconComponent = roleConfig.icon;
                                                         const isCurrentRole = item.roleName === role.name;
                                                         

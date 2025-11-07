@@ -57,7 +57,6 @@ export const CartUtils = {
     } else {
       // Add new item
       cart.items.push(cartItem);
-      console.log(cartItem)
     }
 
     // Recalculate total amount
@@ -126,8 +125,6 @@ const AddToCart = ({ product, quantity = 1, onSuccess, children, className }) =>
         onSuccess(updatedCart);
       }
 
-      // Optional: Show toast notification
-      console.log(`Added ${product.name} to cart`);
       
     } catch (error) {
       console.error('Error adding to cart:', error);

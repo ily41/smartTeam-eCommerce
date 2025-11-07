@@ -67,7 +67,6 @@ export function ProductCard({
     try {
       await toggleFavorite(id);
     } catch (error) {
-      console.log(error);
     }
   };
 

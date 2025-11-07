@@ -21,11 +21,7 @@ const Login = () => {
     mobileConfirmPassword: false
   });
   const navigate = useNavigate()
-  // const navigate('/') = () => {
-  //   console.log("NAVIGATED")
-  //   navigate('/')
-  //   window.location.reload();
-  // }
+
   const location = useLocation();
 
   const from = location.state?.from || '/';

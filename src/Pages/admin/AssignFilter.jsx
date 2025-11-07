@@ -285,7 +285,6 @@ const ProductFilterAssignment = () => {
                           <div className="flex flex-wrap gap-1">
                             {product.filters && product.filters.length > 0 ? (
                               product.filters.map((assignment, index) => {
-                                console.log(assignment)
                                 return(
                                 
                                 <span 

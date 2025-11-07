@@ -159,7 +159,6 @@ function Products() {
     },
     { skip: !isSearch || !searchQuery || searchQuery.length < 2 }
   );
-  console.log(searchResults)
 
   const { data: productDefault, isLoading: isLoadingProducts } = useGetProductsCategorySlugPageQuery(
     {
@@ -202,7 +201,6 @@ function Products() {
   );
 
   const { data: categories } = useGetCategoriesQuery();
-  console.log(categories)
   const { data: favorites } = useGetFavoritesQuery();
   
   const [products, setProducts] = useState([]);
@@ -233,10 +231,8 @@ function Products() {
       cat.slug.toLowerCase().replace(/\s+/g, '-') === slug.toLowerCase()
     );
 
-    console.log(category)
     return category?.id ;
   }, [slug, categories, isSpecialSlug]);
-  console.log(categoryId)
 
   const prevDataRef = useRef({});
   

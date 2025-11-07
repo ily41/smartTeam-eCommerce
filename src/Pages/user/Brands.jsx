@@ -81,7 +81,6 @@ const Brands = () => {
   // Dynamic translation states
   const [translatedBrands, setTranslatedBrands] = useState([]);
   
-  console.log(brandsD);
 
   // Dynamic translation effect
   useEffect(() => {
@@ -115,7 +114,6 @@ const Brands = () => {
     slug: brand?.slug
   })) || [];
   
-  console.log(brands);
 
 
   const filteredBrands = brands.filter(brand => {

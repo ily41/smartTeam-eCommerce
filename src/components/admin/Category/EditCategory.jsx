@@ -4,7 +4,6 @@ import { useEditCategoryWithImageMutation } from "../../../store/API";
 import { toast } from "react-toastify";
 
 const EditCategoryUI = ({item, setOpen, categories}) => {
-  console.log(item)
     const [isCategoryLoading, setIsCategoryLoading] = useState(false);
     const [editCategory, { isLoading }] = useEditCategoryWithImageMutation();
     const [imageFile, setImageFile] = useState(null);
@@ -103,13 +102,11 @@ const EditCategoryUI = ({item, setOpen, categories}) => {
           id: item.id,
           formData: formDataToSend
         }).unwrap();
-        console.log(result)
         
         toast.success("Kateqoriya uğurla yeniləndi");
         setIsCategoryLoading(false);
         if (setOpen) setOpen();
       } catch (error) {
-        console.log(error);
         toast.error(error?.data?.message || "Kateqoriyanı yeniləmək uğursuz oldu");
         setIsCategoryLoading(false);
       }
