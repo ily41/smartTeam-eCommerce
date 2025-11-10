@@ -23,6 +23,7 @@ import {
 import { toast } from 'react-toastify';
 import { useParams, useSearchParams } from 'react-router';
 import UnauthorizedModal from '../../components/UI/UnauthorizedModal';
+import SEO from '../../components/SEO/SEO';
 
 const ProductCardSkeleton = React.memo(({ col }) => (
   <div className={`bg-white rounded-lg border border-gray-200 overflow-hidden ${col ? '' : 'flex'}`}>
@@ -446,8 +447,36 @@ function Products() {
   // Memoize skeleton array
   const skeletonArray = useMemo(() => Array.from({ length: 6 }), []);
 
+  // Generate SEO data based on current page type
+  const seoTitle = useMemo(() => {
+    if (isHotDeals) return 'Hot Deals - Smart Team Electronics';
+    if (isRecommended) return 'Recommended Products - Smart Team Electronics';
+    if (isBrand) return `${brandSlug.charAt(0).toUpperCase() + brandSlug.slice(1)} Products - Smart Team Electronics`;
+    if (isSearch) return `Search Results for "${searchQuery}" - Smart Team Electronics`;
+    if (isCategoryParam) return `${categoryParam.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())} - Smart Team Electronics`;
+    if (slug) return `${slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())} - Smart Team Electronics`;
+    return 'All Products - Smart Team Electronics';
+  }, [isHotDeals, isRecommended, isBrand, isSearch, isCategoryParam, brandSlug, searchQuery, categoryParam, slug]);
+
+  const seoDescription = useMemo(() => {
+    if (isHotDeals) return 'Discover amazing hot deals on electronics at Smart Team Electronics. Limited time offers on computers, laptops, printers, and more.';
+    if (isRecommended) return 'Browse our recommended products - carefully selected electronics for the best quality and value at Smart Team Electronics.';
+    if (isBrand) return `Shop ${brandSlug.charAt(0).toUpperCase() + brandSlug.slice(1)} products at Smart Team Electronics. Best prices and authentic products.`;
+    if (isSearch) return `Search results for "${searchQuery}" at Smart Team Electronics. Find the best electronics products.`;
+    if (isCategoryParam) return `Browse ${categoryParam.replace(/-/g, ' ')} products at Smart Team Electronics. Quality electronics with best prices.`;
+    if (slug) return `Shop ${slug.replace(/-/g, ' ')} products at Smart Team Electronics. Best selection and prices.`;
+    return 'Browse all electronics products at Smart Team Electronics. Computers, laptops, printers, surveillance systems, and more.';
+  }, [isHotDeals, isRecommended, isBrand, isSearch, isCategoryParam, brandSlug, searchQuery, categoryParam, slug]);
+
   return (
     <>
+      <SEO
+        title={seoTitle}
+        description={seoDescription}
+        keywords={`${categoryName}, electronics, smart team, Azerbaijan, ${isBrand ? brandSlug : ''}, ${isSearch ? searchQuery : ''}`}
+        image="/Icons/logo.png"
+        type="website"
+      />
       <UnauthorizedModal 
         isOpen={showUnauthorizedModal} 
         onClose={() => setShowUnauthorizedModal(false)}

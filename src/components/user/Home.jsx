@@ -10,6 +10,7 @@ import { toast } from 'react-toastify'
 import InfiniteBrandSlider from '../UI/BrandSlider'
 import { useTranslation } from 'react-i18next'
 import { translateDynamicField } from '../../i18n'
+import SEO from '../SEO/SEO'
 
 // Skeleton Components
 const CategorySkeleton = () => (
@@ -249,6 +250,13 @@ const Home = () => {
 
   return (
     <>
+      <SEO
+        title="Smart Team Electronics - Premium Electronics Store in Azerbaijan"
+        description="Shop the latest electronics, computers, laptops, printers, surveillance systems, and more at Smart Team Electronics. Best prices, quality products, and excellent customer service in Azerbaijan."
+        keywords="electronics, computers, laptops, printers, surveillance systems, smart team, Azerbaijan, online store, electronics store, hempos"
+        image="/Icons/logo.png"
+        type="website"
+      />
       <main className='bg-[#f7fafc] lg:pt-5'>
         
         <div className='hidden lg:block md:p-5 pb-0 md:pb-5'>
