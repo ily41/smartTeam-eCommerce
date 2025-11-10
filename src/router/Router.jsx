@@ -12,6 +12,8 @@ import Download from "../Pages/user/Download";
 import Secure from "../Pages/user/Secure";
 import Software from "../Pages/user/Software";
 import Login from "../Pages/user/Login";
+import ForgotPassword from "../Pages/user/forgotPassword";
+import ResetPassword from "../Pages/user/resetPassword";
 import Auth from "./Auth";
 import Profile from "../Pages/user/Profile";
 import AdminLayout from "../Pages/admin/Adminlayout";
@@ -43,6 +45,8 @@ const Router = () => {
         
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* User layout */}
         <Route
@@ -55,6 +59,7 @@ const Router = () => {
               <WP />
             </>
           }
+          
         >
           <Route index element={<Home />} />
           <Route path="products/:slug?" element={<Products />} /> 

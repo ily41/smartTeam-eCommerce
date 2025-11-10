@@ -81,6 +81,36 @@ export const API = createApi({
       invalidatesTags: ['Auth'],
     }),
 
+    forgotPassword: builder.mutation({
+      query: ({
+        email
+      }) => ({
+        url: '/api/v1/Auth/forgot-password',
+        method: 'POST',
+        body: {
+          email,
+        },
+      }),
+      invalidatesTags: ['Auth'],
+    }),
+
+    resetPassword: builder.mutation({
+      query: ({
+        token,
+        newPassword,
+        confirmNewPassword
+      }) => ({
+        url: '/api/v1/Auth/reset-password',
+        method: 'POST',
+        body: {
+          token,
+          newPassword,
+          confirmNewPassword,
+        },
+      }),
+      invalidatesTags: ['Auth'],
+    }),
+
     // *CATEGORIES*
 
     getParentCategories: builder.query({
@@ -643,7 +673,9 @@ export const API = createApi({
     }),
 
     deleteProductImage: builder.mutation({
-      query: ({id}) => ({
+      query: ({
+        id
+      }) => ({
         url: `/api/v1/Products/images/${id}`,
         method: 'DELETE',
       })
@@ -1434,6 +1466,8 @@ export const {
   useUpdateBannerMutation,
   useLoginMutation,
   useSignupMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
   useGetMeQuery,
 
   useGetCategoriesQuery,

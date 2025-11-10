@@ -11,19 +11,11 @@ const Login = () => {
     email: "",
     password: ""
   });
-  const [currentView, setCurrentView] = useState('login');
-  const [countdown, setCountdown] = useState(20);
   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
-  const [showPassword, setShowPassword] = useState({
-    loginPassword: false,
-    mobileLoginPassword: false,
-    mobileNewPassword: false,
-    mobileConfirmPassword: false
-  });
-  const navigate = useNavigate()
+  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const location = useLocation();
-
   const from = location.state?.from || '/';
   const [login, { isLoading: isLoginLoading }] = useLoginMutation();
 
@@ -35,25 +27,8 @@ const Login = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  useEffect(() => {
-    if (currentView === 'codeVerification' && countdown > 0) {
-      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [currentView, countdown]);
-
-  const togglePassword = (inputId) => {
-    setShowPassword(prev => ({
-      ...prev,
-      [inputId]: !prev[inputId]
-    }));
-  };
-
-  const moveToNext = (current, index) => {
-    if (current.value.length === 1 && index < 3) {
-      const inputs = document.querySelectorAll('.code-input input');
-      inputs[index + 1].focus();
-    }
+  const togglePassword = () => {
+    setShowPassword(prev => !prev);
   };
 
   const setCookie = (name, value, expiresAt) => {
@@ -114,161 +89,63 @@ const Login = () => {
           />
         </div>
 
-        {currentView === 'login' && (
-          <div className="bg-white rounded-lg shadow-lg p-6 mb-4">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Log In</h2>
-            <p className="text-gray-600 text-sm mb-6">Login your account in a seconds</p>
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-4">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Log In</h2>
+          <p className="text-gray-600 text-sm mb-6">Login your account in a seconds</p>
 
-            <form className="space-y-4" onSubmit={handleLogin}>
+          <form className="space-y-4" onSubmit={handleLogin}>
+            <input 
+              type="email" 
+              required 
+              name='email' 
+              onChange={handleChange} 
+              placeholder="Email Address" 
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg" 
+            />
+            <div className="relative">
               <input 
-                type="email" 
+                type={showPassword ? "text" : "password"}
                 required 
-                name='email' 
+                minLength={8} 
+                name='password' 
                 onChange={handleChange} 
-                placeholder="Email Address" 
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg" 
+                placeholder="Password" 
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg pr-12" 
               />
-              <div className="relative">
-                <input 
-                  type={showPassword.mobileLoginPassword ? "text" : "password"}
-                  required 
-                  minLength={8} 
-                  name='password' 
-                  id="mobileLoginPassword" 
-                  onChange={handleChange} 
-                  placeholder="Password" 
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg pr-12" 
-                />
-                <button 
-                  type="button" 
-                  className="absolute right-3 top-1/2 transform cursor-pointer -translate-y-1/2 text-gray-400" 
-                  onClick={() => togglePassword('mobileLoginPassword')}
-                >
-                  {showPassword.mobileLoginPassword ? <Eye size={20} /> : <EyeOff size={20} />}
-                </button>
-              </div>
-              <div className="text-right">
-                <button 
-                  type="button" 
-                  className="text-red-600 text-sm" 
-                  onClick={() => setCurrentView('forgotPassword')}
-                >
-                  Forgot password?
-                </button>
-              </div>
               <button 
-                type="submit" 
-                disabled={isLoginLoading} 
-                className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold"
+                type="button" 
+                className="absolute right-3 top-1/2 transform cursor-pointer -translate-y-1/2 text-gray-400" 
+                onClick={togglePassword}
               >
-                {isLoginLoading ? <Loader2 className="animate-spin mx-auto text-white" size={28} /> : 'Log in'}
+                {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
               </button>
-            </form>
-
-            <div className="mt-4 text-center text-sm text-gray-600">
-              Don't have an account? <button type="button" className="text-red-600" onClick={() => navigate('/register')}>Sign up</button>
             </div>
-
-            <div className="mt-4 text-center">
-              <button type="button" className="text-gray-500 text-sm hover:text-gray-700 underline" onClick={() => {navigate('/'); window.location.reload();}}>Continue without logging in</button>
+            <div className="text-right">
+              <button 
+                type="button" 
+                className="text-red-600 text-sm" 
+                onClick={() => navigate('/forgot-password')}
+              >
+                Forgot password?
+              </button>
             </div>
-          </div>
-        )}
-
-        {currentView === 'forgotPassword' && (
-          <div className="bg-white rounded-lg shadow-lg p-6 mb-4">
-            <button className="flex items-center text-gray-600 text-sm mb-6" onClick={() => setCurrentView('login')}>
-              ← Back
+            <button 
+              type="submit" 
+              disabled={isLoginLoading} 
+              className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold"
+            >
+              {isLoginLoading ? <Loader2 className="animate-spin mx-auto text-white" size={28} /> : 'Log in'}
             </button>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Forgot password?</h2>
-            <p className="text-gray-600 text-sm mb-6">Don't worry! It happens. Please enter the email associated with your account.</p>
+          </form>
 
-            <form className="space-y-4">
-              <input type="email" placeholder="Email address" className="w-full px-4 py-3 border border-gray-300 rounded-lg" />
-              <button type="button" className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold" onClick={() => { setCurrentView('codeVerification'); setCountdown(20); }}>Send a code</button>
-            </form>
-
-            <div className="mt-4 text-center text-sm text-gray-600">
-              Remember password? <button type="button" className="text-blue-600" onClick={() => setCurrentView('login')}>Log in</button>
-            </div>
+          <div className="mt-4 text-center text-sm text-gray-600">
+            Don't have an account? <button type="button" className="text-red-600" onClick={() => navigate('/register')}>Sign up</button>
           </div>
-        )}
 
-        {currentView === 'codeVerification' && (
-          <div className="bg-white rounded-lg shadow-lg p-6 mb-4">
-            <button className="flex items-center text-gray-600 text-sm mb-6" onClick={() => setCurrentView('forgotPassword')}>
-              ← Back
-            </button>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Forgot password - code</h2>
-            <p className="text-gray-600 text-sm mb-6">We've sent a code to <strong>helloworld@gmail.com</strong></p>
-
-            <div className="flex justify-center space-x-2 mb-6 code-input">
-              <input type="text" maxLength="1" className="w-12 h-12 text-center border border-gray-300 rounded-lg font-bold text-lg" onInput={(e) => moveToNext(e.target, 0)} defaultValue="8" />
-              <input type="text" maxLength="1" className="w-12 h-12 text-center border border-gray-300 rounded-lg font-bold text-lg" onInput={(e) => moveToNext(e.target, 1)} defaultValue="2" />
-              <input type="text" maxLength="1" className="w-12 h-12 text-center border border-gray-300 rounded-lg font-bold text-lg" onInput={(e) => moveToNext(e.target, 2)} defaultValue="2" />
-              <input type="text" maxLength="1" className="w-12 h-12 text-center border border-gray-300 rounded-lg font-bold text-lg" onInput={(e) => moveToNext(e.target, 3)} />
-            </div>
-
-            <button type="button" className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold" onClick={() => setCurrentView('resetPassword')}>Verify</button>
+          <div className="mt-4 text-center">
+            <button type="button" className="text-gray-500 text-sm hover:text-gray-700 underline" onClick={() => {navigate('/'); window.location.reload();}}>Continue without logging in</button>
           </div>
-        )}
-
-        {currentView === 'resetPassword' && (
-          <div className="bg-white rounded-lg shadow-lg p-6 mb-4">
-            <button className="flex items-center text-gray-600 text-sm mb-6" onClick={() => setCurrentView('codeVerification')}>
-              ← Back
-            </button>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Reset password</h2>
-            <p className="text-gray-600 text-sm mb-6">Please type something you'll remember</p>
-
-            <form className="space-y-4">
-              <div className="relative">
-                <input 
-                  type={showPassword.mobileNewPassword ? "text" : "password"}
-                  id="mobileNewPassword" 
-                  placeholder="New password" 
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg pr-12" 
-                />
-                <button 
-                  type="button" 
-                  className="absolute right-3 top-1/2 transform cursor-pointer -translate-y-1/2 text-gray-400" 
-                  onClick={() => togglePassword('mobileNewPassword')}
-                >
-                  {showPassword.mobileNewPassword ? <Eye size={20} /> : <EyeOff size={20} />}
-                </button>
-              </div>
-              <div className="relative">
-                <input 
-                  type={showPassword.mobileConfirmPassword ? "text" : "password"}
-                  id="mobileConfirmPassword" 
-                  placeholder="Confirm new password" 
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg pr-12" 
-                />
-                <button 
-                  type="button" 
-                  className="absolute right-3 top-1/2 transform cursor-pointer -translate-y-1/2 text-gray-400" 
-                  onClick={() => togglePassword('mobileConfirmPassword')}
-                >
-                  {showPassword.mobileConfirmPassword ? <Eye size={20} /> : <EyeOff size={20} />}
-                </button>
-              </div>
-              <button type="button" className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold" onClick={() => setCurrentView('passwordChanged')}>Verify</button>
-            </form>
-
-            <div className="mt-4 text-center text-sm text-gray-600">
-              Already have an account? <button type="button" className="text-blue-600" onClick={() => setCurrentView('login')}>Log in</button>
-            </div>
-          </div>
-        )}
-
-        {currentView === 'passwordChanged' && (
-          <div className="bg-white rounded-lg shadow-lg p-6 mb-4 text-center">
-            <div className="text-6xl mb-6">✨</div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Password changed</h2>
-            <p className="text-gray-600 text-sm mb-6">Your password has been changed successfully</p>
-            <button type="button" className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold" onClick={() => setCurrentView('login')}>Log in now</button>
-          </div>
-        )}
+        </div>
       </div>
     );
   }
@@ -310,21 +187,30 @@ const Login = () => {
               
               <div className="relative">
                 <input 
-                  type={showPassword.loginPassword ? "text" : "password"}
+                  type={showPassword ? "text" : "password"}
                   required 
                   minLength={8} 
                   name='password' 
                   onChange={handleChange} 
-                  id="loginPassword" 
                   placeholder="Password" 
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none pr-12" 
                 />
                 <button 
                   type="button" 
                   className="absolute right-3 top-1/2 cursor-pointer transform -translate-y-1/2 text-gray-400" 
-                  onClick={() => togglePassword('loginPassword')}
+                  onClick={togglePassword}
                 >
-                  {showPassword.loginPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+                  {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+                </button>
+              </div>
+
+              <div className="text-right">
+                <button 
+                  type="button" 
+                  className="text-red-600 text-sm hover:underline" 
+                  onClick={() => navigate('/forgot-password')}
+                >
+                  Forgot password?
                 </button>
               </div>
 
