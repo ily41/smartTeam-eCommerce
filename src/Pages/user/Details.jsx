@@ -883,7 +883,7 @@ const prevModalSlide = () => {
             }`}
           >
             <ShoppingBag className="w-4 h-4 mr-2" />
-            Buy Now
+            {t('buyNow')}
           </button>
         </div>
 
@@ -977,12 +977,12 @@ const prevModalSlide = () => {
                 {isInStock ? (
                   <>
                     <Check className='w-[20px] text-green-500' />
-                    <span className="text-green-500">In stock</span>
+                    <span className="text-green-500">{t("features.inStock")}</span>
                   </>
                 ) : (
                   <>
                     <X className='w-[20px] text-red-500' />
-                    <span className="text-red-500">Out of stock</span>
+                    <span className="text-red-500">{t("features.outOfStock")}</span>
                   </>
                 )}
               </div>
@@ -994,34 +994,6 @@ const prevModalSlide = () => {
                   
                   <div className="flex items-center gap-3">
                     <span className="text-3xl font-bold text-red-500">{me ? product?.prices[me?.role - 1]?.discountedPrice : product?.prices[0].discountedPrice} AZN</span> 
-                     {/*{product?.prices && me?.role !== undefined && (
-                      (() => { 
-                        const currentPrice = product.prices.find(p => p.userRole === me.role);
-                      
-                        if (!currentPrice) return null;
-                      
-                        const hasDiscount = currentPrice.discountPercentage > 0;
-                      
-                        return hasDiscount ? (
-                          <>
-                            <span className="text-xl text-gray-500 line-through">
-                              {currentPrice.price} AZN
-                            </span>
-
-                            <span className="text-green-700 font-semibold ml-2">
-                              {currentPrice.discountedPrice} AZN
-                            </span>
-
-                            <span className="bg-red-100 text-red-800 px-2 py-1 rounded text-sm font-medium ml-2">
-                              -{currentPrice.discountPercentage}%
-                            </span>
-                          
-                          </>
-                        ) : (
-                          <span className="text-xl text-gray-800">{currentPrice.price} AZN</span>
-                        );
-                      })()
-                    )} */}
                   </div>
                 </div>
                 

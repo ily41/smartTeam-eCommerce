@@ -224,8 +224,8 @@
     "sku": "SKU",
     "stock": "Stock",
     "hotDeal": "Hot Deal",
-    "inStock": "In Stock",
-    "outOfStock": "Out of Stock",
+    "inStock": "In stock",
+    "outOfStock": "Out of stock",
     "yes": "Yes",
     "no": "No"
   },
