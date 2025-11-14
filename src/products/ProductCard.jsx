@@ -77,7 +77,7 @@ export function ProductCard({
         <Link to={`/details/${id}`} className="block">
           <div className="aspect-square p-4 relative">
             <img
-              src={`https://smartteamaz2-001-site1.ntempurl.com${url}`}
+              src={`https://smartteamazreal-001-site1.ktempurl.com${url}`}
               alt={name || 'Product'}
               className="w-full h-full object-contain"
               onError={(e) => { e.target.src = '/Icons/logo.svg'; }}
@@ -167,7 +167,7 @@ export function ProductCard({
       >
         <div className="flex-shrink-0 h-full w-full max-w-[150px] relative">
           <img
-            src={`https://smartteamaz2-001-site1.ntempurl.com${url}`}
+            src={`https://smartteamazreal-001-site1.ktempurl.com${url}`}
             alt={name || 'Product'}
             className="max-w-[150px] object-cover aspect-square w-full h-full rounded-lg"
             onError={(e) => {

@@ -168,7 +168,7 @@ const ProductsUI = () => {
                   <div className="relative h-48 bg-gray-700">
                     <img
                       className="w-full h-full object-cover cursor-pointer"
-                      src={`https://smartteamaz2-001-site1.ntempurl.com${product.primaryImageUrl}`}
+                      src={`https://smartteamazreal-001-site1.ktempurl.com${product.primaryImageUrl}`}
                       alt={product.name}
                       onClick={() => handleViewProduct(product)}
                       onError={(e) => {
