@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { translateDynamicField } from "../i18n";
 
 export function Breadcrumb({ productData = null }) {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const location = useLocation();
   const pathnames = location.pathname.split("/").filter((x) => x);
 
@@ -67,7 +67,7 @@ export function Breadcrumb({ productData = null }) {
           to="/"
           className="hover:text-gray-900 transition-colors text-sm lg:text-lg"
         >
-          Home
+          {t('productsPage.home')}
         </Link>
 
         {/* Parent Category */}
@@ -131,7 +131,7 @@ export function Breadcrumb({ productData = null }) {
         to="/"
         className="hover:text-gray-900 transition-colors text-sm lg:text-lg"
       >
-        Home
+        {t('productsPage.home')}
       </Link>
 
       {pathnames.map((value, index) => {

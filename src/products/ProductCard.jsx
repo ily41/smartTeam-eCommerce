@@ -21,7 +21,7 @@ export function ProductCard({
   const [name, setName] = useState(originalName);
   const [description, setDescription] = useState(originalDescription);
   const { data: favoriteStatus } = useGetFavoriteStatusQuery({ productId: id });
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   const hasDiscount = priceOriginal && price && priceOriginal > price;
 
@@ -85,7 +85,7 @@ export function ProductCard({
 
             {isHotDeal && (
               <div className="absolute top-2 right-2 bg-[#E60C03] text-white text-xs px-2 py-1 rounded font-semibold">
-                Hot Deal
+                {t('productCard.hotDeal')}
               </div>
             )}
             {hasDiscount && discountPercentage > 0 && (
@@ -130,7 +130,7 @@ export function ProductCard({
             </div>
             {hasDiscount && (
               <p className="text-xs text-green-600 font-medium mt-1">
-                Save {(priceOriginal - price).toFixed(2)} ₼
+                {t('productCard.save')} {(priceOriginal - price).toFixed(2)} ₼
               </p>
             )}
           </Link>
@@ -147,12 +147,12 @@ export function ProductCard({
             {justAdded ? (
               <>
                 <Check className="w-4 h-4" />
-                Added to cart
+                {t('productCard.addedToCart')}
               </>
             ) : isAddingToCart ? (
-              'Adding...'
+              t('productCard.adding')
             ) : (
-              'Add to the cart'
+              t('productCard.addToCart')
             )}
           </button>
         </div>
@@ -184,7 +184,7 @@ export function ProductCard({
           )}
           {isHotDeal && (
             <div className="absolute top-2 right-2 bg-[#E60C03] text-white text-xs px-2 py-1 rounded font-semibold">
-              Hot Deal
+              {t('productCard.hotDeal')}
             </div>
           )}
         </div>
@@ -226,12 +226,12 @@ export function ProductCard({
             {justAdded ? (
               <>
                 <Check className="w-4 h-4" />
-                Added to cart
+                {t('productCard.addedToCart')}
               </>
             ) : isAddingToCart ? (
-              'Adding...'
+              t('productCard.adding')
             ) : (
-              'Add to the cart'
+              t('productCard.addToCart')
             )}
           </button>
         </div>

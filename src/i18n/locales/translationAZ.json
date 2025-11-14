@@ -156,12 +156,19 @@
   },
 
   "quickOrder": {
+    "title": "Sürətli Sifariş",
+    "fullName": "Tam Ad",
+    "fullNamePlaceholder": "Tam adınızı daxil edin",
+    "phoneNumber": "Telefon nömrəsi",
+    "phoneNumberPlaceholder": "+994 XX XXX XX XX",
+    "totalAmount": "Ümumi məbləğ:",
+    "processing": "İşlənir...",
+    "orderPlacedSuccess": "Sifariş uğurla verildi!",
+    "placeOrder": "Sifariş Ver",
     "customerName": "Müştəri Adı",
     "customerPhone": "Müştəri Telefonu",
-    "placeOrder": "Sifariş Ver",
     "pleaseEnterName": "Zəhmət olmasa adınızı daxil edin",
     "pleaseEnterPhone": "Zəhmət olmasa müştəri telefonunuzu daxil edin",
-    "orderPlacedSuccess": "Sifariş uğurla verildi!",
     "orderFailed": "Sifariş verilmədi. Zəhmət olmasa yenidən cəhd edin."
   },
 
@@ -301,5 +308,40 @@
   "priceRange": "Qiymət Aralığı",
   "itemsFoundPr": "{{count}} məhsul tapıldı",
   "inCategoryPr": "kateqoriyada",
-  "allProducts": "Bütün Məhsullar"
+  "allProducts": "Bütün Məhsullar",
+
+  "productsPage": {
+    "hotDeals": "Qaynar Təkliflər",
+    "recommended": "Tövsiyə Olunanlar",
+    "searchResultsFor": "Axtarış nəticələri: \"{{query}}\"",
+    "noProductsFound": "Heç bir məhsul tapılmadı",
+    "tryDifferentKeywords": "Fərqli açar sözlərlə axtarışı sınayın",
+    "tryAdjustingFilters": "Filtrlərinizi dəyişməyi sınayın",
+    "addToCartAction": "məhsulları səbətə əlavə etmək",
+    "filtering": "Filtrlənir...",
+    "loadingFilters": "Filtrlər yüklənir...",
+    "min": "Min",
+    "max": "Max",
+    "clear": "Təmizlə",
+    "show": "Göstər",
+    "loading": "Yüklənir...",
+    "sorting": "Sıralama",
+    "filteringBtn": "Filtrləmə",
+    "category": "Kateqoriya",
+    "home": "Ana səhifə"
+  },
+
+  "productCard": {
+    "hotDeal": "Qaynar Təklif",
+    "save": "Qənaət",
+    "addedToCart": "Səbətə əlavə edildi",
+    "adding": "Əlavə edilir...",
+    "addToCart": "Səbətə əlavə et"
+  },
+
+  "pagination": {
+    "previousPage": "Əvvəlki səhifə",
+    "page": "Səhifə",
+    "nextPage": "Növbəti səhifə"
+  }
 }

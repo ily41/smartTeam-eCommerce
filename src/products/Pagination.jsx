@@ -1,8 +1,10 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { current } from '@reduxjs/toolkit';
+import { useTranslation } from 'react-i18next';
 
 export function Pagination({ currentPage, totalPages, onPageChange }) {
+  const { t } = useTranslation();
   const getPageNumbers = () => {
     const pages = [];
     const showPages = 5;
@@ -69,7 +71,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }) {
             ${currentPage === 1 
               ? 'opacity-50 cursor-not-allowed bg-gray-50' 
               : 'hover:bg-gray-100 cursor-pointer bg-white'}`}
-          aria-label="Previous page"
+          aria-label={t('pagination.previousPage')}
         >
           <ChevronLeft className="w-4 h-4" />
         </button>
@@ -91,7 +93,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }) {
                 ${currentPage === page 
                   ? 'bg-gray-900 text-white cursor-default' 
                   : 'text-gray-700 hover:bg-gray-100 cursor-pointer bg-white'}`}
-              aria-label={`Page ${page}`}
+              aria-label={`${t('pagination.page')} ${page}`}
               aria-current={currentPage === page ? 'page' : undefined}
             >
               {page}
@@ -106,7 +108,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }) {
             ${currentPage === totalPages 
               ? 'opacity-50 cursor-not-allowed bg-gray-50' 
               : 'hover:bg-gray-100 cursor-pointer bg-white'}`}
-          aria-label="Next page"
+          aria-label={t('pagination.nextPage')}
         >
           <ChevronRight className="w-4 h-4" />
         </button>

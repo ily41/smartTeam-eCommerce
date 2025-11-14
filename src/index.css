@@ -8,8 +8,17 @@
   font-family: 'helveticaNow', sans-serif;
 }
 
+/* Allow text selection by default */
 * {
+  user-select: auto;
+}
+
+/* Disable text selection only for specific interactive elements */
+button, img, svg, .select-none {
   user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .inter {

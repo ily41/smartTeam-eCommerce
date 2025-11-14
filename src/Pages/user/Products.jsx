@@ -141,13 +141,13 @@ function Products() {
   }, [location, slug, searchQuery, categoryParam, brandParam]);
   
   const categoryName = useMemo(() => {
-    if (isHotDeals) return 'Hot Deals';
-    if (isRecommended) return 'Recommended';
+    if (isHotDeals) return t('productsPage.hotDeals');
+    if (isRecommended) return t('productsPage.recommended');
     if (isBrand) return brandSlug.charAt(0).toUpperCase() + brandSlug.slice(1);
-    if (isSearch) return `Search Results for "${searchQuery}"`;
+    if (isSearch) return t('productsPage.searchResultsFor', { query: searchQuery });
     if (isCategoryParam) return categoryParam.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
     return slug?.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) || t('allProducts');
-  }, [isHotDeals, isRecommended, isBrand, isSearch, isCategoryParam, brandSlug, searchQuery, categoryParam, slug]);
+  }, [isHotDeals, isRecommended, isBrand, isSearch, isCategoryParam, brandSlug, searchQuery, categoryParam, slug, t]);
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024); 
   const [template, setTemplate] = useState(isMobile ? "cols" : "rows");
@@ -221,12 +221,12 @@ function Products() {
 
   // Sort options for dropdown - memoized
   const sortOptions = useMemo(() => [
-    { value: null, label: 'Sort by' },
-    { value: 'price_asc', label: 'Price: Low to High' },
-    { value: 'price_desc', label: 'Price: High to Low' },
-    { value: 'name_asc' , label: 'Name: A to Z' },
-    { value: 'name_desc', label: 'Name: Z to A' }
-  ], []);
+    { value: null, label: t('sortBy') },
+    { value: 'price_asc', label: t('priceLowToHigh') },
+    { value: 'price_desc', label: t('priceHighToLow') },
+    { value: 'name_asc' , label: t('nameAToZ') },
+    { value: 'name_desc', label: t('nameZToA') }
+  ], [t]);
 
   const categoryId = useMemo(() => {
     if (!slug || !categories || isSpecialSlug) return null;
@@ -376,9 +376,9 @@ function Products() {
     } catch (err) {
       console.error(err);
       if (err?.status === 401 || err?.data?.status === 401) {
-        toast.error("Please log in first");
+        toast.error(t('pleaseLoginFirst'));
       } else {
-        toast.error("Failed to add product to cart");
+        toast.error(t('failedAddToCart'));
       }
     } finally {
       setAddingIds(prev => {
@@ -397,11 +397,11 @@ function Products() {
     } catch (err) {
       console.error(err);
       if (err?.status === 401 || err?.data?.status === 401) {
-        setUnauthorizedAction('add items to cart');
+        setUnauthorizedAction(t('productsPage.addToCartAction'));
         setShowUnauthorizedModal(true);
         setIsAuthenticated(false);
       } else {
-        toast.error("Failed to update favorites");
+        toast.error(t('failedUpdateFavorites'));
       }
     }
   }, [toggleFavorite]);
@@ -606,9 +606,9 @@ function Products() {
                   })
                 ) : (
                   <div className="col-span-full text-center py-12">
-                    <p className="text-gray-500 text-lg">No products found</p>
+                    <p className="text-gray-500 text-lg">{t('productsPage.noProductsFound')}</p>
                     <p className="text-gray-400 text-sm mt-2">
-                      {isSearch ? 'Try searching with different keywords' : 'Try adjusting your filters'}
+                      {isSearch ? t('productsPage.tryDifferentKeywords') : t('productsPage.tryAdjustingFilters')}
                     </p>
                   </div>
                 )}

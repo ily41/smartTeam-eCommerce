@@ -157,12 +157,19 @@
   },
 
   "quickOrder": {
+    "title": "Quick Order",
+    "fullName": "Full Name",
+    "fullNamePlaceholder": "Enter your full name",
+    "phoneNumber": "phone number",
+    "phoneNumberPlaceholder": "+994 XX XXX XX XX",
+    "totalAmount": "Total Amount:",
+    "processing": "Processing...",
+    "orderPlacedSuccess": "Order Placed Successfully!",
+    "placeOrder": "Place Order",
     "customerName": "Customer Name",
     "customerPhone": "Customer Phone",
-    "placeOrder": "Place Order",
     "pleaseEnterName": "Please enter your name",
     "pleaseEnterPhone": "Please enter your customer phone",
-    "orderPlacedSuccess": "Order placed successfully!",
     "orderFailed": "Failed to place order. Please try again."
   },
 
@@ -301,7 +308,42 @@
   "items": "items",
   "itemsFoundPr": "{{count}} items found",
   "inCategoryPr": "in",
-  "allProducts": "All Products"
+  "allProducts": "All Products",
+
+  "productsPage": {
+    "hotDeals": "Hot Deals",
+    "recommended": "Recommended",
+    "searchResultsFor": "Search Results for \"{{query}}\"",
+    "noProductsFound": "No products found",
+    "tryDifferentKeywords": "Try searching with different keywords",
+    "tryAdjustingFilters": "Try adjusting your filters",
+    "addToCartAction": "add items to cart",
+    "filtering": "Filtering...",
+    "loadingFilters": "Loading filters...",
+    "min": "Min",
+    "max": "Max",
+    "clear": "Clear",
+    "show": "Show",
+    "loading": "Loading...",
+    "sorting": "Sorting",
+    "filteringBtn": "Filtering",
+    "category": "Category",
+    "home": "Home"
+  },
+
+  "productCard": {
+    "hotDeal": "Hot Deal",
+    "save": "Save",
+    "addedToCart": "Added to cart",
+    "adding": "Adding...",
+    "addToCart": "Add to the cart"
+  },
+
+  "pagination": {
+    "previousPage": "Previous page",
+    "page": "Page",
+    "nextPage": "Next page"
+  }
   
 
 

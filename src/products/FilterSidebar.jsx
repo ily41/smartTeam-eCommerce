@@ -430,7 +430,7 @@ export const FilterSidebar = React.memo(({
           
           <details open>
             <summary className="w-full flex items-center justify-between p-4 text-left cursor-pointer">
-              <span className="font-medium text-gray-900">Category</span>
+              <span className="font-medium text-gray-900">{t('filters.category')}</span>
               <ChevronDown className="chevron w-4 h-4 text-gray-500 transition-transform duration-200" />
             </summary>
             <div className="px-4 pb-4 space-y-2">
@@ -453,7 +453,7 @@ export const FilterSidebar = React.memo(({
                   onClick={toggleShowAll}
                   className="text-sm text-red-500 hover:text-red-600 font-medium"
                 >
-                  {showAllCategories ? 'See less' : 'See all'}
+                  {showAllCategories ? t('filters.seeLess') : t('filters.seeAll')}
                 </button>
               )}
             </div>
@@ -509,23 +509,23 @@ export const FilterSidebar = React.memo(({
         </summary>
         <div className="px-4 pb-4 space-y-3">
           <div className="flex items-center space-x-2">
-            <input
-              type="number"
-              placeholder="Min"
-              value={minPrice}
-              onChange={handleMinPriceChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
-              min="0"
-            />
-            <span className="text-gray-500">-</span>
-            <input
-              type="number"
-              placeholder="Max"
-              value={maxPrice}
-              onChange={handleMaxPriceChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
-              min="0"
-            />
+              <input
+                type="number"
+                placeholder={t('productsPage.min')}
+                value={minPrice}
+                onChange={handleMinPriceChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                min="0"
+              />
+              <span className="text-gray-500">-</span>
+              <input
+                type="number"
+                placeholder={t('productsPage.max')}
+                value={maxPrice}
+                onChange={handleMaxPriceChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                min="0"
+              />
           </div>
         </div>
       </details>
@@ -533,7 +533,7 @@ export const FilterSidebar = React.memo(({
       {(isFiltering || isFiltersLoading) && (
         <div className="px-4 py-2 text-sm text-gray-500 flex items-center space-x-2">
           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-500"></div>
-          <span>{isFiltering ? 'Filtering...' : 'Loading filters...'}</span>
+          <span>{isFiltering ? t('productsPage.filtering') : t('productsPage.loadingFilters')}</span>
         </div>
       )}
     </div>
