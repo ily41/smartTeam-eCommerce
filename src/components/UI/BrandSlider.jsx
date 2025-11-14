@@ -9,7 +9,7 @@ const InfiniteBrandSlider = () => {
 
 
     const brandsImg = brands?.map(brand => ({
-      src: `https://smartteamaz2-001-site1.ntempurl.com${brand?.logoUrl}`,
+      src: `https://smartteamazreal-001-site1.ktempurl.com${brand?.logoUrl}`,
       alt: brand?.name || "Brand",
       slug: brand?.slug
     })) || [];

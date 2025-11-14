@@ -299,7 +299,7 @@ const CheckoutModal = ({ isOpen, onClose, cartItems, onSubmit, isSubmitting, isS
             {cartItems?.items?.slice(0, 3).map((item) => (
               <div key={item.id} className="flex items-center gap-3 bg-white p-2 rounded-lg">
                 <img 
-                  src={`https://smartteamaz2-001-site1.ntempurl.com${item?.productImageUrl}`}
+                  src={`https://smartteamazreal-001-site1.ktempurl.com${item?.productImageUrl}`}
                   alt={item?.productName}
                   className="w-12 h-12 object-contain rounded bg-gray-50 p-1"
                   onError={(e) => {
@@ -737,7 +737,7 @@ useEffect(() => {
                             <div className="w-30 h-30 rounded-lg flex items-center justify-center mr-4 overflow-hidden">
                               <img
                                 className='w-full rounded-lg p-3 aspect-square'
-                                src={`https://smartteamaz2-001-site1.ntempurl.com${item?.productImageUrl}`}
+                                src={`https://smartteamazreal-001-site1.ktempurl.com${item?.productImageUrl}`}
                                 alt={item?.productName || 'Product'}
                                 onError={(e) => {
                                   e.target.src = "/Icons/logo.svg"
@@ -793,7 +793,7 @@ useEffect(() => {
                             <div className="w-30 h-30 rounded-lg flex items-center justify-center mr-4 overflow-hidden">
                               <img
                                 className="w-full rounded-lg p-3 aspect-square"
-                                src={`https://smartteamaz2-001-site1.ntempurl.com${item?.productImageUrl}`}
+                                src={`https://smartteamazreal-001-site1.ktempurl.com${item?.productImageUrl}`}
                                 alt={item?.productName || "Product"}
                                 onError={(e) => {
                                   e.currentTarget.src = "/Icons/logo.svg";

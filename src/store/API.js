@@ -1253,7 +1253,7 @@ export const API = createApi({
 
           // Make the request
           const response = await fetch(
-            `https://smartteamaz2-001-site1.ntempurl.com/api/v1/Files/download/${id}`, {
+            `https://smartteamazreal-001-site1.ktempurl.com/api/v1/Files/download/${id}`, {
               method: 'GET',
               headers: {
                 'Authorization': token ? `Bearer ${token}` : '',

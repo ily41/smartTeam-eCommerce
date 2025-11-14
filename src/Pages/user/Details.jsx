@@ -350,7 +350,7 @@ const prevModalSlide = () => {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      const response = await fetch(`https://smartteamaz2-001-site1.ntempurl.com/api/v1/product-pdfs/download/product/${product.id}`, {
+      const response = await fetch(`https://smartteamazreal-001-site1.ktempurl.com/api/v1/product-pdfs/download/product/${product.id}`, {
         method: 'GET',
         headers: headers,
         credentials: 'include',
@@ -565,11 +565,11 @@ const prevModalSlide = () => {
   
   // Prepare product data for SEO
   const productImageUrl = product?.imageUrl 
-    ? `https://smartteamaz2-001-site1.ntempurl.com${product.imageUrl}`
+    ? `https://smartteamazreal-001-site1.ktempurl.com${product.imageUrl}`
     : '/Icons/logo.png';
   
   const productImages = product?.images 
-    ? product.images.map(img => `https://smartteamaz2-001-site1.ntempurl.com${img.imageUrl}`)
+    ? product.images.map(img => `https://smartteamazreal-001-site1.ktempurl.com${img.imageUrl}`)
     : [];
   
   const productForSEO = product ? {
@@ -643,13 +643,13 @@ const prevModalSlide = () => {
     {/* Image Display */}
     <div className="w-full h-full flex items-center justify-center p-8">
       <img
-        src={`https://smartteamaz2-001-site1.ntempurl.com${
+        src={`https://smartteamazreal-001-site1.ktempurl.com${
           modalSlideIndex === 0
             ? product?.imageUrl
             : product?.images?.[modalSlideIndex - 1]?.imageUrl
         }`}
         alt={product?.name}
-        className="max-w-[200px] max-h-[200px] md:max-w-[600px] md:max-h-[600px] object-contain"
+        className="max-w-[90vw] max-h-[70vh] md:max-w-[85vw] md:max-h-[80vh] object-contain"
         onError={(e) => {
           e.target.src = "/Icons/logo.svg";
         }}
@@ -719,7 +719,7 @@ const prevModalSlide = () => {
   <img 
     onClick={() => openDetail(0)} // main image = index 0
     className='w-full rounded-lg p-3 aspect-square cursor-pointer' 
-    src={`https://smartteamaz2-001-site1.ntempurl.com${product?.imageUrl}`} 
+    src={`https://smartteamazreal-001-site1.ktempurl.com${product?.imageUrl}`} 
     alt={product?.name || 'Product'}
     onError={(e) => { e.target.src = "/Icons/logo.svg" }}
   />
@@ -730,7 +730,7 @@ const prevModalSlide = () => {
     <img 
       onClick={() => openDetail(index + 1)} // shift by +1 to match modal logic
       className='w-full rounded-lg p-3 aspect-square cursor-pointer' 
-      src={`https://smartteamaz2-001-site1.ntempurl.com${item?.imageUrl}`} 
+      src={`https://smartteamazreal-001-site1.ktempurl.com${item?.imageUrl}`} 
       alt={item?.name || 'Product'}
       onError={(e) => { e.target.src = "/Icons/logo.svg" }}
     />
@@ -813,7 +813,7 @@ const prevModalSlide = () => {
                   onClick={() => swiperRef?.slideTo(0)}
                 >
                   <img 
-                    src={`https://smartteamaz2-001-site1.ntempurl.com${product?.imageUrl}`}
+                    src={`https://smartteamazreal-001-site1.ktempurl.com${product?.imageUrl}`}
                     alt={`${product.name} ${1}`}
                     className="w-full aspect-square h-full object-contain"
                     onError={(e) => {
@@ -828,7 +828,7 @@ const prevModalSlide = () => {
                   onClick={() => swiperRef?.slideTo(index + 1)}
                 >
                   <img 
-                    src={`https://smartteamaz2-001-site1.ntempurl.com${item?.imageUrl}`}
+                    src={`https://smartteamazreal-001-site1.ktempurl.com${item?.imageUrl}`}
                     alt={`${product.name} ${index + 1 + 1}`}
                     className="w-full aspect-square h-full object-contain"
                     onError={(e) => {
@@ -932,8 +932,8 @@ const prevModalSlide = () => {
     <img
       src={
         hovered
-          ? `https://smartteamaz2-001-site1.ntempurl.com${hovered}`
-          : `https://smartteamaz2-001-site1.ntempurl.com${product.imageUrl}`
+          ? `https://smartteamazreal-001-site1.ktempurl.com${hovered}`
+          : `https://smartteamazreal-001-site1.ktempurl.com${product.imageUrl}`
       }
       alt={product.name}
       className="h-80 object-contain rounded-lg transition-opacity duration-300 ease-in-out"
@@ -957,7 +957,7 @@ const prevModalSlide = () => {
         }`}
       >
         <img
-          src={`https://smartteamaz2-001-site1.ntempurl.com${item.imageUrl}`}
+          src={`https://smartteamazreal-001-site1.ktempurl.com${item.imageUrl}`}
           alt={`${product.name} ${index + 1}`}
           className="w-full h-full object-contain transition-transform duration-200 hover:scale-105"
           onError={(e) => {

@@ -274,7 +274,7 @@ const EditProduct = ({ setOpen, idPr }) => {
             {imagePreview ? (
               <div className="relative">
                 <img
-                  src={imageFile ? imagePreview : `https://smartteamaz2-001-site1.ntempurl.com${imagePreview}`}
+                  src={imageFile ? imagePreview : `https://smartteamazreal-001-site1.ktempurl.com${imagePreview}`}
                   alt="Product preview"
                   className="w-32 h-32 object-cover rounded-md border border-gray-600"
                 />
@@ -316,7 +316,7 @@ const EditProduct = ({ setOpen, idPr }) => {
           <div className="flex items-center gap-4">
             {edit?.pdfUrl && !pdfFile && (
               <a
-                href={`https://smartteamaz2-001-site1.ntempurl.com${edit.pdfUrl}`}
+                href={`https://smartteamazreal-001-site1.ktempurl.com${edit.pdfUrl}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-indigo-400 hover:text-indigo-300 text-sm underline"
@@ -364,7 +364,7 @@ const EditProduct = ({ setOpen, idPr }) => {
                   return (
                     <div key={image.id} className="relative">
                       <img
-                        src={`https://smartteamaz2-001-site1.ntempurl.com${image.imageUrl}`}
+                        src={`https://smartteamazreal-001-site1.ktempurl.com${image.imageUrl}`}
                         alt={`Detail ${index + 1}`}
                         className="w-full h-32 object-cover rounded-md border border-gray-600"
                       />
