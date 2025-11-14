@@ -259,15 +259,15 @@ const Header = () => {
         <div className='flex justify-between lg:justify-around fixed top-0 z-50 bg-white w-full lg:items-center p-3 px-6 items-center'>
           <Link to='/' className='flex lg:flex-1 cursor-pointer lg:justify-center gap-2'>
         <img
-  src="/Icons/logo.svg"
-  alt="Logo"
-  className="h-12 w-auto object-contain"
-/>
+          src="/Icons/logo.svg"
+          alt="Logo"
+          className="h-12 [@media(min-width:1800px)]:h-15 w-auto object-contain"
+        />
           </Link>
 
           {/* Desktop Search */}
           <div className='hidden lg:flex-4 mr-20 lg:mr-0 lg:px-10 lg:block relative' ref={searchDropdownRef}>
-            <div className="max-w-4xl self-center mx-auto">
+            <div className=" self-center mx-auto">
               <div ref={searchRef} className="flex pl-2 rounded-lg items-center overflow-hidden shadow-sm hover:shadow-md border-1 border-[#dee2e6] bg-white">
                 <Search className='p-[3px]'/>
                 <input
@@ -277,7 +277,7 @@ const Header = () => {
                   onChange={handleSearchChange}
                   onFocus={handleSearchFocus}
                   onKeyDown={handleKeyDown}
-                  className="flex-1 py-2 px-3 text-base border-none outline-none placeholder-gray-400"
+                  className="flex-1 py-2 px-3 w-full text-base border-none outline-none placeholder-gray-400"
                 />
                 {searchQuery && (
                   <button 
