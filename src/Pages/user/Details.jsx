@@ -497,15 +497,9 @@ const prevModalSlide = () => {
     if (!product) return [];
     
     const features = [];
-    const currentProduct = translatedProduct || product;
     const currentProductSpec = translatedProductSpec || productSpec;
     
-    features.push(
-      { label: t('features.name'), value: currentProduct.name },
-      { label: t('features.sku'), value: currentProduct.sku },
-      { label: t('features.category'), value: currentProduct.categoryName },
-      { label: t('features.stock'), value: currentProduct.stockQuantity > 0 ? t('features.inStock') : t('features.outOfStock') }
-    );
+
     
     if (currentProductSpec && currentProductSpec.specificationGroups) {
       currentProductSpec.specificationGroups.forEach(group => {
@@ -893,11 +887,11 @@ const prevModalSlide = () => {
               <h2 className="text-lg font-semibold text-gray-900">{t('features.title')}</h2>
             </div>
             <div className="space-y-3">
-              {features.slice(0, 5).map((feature, index) => (
+              {features.map((feature, index) => (
                 <div key={index}>
                   <div className="flex justify-between px-3 items-center inter">
-                    <span className="text-[#858a92]">{feature.label}</span>
-                    <span className="text-gray-900">{feature.value}</span>
+                    <span className="text-[#858a92] ">{feature.label}</span>
+                    <span className="text-gray-900 text-end">{feature.value}</span>
                   </div>
                   {index < features.slice(0, 5).length - 1 && (
                     <hr className="my-2 mx-2 border-gray-300" />

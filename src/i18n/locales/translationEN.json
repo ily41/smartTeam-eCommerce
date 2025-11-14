@@ -6,15 +6,15 @@
 
   "home": "Home",
   "aboutPage": "About Us",
-  "downloadPage": "Download Program", 
+  "downloadPage": "Download Program",
   "contactPage": "Contact",
   "favorites": "Favorites",
   "myCart": "My Cart",
   "login": "Login",
   "phone": "Phone",
-  "searchProducts":"Search products...",
+  "searchProducts": "Search products...",
   "featuredBrands": "Featured Brands",
-  "products":"Products",
+  "products": "Products",
 
   "menu": {
     "home": "Home",
@@ -63,7 +63,7 @@
     "langAzerbaijani": "Azerbaijani"
   },
 
-  
+
   "itemsFound": "items",
   "inCategory": "in",
   "noProductsFound": "No products found",
@@ -143,7 +143,17 @@
   "secure": {
     "smartPosTitle": "Smart POS & Management with Hemsoft",
     "hemsoftDesc": "The Hemsoft software, provided by Smartteam, is a modern POS and management system specially designed for your business. Take your business to the next level with Hemsoft.",
-    "checkoutHemsoft": "Checkout hemsoft.az"
+    "checkoutHemsoft": "Checkout hemsoft.az",
+    "ourServices": "Our Services",
+    "ourServicesDesc": "Our services are designed to provide maximum safety and smooth operation. These systems, installed by our professional team, ensure the highest level of security for your property.",
+    "fastInstallation": "Fast and Secure Installation",
+    "fastInstallationDesc": "We ensure the software is installed safely and without delays, so you can start using it right away.",
+    "customizedSetup": "Customized Initial Setup",
+    "customizedSetupDesc": "All configurations are tailored to match your specific business needs and requirements.",
+    "staffTraining": "Staff Training & Support",
+    "staffTrainingDesc": "Your team receives practical training and guidance to use the system effectively.",
+    "continuousAssistance": "Continuous Assistance & Updates",
+    "continuousAssistanceDesc": "Enjoy reliable technical support and regular updates to keep your system running at its best."
   },
 
   "quickOrder": {
@@ -215,11 +225,11 @@
   "quantity": "Quantity",
   "price": "Price",
   "totalAmount": "Total Amount",
-  
+
   "features": {
     "title": "Features",
     "name": "Name",
-    "category": "Category", 
+    "category": "Category",
     "quantity": "Quantity",
     "sku": "SKU",
     "stock": "Stock",
@@ -230,7 +240,22 @@
     "no": "No"
   },
 
-  "brands": "Brands",
+  "software": {
+    "title": "Protect Your Space with Advanced Technology",
+    "description": "We provide reliable protection for your workplace and living spaces through security systems built on modern technologies.",
+    "contactWhatsapp": "Contact via Whatsapp",
+    "ourServices": "Our Services",
+    "ourServicesDesc": "Our services are designed to provide maximum safety and smooth operation. These systems, installed by our professional team, ensure the highest level of security for your property.",
+    "videoSurveillance": "Video Surveillance Camera Installation",
+    "videoSurveillanceDesc": "Stay in control with high-quality CCTV cameras.",
+    "ipAnalogSystem": "IP & Analog System Integration",
+    "ipAnalogSystemDesc": "Smoothly connect and manage different system types.",
+    "staffTraining": "Staff Training & Support",
+    "staffTrainingDesc": "Your team receives practical training and guidance to use the system effectively.",
+    "fireAlarmSystem": "Fire Alarm & Signaling Systems",
+    "fireAlarmSystemDesc": "Ensure quick response to emergencies."
+  },
+
   "brandsSection": {
     "searchPlaceholder": "Search brands...",
     "showing": "Showing",
@@ -269,10 +294,10 @@
 
   "similarProd": "Similar Products",
   "sederek": "Sederek branch",
-  "bayil":"Bayil Branch",
-  "workTime1":"Mon-Fri: 9:00 AM - 6:00 PM",
-  "workTime2":"Mon-Sun: 9:00 AM - 6:00 PM"
-  
+  "bayil": "Bayil Branch",
+  "workTime1": "Mon-Fri: 9:00 AM - 6:00 PM",
+  "workTime2": "Mon-Sun: 9:00 AM - 6:00 PM"
+
 
 
 

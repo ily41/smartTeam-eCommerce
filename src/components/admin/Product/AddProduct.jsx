@@ -19,6 +19,13 @@ const ProductFormUI = ({setOpen}) => {
     return roleNames[roleId] || userRoles?.[roleId]?.name || `Role ${roleId}`;
   };
   const { data: categories, isLoading, errorC } = useGetCategoriesQuery();
+  const [sortedCat, setSortedCat] = useState([]);
+  
+  useEffect(() => {
+    if (categories) {
+      setSortedCat([...categories].sort((a, b) => a.name.localeCompare(b.name)));
+    }
+  }, [categories]);
   const { data: brands, isLoading: isBrandsLoading } = useGetBrandsQuery();
   const { data: brand, isLoading: isBrandLoading } = useGetBrandQuery("1cd62de1-35cd-4d90-b767-dc1a443bdb3f");
   const { data: brandPr, isLoading: is } = useGetProductsBrandQuery({brandSlug: "hp"});
@@ -324,10 +331,10 @@ const ProductFormUI = ({setOpen}) => {
               value={formData.categoryId}
               onChange={handleInputChange}
               required
-              className="w-full px-3 py-2 bg-[#2c2c2c] border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 dark-scrollbar bg-[#2c2c2c] border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
-              <option value="">Kateqoriya seçin</option>
-              {categories?.map((category) => (
+              <option value="" disabled>Kateqoriya seçin</option>
+              {sortedCat?.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}
                 </option>

@@ -2,7 +2,7 @@
   "dealsDescriptionLine1": "Ən populyar elektronikada ən isti endirimlər",
   "dealsDescriptionLine2": "məhdud müddətə — fürsəti qaçırmayın!",
   "dealsDescriptionLine3": "",
-  
+
 
   "home": "Ana səhifə",
   "aboutPage": "Haqqımızda",
@@ -12,9 +12,9 @@
   "myCart": "Səbətim",
   "login": "Daxil ol",
   "phone": "Telefon",
-  "searchProducts":"Məhsulları axtar...",
+  "searchProducts": "Məhsulları axtar...",
   "featuredBrands": "Seçilmiş Brendlər",
-  "products":"Məhsullar",
+  "products": "Məhsullar",
 
   "menu": {
     "home": "Əsas səhifə",
@@ -142,7 +142,17 @@
   "secure": {
     "smartPosTitle": "Hemsoft ilə Ağıllı POS və İdarəetmə",
     "hemsoftDesc": "Smartteam tərəfindən təqdim edilən Hemsoft proqramı biznesiniz üçün xüsusi olaraq hazırlanmış müasir POS və idarəetmə sistemidir. Biznesinizi növbəti səviyyəyə çatdırmaq üçün Hemsoft-dan istifadə edin.",
-    "checkoutHemsoft": "hemsoft.az-ı yoxla"
+    "checkoutHemsoft": "Hemsoft.az-ı yoxla",
+    "ourServices": "Xidmətlərimiz",
+    "ourServicesDesc": "Xidmətlərimiz maksimum təhlükəsizlik və hamar fəaliyyət təmin etmək üçün nəzərdə tutulmuşdur. Peşəkar komandam tərəfindən quraşdırılan bu sistemlər mülkünüzün ən yüksək səviyyədə təhlükəsizliyini təmin edir.",
+    "fastInstallation": "Sürətli və Təhlükəli Quraşdırma",
+    "fastInstallationDesc": "Proqramın təhlükəli və gecikmələr olmadan quraşdırılmasını təmin edirik, beləliklə bəlkə də dərhal istifadə etməyə başlaya bilərsiniz.",
+    "customizedSetup": "Xüsusi İlkin Quraşdırma",
+    "customizedSetupDesc": "Bütün konfiqurasiyalar sizin spesifik biznes ehtiyaclarınızı və tələblərini karşılamaq üçün öz xüsusiyyətlərinə uyğun olaraq hazırlanır.",
+    "staffTraining": "Personala Təlim & Dəstək",
+    "staffTrainingDesc": "Komandanız sistemi effektiv şəkildə istifadə etmək üçün praktiki təlim və əlavə təlimatlar alır.",
+    "continuousAssistance": "Davamlı Dəstək & Yeniləmələr",
+    "continuousAssistanceDesc": "Sistem ən yaxşı vəziyyətdə işləməsi üçün etibarlı texniki dəstək və müntəzəm yeniləmələrdən istifadə edin."
   },
 
   "quickOrder": {
@@ -215,11 +225,11 @@
   "quantity": "Miqdar",
   "price": "Qiymət",
   "totalAmount": "Ümumi məbləğ",
-  
+
   "features": {
     "title": "Xüsusiyyətlər",
     "name": "Ad",
-    "category": "Kateqoriya", 
+    "category": "Kateqoriya",
     "quantity": "Miqdar",
     "sku": "SKU",
     "stock": "Stok",
@@ -231,6 +241,22 @@
   },
 
   "brands": "Brendlər",
+  "software": {
+    "title": "Məkanınızı Əliyyat Texnologiyası ilə Qoruyun",
+    "description": "Müasir texnologiyalara əsaslanan təhlükəsizlik sistemləri vasitəsilə iş yerləriniz və yaşayış məkanlarınız üçün etibarlı qoruma təmin edirik.",
+    "contactWhatsapp": "Whatssap vasitəsilə əlaqə",
+    "ourServices": "Xidmətlərimiz",
+    "ourServicesDesc": "Xidmətlərimiz maksimum təhlükəsizlik və hamar fəaliyyət təmin etmək üçün nəzərdə tutulmuşdur. Peşəkar komandam tərəfindən quraşdırılan bu sistemlər mülkünüzün ən yüksək səviyyədə təhlükəsizliyini təmin edir.",
+    "videoSurveillance": "Video Nəzarət Kamerasının Quraşdırılması",
+    "videoSurveillanceDesc": "Yüksək keyfiyyətli CCTV kameraları ilə nəzarətdə qalın.",
+    "ipAnalogSystem": "IP & Analoq Sistem İntegrasyonu",
+    "ipAnalogSystemDesc": "Müxtəlif sistem növlərini hamar şəkildə bağlayın və idarə edin.",
+    "staffTraining": "Personala Təlim & Dəstək",
+    "staffTrainingDesc": "Komandanız sistemi effektiv şəkildə istifadə etmək üçün praktiki təlim və əlavə təlimatlar alır.",
+    "fireAlarmSystem": "Yanğın Siqnalizasyon Sistemləri",
+    "fireAlarmSystemDesc": "Fəlakətə tez reaksiya göstərin."
+  },
+
   "brandsSection": {
     "searchPlaceholder": "Brendlər axtar...",
     "showing": "Göstərilir",
@@ -247,7 +273,7 @@
   "itemRemoved": "Məhsul səbətdən silindi",
   "cartCleared": "Səbət təmizləndi",
 
-  
+
   "favoritesEmpty": "Favorit siyahınız boşdur",
   "favoritesEmptyHint": "Bəyəndiyiniz məhsulları əlavə etməyə başlayın!",
   "clearAll": "Hamısını sil",
@@ -268,7 +294,7 @@
 
   "similarProd": "Oxşar məhsullar",
   "sederek": "Sədərək filialı",
-  "bayil":"Bayıl filialı",
-  "workTime1":"Bazar ertəsi - Bazar: 9:00 - 18:00",
-  "workTime2":"Bazar ertəsi - Bazar: 9:00 - 18:00"                                                                     
+  "bayil": "Bayıl filialı",
+  "workTime1": "Bazar ertəsi - Bazar: 9:00 - 18:00",
+  "workTime2": "Bazar ertəsi - Bazar: 9:00 - 18:00"
 }

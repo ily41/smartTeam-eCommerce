@@ -258,12 +258,11 @@ const Header = () => {
       <nav className=''>
         <div className='flex justify-between lg:justify-around fixed top-0 z-50 bg-white w-full lg:items-center p-3 px-6 items-center'>
           <Link to='/' className='flex lg:flex-1 cursor-pointer lg:justify-center gap-2'>
-            <img
-              className="min-h-[35px] min-w-[70px] max-h-[50px] max-w-[13r0px] lg:w-[20vh]"
-              src="/Icons/logo.svg"
-              srcSet="/Icons/logo@2x.png 2x, /Icons/logo@3.png 3x"
-              alt="Logo"
-            />
+        <img
+  src="/Icons/logo.svg"
+  alt="Logo"
+  className="h-12 w-auto object-contain"
+/>
           </Link>
 
           {/* Desktop Search */}

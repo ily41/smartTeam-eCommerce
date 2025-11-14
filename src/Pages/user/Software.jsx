@@ -1,8 +1,10 @@
 
 import React from 'react'
 import { Breadcrumb } from '../../products/Breadcrumb'
+import { useTranslation } from 'react-i18next';
 
 const Software = () => {
+  const { t } = useTranslation();
     
 
     const contactWp = () => {
@@ -29,9 +31,9 @@ const Software = () => {
                </div>
    
                <div className='text-center my-7 md:my-0 flex flex-col gap-3 md:flex-8 md:text-start   [@media(min-width:1100px)]:p-7'>
-                   <h1 className='font-semibold text-xl lg:text-2xl'>Protect Your Space with  <br className='md:hidden'></br>Advanced Technology</h1>
-                   <p className='max-w-[83vw] mx-auto text-[#505050] md:text-sm md:mb-4  lg:text-lg'>We provide reliable protection for your workplace and living spaces through security systems built on modern technologies.</p>
-                   <button onClick={() => {contactWp()}} className=' py-4 my-4 cursor-pointer bg-gradient-to-b from-[#FF1206] to-[#D91205] rounded-lg mx-3 text-white md:w-fit md:py-3 md:text-sm md:px-7 md:mx-0'>Contact via Whatssap</button>
+                   <h1 className='font-semibold text-xl lg:text-2xl'>{t('software.title')}</h1>
+                   <p className='max-w-[83vw] mx-auto text-[#505050] md:text-sm md:mb-4  lg:text-lg'>{t('software.description')}</p>
+                   <button onClick={() => {contactWp()}} className=' py-4 my-4 cursor-pointer bg-gradient-to-b from-[#FF1206] to-[#D91205] rounded-lg mx-3 text-white md:w-fit md:py-3 md:text-sm md:px-7 md:mx-0'>{t('software.contactWhatsapp')}</button>
                </div>
            </div>
    
@@ -39,33 +41,33 @@ const Software = () => {
 
            <div className='max-w-[95vw] sm:max-w-[90vw] md:max-w-[85vw] md:mt-10 mx-auto pb-25'>
               <div className='py-6 pt-8 text-center '>
-                <h1 className='text-xl font-semibold'>Our Services</h1>
-                <p className='text-[#505050]  max-w-[50vw] mx-auto mt-3'>Our services are designed to provide maximum safety and smooth operation. These systems, installed by our professional team, ensure the highest level of security for your property.</p>
+                <h1 className='text-xl font-semibold'>{t('software.ourServices')}</h1>
+                <p className='text-[#505050]  max-w-[50vw] mx-auto mt-3'>{t('software.ourServicesDesc')}</p>
               </div>
 
               <div className='flex flex-col gap-5 max-w-[90vw] mx-auto md:grid md:grid-cols-2 [@media(min-width:1100px)]:grid lg:grid-cols-2 [@media(min-width:1270px)]:grid-cols-4'>
                 <div className='relative bg-white border-1 border-[#dee2e6] p-7 pt-19 rounded-lg'>
                   <img className='absolute top-4 right-4 bg-[#ff4b43] p-3 rounded-full' src="./Icons/service-2-1.svg" alt="" />
-                  <h1 className='font-semibold text-lg'>Video Surveillance Camera Installation</h1>
-                  <p className='text-md text-[#7D7D7D] font-medium max-w-[84%]'>Stay in control with high-quality CCTV cameras.</p>
+                  <h1 className='font-semibold text-lg'>{t('software.videoSurveillance')}</h1>
+                  <p className='text-md text-[#7D7D7D] font-medium max-w-[84%]'>{t('software.videoSurveillanceDesc')}</p>
                 </div>
 
                 <div className='relative bg-white border-1 border-[#dee2e6] p-7 pt-19 rounded-lg'>
                   <img className='absolute top-4 right-4 bg-[#ff4b43] p-3 rounded-full' src="./Icons/service-2-2.svg" alt="" />
-                  <h1 className='font-semibold text-lg'>IP & Analog System Integration</h1>
-                  <p className='text-md text-[#7D7D7D] font-medium max-w-[84%]'>Smoothly connect and manage different system types.</p>
+                  <h1 className='font-semibold text-lg'>{t('software.ipAnalogSystem')}</h1>
+                  <p className='text-md text-[#7D7D7D] font-medium max-w-[84%]'>{t('software.ipAnalogSystemDesc')}</p>
                 </div>
 
                 <div className='relative bg-white border-1 border-[#dee2e6] p-7 pt-19 rounded-lg'>
                   <img className='absolute top-4 right-4 bg-[#ff4b43] p-3 rounded-full' src="./Icons/service-2-3.svg" alt="" />
-                  <h1 className='font-semibold text-lg'>Staff Training & Support</h1>
-                  <p className='text-md text-[#7D7D7D] font-medium max-w-[84%]'>Your team receives practical training and guidance to use the system effectively.</p>
+                  <h1 className='font-semibold text-lg'>{t('software.staffTraining')}</h1>
+                  <p className='text-md text-[#7D7D7D] font-medium max-w-[84%]'>{t('software.staffTrainingDesc')}</p>
                 </div>
 
                 <div className='relative bg-white border-1 border-[#dee2e6] p-7 pt-19 rounded-lg'>
                   <img className='absolute top-4 right-4 bg-[#ff4b43] p-3 rounded-full' src="./Icons/service-2-4.svg" alt="" />
-                  <h1 className='font-semibold text-lg'> Fire Alarm & Signaling Systems</h1>
-                  <p className='text-md text-[#7D7D7D] font-medium max-w-[84%]'>Ensure quick response to emergencies.</p>
+                  <h1 className='font-semibold text-lg'>{t('software.fireAlarmSystem')}</h1>
+                  <p className='text-md text-[#7D7D7D] font-medium max-w-[84%]'>{t('software.fireAlarmSystemDesc')}</p>
                 </div>
               </div>
             </div>

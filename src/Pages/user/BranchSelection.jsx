@@ -61,7 +61,7 @@ const BranchesSection = () => {
   };
 
   return (
-    <div className='py-8 sm:py-10 w-full px-4 sm:px-6 md:px-8 lg:px-12 max-w-[1400px] mx-auto'>
+    <div className='py-8 sm:py-10 w-full px-4 sm:px-6 md:px-8 lg:px-12 md:max-w-[80vw] mx-auto'>
       <h1 className='text-xl sm:text-2xl font-semibold mb-6 sm:mb-8'>{t('footer.contactUs')}</h1>
 
       {/* Mobile View - Cards */}

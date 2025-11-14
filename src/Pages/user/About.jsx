@@ -111,7 +111,7 @@ const About = () => {
         >
           <img
             className="w-full rounded-t-md h-[190px] lg:h-[220px] object-cover"
-            src="./deals/security-system-monitoring.webp"
+            src="./deals/security-system-monitoring.jpg"
             alt=""
           />
           <div className="relative bg-white p-5 pb-4 ">
