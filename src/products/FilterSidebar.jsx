@@ -18,7 +18,7 @@ export const FilterSidebar = React.memo(({
   forcedCategoryId = null, 
   showCategory = false 
 }) => {
-  const { i18n } = useTranslation();
+  const { t,i18n } = useTranslation();
   
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -504,7 +504,7 @@ export const FilterSidebar = React.memo(({
 
       <details open>
         <summary className="w-full flex items-center justify-between p-4 text-left cursor-pointer">
-          <span className="font-medium text-gray-900">Price Range</span>
+          <span className="font-medium text-gray-900">{t('priceRange')}</span>
           <ChevronDown className="chevron w-4 h-4 text-gray-500 transition-transform duration-200" />
         </summary>
         <div className="px-4 pb-4 space-y-3">

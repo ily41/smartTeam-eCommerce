@@ -676,12 +676,12 @@ const prevModalSlide = () => {
               {isInStock ? (
                 <>
                   <Check className='w-[20px] text-green-500' />
-                  <span className="text-green-500">In stock</span>
+                  <span className="text-green-500">{t('features.inStock')}</span>
                 </>
               ) : (
                 <>
                   <X className='w-[20px] text-red-500' />
-                  <span className="text-red-500">Out of stock</span>
+                  <span className="text-red-500">{t('features.outOfStock')}</span>
                 </>
               )}
             </div>
@@ -802,19 +802,7 @@ const prevModalSlide = () => {
 
           <div className="px-4 pb-6 bg-white">
             <div className="flex space-x-2 justify-center">
-              <button 
-                  className={`w-16 h-16 rounded-lg border-2 ${activeSlide === 0 ? 'border-red-500' : 'border-gray-200'} overflow-hidden`}
-                  onClick={() => swiperRef?.slideTo(0)}
-                >
-                  <img 
-                    src={`https://smartteamazreal-001-site1.ktempurl.com${product?.imageUrl}`}
-                    alt={`${product.name} ${1}`}
-                    className="w-full aspect-square h-full object-contain"
-                    onError={(e) => {
-                        e.target.src =  "/Icons/logo.svg"
-                      }}
-                  />
-                </button>
+             
               {product?.images.map((item, index) => (
                 <button 
                   key={index + 1} 
@@ -893,7 +881,7 @@ const prevModalSlide = () => {
                     <span className="text-[#858a92] ">{feature.label}</span>
                     <span className="text-gray-900 text-end">{feature.value}</span>
                   </div>
-                  {index < features.slice(0, 5).length - 1 && (
+                  {index < features.length - 1 && (
                     <hr className="my-2 mx-2 border-gray-300" />
                   )}
                 </div>

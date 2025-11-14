@@ -24,6 +24,7 @@ import { toast } from 'react-toastify';
 import { useParams, useSearchParams } from 'react-router';
 import UnauthorizedModal from '../../components/UI/UnauthorizedModal';
 import SEO from '../../components/SEO/SEO';
+import { useTranslation } from 'react-i18next';
 
 const ProductCardSkeleton = React.memo(({ col }) => (
   <div className={`bg-white rounded-lg border border-gray-200 overflow-hidden ${col ? '' : 'flex'}`}>
@@ -48,6 +49,7 @@ const ProductCardSkeleton = React.memo(({ col }) => (
     )}
   </div>
 ));
+
 
 const CustomDropdown = React.memo(({ value, onChange, options }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -112,6 +114,7 @@ function Products() {
   const { slug } = useParams();
   const [searchParams] = useSearchParams();
   const location = window.location.pathname;
+  const {t} = useTranslation();
 
   const [showUnauthorizedModal, setShowUnauthorizedModal] = useState(false);
   const [unauthorizedAction, setUnauthorizedAction] = useState('');
@@ -143,7 +146,7 @@ function Products() {
     if (isBrand) return brandSlug.charAt(0).toUpperCase() + brandSlug.slice(1);
     if (isSearch) return `Search Results for "${searchQuery}"`;
     if (isCategoryParam) return categoryParam.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
-    return slug?.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) || 'All Products';
+    return slug?.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) || t('allProducts');
   }, [isHotDeals, isRecommended, isBrand, isSearch, isCategoryParam, brandSlug, searchQuery, categoryParam, slug]);
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024); 
@@ -538,10 +541,14 @@ function Products() {
                   </>
                 ) : (
                   <>
-                    <span className="text-sm text-gray-600">
-                      {(totalItems || 0).toLocaleString()} items
-                      {categoryName && <> in <span className='font-semibold'>{categoryName}</span></>}
-                    </span>
+                   <span className="text-sm text-gray-600">
+                    {t('itemsFoundPr', { count: totalItems || 0 })}
+
+                    {categoryName && (
+                      <> {t('inCategoryPr')} <span className="font-semibold">{categoryName}</span></>
+                    )}
+                  </span>
+
 
                     <div className="hidden lg:flex items-center space-x-4">
                       <CustomDropdown

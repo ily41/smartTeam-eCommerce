@@ -296,7 +296,13 @@
   "sederek": "Sederek branch",
   "bayil": "Bayil Branch",
   "workTime1": "Mon-Fri: 9:00 AM - 6:00 PM",
-  "workTime2": "Mon-Sun: 9:00 AM - 6:00 PM"
+  "workTime2": "Mon-Sun: 9:00 AM - 6:00 PM",
+  "priceRange": "Price Range",
+  "items": "items",
+  "itemsFoundPr": "{{count}} items found",
+  "inCategoryPr": "in",
+  "allProducts": "All Products"
+  
 
 
 

@@ -258,11 +258,20 @@ const Header = () => {
       <nav className=''>
         <div className='flex justify-between lg:justify-around fixed top-0 z-50 bg-white w-full lg:items-center p-3 px-6 items-center'>
           <Link to='/' className='flex lg:flex-1 cursor-pointer lg:justify-center gap-2'>
+      <picture>
+        {/* show after 800px */}
+        <source
+          srcSet="/Icons/logo.svg"
+          media="(min-width: 800px)"
+        />
+      
+        {/* default (mobile) */}
         <img
-          src="/Icons/logo.svg"
+          src="/Icons/logo@3.png"
           alt="Logo"
           className="h-12 [@media(min-width:1800px)]:h-15 w-auto object-contain"
         />
+      </picture>
           </Link>
 
           {/* Desktop Search */}
