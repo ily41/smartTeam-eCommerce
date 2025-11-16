@@ -1,5 +1,5 @@
 import { Loader2, Pen, Trash, Image, Plus } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Modal from "../../UI/Modal";
 import { toast } from "react-toastify";
 import { 
@@ -7,7 +7,9 @@ import {
   useDeleteBannerMutation, 
   useGetBannersQuery, 
   useGetParentCategoriesQuery,
-  useUpdateBannerMutation 
+  useUpdateBannerMutation,
+  useUploadMobileImageMutation,
+  useUploadDesktopImageMutation 
 } from '../../../store/API';
 
 const BannersUI = () => {
@@ -23,8 +25,11 @@ const BannersUI = () => {
   const AddBannerModal = ({ isOpen, onClose }) => {
     const [file, setFile] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
+    const [mobileFile, setMobileFile] = useState(null);
+    const [mobileImagePreview, setMobileImagePreview] = useState(null);
     const [selectedCategoryId, setSelectedCategoryId] = useState("");
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [uploadMobileImage] = useUploadMobileImageMutation();
     const [formData, setFormData] = useState({
       title: "",
       description: "",
@@ -121,6 +126,20 @@ const BannersUI = () => {
 
       try {
         const result = await addBanner(formDataToSend).unwrap();
+        
+        // Upload mobile image if provided
+        if (mobileFile && result?.id) {
+          try {
+            await uploadMobileImage({
+              id: result.id,
+              imageFile: mobileFile
+            }).unwrap();
+          } catch (mobileError) {
+            console.error("Error uploading mobile image:", mobileError);
+            toast.warning("Banner yaradıldı, lakin mobil şəkil yüklənmədi: " + (mobileError.data?.message || mobileError.message));
+          }
+        }
+        
         toast.success("Banner uğurla əlavə edildi!");
         refetch();
         onClose();
@@ -138,6 +157,8 @@ const BannersUI = () => {
         });
         setFile(null);
         setImagePreview(null);
+        setMobileFile(null);
+        setMobileImagePreview(null);
         setSelectedCategoryId("");
       } catch (error) {
         console.error("Error adding banner:", error);
@@ -172,6 +193,38 @@ const BannersUI = () => {
       setFile(null);
       setImagePreview(null);
       const fileInput = document.getElementById('banner-image-input');
+      if (fileInput) {
+        fileInput.value = '';
+      }
+    };
+
+    const handleMobileImageChange = (e) => {
+      const selectedFile = e.target.files[0];
+      if (selectedFile) {
+        if (selectedFile.size > 10 * 1024 * 1024) {
+          toast.error("Fayl ölçüsü 10MB-dan az olmalıdır");
+          return;
+        }
+
+        if (!selectedFile.type.startsWith('image/')) {
+          toast.error("Zəhmət olmasa düzgün şəkil faylı seçin");
+          return;
+        }
+
+        setMobileFile(selectedFile);
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          setMobileImagePreview(e.target.result);
+        };
+        reader.readAsDataURL(selectedFile);
+      }
+    };
+
+    const handleRemoveMobileImage = () => {
+      setMobileFile(null);
+      setMobileImagePreview(null);
+      const fileInput = document.getElementById('banner-mobile-image-input');
       if (fileInput) {
         fileInput.value = '';
       }
@@ -301,7 +354,7 @@ const BannersUI = () => {
 
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              Banner şəkli *
+              Banner şəkli (Desktop) *
             </label>
 
             {!imagePreview ? (
@@ -377,6 +430,84 @@ const BannersUI = () => {
             )}
           </div>
 
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Banner şəkli (Mobile)
+            </label>
+
+            {!mobileImagePreview ? (
+              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-600 border-dashed rounded-lg hover:border-gray-500 transition-colors">
+                <div className="space-y-1 text-center">
+                  <Image className="mx-auto h-12 w-12 text-gray-400" />
+                  <div className="flex text-sm text-gray-400">
+                    <label className="relative cursor-pointer rounded-md font-medium text-blue-400 hover:text-blue-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500 px-2 py-1">
+                      <span>Fayl yüklə</span>
+                      <input
+                        id="banner-mobile-image-input"
+                        type="file"
+                        className="sr-only"
+                        accept="image/*"
+                        onChange={handleMobileImageChange}
+                      />
+                    </label>
+                    <p className="pl-1">və ya sürükləyin</p>
+                  </div>
+                  <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                </div>
+              </div>
+            ) : (
+              <div className="relative">
+                <div className="relative rounded-lg overflow-hidden border-2 border-gray-600">
+                  <img
+                    src={mobileImagePreview}
+                    alt="Mobile Preview"
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-200">
+                    <button
+                      type="button"
+                      onClick={handleRemoveMobileImage}
+                      className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full transition-colors duration-200"
+                    >
+                      <Trash className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="mt-3 flex items-center justify-between rounded-lg p-3">
+                  <div className="flex items-center space-x-3">
+                    <Image className="w-5 h-5 text-gray-400" />
+                    <div>
+                      <p className="text-sm text-white font-medium">{mobileFile?.name}</p>
+                      <p className="text-xs text-gray-400">
+                        {mobileFile ? (mobileFile.size / 1024 / 1024).toFixed(2) : 0} MB
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleRemoveMobileImage}
+                    className="text-red-400 hover:text-red-300 p-1"
+                  >
+                    <Trash className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="mt-2">
+                  <label className="relative cursor-pointer rounded-md font-medium text-blue-400 hover:text-blue-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500 px-3 py-2 text-sm inline-block">
+                    <span>Şəkli dəyişdir</span>
+                    <input
+                      type="file"
+                      className="sr-only"
+                      accept="image/*"
+                      onChange={handleMobileImageChange}
+                    />
+                  </label>
+                </div>
+              </div>
+            )}
+          </div>
+
           <div className="flex items-center">
             <input
               type="checkbox"
@@ -421,6 +552,22 @@ const BannersUI = () => {
   const EditBannerModal = ({ isOpen, onClose, banner }) => {
     const [file, setFile] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
+    const [mobileFile, setMobileFile] = useState(null);
+    const [mobileImagePreview, setMobileImagePreview] = useState(null);
+    const [uploadMobileImage] = useUploadMobileImageMutation();
+    const [uploadDesktopImage] = useUploadDesktopImageMutation();
+    
+    // Initialize image previews from banner data
+    useEffect(() => {
+      if (banner) {
+        if (banner.imageUrl && !file) {
+          setImagePreview(`https://smartteamazreal-001-site1.ktempurl.com/${banner.imageUrl}`);
+        }
+        if (banner.mobileImageUrl && !mobileFile) {
+          setMobileImagePreview(`https://smartteamazreal-001-site1.ktempurl.com/${banner.mobileImageUrl}`);
+        }
+      }
+    }, [banner, file, mobileFile]);
     const [formData, setFormData] = useState({
       title: banner?.title || '',
       titleVisible: banner?.titleVisible ,
@@ -461,12 +608,102 @@ const BannersUI = () => {
           ...cleanFormData  // Spread the data at the same level as id
         }).unwrap();
 
+        // Upload desktop image if provided
+        if (file) {
+          try {
+            await uploadDesktopImage({
+              id: banner.id,
+              imageFile: file
+            }).unwrap();
+          } catch (desktopError) {
+            console.error("Error uploading desktop image:", desktopError);
+            toast.warning("Banner yeniləndi, lakin desktop şəkil yüklənmədi: " + (desktopError.data?.message || desktopError.message));
+          }
+        }
+
+        // Upload mobile image if provided
+        if (mobileFile) {
+          try {
+            await uploadMobileImage({
+              id: banner.id,
+              imageFile: mobileFile
+            }).unwrap();
+          } catch (mobileError) {
+            console.error("Error uploading mobile image:", mobileError);
+            toast.warning("Banner yeniləndi, lakin mobil şəkil yüklənmədi: " + (mobileError.data?.message || mobileError.message));
+          }
+        }
+
         toast.success("Banner uğurla yeniləndi!");
         refetch();
         onClose();
       } catch (error) {
         console.error("Error updating banner:", error);
         toast.error("Banneri yeniləmək uğursuz oldu: " + (error.data?.message || error.message));
+      }
+    };
+
+    const handleMobileImageChange = (e) => {
+      const selectedFile = e.target.files[0];
+      if (selectedFile) {
+        if (selectedFile.size > 10 * 1024 * 1024) {
+          toast.error("Fayl ölçüsü 10MB-dan az olmalıdır");
+          return;
+        }
+
+        if (!selectedFile.type.startsWith('image/')) {
+          toast.error("Zəhmət olmasa düzgün şəkil faylı seçin");
+          return;
+        }
+
+        setMobileFile(selectedFile);
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          setMobileImagePreview(e.target.result);
+        };
+        reader.readAsDataURL(selectedFile);
+      }
+    };
+
+    const handleRemoveMobileImage = () => {
+      setMobileFile(null);
+      setMobileImagePreview(null);
+      const fileInput = document.getElementById('edit-banner-mobile-image-input');
+      if (fileInput) {
+        fileInput.value = '';
+      }
+    };
+
+    const handleImageChange = (e) => {
+      const selectedFile = e.target.files[0];
+      if (selectedFile) {
+        if (selectedFile.size > 10 * 1024 * 1024) {
+          toast.error("Fayl ölçüsü 10MB-dan az olmalıdır");
+          return;
+        }
+
+        if (!selectedFile.type.startsWith('image/')) {
+          toast.error("Zəhmət olmasa düzgün şəkil faylı seçin");
+          return;
+        }
+
+        setFile(selectedFile);
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          setImagePreview(e.target.result);
+        };
+        reader.readAsDataURL(selectedFile);
+      }
+    };
+
+    const handleRemoveImage = () => {
+      setFile(null);
+      setImagePreview(null);
+      const fileInput = document.getElementById('edit-banner-image-input');
+      if (fileInput) {
+        fileInput.value = '';
       }
     };
 
@@ -581,7 +818,161 @@ const BannersUI = () => {
 
           </div>
 
-          
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Banner şəkli (Desktop)
+            </label>
+
+            {!imagePreview && !banner?.imageUrl ? (
+              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-600 border-dashed rounded-lg hover:border-gray-500 transition-colors">
+                <div className="space-y-1 text-center">
+                  <Image className="mx-auto h-12 w-12 text-gray-400" />
+                  <div className="flex text-sm text-gray-400">
+                    <label className="relative cursor-pointer rounded-md font-medium text-blue-400 hover:text-blue-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500 px-2 py-1">
+                      <span>Fayl yüklə</span>
+                      <input
+                        id="edit-banner-image-input"
+                        type="file"
+                        className="sr-only"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                      />
+                    </label>
+                    <p className="pl-1">və ya sürükləyin</p>
+                  </div>
+                  <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                </div>
+              </div>
+            ) : (
+              <div className="relative">
+                <div className="relative rounded-lg overflow-hidden border-2 border-gray-600">
+                  <img
+                    src={imagePreview || `https://smartteamazreal-001-site1.ktempurl.com/${banner?.imageUrl}`}
+                    alt="Desktop Preview"
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-200">
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full transition-colors duration-200"
+                    >
+                      <Trash className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="mt-3 flex items-center justify-between rounded-lg p-3">
+                  <div className="flex items-center space-x-3">
+                    <Image className="w-5 h-5 text-gray-400" />
+                    <div>
+                      <p className="text-sm text-white font-medium">{file?.name || 'Mövcud desktop şəkil'}</p>
+                      <p className="text-xs text-gray-400">
+                        {file ? (file.size / 1024 / 1024).toFixed(2) : ''} {file ? 'MB' : ''}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleRemoveImage}
+                    className="text-red-400 hover:text-red-300 p-1"
+                  >
+                    <Trash className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="mt-2">
+                  <label className="relative cursor-pointer rounded-md font-medium text-blue-400 hover:text-blue-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500 px-3 py-2 text-sm inline-block">
+                    <span>Şəkli dəyişdir</span>
+                    <input
+                      type="file"
+                      className="sr-only"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                    />
+                  </label>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Banner şəkli (Mobile)
+            </label>
+
+            {!mobileImagePreview && !banner?.mobileImageUrl ? (
+              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-600 border-dashed rounded-lg hover:border-gray-500 transition-colors">
+                <div className="space-y-1 text-center">
+                  <Image className="mx-auto h-12 w-12 text-gray-400" />
+                  <div className="flex text-sm text-gray-400">
+                    <label className="relative cursor-pointer rounded-md font-medium text-blue-400 hover:text-blue-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500 px-2 py-1">
+                      <span>Fayl yüklə</span>
+                      <input
+                        id="edit-banner-mobile-image-input"
+                        type="file"
+                        className="sr-only"
+                        accept="image/*"
+                        onChange={handleMobileImageChange}
+                      />
+                    </label>
+                    <p className="pl-1">və ya sürükləyin</p>
+                  </div>
+                  <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                </div>
+              </div>
+            ) : (
+              <div className="relative">
+                <div className="relative rounded-lg overflow-hidden border-2 border-gray-600">
+                  <img
+                    src={mobileImagePreview || `https://smartteamazreal-001-site1.ktempurl.com/${banner?.mobileImageUrl}`}
+                    alt="Mobile Preview"
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-200">
+                    <button
+                      type="button"
+                      onClick={handleRemoveMobileImage}
+                      className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full transition-colors duration-200"
+                    >
+                      <Trash className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="mt-3 flex items-center justify-between rounded-lg p-3">
+                  <div className="flex items-center space-x-3">
+                    <Image className="w-5 h-5 text-gray-400" />
+                    <div>
+                      <p className="text-sm text-white font-medium">{mobileFile?.name || 'Mövcud mobil şəkil'}</p>
+                      <p className="text-xs text-gray-400">
+                        {mobileFile ? (mobileFile.size / 1024 / 1024).toFixed(2) : ''} {mobileFile ? 'MB' : ''}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleRemoveMobileImage}
+                    className="text-red-400 hover:text-red-300 p-1"
+                  >
+                    <Trash className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="mt-2">
+                  <label className="relative cursor-pointer rounded-md font-medium text-blue-400 hover:text-blue-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500 px-3 py-2 text-sm inline-block">
+                    <span>Şəkli dəyişdir</span>
+                    <input
+                      type="file"
+                      className="sr-only"
+                      accept="image/*"
+                      onChange={handleMobileImageChange}
+                    />
+                  </label>
+                </div>
+              </div>
+            )}
+          </div>
 
           <div className="flex gap-4 pt-4">
             <button

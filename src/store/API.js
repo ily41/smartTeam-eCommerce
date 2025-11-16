@@ -22,13 +22,15 @@ export const API = createApi({
         endpoint === 'addBrandImage' ||
         endpoint === 'editCategoryWithImage' ||
         endpoint === 'editBrandWithImage' ||
+        endpoint === 'uploadMobileImage' ||
+        endpoint === 'uploadDesktopImage' ||
         body instanceof FormData;
 
       if (!isFormDataRequest) {
         headers.set('Content-Type', 'application/json');
       }
 
-      const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1]
+      const token = document.cookie.split('; ').find(row => row.startsWith('token=')) ?.split('=')[1]
 
 
       if (token) {
@@ -818,6 +820,46 @@ export const API = createApi({
       }),
       invalidatesTags: ['Banners'],
     }),
+
+    uploadMobileImage: builder.mutation({
+      query: ({
+        id,
+        imageFile
+      }) => {
+        const formData = new FormData();
+        formData.append('imageFile', imageFile);
+        return {
+          url: `/api/v1/Admin/banners/${id}/upload-mobile-image`,
+          method: 'POST',
+          body: formData,
+          prepareHeaders: headers => {
+            headers.delete('Content-Type');
+            return headers;
+          },
+        };
+      },
+      invalidatesTags: ['Banners'],
+    }),
+
+    uploadDesktopImage: builder.mutation({
+      query: ({
+        id,
+        imageFile
+      }) => {
+        const formData = new FormData();
+        formData.append('imageFile', imageFile);
+        return {
+          url: `/api/v1/Admin/banners/${id}/upload-image`,
+          method: 'POST',
+          body: formData,
+          prepareHeaders: headers => {
+            headers.delete('Content-Type');
+            return headers;
+          },
+        };
+      },
+      invalidatesTags: ['Banners'],
+    }),
     // *FILTERS*
     getFilters: builder.query({
       query: () => ({
@@ -1249,7 +1291,7 @@ export const API = createApi({
       queryFn: async (id, _api, _extraOptions, baseQuery) => {
         try {
           // Get token from cookies (same as your existing setup)
-          const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+          const token = document.cookie.split('; ').find(row => row.startsWith('token=')) ?.split('=')[1];
 
           // Make the request
           const response = await fetch(
@@ -1464,6 +1506,8 @@ export const {
   useDeleteBannerMutation,
   useAddBannerMutation,
   useUpdateBannerMutation,
+  useUploadMobileImageMutation,
+  useUploadDesktopImageMutation,
   useLoginMutation,
   useSignupMutation,
   useForgotPasswordMutation,

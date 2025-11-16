@@ -263,133 +263,156 @@ const Home = () => {
           
         </div>
           <SearchUI />
-        <section onMouseLeave={() => setHoveredCategorie(null)} className="lg:flex lg:w-[85vw] transition-all  lg:mx-auto lg:shadow-[0_4px_4px_rgba(0,0,0,0.25)] lg:rounded-lg lg:gap-5 lg:bg-white">
-            
-           <div className='hidden lg:mt-5 lg:m-4 lg:flex flex-col text-black mt-1 whitespace-nowrap'>
-                {isParentLoading ? (
-                  <>
-                    {[...Array(7)].map((_, i) => (
-                      <CategorySkeleton key={i} />
-                    ))}
-                  </>
-                ) : (
-                  (translatedParentCategories.length > 0 ? translatedParentCategories : parentCategories)?.map((item) => {
-                    return (
-                      <Link 
-                        key={item.id}
-                        to={`/categories/${item.slug}`}
-                        state={{ name: item.name }}
-                        onMouseEnter={() => {setHoveredCategorie(item.id); setHoveredName(item.name)}}
-                        onClick={() => setActiveCategorie(activeCategorie === item.slug ? null : item.slug)}
-                        className={`p-2 pl-3 flex gap-2 lg:mb-3 lg:hover:bg-[#ffe2e1] ${activeCategorie === item.slug ? 'bg-[#ffe2e1]' : ''} cursor-pointer lg:rounded-2xl min-w-[220px] lg:pr-5`}
-                      >
-                        <img className="w-[24px]" src={getCategoryIcon(item.slug)} alt="" />
-                        <span>{item.name}</span>
-                      </Link>
-                    )
-                  })
-                )}
+          <section onMouseLeave={() => setHoveredCategorie(null)} className="lg:flex lg:w-[85vw] transition-all lg:mx-auto lg:shadow-[0_4px_4px_rgba(0,0,0,0.25)] lg:rounded-lg lg:gap-5 lg:bg-white">
+  
+  <div className='hidden lg:mt-5 lg:m-4 lg:flex flex-col justify-between text-black mt-1 whitespace-nowrap lg:w-[220px] lg:flex-shrink-0'>
+    {isParentLoading ? (
+      <>
+        {[...Array(7)].map((_, i) => (
+          <CategorySkeleton key={i} />
+        ))}
+      </>
+    ) : (
+      <>
+        {/* Top 4 categories */}
+        <div className="flex flex-col gap-3">
+          {(translatedParentCategories.length > 0 ? translatedParentCategories : parentCategories)?.slice(0, 4).map((item) => {
+            return (
+              <Link 
+                key={item.id}
+                to={`/categories/${item.slug}`}
+                state={{ name: item.name }}
+                onMouseEnter={() => {setHoveredCategorie(item.id); setHoveredName(item.name)}}
+                onClick={() => setActiveCategorie(activeCategorie === item.slug ? null : item.slug)}
+                className={`p-2 pl-3 flex gap-2 lg:mb-3 lg:hover:bg-[#ffe2e1] ${activeCategorie === item.slug ? 'bg-[#ffe2e1]' : ''} cursor-pointer lg:rounded-2xl min-w-[220px] lg:pr-5`}
+              >
+                <img className="w-[24px]" src={getCategoryIcon(item.slug)} alt="" />
+                <span>{item.name}</span>
+              </Link>
+            )
+          })}
+        </div>
+
+        {/* 3 dots separator */}
+        {(translatedParentCategories.length > 0 ? translatedParentCategories : parentCategories)?.length > 4 && (
+          <div className="flex justify-center items-center py-2 lg:mb-3 w-full">
+            <div className="flex gap-10">
+              <span className="w-1.5 h-1.5 bg-gray-400 rounded-full"></span>
+              <span className="w-1.5 h-1.5 bg-gray-400 rounded-full"></span>
+              <span className="w-1.5 h-1.5 bg-gray-400 rounded-full"></span>
             </div>
-            
-            
-            <div className={`${hoveredCategorie || activeCategorie ? 'lg:hidden' : ''} border-[#E0E0E0]`}>
-              
-                <BannerSlider />
-            </div>
-            
-            <div className={`${activeCategorie || hoveredCategorie ? 'lg:flex' : 'hidden'} hidden border-l border-[#E0E0E0] flex-1 overflow-y-auto`}>
-                {isParentLoading ? (
-                  <div className="w-full p-10">
-                    <SubCategorySkeleton />
-                  </div>
-                ) : (
-                  <div className={`${activeCategorie || hoveredCategorie ? 'lg:flex' : 'hidden'} hidden border-l border-[#E0E0E0] flex-1 overflow-y-auto`}>
-                      {isParentLoading ? (
-                        <div className="w-full p-10">
-                          <SubCategorySkeleton />
-                        </div>
-                      ) : (
-                        <div className='w-full p-8 py-10 animate-fadeIn'>
-                          <h1 className='text-2xl font-bold text-gray-800 mb-8 pb-4 border-b-2 border-[#E60C03] animate-slideDown'>{hoveredName}</h1>
-                          <div className={`grid ${(translatedSubCategories.length > 0 ? translatedSubCategories : subCategories)?.length <= 3 ? 'grid-cols-1' : (translatedSubCategories.length > 0 ? translatedSubCategories : subCategories)?.length <= 6 ? 'grid-cols-2' : 'grid-cols-3'} gap-4`}>
-                            {(translatedSubCategories.length > 0 ? translatedSubCategories : subCategories)?.map((item, index) => {
-                              return (
-                                <Link 
-                                  key={item.id}
-                                  to={`/products/${item.slug || '#'}`}
-                                  className='group relative flex items-center justify-between gap-3 p-4 rounded-xl bg-gradient-to-r from-gray-50 to-white border border-gray-200 hover:border-[#E60C03] hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer animate-slideIn overflow-hidden'
-                                  style={{ animationDelay: `${index * 50}ms` }}
-                                >
-                                  {/* Animated background on hover */}
-                                  <div className='absolute inset-0 bg-gradient-to-r from-[#ffe2e1] to-[#fff5f5] opacity-0 group-hover:opacity-100 transition-opacity duration-300'></div>
+          </div>
+        )}
 
-                                  {/* Text */}
-                                  <div className='relative z-10 flex-1'>
-                                    <p className='text-base font-medium text-gray-700 group-hover:text-[#E60C03] transition-all duration-300'>{item.name}</p>
-                                  </div>
+        {/* Bottom 3 categories */}
+        <div className="flex flex-col gap-3">
+          {(translatedParentCategories.length > 0 ? translatedParentCategories : parentCategories)?.slice(4, 7).map((item) => {
+            return (
+              <Link 
+                key={item.id}
+                to={`/categories/${item.slug}`}
+                state={{ name: item.name }}
+                onMouseEnter={() => {setHoveredCategorie(item.id); setHoveredName(item.name)}}
+                onClick={() => setActiveCategorie(activeCategorie === item.slug ? null : item.slug)}
+                className={`p-2 pl-3 flex gap-2 lg:mb-3 lg:hover:bg-[#ffe2e1] ${activeCategorie === item.slug ? 'bg-[#ffe2e1]' : ''} cursor-pointer lg:rounded-2xl min-w-[220px] lg:pr-5`}
+              >
+                <img className="w-[24px]" src={getCategoryIcon(item.slug)} alt="" />
+                <span>{item.name}</span>
+              </Link>
+            )
+          })}
+        </div>
+      </>
+    )}
+  </div>
+  
+  
+  <div className={`${hoveredCategorie || activeCategorie ? 'lg:hidden' : ''} border-[#E0E0E0] w-full  flex items-center`}>
+    <BannerSlider />
+  </div>
+  
+  <div className={`${activeCategorie || hoveredCategorie ? 'lg:flex' : 'hidden'} hidden border-l border-[#E0E0E0] flex-1 overflow-y-auto`}>
+    {isParentLoading ? (
+      <div className="w-full p-10">
+        <SubCategorySkeleton />
+      </div>
+    ) : (
+      <div className='w-full p-8 py-10 animate-fadeIn'>
+        <h1 className='text-2xl font-bold text-gray-800 mb-8 pb-4 border-b-2 border-[#E60C03] animate-slideDown'>{hoveredName}</h1>
+        <div className={`grid ${(translatedSubCategories.length > 0 ? translatedSubCategories : subCategories)?.length <= 3 ? 'grid-cols-1' : (translatedSubCategories.length > 0 ? translatedSubCategories : subCategories)?.length <= 6 ? 'grid-cols-2' : 'grid-cols-3'} gap-4`}>
+          {(translatedSubCategories.length > 0 ? translatedSubCategories : subCategories)?.map((item, index) => {
+            return (
+              <Link 
+                key={item.id}
+                to={`/products/${item.slug || '#'}`}
+                className='group relative flex items-center justify-between gap-3 p-4 rounded-xl bg-gradient-to-r from-gray-50 to-white border border-gray-200 hover:border-[#E60C03] hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer animate-slideIn overflow-hidden'
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
+                <div className='absolute inset-0 bg-gradient-to-r from-[#ffe2e1] to-[#fff5f5] opacity-0 group-hover:opacity-100 transition-opacity duration-300'></div>
 
-                                  {/* Arrow icon */}
-                                  <div className='relative z-10 opacity-0 group-hover:opacity-100 transform translate-x-[-10px] group-hover:translate-x-0 transition-all duration-300'>
-                                    <svg className='w-5 h-5 text-[#E60C03]' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5l7 7-7 7' />
-                                    </svg>
-                                  </div>
-                                </Link>
-                              )
-                            })}
-                          </div>
-                          
-                          <style jsx>{`
-                            @keyframes fadeIn {
-                              from {
-                                opacity: 0;
-                              }
-                              to {
-                                opacity: 1;
-                              }
-                            }
+                <div className='relative z-10 flex-1'>
+                  <p className='text-base font-medium text-gray-700 group-hover:text-[#E60C03] transition-all duration-300'>{item.name}</p>
+                </div>
 
-                            @keyframes slideDown {
-                              from {
-                                opacity: 0;
-                                transform: translateY(-10px);
-                              }
-                              to {
-                                opacity: 1;
-                                transform: translateY(0);
-                              }
-                            }
+                <div className='relative z-10 opacity-0 group-hover:opacity-100 transform translate-x-[-10px] group-hover:translate-x-0 transition-all duration-300'>
+                  <svg className='w-5 h-5 text-[#E60C03]' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5l7 7-7 7' />
+                  </svg>
+                </div>
+              </Link>
+            )
+          })}
+        </div>
+        
+        <style jsx>{`
+          @keyframes fadeIn {
+            from {
+              opacity: 0;
+            }
+            to {
+              opacity: 1;
+            }
+          }
 
-                            @keyframes slideIn {
-                              from {
-                                opacity: 0;
-                                transform: translateX(-20px);
-                              }
-                              to {
-                                opacity: 1;
-                                transform: translateX(0);
-                              }
-                            }
+          @keyframes slideDown {
+            from {
+              opacity: 0;
+              transform: translateY(-10px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
 
-                            .animate-fadeIn {
-                              animation: fadeIn 0.3s ease-out;
-                            }
+          @keyframes slideIn {
+            from {
+              opacity: 0;
+              transform: translateX(-20px);
+            }
+            to {
+              opacity: 1;
+              transform: translateX(0);
+            }
+          }
 
-                            .animate-slideDown {
-                              animation: slideDown 0.4s ease-out;
-                            }
+          .animate-fadeIn {
+            animation: fadeIn 0.3s ease-out;
+          }
 
-                            .animate-slideIn {
-                              animation: slideIn 0.4s ease-out forwards;
-                              opacity: 0;
-                            }
-                          `}</style>
-                        </div>
-                      )}
-                  </div>
-                )}
-            </div>
-        </section>
+          .animate-slideDown {
+            animation: slideDown 0.4s ease-out;
+          }
+
+          .animate-slideIn {
+            animation: slideIn 0.4s ease-out forwards;
+            opacity: 0;
+          }
+        `}</style>
+      </div>
+    )}
+  </div>
+</section>
 
         <section className="md:mt-12 md:mx-4 lg:w-[85vw] lg:mx-auto">
           <InfiniteBrandSlider />

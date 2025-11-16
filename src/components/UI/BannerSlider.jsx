@@ -7,6 +7,7 @@ import { translateDynamicField } from '../../i18n';
 const BannerSlider = () => {
   const { i18n } = useTranslation();
   const { data: bannersD, isBannersLoading,  } = useGetBannersQuery();
+  console.log(bannersD);
   const navigate = useNavigate();
 
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -37,7 +38,7 @@ const BannerSlider = () => {
   };
 
   const handleMouseEnter = () => setIsAutoPlaying(false);
-  const handleMouseLeave = () => setIsAutoPlaying(true);
+  const handleMouseLeave = () => setIsAutoPlaying(false);
 
   // Dynamic translation effect
   useEffect(() => {
@@ -71,19 +72,33 @@ const BannerSlider = () => {
     >
       {/* Banner Container */}
       <div 
-        className="flex transition-transform duration-500 h-full ease-in-out "
+        className="flex transition-transform duration-500 h-full w-full ease-in-out "
         style={{ transform: `translateX(-${currentSlide * 100}%)` }}
       >
         {(translatedBanners.length > 0 ? translatedBanners : bannersD)?.map((banner, index) => {
           return (
           <div onClick={() => navigate(`${banner.linkUrl}`)} key={banner.id} className="w-full cursor-pointer flex-shrink-0 h-full   relative">
+            {/* Desktop Image */}
             <img 
-              className="w-full object-cover md:rounded-lg lg:h-full  h-[26vh] md:h-[40vh] lg:p-2" 
+              className="hidden md:block  w-full object-cover md:rounded-lg lg:h-full md:h-[40vh] lg:p-2" 
               src={`https://smartteamazreal-001-site1.ktempurl.com${banner.imageUrl}`}
               alt={`Banner ${index + 1}`} 
               onError={(e) => {
                       e.target.src = '/Icons/logo.svg';
-                      e.target.className = 'w-[70%] h-[70%] mx-auto object-contain  md:rounded-lg h-[26vh] md:h-[40vh] lg:p-2'
+                      e.target.className = 'hidden md:block w-[70%] h-[70%] mx-auto object-cover md:rounded-lg md:h-[40vh] lg:p-2'
+                    }}
+            />
+            
+            {/* Mobile Image */}
+            <img 
+              className="block md:hidden w-full  md:rounded-lg  md:h-[40vh] lg:p-2" 
+              src={banner.mobileImageUrl 
+                ? `https://smartteamazreal-001-site1.ktempurl.com${banner.mobileImageUrl}` 
+                : `https://smartteamazreal-001-site1.ktempurl.com${banner.imageUrl}`}
+              alt={`Banner ${index + 1}`} 
+              onError={(e) => {
+                      e.target.src = '/Icons/logo.svg';
+                      e.target.className = 'block md:hidden w-[70%] h-[70%] mx-auto object-contain md:rounded-lg h-[26vh] md:h-[40vh] lg:p-2'
                     }}
             />
             
