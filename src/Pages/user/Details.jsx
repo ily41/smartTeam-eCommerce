@@ -688,15 +688,19 @@ const prevModalSlide = () => {
             <div className="flex items-center">
               <h1 className="text-xl text-gray-900 inter">{currentProduct.name}</h1>
             </div>
-            {hasDiscount && (
-              <div className="flex items-center gap-2 mt-2">
-                <span className="text-2xl font-bold text-red-500">{product?.prices[0].discountedPrice} AZN</span>
-                <span className="text-lg text-gray-500 line-through">{product?.prices[0].price} AZN</span>
-                <span className="bg-red-100 text-red-800 px-2 py-1 rounded text-sm font-medium">
-                  -{product.discountPercentage}%
-                </span>
-              </div>
-            )}
+            <div className="flex items-center gap-2 mt-2">
+              {hasDiscount ? (
+                <>
+                  <span className="text-2xl font-bold text-red-500">{me ? product?.prices[me?.role - 1]?.discountedPrice : product?.prices[0]?.discountedPrice} AZN</span>
+                  <span className="text-lg text-gray-500 line-through">{me ? product?.prices[me?.role - 1]?.price : product?.prices[0]?.price} AZN</span>
+                  <span className="bg-red-100 text-red-800 px-2 py-1 rounded text-sm font-medium">
+                    -{product.discountPercentage}%
+                  </span>
+                </>
+              ) : (
+                <span className="text-2xl font-bold text-red-500">{me ? product?.prices[me?.role - 1]?.discountedPrice : product?.prices[0]?.discountedPrice} AZN</span>
+              )}
+            </div>
           </div>
 
           <div className="relative px-4 mb-4 flex w-full justify-center">

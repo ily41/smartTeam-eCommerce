@@ -403,14 +403,14 @@ const Home = () => {
             </div>
 
             <div className='grid grid-cols-3 mt-10 gap-2 text-sm'>
-                <Link to='categories/sebeke-avadanliqlari' state={{ name: 'sebeke avadanliqlari' }} className='justify-center md:justify-start flex col-span-3 items-center bg-white lg:hidden rounded-lg border border-[#DEE2E6] p-4'>
+                <Link to='categories/ticaret-avadanliqlari' state={{ name: 'ticaret avadanliqlari' }} className='justify-center md:justify-start flex col-span-3 items-center bg-white lg:hidden rounded-lg border border-[#DEE2E6] p-4'>
                   <div className='flex flex-row gap-4'>
                     <div className='w-full h-full flex-shrink-0 my-auto object-cover max-w-[140px] md:max-w-[160px]'>
-                      <img className='w-full object-contain max-h-[160px]' src="./deals/network.svg" srcSet="/deals/network@3.png 3x" alt="" />
+                      <img className='w-full object-contain max-h-[160px]' src="./deals/homeBarcode.svg" srcSet="/deals/homeBarcode@3.png 3x" alt="" />
                     </div>
                     <div className='flex flex-col w-full text-start self-start'>
-                      <p className='text-xl inter mb-1 md:text-2xl'>{t('networkEquipmentTitle')}</p>
-                      <p className='text-sm md:text-base text-[#AFB0B1]'>Reliable routers, switches, and cabling systems for fast, stable, and secure connectivity. Scalable solutions to keep your business connected and future-ready.</p>
+                      <p className='text-xl inter mb-1 md:text-2xl'>{t('commercialEquipment')}</p>
+                      <p className='text-sm md:text-base text-[#AFB0B1]'>{t('commercialEquipmentDesc')}</p>
                     </div>
                   </div>
                 </Link>
@@ -433,11 +433,11 @@ const Home = () => {
                 </div>
                 <p className='text-center'>{t('officeEquipment')}</p>
               </Link>
-              <Link to='categories/ticaret-avadanliqlari' state={{ name: 'ticaret avadanliqlari' }} className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
+              <Link to='categories/sebeke-avadanliqlari' state={{ name: 'sebeke avadanliqlari' }} className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>
-                  <img className='min-h-[120px] object-contain' src="./deals/homeBarcode.svg" srcSet="/deals/homeBarcode@3.png 3x" alt="" />
+                  <img className='min-h-[120px] object-contain' src="./deals/network.svg" srcSet="/deals/network@3.png 3x" alt="" />
                 </div>
-                <p className='text-center'>{t('commercialEquipment')}</p>
+                <p className='text-center'>{t('networkEquipmentTitle')}</p>
               </Link>
               <Link to='categories/musahide-sistemleri' state={{ name: 'musahide sistemleri' }} className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>

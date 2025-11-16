@@ -18,9 +18,9 @@ import i18n from '../../i18n';
  * @param {boolean} props.noindex - Whether to prevent indexing
  */
 const SEO = ({
-  title = 'Smart Team Electronics - Premium Electronics Store',
-  description = 'Shop the latest electronics, computers, laptops, printers, surveillance systems, and more at Smart Team Electronics. Best prices and quality products in Azerbaijan.',
-  keywords = 'electronics, computers, laptops, printers, surveillance, smart team, Azerbaijan, online store, elektronika, kompyuter, noutbuk, Azərbaycan',
+  title = 'Smart Team Electronics - Azərbaycanda Premium Elektronika Mağazası',
+  description = 'Smart Team Electronics-də ən son elektronika, kompyuter, noutbuk, printer, müşahidə sistemləri və daha çoxunu alın. Azərbaycanda ən yaxşı qiymətlər, keyfiyyətli məhsullar və əla müştəri xidməti.',
+  keywords = 'elektronika, kompyuter, noutbuk, printer, müşahidə, smart team, Azərbaycan, onlayn mağaza, elektronika mağazası, electronics, computers, laptops, printers, surveillance, Azerbaijan, online store',
   image = '/Icons/logo.png',
   url,
   type = 'website',
@@ -46,7 +46,7 @@ const SEO = ({
     name: 'Smart Team Electronics',
     url: siteUrl,
     logo: `${siteUrl}/Icons/logo.png`,
-    description: 'Premium electronics store in Azerbaijan',
+    description: 'Azərbaycanda premium elektronika mağazası',
     address: {
       '@type': 'PostalAddress',
       streetAddress: 'Qurban Abbasov 35',
