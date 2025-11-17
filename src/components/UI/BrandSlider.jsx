@@ -168,7 +168,7 @@ const InfiniteBrandSlider = () => {
                   >
                     <img
                       src={brand.src}
-                      className="h-12 w-auto  max-w-[80px] object-contain grayscale hover:grayscale-0 transition-transform duration-300 hover:scale-110"
+                      className="h-12 w-auto  max-w-[80px] object-contain md:grayscale md:hover:grayscale-0 transition-transform duration-300 hover:scale-110"
                       draggable="false"
                     />
                   </a>
@@ -176,7 +176,7 @@ const InfiniteBrandSlider = () => {
                   <div key={`set${setIndex}-${idx}`} className="flex-shrink-0">
                     <img
                       src={brand?.src}
-                      className="h-12 w-auto min-w-[80px] max-w-[80px] object-contain grayscale hover:grayscale-0 transition-transform duration-300 hover:scale-110 pointer-events-none"
+                      className="h-12 w-auto min-w-[80px] max-w-[80px] object-contain md:grayscale md:hover:grayscale-0 transition-transform duration-300 hover:scale-110 pointer-events-none"
                       draggable="false"
                     />
                   </div>

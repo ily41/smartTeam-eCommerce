@@ -29,7 +29,7 @@ const MyMap = ({ markerIndex, branches }) => {
     ? center 
     : { lat: markers[markerIndex].lat, lng: markers[markerIndex].lng };
   
-  const mapZoom = showAllMarkers ? 14 : 15;
+  const mapZoom = showAllMarkers ? 13 : 14;
 
   return (
     <LoadScript googleMapsApiKey="AIzaSyD41sWartpep37guUs7W7ipsbijuI2nMzE">
