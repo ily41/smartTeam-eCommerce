@@ -265,18 +265,21 @@ const Home = () => {
           <SearchUI />
           <section onMouseLeave={() => setHoveredCategorie(null)} className="lg:flex lg:w-[85vw] transition-all lg:mx-auto lg:shadow-[0_4px_4px_rgba(0,0,0,0.25)] lg:rounded-lg lg:gap-5 lg:bg-white">
   
-  <div className='hidden lg:mt-5 lg:m-4 lg:flex flex-col justify-between text-black mt-1 whitespace-nowrap lg:w-[220px] lg:flex-shrink-0'>
-    {isParentLoading ? (
-      <>
-        {[...Array(7)].map((_, i) => (
-          <CategorySkeleton key={i} />
-        ))}
-      </>
-    ) : (
-      <>
-        {/* Top 4 categories */}
-        <div className="flex flex-col gap-3">
-          {(translatedParentCategories.length > 0 ? translatedParentCategories : parentCategories)?.slice(0, 4).map((item) => {
+          <div className='hidden lg:mt-5 lg:m-4 lg:flex flex-col justify-between text-black mt-1 whitespace-nowrap lg:w-[220px] lg:flex-shrink-0'>
+            {isParentLoading ? (
+              <>
+                {[...Array(7)].map((_, i) => (
+                  <CategorySkeleton key={i} />
+                ))}
+              </>
+            ) : (
+              <>
+                {/* Top 4 categories */}
+       
+              
+                {/* Bottom 3 categories */}
+                <div className="flex flex-col gap-3">
+          {(translatedParentCategories.length > 0 ? translatedParentCategories : parentCategories)?.map((item) => {
             return (
               <Link 
                 key={item.id}
@@ -291,47 +294,17 @@ const Home = () => {
               </Link>
             )
           })}
-        </div>
-
-        {/* 3 dots separator */}
-        {(translatedParentCategories.length > 0 ? translatedParentCategories : parentCategories)?.length > 4 && (
-          <div className="flex justify-center items-center py-2 lg:mb-3 w-full">
-            <div className="flex gap-10">
-              <span className="w-1.5 h-1.5 bg-gray-400 rounded-full"></span>
-              <span className="w-1.5 h-1.5 bg-gray-400 rounded-full"></span>
-              <span className="w-1.5 h-1.5 bg-gray-400 rounded-full"></span>
-            </div>
+                </div>
+              </>
+            )}
           </div>
-        )}
-
-        {/* Bottom 3 categories */}
-        <div className="flex flex-col gap-3">
-          {(translatedParentCategories.length > 0 ? translatedParentCategories : parentCategories)?.slice(4, 7).map((item) => {
-            return (
-              <Link 
-                key={item.id}
-                to={`/categories/${item.slug}`}
-                state={{ name: item.name }}
-                onMouseEnter={() => {setHoveredCategorie(item.id); setHoveredName(item.name)}}
-                onClick={() => setActiveCategorie(activeCategorie === item.slug ? null : item.slug)}
-                className={`p-2 pl-3 flex gap-2 lg:mb-3 lg:hover:bg-[#ffe2e1] ${activeCategorie === item.slug ? 'bg-[#ffe2e1]' : ''} cursor-pointer lg:rounded-2xl min-w-[220px] lg:pr-5`}
-              >
-                <img className="w-[24px]" src={getCategoryIcon(item.slug)} alt="" />
-                <span>{item.name}</span>
-              </Link>
-            )
-          })}
-        </div>
-      </>
-    )}
-  </div>
-  
-  
-  <div className={`${hoveredCategorie || activeCategorie ? 'lg:hidden' : ''} border-[#E0E0E0] w-full  flex items-center`}>
-    <BannerSlider />
-  </div>
-  
-  <div className={`${activeCategorie || hoveredCategorie ? 'lg:flex' : 'hidden'} hidden border-l border-[#E0E0E0] flex-1 overflow-y-auto`}>
+          
+          
+          <div className={`${hoveredCategorie || activeCategorie ? 'lg:hidden' : ''} border-[#E0E0E0] w-full  flex items-center`}>
+            <BannerSlider />
+          </div>
+          
+          <div className={`${activeCategorie || hoveredCategorie ? 'lg:flex' : 'hidden'} hidden border-l border-[#E0E0E0] flex-1 overflow-y-auto`}>
     {isParentLoading ? (
       <div className="w-full p-10">
         <SubCategorySkeleton />
@@ -411,8 +384,8 @@ const Home = () => {
         `}</style>
       </div>
     )}
-  </div>
-</section>
+          </div>
+        </section>
 
         <section className="md:mt-12 md:mx-4 lg:w-[85vw] lg:mx-auto">
           <InfiniteBrandSlider />
