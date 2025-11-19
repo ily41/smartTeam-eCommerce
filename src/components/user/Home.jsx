@@ -421,7 +421,7 @@ const Home = () => {
                 <div className='max-w-[130px]'>
                   <img className='min-h-[120px] object-contain' src="./deals/homeLaptop.svg" srcSet="/deals/homeLaptop@3.png 3x" alt="" />
                 </div>
-                <p className='text-center'>Laptops</p>
+                <p className='text-center'>{t('laptops')}</p>
               </Link>
               <Link to='categories/ofis-avadanliqlari' state={{ name: 'ofis avadanliqlari' }} className='bg-white flex justify-center items-center flex-col gap-4 rounded-lg border border-[#DEE2E6] p-4'>
                 <div className='max-w-[130px]'>

@@ -1,7 +1,7 @@
-import { Loader2, Pen, Trash, Package, DollarSign, Palette, Ruler, Eye, Search, X } from "lucide-react";
-import { useState } from "react";
+import { Loader2, Pen, Trash, Package, DollarSign, Palette, Ruler, Eye, Search, X, ChevronDown, Filter } from "lucide-react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { useActivateUserMutation, useDeActivateUserMutation, useDeleteProductMutation, useGetProductsQuery, useGetProductsSummaryQuery } from "../../store/API";
+import { useActivateUserMutation, useDeActivateUserMutation, useDeleteProductMutation, useGetProductsQuery, useGetProductsSummaryQuery, useGetParentCategoriesQuery } from "../../store/API";
 import Modal from "../../components/UI/Modal";
 import AddProductStatic from "../../components/admin/Product/AddProduct";
 import EditProduct from "../../components/admin/Product/EditProduct";
@@ -12,12 +12,18 @@ const ProductsUI = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { data: products, isLoading, error, refetch } = useGetProductsQuery();
+    console.log(products);
     const { data: productsSummary, isSummaryLoading } = useGetProductsSummaryQuery();
+    const { data: parentCategories, isLoading: isParentCategoriesLoading } = useGetParentCategoriesQuery();
     
     const [open, setOpen] = useState(false);
     const [modalType, setModalType] = useState(null); 
     const [cat, setCat] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
+    const [selectedCategories, setSelectedCategories] = useState([]);
+    const [openDropdowns, setOpenDropdowns] = useState({});
+    const [isCategoryFilterOpen, setIsCategoryFilterOpen] = useState(false);
+    const categoryFilterRef = useRef(null);
 
     const [deleteCategory] = useDeleteProductMutation();
 
@@ -41,16 +47,62 @@ const ProductsUI = () => {
       refetch();
     };
 
-    // Filter products based on search query
-    const filteredProducts = products?.filter(product => {
-      const query = searchQuery.toLowerCase();
-      return (
-        product.name?.toLowerCase().includes(query) ||
-        product.slug?.toLowerCase().includes(query) ||
-        product.colors?.some(color => color.toLowerCase().includes(query)) ||
-        product.sizes?.some(size => size.toLowerCase().includes(query))
-      );
-    });
+    // Close category filter when clicking outside
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (categoryFilterRef.current && !categoryFilterRef.current.contains(event.target)) {
+          setIsCategoryFilterOpen(false);
+        }
+      };
+
+      if (isCategoryFilterOpen) {
+        document.addEventListener('mousedown', handleClickOutside);
+      }
+
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }, [isCategoryFilterOpen]);
+
+    // Toggle dropdown
+    const toggleDropdown = (parentId) => {
+      setOpenDropdowns(prev => ({
+        ...prev,
+        [parentId]: !prev[parentId]
+      }));
+    };
+
+    // Handle category selection (same logic as FilterSidebar)
+    const handleCategoryChange = (categoryId) => {
+      setSelectedCategories(prev => {
+        if (prev.includes(categoryId)) {
+          return prev.filter(id => id !== categoryId);
+        }
+        return [...prev, categoryId];
+      });
+    };
+
+    // Filter products based on search query and selected categories
+    const filteredProducts = useMemo(() => {
+      if (!products) return [];
+      
+      return products.filter(product => {
+        // Search filter
+        const query = searchQuery.toLowerCase();
+        const matchesSearch = !searchQuery || (
+          product.name?.toLowerCase().includes(query) ||
+          product.slug?.toLowerCase().includes(query) ||
+          product.colors?.some(color => color.toLowerCase().includes(query)) ||
+          product.sizes?.some(size => size.toLowerCase().includes(query))
+        );
+
+        // Category filter
+        const matchesCategory = selectedCategories.length === 0 || 
+          selectedCategories.includes(product.categoryId);
+
+        return matchesSearch && matchesCategory;
+      });
+    }, [products, searchQuery, selectedCategories]);
 
     return (
       <div className="text-white p-4 min-h-screen">
@@ -152,25 +204,139 @@ const ProductsUI = () => {
                   </div>
                 </div>
               </div>
-              <div className="mb-10 ml-[60%] ">
-                <div className="relative">
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input
-                    type="text"
-                    placeholder="Məhsul axtar..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-12 pr-12 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  />
-                  {searchQuery && (
+
+              {/* Category Filter and Search Bar */}
+              <div className="flex flex-col  mb-9">
+                <div className="mb-3 flex flex-col md:flex-row gap-4 items-start md:items-center">
+                  {/* Category Filter */}
+                  <div className="w-full md:w-auto" ref={categoryFilterRef}>
+                  <div className="relative">
                     <button
-                      onClick={() => setSearchQuery("")}
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                      onClick={() => setIsCategoryFilterOpen(!isCategoryFilterOpen)}
+                      className="flex items-center gap-2 px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white hover:bg-gray-700 transition-all"
                     >
-                      <X className="w-5 h-5" />
+                      <Filter className="w-5 h-5" />
+                      <span className="text-sm font-medium">Kateqoriya</span>
+                      <ChevronDown 
+                        className={`w-4 h-4 transition-transform duration-200 ${
+                          isCategoryFilterOpen ? 'transform rotate-180' : ''
+                        }`}
+                      />
                     </button>
-                  )}
+                    
+                    {/* Category Dropdowns */}
+                    {isCategoryFilterOpen && !isParentCategoriesLoading && parentCategories && parentCategories.length > 0 && (
+                      <div className="absolute top-full left-0 mt-2 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-50 min-w-[280px] max-h-[500px] overflow-y-auto">
+                        <div className="p-4 space-y-2">
+                          {parentCategories.map((parentCat) => (
+                            <div key={parentCat.id} className="border-b border-gray-700 last:border-b-0 pb-2 last:pb-0">
+                              {/* Parent Category Dropdown */}
+                              <button
+                                onClick={() => toggleDropdown(parentCat.id)}
+                                className="w-full flex items-center justify-between px-3 py-2 text-white hover:bg-gray-700 rounded-lg transition-colors"
+                              >
+                                <span className="font-medium text-sm">{parentCat.name}</span>
+                                <ChevronDown 
+                                  className={`w-4 h-4 transition-transform duration-200 ${
+                                    openDropdowns[parentCat.id] ? 'transform rotate-180' : ''
+                                  }`}
+                                />
+                              </button>
+                              
+                              {/* Subcategories */}
+                              {openDropdowns[parentCat.id] && parentCat.subCategories && parentCat.subCategories.length > 0 && (
+                                <div className="mt-2 ml-4 space-y-1">
+                                  {parentCat.subCategories.map((subCat) => (
+                                    <label
+                                      key={subCat.id}
+                                      className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-300 hover:bg-gray-700 rounded-lg cursor-pointer transition-colors"
+                                    >
+                                      <input
+                                        type="checkbox"
+                                        className="w-4 h-4 text-blue-500 cursor-pointer border-gray-600 rounded focus:ring-blue-500 bg-gray-700"
+                                        checked={selectedCategories.includes(subCat.id)}
+                                        onChange={() => handleCategoryChange(subCat.id)}
+                                      />
+                                      <span>{subCat.name}</span>
+                                    </label>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                          
+                          {/* Clear Filters Button */}
+                          {selectedCategories.length > 0 && (
+                            <button
+                              onClick={() => setSelectedCategories([])}
+                              className="w-full mt-3 px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-gray-700 rounded-lg transition-colors"
+                            >
+                              Filtrləri təmizlə
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Selected Categories Badges */}
+                  
+                  </div>
+
+                  {/* Search Bar */}
+                  <div className="flex-1 md:ml-auto md:max-w-md">
+                  <div className="relative">
+                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <input
+                      type="text"
+                      placeholder="Məhsul axtar..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-12 pr-12 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    />
+                    {searchQuery && (
+                      <button
+                        onClick={() => setSearchQuery("")}
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    )}
+                  </div>
+                  </div>
+                 
+
                 </div>
+
+                {selectedCategories.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {selectedCategories.map(catId => {
+                        let categoryName = '';
+                        parentCategories?.forEach(parent => {
+                          if (parent.id === catId) {
+                            categoryName = parent.name;
+                          } else if (parent.subCategories) {
+                            const subCat = parent.subCategories.find(sub => sub.id === catId);
+                            if (subCat) categoryName = subCat.name;
+                          }
+                        });
+                        return (
+                          <span
+                            key={catId}
+                            className="inline-flex items-center gap-1 px-3 py-1 bg-blue-600 text-white text-xs rounded-full"
+                          >
+                            {categoryName}
+                            <button
+                              onClick={() => handleCategoryChange(catId)}
+                              className="hover:text-red-300 transition-colors"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </span>
+                        );
+                      })}
+                    </div>
+                    )}
               </div>
 
               {/* Products Grid */}

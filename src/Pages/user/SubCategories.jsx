@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useGetCategoryQuery, useGetRecommendedQuery } from '../../store/API';
+import { useGetCategoryQuery, useGetRecommendedPageQuery, useGetRecommendedQuery } from '../../store/API';
 import { Link, useLocation, useParams } from 'react-router';
 import { Breadcrumb } from '../../products/Breadcrumb';
 import SimilarProducts from '../../components/UI/SimilarRecommendedProducts';
@@ -79,16 +79,18 @@ const CategoryCard = ({ title, imageSrc = null, slug }) => (
 const SubCategories = () => {
   const { slug } = useParams();
   const { data: subs, isLoading } = useGetCategoryQuery(slug);
-  const { data: similar, isLoading: isSimilarLoading } = useGetRecommendedQuery({
+  console.log(subs)
+  const { data: similar, isLoading: isSimilarLoading } = useGetRecommendedPageQuery({
     categoryId: subs?.id,
-    limit: 6
+    page: 1,
+    pageSize: 6
   });
+  console.log(similar)
   const location = useLocation();
   const { name } = location.state || {};
   const { i18n } = useTranslation();
   const [translatedSubs, setTranslatedSubs] = useState(null);
 
-  // ✅ Translate category and subcategory names when language changes
   useEffect(() => {
     async function translateCategoryData() {
       if (!subs) return;
@@ -154,7 +156,7 @@ const SubCategories = () => {
 
         {/* Similar Products Section */}
         <SimilarProducts
-          products={similar?.recentlyAdded}
+          products={similar?.items}
           isLoading={isSimilarLoading}
         />
       </div>

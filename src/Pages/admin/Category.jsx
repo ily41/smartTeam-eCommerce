@@ -10,8 +10,10 @@ const Category = () => {
   const [modalType, setModalType] = useState(null); 
   const [edit, setEdit] = useState(null);
   const { data: categories, isLoading, error, refetch } = useGetCategoriesQuery();
+  console.log(categories);
   const { data: ParCat, isParCatLoading} = useGetParentCategoriesQuery();
-  const [expanded, setExpanded] = useState({}); // Track expanded categories
+  console.log(ParCat);
+  const [expanded, setExpanded] = useState({}); 
 
   const [deleteCategory] = useDeleteCategoryMutation();
 

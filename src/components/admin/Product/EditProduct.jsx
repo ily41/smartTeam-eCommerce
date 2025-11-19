@@ -8,6 +8,13 @@ const EditProduct = ({ setOpen, idPr }) => {
   const [editProductWithImage, { isLoading: isEditLoading }] = useEditProductWithImageMutation();
   const [deleteDetailImage] = useDeleteProductImageMutation();
   const { data: categories } = useGetCategoriesQuery();
+  const [sortedCat, setSortedCat] = useState([]);
+  
+  useEffect(() => {
+    if (categories) {
+      setSortedCat([...categories].sort((a, b) => a.name.localeCompare(b.name)));
+    }
+  }, [categories]);
   const { data: brands } = useGetBrandsQuery();
   const { data: userRoles } = useGetUserRolesQuery();
 
@@ -461,7 +468,7 @@ const EditProduct = ({ setOpen, idPr }) => {
               className="w-full px-3 py-2 bg-[#2c2c2c] border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
               <option value="">Kateqoriya seçin</option>
-              {categories?.map(category => (
+              {sortedCat?.map(category => (
                 <option key={category.id} value={category.id}>
                   {category.name}
                 </option>
