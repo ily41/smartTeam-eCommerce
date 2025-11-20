@@ -21,7 +21,7 @@ import {
   useGetProductsPaginatedQuery
 } from '../../store/API';
 import { toast } from 'react-toastify';
-import { useParams, useSearchParams } from 'react-router';
+import { useParams, useSearchParams, useLocation } from 'react-router';
 import UnauthorizedModal from '../../components/UI/UnauthorizedModal';
 import SEO from '../../components/SEO/SEO';
 import { useTranslation } from 'react-i18next';
@@ -113,8 +113,12 @@ const CustomDropdown = React.memo(({ value, onChange, options }) => {
 function Products() {
   const { slug } = useParams();
   const [searchParams] = useSearchParams();
-  const location = window.location.pathname;
+  const location = useLocation();
+  const locationPath = location.pathname;
   const {t} = useTranslation();
+  
+  // Get parent category info from navigation state
+  const parentCategoryInfo = location.state || null;
 
   const [showUnauthorizedModal, setShowUnauthorizedModal] = useState(false);
   const [unauthorizedAction, setUnauthorizedAction] = useState('');
@@ -126,7 +130,7 @@ function Products() {
   
   // Extract brand slug if this is a brand route - memoize this
   const { isBrandRoute, brandSlug, isHotDeals, isRecommended, isBrand, isSearch, isCategoryParam, isBrandParam, isSpecialSlug } = useMemo(() => {
-    const pathParts = location.split('/');
+    const pathParts = locationPath.split('/');
     const isBrandRoute = pathParts.includes('brand');
     const brandSlug = isBrandRoute ? pathParts[pathParts.indexOf('brand') + 1] : null;
     const isHotDeals = slug === 'hot-deals';
@@ -138,7 +142,7 @@ function Products() {
     const isSpecialSlug = isHotDeals || isRecommended || isBrand || isSearch || isCategoryParam || isBrandParam;
     
     return { isBrandRoute, brandSlug, isHotDeals, isRecommended, isBrand, isSearch, isCategoryParam, isBrandParam, isSpecialSlug };
-  }, [location, slug, searchQuery, categoryParam, brandParam]);
+  }, [locationPath, slug, searchQuery, categoryParam, brandParam]);
   
   const categoryName = useMemo(() => {
     if (isHotDeals) return t('productsPage.hotDeals');
@@ -489,7 +493,12 @@ function Products() {
       <div className="min-h-screen bg-[#f7fafc] inter">
         <div className='lg:hidden px-4 py-4 border-y-1 border-[#dee2e6] bg-white'>
           <div className='mb-4'><SearchUI /></div>
-          <Breadcrumb />
+          <Breadcrumb categoryData={parentCategoryInfo ? {
+            parentCategoryName: parentCategoryInfo.parentCategoryName,
+            parentCategorySlug: parentCategoryInfo.parentCategorySlug,
+            categoryName: categoryName,
+            categorySlug: slug
+          } : null} />
         </div>
         
         <div className='lg:hidden bg-white px-4 py-4'>
@@ -499,7 +508,12 @@ function Products() {
         </div>
         
         <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-          <div className='hidden lg:block lg:pl-4'><Breadcrumb /></div>
+          <div className='hidden lg:block lg:pl-4'><Breadcrumb categoryData={parentCategoryInfo ? {
+            parentCategoryName: parentCategoryInfo.parentCategoryName,
+            parentCategorySlug: parentCategoryInfo.parentCategorySlug,
+            categoryName: categoryName,
+            categorySlug: slug
+          } : null} /></div>
           
           <div className="lg:flex lg:gap-8 lg:mt-5">
             <div className="hidden lg:block lg:w-64 lg:flex-shrink-0">

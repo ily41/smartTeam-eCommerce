@@ -4,7 +4,7 @@ import { ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { translateDynamicField } from "../i18n";
 
-export function Breadcrumb({ productData = null }) {
+export function  Breadcrumb({ productData = null, categoryData = null }) {
   const { i18n, t } = useTranslation();
   const location = useLocation();
   const pathnames = location.pathname.split("/").filter((x) => x);
@@ -13,6 +13,7 @@ export function Breadcrumb({ productData = null }) {
   
   // Dynamic translation states
   const [translatedProductData, setTranslatedProductData] = useState(null);
+  const [translatedCategoryData, setTranslatedCategoryData] = useState(null);
 
   const formatName = (value) =>
     value.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
@@ -22,7 +23,7 @@ export function Breadcrumb({ productData = null }) {
     /^[a-f0-9]{24}$/i.test(value) ||
     /^[0-9a-f-]{36}$/i.test(value);
 
-  // Dynamic translation effect
+  // Dynamic translation effect for product data
   useEffect(() => {
     async function translateProductData() {
       if (!productData) return;
@@ -52,11 +53,75 @@ export function Breadcrumb({ productData = null }) {
     translateProductData();
   }, [i18n.language, productData]);
 
+  // Dynamic translation effect for category data
+  useEffect(() => {
+    async function translateCategoryData() {
+      if (!categoryData) return;
+      
+      const targetLang = i18n.language;
+      if (targetLang === 'en') {
+        const translated = { ...categoryData };
+        
+        if (categoryData.parentCategoryName) {
+          translated.parentCategoryName = await translateDynamicField(categoryData.parentCategoryName, targetLang);
+        }
+        if (categoryData.categoryName) {
+          translated.categoryName = await translateDynamicField(categoryData.categoryName, targetLang);
+        }
+        
+        setTranslatedCategoryData(translated);
+      } else {
+        setTranslatedCategoryData(categoryData);
+      }
+    }
+    translateCategoryData();
+  }, [i18n.language, categoryData]);
+
   // ✅ include "details" so breadcrumb works for your product detail page
   const isProductPage =
     pathnames.includes("product") ||
     pathnames.includes("products") ||
     pathnames.includes("details");
+
+  // ✅ Category breadcrumb (Home > Parent Category > Sub Category)
+  if (isProductPage && categoryData && !productData) {
+    const currentCategoryData = translatedCategoryData || categoryData;
+    return (
+      <nav className="flex items-center space-x-2 text-sm text-[#8B96A5] inter">
+        <Link
+          to="/"
+          className="hover:text-gray-900 transition-colors text-sm lg:text-lg"
+        >
+          {t('productsPage.home')}
+        </Link>
+
+        {/* Parent Category */}
+        {currentCategoryData.parentCategoryName && (
+          <>
+            <ChevronRight className="w-4 h-4 text-gray-400" />
+            <Link
+              to={`/categories/${currentCategoryData.parentCategorySlug
+                ?.toLowerCase()
+                .replace(/\s+/g, "-")}`}
+              className="hover:text-gray-900 transition-colors text-sm lg:text-lg"
+            >
+              {currentCategoryData.parentCategoryName}
+            </Link>
+          </>
+        )}
+
+        {/* Sub Category */}
+        {currentCategoryData.categoryName && (
+          <>
+            <ChevronRight className="w-4 h-4 text-gray-400" />
+            <span className="font-medium text-sm lg:text-lg text-black">
+              {currentCategoryData.categoryName}
+            </span>
+          </>
+        )}
+      </nav>
+    );
+  }
 
   // ✅ Product breadcrumb (Home > Category > Subcategory > Product Name)
   if (isProductPage && productData) {
@@ -86,23 +151,26 @@ export function Breadcrumb({ productData = null }) {
         )}
 
         {/* Sub Category */}
-        {currentProductData.subCategoryName && (
+        {(currentProductData.subCategoryName || 
+          (currentProductData.categoryName && currentProductData.parentCategoryName && !currentProductData.subCategoryName)) && (
             <>
               <ChevronRight className="w-4 h-4 text-gray-400" />
               <Link
                 to={`/products/${currentProductData.categorySlug
-                  .toLowerCase()
+                  ?.toLowerCase()
                   .replace(/\s+/g, "-")}`}
                 className="hover:text-gray-900 transition-colors text-sm lg:text-lg"
               >
-                {currentProductData.subCategoryName}
+                {currentProductData.subCategoryName || currentProductData.categoryName}
               </Link>
             </>
           )}
 
+        {/* Additional Category (only if different from subcategory and parent) */}
         {currentProductData.categoryName &&
           currentProductData.categoryName !== currentProductData.subCategoryName &&
-          currentProductData.categoryName !== currentProductData.parentCategoryName && (
+          currentProductData.categoryName !== currentProductData.parentCategoryName &&
+          (!currentProductData.parentCategoryName || currentProductData.subCategoryName) && (
             <>
               <ChevronRight className="w-4 h-4 text-gray-400" />
               <Link

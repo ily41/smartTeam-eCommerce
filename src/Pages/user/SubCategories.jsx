@@ -51,9 +51,13 @@ const SubCategoriesSkeleton = () => {
 };
 
 // Category Card
-const CategoryCard = ({ title, imageSrc = null, slug }) => (
+const CategoryCard = ({ title, imageSrc = null, slug, parentCategory }) => (
   <Link
     to={`/products/${slug}`}
+    state={{
+      parentCategoryName: parentCategory?.name,
+      parentCategorySlug: parentCategory?.slug
+    }}
     className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200 cursor-pointer group"
   >
     <div className="flex flex-col items-center text-center h-full">
@@ -131,7 +135,7 @@ const SubCategories = () => {
     <section className="bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         
-        <div className="hidden md:block mb-5">
+        <div className=" md:block mb-5">
           <Breadcrumb />
         </div>
         
@@ -150,6 +154,7 @@ const SubCategories = () => {
               title={category.name}
               imageSrc={category.imageUrl}
               slug={category.slug}
+              parentCategory={translatedSubs}
             />
           ))}
         </div>

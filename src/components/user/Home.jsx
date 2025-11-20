@@ -150,6 +150,11 @@ const Home = () => {
        const subCategories = hoveredCategorie 
        ? parentCategories?.find(cat => cat.id === hoveredCategorie)?.subCategories 
        : null;
+       
+    // Get the parent category object for breadcrumb navigation
+    const parentCategory = hoveredCategorie 
+      ? (translatedParentCategories.length > 0 ? translatedParentCategories : parentCategories)?.find(cat => cat.id === hoveredCategorie)
+      : null;
 
     // Dynamic translation effect for parent categories
     useEffect(() => {
@@ -318,6 +323,10 @@ const Home = () => {
               <Link 
                 key={item.id}
                 to={`/products/${item.slug || '#'}`}
+                state={{
+                  parentCategoryName: parentCategory?.name,
+                  parentCategorySlug: parentCategory?.slug
+                }}
                 className='group relative flex items-center justify-between gap-3 p-4 rounded-xl bg-gradient-to-r from-gray-50 to-white border border-gray-200 hover:border-[#E60C03] hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer animate-slideIn overflow-hidden'
                 style={{ animationDelay: `${index * 50}ms` }}
               >
