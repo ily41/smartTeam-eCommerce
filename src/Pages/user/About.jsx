@@ -24,7 +24,7 @@ const About = () => {
         title="About Us - Smart Team Electronics"
         description="Learn about Smart Team Electronics - your trusted partner for premium electronics in Azerbaijan. We offer quality products, excellent service, and innovative solutions including HEMPOS software installation."
         keywords="about smart team, electronics store Azerbaijan, hempos, smart team electronics, company information"
-        image="/Icons/logo.png"
+        image="/Icons/logo.svg"
         type="website"
       />
       <section className='bg-[#F7FAFC] pt-5 inter'>

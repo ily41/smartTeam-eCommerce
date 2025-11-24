@@ -21,7 +21,7 @@ const SEO = ({
   title = 'Smart Team Electronics - Azərbaycanda Premium Elektronika Mağazası',
   description = 'Smart Team Electronics-də ən son elektronika, kompyuter, noutbuk, printer, müşahidə sistemləri və daha çoxunu alın. Azərbaycanda ən yaxşı qiymətlər, keyfiyyətli məhsullar və əla müştəri xidməti.',
   keywords = 'elektronika, kompyuter, noutbuk, printer, müşahidə, smart team, Azərbaycan, onlayn mağaza, elektronika mağazası, electronics, computers, laptops, printers, surveillance, Azerbaijan, online store',
-  image = '/Icons/logo.png',
+  image = '/Icons/logo.svg',
   url,
   type = 'website',
   product = null,
@@ -45,7 +45,7 @@ const SEO = ({
     '@type': ['Organization', 'LocalBusiness'],
     name: 'Smart Team Electronics',
     url: siteUrl,
-    logo: `${siteUrl}/Icons/logo.png`,
+    logo: `${siteUrl}/Icons/logo.svg`,
     description: 'Azərbaycanda premium elektronika mağazası',
     address: {
       '@type': 'PostalAddress',

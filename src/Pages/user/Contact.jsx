@@ -17,7 +17,7 @@ const Contact = () => {
         title="Contact Us - Smart Team Electronics"
         description="Get in touch with Smart Team Electronics. Visit our branches in Azerbaijan or contact us via phone, email, or social media. We're here to help with all your electronics needs."
         keywords="contact smart team, electronics store contact, Azerbaijan electronics, smart team phone, smart team email"
-        image="/Icons/logo.png"
+        image="/Icons/logo.svg"
         type="website"
       />
       <section className='bg-[#f7fafc] pt-10 inter min-h-screen'>
