@@ -15,6 +15,7 @@ import {
   useGetFavoriteStatusQuery,
   useGetRecommendedQuery,
   useGetMeQuery,
+  useGetRecommendedPageQuery,
 } from '../../store/API';
 import { toast } from 'react-toastify';
 import SimilarProducts from '../../components/UI/SimilarRecommendedProducts';
@@ -192,6 +193,8 @@ function Details() {
   const [showQuickOrderModal, setShowQuickOrderModal] = useState(false);
   const { data: me, isLoading: isMeLoading } = useGetMeQuery();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  
   
   // Dynamic translation states
   const [translatedProduct, setTranslatedProduct] = useState(null);
@@ -229,6 +232,13 @@ const prevModalSlide = () => {
   const { data: product, isLoading: loading, error, isError } = useGetProductQuery(id, { skip: !id });
   const { data: productSpec, isLoading: isSpecLoading } = useGetProductSpecificationsQuery(product?.id, { skip: !product?.id });
   const { data: favoriteStatus } = useGetFavoriteStatusQuery({ productId: product?.id }, { skip: !product?.id });
+  const { data: similar, isLoading: isSimilarLoading } = useGetRecommendedPageQuery({
+      categoryId: product?.categoryId,
+      page: 1,
+      pageSize: 6
+    });
+
+    
   const [showSuccess, setShowSuccess] = useState(false);
 
   // Dynamic translation effect
@@ -893,9 +903,9 @@ const prevModalSlide = () => {
         </div>
 
         <SimilarProducts
-           products={recommendation?.recentlyAdded} 
-           isLoading={isRecLoading} 
-         />
+          products={similar?.items}
+          isLoading={isSimilarLoading}
+        />
       </div>
 
       {/* Desktop Layout */}
@@ -1127,7 +1137,7 @@ const prevModalSlide = () => {
           </div>
         </div>
         <SimilarProducts
-           products={recommendation?.recentlyAdded} 
+           products={similar?.items} 
            isLoading={isRecLoading} 
          />
       </div>

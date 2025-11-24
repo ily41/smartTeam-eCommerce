@@ -283,7 +283,7 @@ const Home = () => {
        
               
                 {/* Bottom 3 categories */}
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col ">
           {(translatedParentCategories.length > 0 ? translatedParentCategories : parentCategories)?.map((item) => {
             return (
               <Link 
