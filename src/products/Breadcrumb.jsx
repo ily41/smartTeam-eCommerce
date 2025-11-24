@@ -87,10 +87,10 @@ export function  Breadcrumb({ productData = null, categoryData = null }) {
   if (isProductPage && categoryData && !productData) {
     const currentCategoryData = translatedCategoryData || categoryData;
     return (
-      <nav className="flex items-center space-x-2 text-sm text-[#8B96A5] inter">
+      <nav className="flex items-center space-x-2 text-sm text-[#8B96A5] inter overflow-x-auto scrollbar-hide whitespace-nowrap">
         <Link
           to="/"
-          className="hover:text-gray-900 transition-colors text-sm lg:text-lg"
+          className="hover:text-gray-900 transition-colors text-sm lg:text-lg flex-shrink-0"
         >
           {t('productsPage.home')}
         </Link>
@@ -98,12 +98,12 @@ export function  Breadcrumb({ productData = null, categoryData = null }) {
         {/* Parent Category */}
         {currentCategoryData.parentCategoryName && (
           <>
-            <ChevronRight className="w-4 h-4 text-gray-400" />
+            <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
             <Link
               to={`/categories/${currentCategoryData.parentCategorySlug
                 ?.toLowerCase()
                 .replace(/\s+/g, "-")}`}
-              className="hover:text-gray-900 transition-colors text-sm lg:text-lg"
+              className="hover:text-gray-900 transition-colors text-sm lg:text-lg flex-shrink-0 whitespace-nowrap"
             >
               {currentCategoryData.parentCategoryName}
             </Link>
@@ -113,8 +113,8 @@ export function  Breadcrumb({ productData = null, categoryData = null }) {
         {/* Sub Category */}
         {currentCategoryData.categoryName && (
           <>
-            <ChevronRight className="w-4 h-4 text-gray-400" />
-            <span className="font-medium text-sm lg:text-lg text-black">
+            <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
+            <span className="font-medium text-sm lg:text-lg text-black flex-shrink-0 whitespace-nowrap">
               {currentCategoryData.categoryName}
             </span>
           </>
@@ -127,10 +127,10 @@ export function  Breadcrumb({ productData = null, categoryData = null }) {
   if (isProductPage && productData) {
     const currentProductData = translatedProductData || productData;
     return (
-      <nav className="flex items-center space-x-2 text-sm text-[#8B96A5] inter">
+      <nav className="flex items-center space-x-2 text-sm text-[#8B96A5] inter overflow-x-auto scrollbar-hide whitespace-nowrap">
         <Link
           to="/"
-          className="hover:text-gray-900 transition-colors text-sm lg:text-lg"
+          className="hover:text-gray-900 transition-colors text-sm lg:text-lg flex-shrink-0"
         >
           {t('productsPage.home')}
         </Link>
@@ -138,12 +138,12 @@ export function  Breadcrumb({ productData = null, categoryData = null }) {
         {/* Parent Category */}
         {currentProductData.parentCategoryName && (
           <>
-            <ChevronRight className="w-4 h-4 text-gray-400" />
+            <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
             <Link
               to={`/categories/${currentProductData.parentCategorySlug
                 .toLowerCase()
                 .replace(/\s+/g, "-")}`}
-              className="hover:text-gray-900 transition-colors text-sm lg:text-lg"
+              className="hover:text-gray-900 transition-colors text-sm lg:text-lg flex-shrink-0 whitespace-nowrap"
             >
               {currentProductData.parentCategoryName}
             </Link>
@@ -154,12 +154,12 @@ export function  Breadcrumb({ productData = null, categoryData = null }) {
         {(currentProductData.subCategoryName || 
           (currentProductData.categoryName && currentProductData.parentCategoryName && !currentProductData.subCategoryName)) && (
             <>
-              <ChevronRight className="w-4 h-4 text-gray-400" />
+              <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
               <Link
                 to={`/products/${currentProductData.categorySlug
                   ?.toLowerCase()
                   .replace(/\s+/g, "-")}`}
-                className="hover:text-gray-900 transition-colors text-sm lg:text-lg"
+                className="hover:text-gray-900 transition-colors text-sm lg:text-lg flex-shrink-0 whitespace-nowrap"
               >
                 {currentProductData.subCategoryName || currentProductData.categoryName}
               </Link>
@@ -172,12 +172,12 @@ export function  Breadcrumb({ productData = null, categoryData = null }) {
           currentProductData.categoryName !== currentProductData.parentCategoryName &&
           (!currentProductData.parentCategoryName || currentProductData.subCategoryName) && (
             <>
-              <ChevronRight className="w-4 h-4 text-gray-400" />
+              <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
               <Link
                 to={`/category/${currentProductData.categoryName
                   .toLowerCase()
                   .replace(/\s+/g, "-")}`}
-                className="hover:text-gray-900 transition-colors text-sm lg:text-lg"
+                className="hover:text-gray-900 transition-colors text-sm lg:text-lg flex-shrink-0 whitespace-nowrap"
               >
                 {currentProductData.categoryName}
               </Link>
@@ -185,8 +185,8 @@ export function  Breadcrumb({ productData = null, categoryData = null }) {
           )}
 
         {/* Product Name */}
-        <ChevronRight className="w-4 h-4 text-gray-400" />
-        <span className="font-medium text-sm lg:text-lg text-black">
+        <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
+        <span className="font-medium text-sm lg:text-lg text-black flex-shrink-0 whitespace-nowrap">
           {currentProductData.name}
         </span>
       </nav>
@@ -194,10 +194,10 @@ export function  Breadcrumb({ productData = null, categoryData = null }) {
   }
 
   return (
-    <nav className="flex items-center space-x-2 text-sm text-[#8B96A5] inter">
+    <nav className="flex items-center space-x-2 text-sm text-[#8B96A5] inter overflow-x-auto scrollbar-hide whitespace-nowrap">
       <Link
         to="/"
-        className="hover:text-gray-900 transition-colors text-sm lg:text-lg"
+        className="hover:text-gray-900 transition-colors text-sm lg:text-lg flex-shrink-0"
       >
         {t('productsPage.home')}
       </Link>
@@ -211,15 +211,15 @@ export function  Breadcrumb({ productData = null, categoryData = null }) {
 
         return (
           <React.Fragment key={to}>
-            <ChevronRight className="w-4 h-4 text-gray-400" />
+            <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
             {isLast ? (
-              <span className="font-medium text-sm lg:text-lg text-black">
+              <span className="font-medium text-sm lg:text-lg text-black flex-shrink-0 whitespace-nowrap">
                 {formatName(value)}
               </span>
             ) : (
               <Link
                 to={to}
-                className="hover:text-gray-900 transition-colors text-sm lg:text-lg"
+                className="hover:text-gray-900 transition-colors text-sm lg:text-lg flex-shrink-0 whitespace-nowrap"
               >
                 {formatName(value)}
               </Link>

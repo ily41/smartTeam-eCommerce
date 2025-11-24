@@ -194,80 +194,84 @@ const MobileProductCard = ({ product, isAddingToCart, loadingProductId, showSucc
     }
   };
 
-  const renderButton = () => {
-    const {t} = useTranslation()
-    const isThisProductLoading = isAddingToCart && loadingProductId === product.id;
-    
-    if (isThisProductLoading) {
-      return (
-        <button
-          disabled
-          className="w-full cursor-not-allowed flex justify-center items-center text-xs bg-red-400 text-white py-1.5 px-3 rounded-md font-medium transition-colors duration-200"
-        >
-          <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-          Adding...
-        </button>
-      );
-    }
-    
-    if (showSuccess === product.id) {
-      return (
-        <button
-          disabled
-          className="w-full cursor-default flex justify-center items-center text-xs bg-green-500 text-white py-1.5 px-3 rounded-md font-medium transition-colors duration-200"
-        >
-          <Check className="w-3 h-3 mr-1" />
-          Added
-        </button>
-      );
-    }
-
-    return (
-      <button
-        onClick={(e) => onAddToCart(e, product)}
-        className="w-full cursor-pointer flex justify-center items-center text-xs bg-red-500 hover:bg-red-600 text-white py-1.5 px-3 rounded-md font-medium transition-colors duration-200"
-      >
-       {t('addToCart')}
-      </button>
-    );
-  };
+  const isThisProductLoading = isAddingToCart && loadingProductId === product.id;
+  const isSuccess = showSuccess === product.id;
 
   return (
-    <Link to={`/details/${product?.id}`} className="flex flex-col min-w-[70%] p-3 bg-white rounded-lg shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)]">
-      <div className="w-full h-32 mb-3">
-        <img 
-          src={`https://smartteamazreal-001-site1.ktempurl.com${product.primaryImageUrl}`} 
-          alt={product.name} 
-          className="w-full h-full max-w-[300px] object-contain" 
-          onError={(e) => {
-            e.target.src = "/Icons/logo.svg";
-          }}
-        />
-      </div>
-      <div className="flex-1 flex flex-col space-y-1.5">
-        <h3 className="font-medium text-sm text-gray-900 line-clamp-2">{product.name}</h3>
-        <p className="text-red-500 font-semibold text-sm">{product.currentPrice} AZN</p>
-      </div>
-      <div className="flex gap-2 mt-3">
-        {renderButton()}
-        <button 
-          onClick={handleFavoriteClick}
-          disabled={isTogglingFavorite}
-          className="p-2 border border-[#DEE2E6] rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50"
-        >
-          <Heart 
-            className={`w-4 h-4 transition-colors ${
-              localFavorite ? 'fill-red-500 text-red-500' : 'text-red-400'
-            }`}
+    <div className="bg-white rounded-xl shadow-sm border flex flex-col justify-between border-gray-200 overflow-hidden relative w-full">
+      <Link to={`/details/${product?.id}`} className="block">
+        <div className="aspect-square p-4 relative">
+          <img
+            src={`https://smartteamazreal-001-site1.ktempurl.com${product.primaryImageUrl}`}
+            alt={product.name || 'Product'}
+            className="w-full h-full object-contain"
+            onError={(e) => { e.target.src = '/Icons/logo.svg'; }}
           />
+        </div>
+      </Link>
+
+      <div className="p-4 relative">
+        <Link to={`/details/${product?.id}`} className="block mb-4">
+          <div className='flex gap-2'>
+            <h3 className="text-sm font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[56px] flex-1">
+              {product.name}
+            </h3>
+            <button
+              onClick={handleFavoriteClick}
+              disabled={isTogglingFavorite}
+              className="top-4 right-4 p-1 rounded-lg border border-gray-200 bg-white shadow-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed z-10 h-fit"
+            >
+              <Heart
+                className={`w-4 h-4 transition-colors text-red-500 hover:fill-red-400 cursor-pointer ${
+                  favoriteStatus?.isFavorite && 'fill-red-500'
+                }`}
+              />
+            </button>
+          </div>
+          {product.shortDescription && (
+            <p className="text-sm text-gray-600 mb-2 line-clamp-2">
+              {product.shortDescription}
+            </p>
+          )}
+
+          <div className="flex items-center gap-2 mt-2 flex-wrap">
+            <p className="text-xl font-bold text-[#E60C03]">{product.currentPrice} ₼</p>
+            {product.originalPrice && product.originalPrice > product.currentPrice && (
+              <p className="text-sm text-gray-400 line-through">{product.originalPrice} ₼</p>
+            )}
+          </div>
+        </Link>
+
+        <button
+          onClick={(e) => onAddToCart(e, product)}
+          disabled={isThisProductLoading || isSuccess}
+          className={`w-full cursor-pointer text-xs py-2 px-3 rounded-md font-medium transition-all duration-200 flex items-center justify-center gap-1.5 ${
+            isSuccess
+              ? 'bg-green-500 hover:bg-green-600 text-white'
+              : 'bg-[#E60C03] hover:bg-red-600 disabled:bg-red-400 disabled:cursor-not-allowed text-white'
+          }`}
+        >
+          {isSuccess ? (
+            <>
+              <Check className="w-3 h-3" />
+              {t('productCard.addedToCart')}
+            </>
+          ) : isThisProductLoading ? (
+            <>
+              <Loader2 className="w-3 h-3 animate-spin" />
+              {t('productCard.adding')}
+            </>
+          ) : (
+            t('productCard.addToCart')
+          )}
         </button>
       </div>
-    </Link>
+    </div>
   );
 };
 
 // Main Component
-const SimilarProducts = ({ products, isLoading }) => {
+const SimilarProducts = ({ products, isLoading, useGridOnMobile = false }) => {
   const scrollContainerRef = useRef(null);
   const [loadingProductId, setLoadingProductId] = useState(null);
   const [showSuccess, setShowSuccess] = useState(null);
@@ -346,11 +350,19 @@ const SimilarProducts = ({ products, isLoading }) => {
         <div className="md:hidden mt-4">
           <div className="px-4 py-4">
             <div className="h-6 bg-gray-200 rounded w-32 mb-4 animate-pulse"></div>
-            <div className="overflow-x-scroll scrollbar-hide flex gap-3 rounded-lg p-3">
-              {[...Array(2)].map((_, index) => (
-                <SkeletonProductCard key={index} isMobile={true} />
-              ))}
-            </div>
+            {useGridOnMobile ? (
+              <div className="grid grid-cols-2 gap-4">
+                {[...Array(4)].map((_, index) => (
+                  <SkeletonProductCard key={index} isMobile={true} />
+                ))}
+              </div>
+            ) : (
+              <div className="overflow-x-scroll scrollbar-hide flex gap-3 rounded-lg p-3">
+                {[...Array(2)].map((_, index) => (
+                  <SkeletonProductCard key={index} isMobile={true} />
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
@@ -389,19 +401,36 @@ const SimilarProducts = ({ products, isLoading }) => {
       <div className="md:hidden mt-4">
         <div className="px-4 py-4">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('similarProd')}</h2>
-          <div className="overflow-x-scroll scrollbar-hide flex gap-3 rounded-lg p-3">
-            {products.map((product) => (
-              <MobileProductCard 
-                key={product.id}
-                product={product}
-                isAddingToCart={isAddingToCart}
-                loadingProductId={loadingProductId}
-                showSuccess={showSuccess}
-                onAddToCart={onAddToCart}
-                onUnauthorized={handleUnauthorized}
-              />
-            ))}
-          </div>
+          {useGridOnMobile ? (
+            <div className="grid grid-cols-2 gap-4">
+              {products.map((product) => (
+                <div key={product.id} className="w-full">
+                  <MobileProductCard 
+                    product={product}
+                    isAddingToCart={isAddingToCart}
+                    loadingProductId={loadingProductId}
+                    showSuccess={showSuccess}
+                    onAddToCart={onAddToCart}
+                    onUnauthorized={handleUnauthorized}
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="overflow-x-scroll scrollbar-hide flex gap-3 rounded-lg p-3">
+              {products.map((product) => (
+                <MobileProductCard 
+                  key={product.id}
+                  product={product}
+                  isAddingToCart={isAddingToCart}
+                  loadingProductId={loadingProductId}
+                  showSuccess={showSuccess}
+                  onAddToCart={onAddToCart}
+                  onUnauthorized={handleUnauthorized}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

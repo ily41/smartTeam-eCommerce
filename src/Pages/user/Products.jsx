@@ -422,7 +422,12 @@ function Products() {
   }, []);
 
   useEffect(() => {
-    setTemplate(isMobile ? "cols" : "rows"); 
+    // Mobil görünüşdə həmişə "cols" (grid), desktopda "rows" (list)
+    if (isMobile) {
+      setTemplate("cols");
+    } else {
+      setTemplate("rows");
+    }
   }, [isMobile]);
 
   // Determine loading state based on slug type - memoized
@@ -572,14 +577,22 @@ function Products() {
                       />
                       <div className="flex border border-gray-300 rounded-md overflow-hidden">
                         <button 
-                          onClick={() => setTemplate("cols")} 
+                          onClick={() => {
+                            if (!isMobile) {
+                              setTemplate("cols");
+                            }
+                          }} 
                           className={`p-2 ${template === "cols" ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'} cursor-pointer`}
                         >
                           <Grid className="w-4 h-4" />
                         </button>
 
                         <button 
-                          onClick={() => setTemplate("rows")} 
+                          onClick={() => {
+                            if (!isMobile) {
+                              setTemplate("rows");
+                            }
+                          }} 
                           className={`p-2 ${template === "cols" ? 'bg-white text-gray-900' : 'bg-gray-900 text-white'} cursor-pointer`}
                         >
                           <List className="w-4 h-4" />

@@ -163,6 +163,7 @@ const SubCategories = () => {
         <SimilarProducts
           products={similar?.items}
           isLoading={isSimilarLoading}
+          useGridOnMobile={true}
         />
       </div>
     </section>

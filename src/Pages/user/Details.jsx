@@ -662,9 +662,7 @@ const prevModalSlide = () => {
     
     <div className='p-6 py-4 pt-0  border-y-1 border-[#DEE2E6] sm:hidden flex flex-col gap-5'>
       <SearchUI />
-      <div className='hidden md:block'>
-        <Breadcrumb productData={product}/>
-      </div>
+      <Breadcrumb productData={product}/>
     </div>
 
     <div className="min-h-[70vh] bg-gray-50 pt-8 sm:pt-0">
