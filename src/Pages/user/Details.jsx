@@ -570,7 +570,7 @@ const prevModalSlide = () => {
   // Prepare product data for SEO
   const productImageUrl = product?.imageUrl 
     ? `https://smartteamazreal-001-site1.ktempurl.com${product.imageUrl}`
-    : '/Icons/logo.png';
+    : '/Icons/logo.svg';
   
   const productImages = product?.images 
     ? product.images.map(img => `https://smartteamazreal-001-site1.ktempurl.com${img.imageUrl}`)
